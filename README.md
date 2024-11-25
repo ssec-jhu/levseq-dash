@@ -1,8 +1,8 @@
 # SSEC-JHU LevSeq-Dash
 
 [![CI](https://github.com/ssec-jhu/levseq-dash/actions/workflows/ci.yml/badge.svg)](https://github.com/ssec-jhu/levseq-dash/actions/workflows/ci.yml)
-[![Documentation Status](https://readthedocs.org/projects/ssec-jhu-levseq-dash/badge/?version=latest)](https://ssec-jhu-levseq-dash.readthedocs.io/en/latest/?badge=latest)
-[![codecov](https://codecov.io/gh/ssec-jhu/levseq-dash/branch/main/graph/badge.svg?token=0KPNKHRC2V)](https://codecov.io/gh/ssec-jhu/levseq-dash)
+<!---[![Documentation Status](https://readthedocs.org/projects/ssec-jhu-levseq-dash/badge/?version=latest)](https://ssec-jhu-levseq-dash.readthedocs.io/en/latest/?badge=latest) --->
+<!---[![codecov](https://codecov.io/gh/ssec-jhu/levseq-dash/branch/main/graph/badge.svg?token=0KPNKHRC2V)](https://codecov.io/gh/ssec-jhu/levseq-dash) --->
 [![Security](https://github.com/ssec-jhu/levseq-dash/actions/workflows/security.yml/badge.svg)](https://github.com/ssec-jhu/levseq-dash/actions/workflows/security.yml)
 <!---[![DOI](https://zenodo.org/badge/<insert_ID_number>.svg)](https://zenodo.org/badge/latestdoi/<insert_ID_number>) --->
 
