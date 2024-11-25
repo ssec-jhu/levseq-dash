@@ -1,5 +1,5 @@
 [project]
-name = "package_name"  # Replace package_name with actual name (it's just a template).
+name = "levseq_dash"
 dynamic = ["version"]
 authors = [
     {name = "Scientifc Software Engineering Center at JHU", email = "ssec@jhu.edu"},
@@ -10,7 +10,14 @@ license = {file = "LICENSE"}
 
 requires-python = ">=3.11"
 dependencies = [
-    "fastapi[all]",
+    "dash",
+    "dash-ag-grid",
+    "dash-bootstrap-components",
+    "dash-bootstrap-templates",
+    "dash-iconify",
+    "pandas",
+    "dash-loading-spinners",
+    "gunicorn"
 ]
 
 [project.optional-dependencies]
@@ -33,9 +40,9 @@ docs = [
 ]
 
 [project.urls]
-homepage = "https://github.com/ssec-jhu/base-template"
-documentation = "https://github.com/ssec-jhu/base-template"
-repository = "https://github.com/ssec-jhu/base-template"
+homepage = "https://github.com/ssec-jhu/levseq-dash"
+documentation = "https://github.com/ssec-jhu/levseq-dash"
+repository = "https://github.com/ssec-jhu/levseq-dash"
 
 [build-system]
 requires = ["setuptools>=61.2", "setuptools_scm[toml]>=8.0"]
@@ -47,11 +54,11 @@ include-package-data = true
 exclude-package-data = {"*" = ["tests/*"]}
 
 [tool.setuptools.packages.find]
-include = ["package_name*"]
+include = ["levseq_dash*"]
 exclude = ["*.tests*"]
 
 [tool.setuptools_scm]
-write_to = "package_name/_version.py"  # Replace package_name with actual name (it's just a template).
+write_to = "levseq_dash/_version.py"  # Replace levseq_dash with actual name (it's just a template).
 
 [tool.bandit]
 exclude_dirs = ["tests"]

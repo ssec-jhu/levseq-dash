@@ -31,8 +31,8 @@ authors:
 - family-names: "Noss"
   given-names: "James"
   orcid: "https://orcid.org/0000-0002-0922-5770"
-title: "<package_name>"
+title: "LevSeq-Dash"
 version: 0.0.1
 doi: <insert zenodo DOI>
 date-released: 2023-01-01
-url: "https://github.com/ssec-jhu/<package_name>"
+url: "https://github.com/ssec-jhu/levseq-dash"
