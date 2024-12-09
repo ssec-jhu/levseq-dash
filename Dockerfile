@@ -8,4 +8,4 @@ RUN pip3 install -r requirements.txt
 
 COPY . .
 
-CMD ["uvicorn", "levseq_dash.app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["gunicorn", "--workers=1", "--threads=1", "-b", "0.0.0.0:8050", "levseq_dash.app.main_app_test:server"]

@@ -11,6 +11,7 @@ app = Dash(
     external_stylesheets=[dbc.themes.FLATLY, dbc_css],
 )
 
+server = app.server
 
 app.layout = html.Div(
     [
