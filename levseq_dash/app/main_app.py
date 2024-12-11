@@ -2,8 +2,8 @@ import dash_bootstrap_components as dbc
 from dash import Dash
 from dash_bootstrap_templates import load_figure_template
 
-from levseq_dash.app import layout_upload
 from levseq_dash.app import global_strings as gs
+from levseq_dash.app import layout_upload
 
 # Initialize the app
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"

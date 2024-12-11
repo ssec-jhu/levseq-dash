@@ -1,5 +1,6 @@
 import dash_bootstrap_components as dbc
 from dash import dcc, html
+
 from levseq_dash.app import global_strings as gs
 
 upload_form_layout = dbc.Form(
