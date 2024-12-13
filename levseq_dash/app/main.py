@@ -2,7 +2,8 @@
 # main.py
 #
 # Notes:
-#  This script contains the web application program entry point.
+#  This script is the web application program entry point.
+#
 
 ### TODO: GET RID OF IMPORTS THAT ARE NO LONGER USED (SEE BELOW)
 import sys
@@ -24,11 +25,9 @@ import global_strings as gs
 
 
 
-def initWebPage():
+def initWebPage( debugDash : bool ) -> None:
 
-    print( "#### initWebPage ####")
-
-    app.title = gs.web_title
+    app.title = f"{gs.web_title}{' (DEBUG)' if debugDash else ''}"
 
     # the database fetch returns a list of tuples, each of which contains one country name;
     #  the join "stringizes" a tuple, so the list comprehension builds a list of country name strings
@@ -36,18 +35,17 @@ def initWebPage():
     aCountries = [''.join(t) for t in tuples]
 
     app.layout = [
-        html.H1(children=gs.web_title, style={'textAlign':'center','color':'brown'}),
+        html.H1(children=app.title, style={'textAlign':'center','color':'brown'}),
         dcc.Dropdown(aCountries, '', id='dropdown-selection'),
         html.Ul(id="population_data_rows")
     ]
 
 
-## TODO: do we need to instantiate app with prevent_initial_callbacks=True ???
-##  or else use the partially-documented attribute prevent_initial_call on the following decorator???
-
-@callback( Output('population_data_rows', 'children'), Input('dropdown-selection', 'value') )
+@callback( Output('population_data_rows', 'children'),
+           Input('dropdown-selection', 'value'),
+           prevent_initial_call=True )
 def initTable(value):
-    
+
     tuples = dbexec.doFetch( "population_data", [value] )
 
     # Each row in the result set is a tuple that needs to be "stringified".
@@ -59,7 +57,8 @@ def initTable(value):
     # - The join concatenates the stringified value of each item in the tuple:
     #       ' '.join( ... )
     #
-    # This ugly bit of python might be avoided by letting the database server "stringify" the rows.
+    # This ugly code should probably be avoided by letting the database server
+    #  "stringify" the rows.
     #
     return [html.Li(' '.join( tuple(str(t) for t in raw_tuple) ) ) for raw_tuple in tuples]
 
@@ -155,9 +154,8 @@ if False :
             return [html.Li(file_download_link(filename)) for filename in files]
 
 
-
 sScriptName = os.path.basename(__file__)
-print(f"\nStart {sScriptName} __name__={__name__} pid={os.getpid()}, python v{sys.version.split('|')[0]}...\n")
+print(f"\nStart {sScriptName} __name__={__name__} pid={os.getpid()}, python v{sys.version.split('|')[0]}...")
 
 if __name__ == "__main__":
 
@@ -168,9 +166,11 @@ if __name__ == "__main__":
     # - If we use localhost, we can debug on the local machine or on a remote machine via port
     #    forwarding (which VSCode knows how to do without being told).
     #
-    app = Dash(__name__, prevent_initial_callbacks=True)
-    initWebPage()
-    app.run_server(debug=True, host='localhost', port=8050)
+    app = Dash(__name__)
+
+    debugDash = True
+    hostName = 'localhost'
+    tcpPort = 8050              # port 8050 for debugging
 
 else:
 
@@ -185,9 +185,15 @@ else:
     #
     srvFlask = Flask(__name__)
     app = Dash(__name__, server=srvFlask)   # (corresponds to "main:srvFlask" in the gunicorn command line)
-    initWebPage()
-    app.run_server(host='hplc-pc.che.caltech.edu',port=8051)
 
-# that's all, folks!
-print(f"Exiting {sScriptName} pid {os.getpid()}")
-exit()
+    debugDash = False
+    hostName = 'hplc-pc.che.caltech.edu'
+    tcpPort = 8051              # port 8051 for users
+
+# initialize the web page layout
+initWebPage( debugDash )
+
+# gunicorn will not load this app correctly unless the script ends with following
+#  two-line magic incantation
+if __name__ == '__main__' :
+    app.run( debug=debugDash, host=hostName, port=tcpPort, use_reloader=debugDash )
