@@ -60,13 +60,12 @@ def GetUploadDirectoryList():
 #  subsequently loaded into the database
 def FileUploadStatus( fileName: str ) -> str:
 
-    # this query returns a one-row, one-column result set containing a status string:
+    # get the file's upload status from the database:
     #  'completed'
     #  'in progress'
     #  'failed: (error message)'
     #  'none'
-    rows = dbexec.Query('file_load_status', [fileName])
-    msg = dbexec.RowToString(rows[0]).split(':')[0]
+    msg = dbexec.QueryScalar('get_file_load_status', [fileName])
     if msg != 'none':
         msg = f"uploaded; {msg}"
 

@@ -4,10 +4,13 @@
 # Notes:
 #  This script is the web application program entry point.
 #
+#  Dash "core components" are documented here: https://dash.plotly.com/dash-core-components/
+
 
 import sys
 import os
 
+import flask
 from flask import Flask
 from dash import Dash, dcc, html, callback, Output, Input
 
@@ -26,16 +29,16 @@ def _initWebPage( debugDash : bool ) -> None:
     app.title = f"{gs.web_title}{' (DEBUG)' if debugDash else ''}"
 
     # the database query returns a list of tuples, each of which contains one country name
-    rows = dbexec.Query( "countries" )
+    rows = dbexec.Query( "get_usernames" )
 
     # convert each row tuple to a string
-    aCountries = [dbexec.RowToString(r) for r in rows]
+    aUsers = [dbexec.RowToDropdownOption(r) for r in rows]
 
     # dbexec interaction layout
     layout_dbexec = [
         html.H3("dropdown select -> query database -> result set -> dash"),
-        dcc.Dropdown(aCountries, '', id='country_selection'),
-        html.Ul(id='population_data_rows')
+        dcc.Dropdown(aUsers, '', id='user_selection'),
+        html.Ul(id='selected_user')
     ]
 
     # fsexec interaction layout
@@ -55,7 +58,8 @@ def _initWebPage( debugDash : bool ) -> None:
                 "margin": "10px",
             },
             multiple=True
-        )
+        ),
+        html.Ul(id='uploaded_filenames',children='(none yet)')
     ]
     
     app.layout = [
@@ -64,36 +68,35 @@ def _initWebPage( debugDash : bool ) -> None:
         html.Div(id='fsexec_test', children=layout_fsexec,style={'width': '100%', 'border':'solid', 'border-width':'1px'})
     ]
 
-# callback: country list dropdown selection
-@callback( Output('population_data_rows', 'children'),
-           Input('country_selection', 'value'),
+# callback: user list dropdown selection
+@callback( Output('selected_user', 'children'),
+           Input('user_selection', 'value'),
            prevent_initial_call=True )
-def initTable(value) -> list:
+def initTable(val) -> list:
+
+    # save the user's IP address
+    remoteIPaddr = flask.request.remote_addr if flask.has_request_context() else ''
 
     # the database implementation returns query results as a list of tuples
-    rows = dbexec.Query( "population_data", [value] )
+    dbexec.NonQuery( "save_user_ip", [val, remoteIPaddr] )
 
-    # concatenate the row data into strings for HTML display
-    return [html.Li(dbexec.RowToString(r)) for r in rows]
+    # return the current user name for HTML display
+    return [f"Current user ID: {val}"]
 
 # callback: file upload
-@callback( ## TODO: Output("file-list", "children"),
-           [Input("upload-data", "filename"), Input("upload-data", "contents")] )
-def writeUploadedFiles(aFileNames: list[str], aFileContents:list[str]) -> None:
+@callback( Output('uploaded_filenames', "children"),
+           [Input('upload-data', 'filename'), Input('upload-data', 'contents')] )
+def writeUploadedFiles(aFileNames: list[str], aFileContents:list[str]) -> list:
 
-    print( 'writeUploadedFiles...')
+    rval = []
 
     if aFileNames is not None and aFileContents is not None:
         for fileName, fileContents in zip(aFileNames, aFileContents, strict=True):
             cb = fsexec.UploadBase64File(fileName, fileContents)
+            uploadStatus = fsexec.FileUploadStatus(fileName)
+            rval += [html.Li(f"Uploaded {fileName}: {cb} bytes (status: {uploadStatus})")]
 
-
-            ### TODO: GET RID OF THIS ASAP
-            print( f"Uploaded {fileName}: {cb} bytes")
-            print( f"Upload status: {fsexec.FileUploadStatus(fileName)}" )
-
-    return  ## should populate a list of uploaded files and statuses
-
+    return rval
 
 
 # Web application setup
