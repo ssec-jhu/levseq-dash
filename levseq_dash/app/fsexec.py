@@ -1,12 +1,84 @@
 #
-# upload.py
+# fsexec.py
 #
-# From: https://docs.faculty.ai/user-guide/apps/examples/dash_file_upload_download.html
+# Notes:
+#  Functionality relating to files in the local filesystem.
+#
+#  Upload/download strategy based on: https://docs.faculty.ai/user-guide/apps/examples/dash_file_upload_download.html
 #
 
+import base64
+import os
+from urllib.parse import quote as urlquote
 
-pathToHostDir = "/mnt/Data/ssec-devuser/uploads"
+import dbexec
+import global_strings as gs
 
+
+
+
+# upload a file from a user-selected directory on the web client machine
+#  to a predefined directory (which should be located on the database server machine)
+def UploadBase64File( fileName: str, b64:str) -> int:
+
+    # The base64-encoded file produced by the dash core component Upload looks like this:
+    #
+    #   data:text/plain;base64,xxxxx...
+    #
+    # where xxxxx... is the base64-encoded representation of the binary file contents.
+    #
+    # (Doing base64 encoding for HTTP file transfers may not be necessary, but it's common
+    #  practice and costs very little to ensure that nothing in binary file data can be
+    #  misinterpreted, so it's hard to argue with this aspect of the implementation of dcc.Upload.)
+    
+    # We want the os to write the base64-string as a sequence of bytes, so we encode
+    #  the python string as 8-bit bytes, split it on the characters ';base64,', and
+    #  grab just the utf8-encoded base64 string.
+    b64 = b64.encode('utf8').split(b';base64,')[1]
+
+    # open the output file for binary write; the open() function returns an instance of io.BufferedWriter
+    fileSpec = os.path.join(gs.host_upload_directory, fileName)
+    with open(fileSpec, "wb") as bw:
+
+        # decode b64 to binary and write the bytes to the output file
+        return bw.write(base64.decodebytes(b64))
+
+# download a file from a predefined directory on the database server machine
+#  to a user-selected directory on the web client machine
+def DownloadFile():
+    return
+
+# get a fully-qualified path to the predefined upload directory on the database server machine
+def GetUploadDirectory():
+    return
+
+# return a filtered list of filenames in the predefined upload directory
+def GetUploadDirectoryList():
+    return
+
+# return a string that indicates whether the specified file has been uploaded and
+#  subsequently loaded into the database
+def FileUploadStatus( fileName: str ) -> str:
+
+    # this query returns a one-row, one-column result set containing a status string:
+    #  'completed'
+    #  'in progress'
+    #  'failed: (error message)'
+    #  'none'
+    rows = dbexec.Query('file_load_status', [fileName])
+    msg = dbexec.RowToString(rows[0]).split(':')[0]
+    if msg != 'none':
+        msg = f"uploaded; {msg}"
+
+    else:
+        # the file has not been "seen" in the database, so we look in the upload directory
+        fileSpec = os.path.join(gs.host_upload_directory, fileName)
+        if os.path.isfile(fileSpec):
+            msg = 'uploaded; not in database'
+        else:
+            msg = 'not uploaded'
+
+    return msg
 
 
 if False:
@@ -106,6 +178,4 @@ if False:
             return [html.Li(file_download_link(filename)) for filename in files]
 
 
-    if __name__ == "__main__":
-        ## app.run_server(debug=True, port=8050)     # VSCode forwards 127.0.0.1:8050 to a local port!
-        app.run_server(host='hplc-pc.che.caltech.edu',port=8050)
+    
