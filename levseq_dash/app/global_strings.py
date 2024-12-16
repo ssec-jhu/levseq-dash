@@ -11,8 +11,4 @@ dbc_template_name = "flatly"
 
 # postgres database connection string
 pgcs = "user=ssec-devuser dbname=LevSeq"  # database connection string
-schema = "dev"  # database schema
-
-# postgres-accessible file upload directory
-### TODO: GET THIS AT USER LOGIN TIME, MAINTAIN IN WEB SESSION
-host_upload_directory = "/mnt/Data/ssec-devuser/uploads"
+schema = "v1"  # database schema

@@ -59,20 +59,19 @@ def GetUploadDirectoryList():
 
 # return a string that indicates whether the specified file has been uploaded and
 #  subsequently loaded into the database
-def FileUploadStatus(fileName: str) -> str:
+def GetFileUploadStatus(fileSpec: str) -> str:
 
     # get the file's upload status from the database:
     #  'completed'
     #  'in progress'
     #  'failed: (error message)'
     #  'none'
-    msg = dbexec.QueryScalar("get_file_load_status", [fileName])
+    msg = dbexec.QueryScalar("get_file_load_status", [fileSpec])
     if msg != "none":
         msg = f"uploaded; {msg}"
 
     else:
         # the file has not been "seen" in the database, so we look in the upload directory
-        fileSpec = os.path.join(gs.host_upload_directory, fileName)
         if os.path.isfile(fileSpec):
             msg = "uploaded; not in database"
         else:

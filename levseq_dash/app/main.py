@@ -6,6 +6,8 @@
 #
 #  Dash "core components" are documented here: https://dash.plotly.com/dash-core-components/
 #
+#  Flask is documented here: https://flask.palletsprojects.com/en/stable/
+#
 #  Autoformatter: black
 #  Linter: pylance
 #
@@ -23,10 +25,10 @@ import global_strings as gs
 
 
 # emit a banner
+# fmt: off
 sScriptName = os.path.basename(__file__)
-print(
-    f"\nStart {sScriptName} __name__={__name__} pid={os.getpid()}, python v{sys.version.split('|')[0]}..."
-)
+print(f"\nStart {sScriptName} __name__={__name__} pid={os.getpid()}, python v{sys.version.split('|')[0]}...")
+# fmt: on
 
 
 # initial web page layout implementation
@@ -96,15 +98,17 @@ def selectUser(uid) -> list:
 
     if flask.has_request_context():
         remoteIPaddr = flask.request.remote_addr
-        flask.session["user"] = uid
-        flask.session["upload_dir"] = (
-            gs.host_upload_directory
-        )  # TODO: GET THIS FROM DB!!!
+        flask.session["username"] = uid
     else:  # (this should not happen)
         remoteIPaddr = "?.?.?.?"
 
     # save the IP address in the database table of users
     dbexec.NonQuery("save_user_ip", [uid, remoteIPaddr])
+
+    # get user session config
+    user_config = dbexec.Query("get_user_config", [uid])[0]
+    flask.session["groupname"] = user_config[0]
+    flask.session["hostUploadDir"] = user_config[1]
 
     # return the current user name for HTML display
     return [f"Current user ID: {uid}"]
@@ -121,22 +125,29 @@ def writeUploadedFiles(aFileNames: list[str], aFileContents: list[str]) -> list:
     rval = []
 
     if aFileNames is not None and aFileContents is not None:
-        hostUploadDir = flask.session["upload_dir"]
+
+        # upload the file data
+        uid = flask.session["username"]
+        hostUploadDir = flask.session["hostUploadDir"]
         for fileName, fileContents in zip(aFileNames, aFileContents, strict=True):
             fileSpec = os.path.join(hostUploadDir, fileName)
 
             cb = fsexec.UploadBase64File(fileSpec, fileContents)
 
+        # load CSV file(s) into database tables
+        for fileName, fileContents in zip(aFileNames, aFileContents, strict=True):
             if fileName[-4:].lower() == ".csv":
-                dbexec.NonQuery("load_csv_file", [fileSpec])
+                fileSpec = os.path.join(hostUploadDir, fileName)
+                dbexec.NonQuery("load_csv_file", [uid, fileSpec])
 
-            uploadStatus = fsexec.FileUploadStatus(fileName)
-            rval += [html.Li(f"Uploaded {fileName}: {cb} bytes (status: {uploadStatus})")]
+        # get uploaded file status
+        rows = dbexec.Query("get_file_load_status", [uid, hostUploadDir, aFileNames])
+        rval += [html.Li(f"Uploaded {r[0]}: (status: {r[1]} {r[2]})") for r in rows]
 
     return rval
 
 
-# Web application setup
+# Dash/Flask application setup
 #
 # The loader-assigned module name lets us determine whether we are loaded by a python script
 #  loader or as a module (e.g., by gunicorn).
