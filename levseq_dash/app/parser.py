@@ -7,7 +7,10 @@ import pandas as pd
 
 
 def parse_csv_contents(contents, filename, last_modified):
-    # TODO: maintain the percesion
+    # TODO: maintain the precision
+    # TODO: extract the parent
+    # TODO: verify the CAS numbers
+
     # dtype={
     #     "col1": "int64",  # Use int64 for large integers
     #     "col2": "float64" # Use float64 for high-precision floats
