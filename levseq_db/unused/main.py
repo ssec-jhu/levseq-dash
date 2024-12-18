@@ -191,7 +191,7 @@ else:
 _initWebPage(debugDash)
 
 # gunicorn will not load this app correctly unless the script ends with the
-#  following two lines of code:
+#  customary module-name validation:
 if __name__ == "__main__":
     app.server.config.update(SECRET_KEY=gs.session_key)
     app.run(host=hostName, port=str(tcpPort), debug=debugDash, use_reloader=debugDash)
