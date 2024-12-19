@@ -1,6 +1,3 @@
-import pandas as pd
-
-
 class DBManager:
     def __init__(self):
         """Initialize the 'database'"""
@@ -16,16 +13,16 @@ class DBManager:
         self,
         user_id: int,  # returned by the db
         experiment_name: str,  # provided from UI
-        time_stamp: str,  # provided from UI
+        upload_time_stamp: str,  # provided from UI
+        experiment_time: str,  # provided from UI
         substrate_cas_number: list[str],  # provided from UI
         product_cas_number: list[str],  # provided from UI
         assay: str,  # provided from UI
-        mutegenesis_method: bool,  # epPCR=0 SSM=1
+        mutagenesis_method: bool,  # epPCR=0 SSM=1
         plates_count: int,  # processed
         parent_sequence: str,  # processed
-        experiment_data: pd.DataFrame,  # the contents of the csv
+        experiment_data: bytes,  # or file - the contents of the csv
         pdb_file: bytes,  # file uploaded from the user
-        experiment_time: str = None,  # provided from UI - optional
     ) -> int:
         """
         Push a new experiment record into the database.
@@ -40,12 +37,12 @@ class DBManager:
             Unique identifier for the user (retrieved from the database).
         experiment_name : str
             Descriptive name of the experiment (provided via the UI).
-        time_stamp : str
+        upload_time_stamp : str
         experiment_time : str, optional
         substrate_cas_number : list[str]
         product_cas_number : list[str]
         assay : str
-        mutegenesis_method : bool
+        mutagenesis_method : bool
             Mutation method used, where `1` indicates SSM (site-saturation mutagenesis),
             and `0` indicates epPCR (error-prone PCR).
         plates_count : int
@@ -101,20 +98,20 @@ class DBManager:
         # TODO:get_user_id() stub
         return 0
 
-    def get_all_users(self) -> list:
+    def get_all_users(self):
         """
         Retrieve a list of all user IDs in this lab.
 
         Returns
         -------
-        list
+        data structure containing all user IDs
             A list of unique user IDs belonging to all users in the lab.
 
         """
         # TODO:get_all_users() stub
-        return []
+        return None
 
-    def get_user_experiments(self, user_id: str) -> pd.DataFrame:
+    def get_user_experiments(self, user_id: str):
         """
         Retrieve all experiments uploaded by a specific user.
 
@@ -125,8 +122,7 @@ class DBManager:
 
         Returns
         -------
-        pd.DataFrame
-            A DataFrame containing details about all experiments uploaded by the user, with the following columns:
+        data structure containing details about all experiments uploaded by the user, with the following columns:
             - 'experiment_name' (str):
             - 'experiment_id' (int):
             - 'time_stamp' (str):
@@ -138,16 +134,15 @@ class DBManager:
 
         """
         # TODO: get_user_experiments() stub
-        return pd.DataFrame()
+        return None
 
-    def get_all_experiments(self) -> pd.DataFrame:
+    def get_all_experiments(self):
         """
         Retrieve all experiments uploaded by a all users.
 
         Returns
         -------
-        pd.DataFrame
-            A DataFrame containing details about all experiments uploaded by the user, with the following columns:
+        data structure containing details about all experiments uploaded by the user, with the following columns:
             - 'user_id' (int):
             - 'user_name' (str):
             - 'experiment_name' (str):
@@ -161,7 +156,7 @@ class DBManager:
 
         """
         # TODO: get_all_experiments() stub
-        return pd.DataFrame()
+        return None
 
     # ----------------------------
     #   DATA RETRIEVAL: PER EXPERIMENT
@@ -201,7 +196,7 @@ class DBManager:
         # TODO: get_experiment_pdb_file() stub
         return None
 
-    def get_experiment_meta_data(self, experiment_id: int) -> dict:
+    def get_experiment_meta_data(self, experiment_id: int):
         """
         Retrieve metadata for a specific experiment.
 
@@ -212,8 +207,7 @@ class DBManager:
 
         Returns
         -------
-        dict
-            A dictionary containing metadata for the experiment with the following keys:
+        data structure containing metadata for the experiment with the following keys:
             - 'experiment_name' (str): The name of the experiment.
             - 'time_stamp' (str): The date and time the experiment was created.
             - 'experiment_time': str
@@ -223,9 +217,9 @@ class DBManager:
             - 'assay' (str): The assay used in the experiment.
         """
         # TODO: get_experiment_meta_data() stub
-        return {}
+        return None
 
-    def get_experiment_fitness_values(self, experiment_id: int) -> pd.DataFrame:
+    def get_experiment_fitness_values(self, experiment_id: int):
         """
         Retrieve fitness values for a specific experiment including the X and Y location
 
@@ -236,8 +230,7 @@ class DBManager:
 
         Returns
         -------
-        pd.DataFrame
-            A DataFrame containing following columns:
+        data structure containing the following:
             - 'cas_number' (str):
             - 'plate' (str):
             - 'well' (str):
@@ -247,12 +240,12 @@ class DBManager:
             - 'fitness_value' (float):
         """
         # TODO: get_experiment_fitness_values() stub
-        return pd.DataFrame()
+        return None
 
-    def get_experiment_all(self, experiment_id: int) -> pd.DataFrame:
+    def get_experiment_all(self, experiment_id: int):
         """
         Retrieve ALL data uploaded by user in the original csv file.
-        This does not include the metadata.
+        This does not include the metadata. This will/should match the csv file that was uploaded.
 
         Parameters
         ----------
@@ -261,14 +254,13 @@ class DBManager:
 
         Returns
         -------
-        pd.DataFrame
-            A DataFrame containing following columns:
+        data structure containing following:
             - 'ID' (str):
             - 'barcode_plate' (int):
             - 'cas_number' (str):
             - 'plate' (str):
             - 'well' (str):
-            - 'aligment_count' (int):
+            - 'alignment_count' (int):
             - 'nucleotide_mutation' (str):
             - 'amino_acid_substitutions' (str):
             - 'alignment_probability' (int):
@@ -283,72 +275,67 @@ class DBManager:
             - 'fitness_value' (float):
         """
         # TODO: get_experiment_all() stub
-        return pd.DataFrame()
+        return None
 
     # ----------------------------
     #   DATA RETRIEVAL: EXPERIMENT STATS
     # ----------------------------
-    def get_experiment_alignment_count(self, experiment_id: int) -> pd.DataFrame:
+    def get_experiment_alignment_count(self, experiment_id: int):
         """
         Returns
         -------
-        pd.DataFrame
-            A DataFrame containing the following columns:
+        data structure containing the following:
             - 'plate' (str):
             - 'well' (str):
             - 'alignment_count' (int):
         """
         # TODO: get_experiment_alignment_count() stub
-        return pd.DataFrame()
+        return None
 
-    def get_experiment_alignment_probability(self, experiment_id: int) -> pd.DataFrame:
+    def get_experiment_alignment_probability(self, experiment_id: int):
         """
         Returns
         -------
-        pd.DataFrame
-            A DataFrame containing the following probability:
+        data structure containing the following probability:
             - 'plate' (str):
             - 'well' (str):
             - 'alignment_probability' (float):
         """
         # TODO: get_experiment_alignment_probability() stub
-        return pd.DataFrame()
+        return None
 
-    def get_experiment_average_mutation_frequency(self, experiment_id: int) -> pd.DataFrame:
+    def get_experiment_average_mutation_frequency(self, experiment_id: int):
         """
         Returns
         -------
-        pd.DataFrame
-            A DataFrame containing the following columns:
+        data structure containing the following columns:
             - 'plate' (str):
             - 'well' (str):
             - 'average_mutation_frequency' (float):
         """
         # TODO: get_experiment_alignment_count() stub
-        return pd.DataFrame()
+        return None
 
-    def get_experiment_p_value(self, experiment_id: int) -> pd.DataFrame:
+    def get_experiment_p_value(self, experiment_id: int):
         """
         Returns
         -------
-        pd.DataFrame
-            A DataFrame containing the following columns:
+        data structure containing the following columns:
             - 'plate' (str):
             - 'well' (str):
             - 'p_value' (float):
         """
         # TODO: get_experiment_alignment_count() stub
-        return pd.DataFrame()
+        return None
 
-    def get_experiment_p_adj_value(self, experiment_id: int) -> pd.DataFrame:
+    def get_experiment_p_adj_value(self, experiment_id: int):
         """
         Returns
         -------
-        pd.DataFrame
-            A DataFrame containing the following columns:
+        data structure containing the following columns:
             - 'plate' (str):
             - 'well' (str):
             - 'p_adj_value' (float):
         """
         # TODO: get_experiment_alignment_count() stub
-        return pd.DataFrame()
+        return None
