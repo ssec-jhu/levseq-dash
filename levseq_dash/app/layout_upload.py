@@ -1,3 +1,5 @@
+from datetime import date
+
 import dash_bootstrap_components as dbc
 from dash import dcc, html
 
@@ -15,6 +17,23 @@ form = dbc.Form(
                 components.get_label(gs.experiment_name),
                 dbc.Col(
                     dbc.Input(type="text", id="id-input-experiment-name", placeholder=gs.experiment_name_placeholder),
+                ),
+            ],
+            className="mb-3",
+        ),
+        dbc.Row(
+            [
+                components.get_label(gs.experiment_date),
+                dbc.Col(
+                    [
+                        dcc.DatePickerSingle(
+                            id="id-experiment-date",
+                            clearable=True,
+                            # className="dbc",
+                            # TODO: what should be the placeholder
+                            # placeholder="date of experiment"
+                        )
+                    ],
                 ),
             ],
             className="mb-3",
