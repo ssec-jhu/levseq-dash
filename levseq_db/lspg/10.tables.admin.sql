@@ -1,5 +1,5 @@
 /*
-   02.tables.admin.sql
+   10.tables.admin.sql
 */
 
 /* ensure that the SQL schema exists */
@@ -17,8 +17,8 @@ create table if not exists v1.usergroups
 )
 tablespace pg_default;
 
-alter table if exists v1.usergroups
-   owner to "ssec-devuser";
+alter table v1.usergroups owner to "ssec-devuser";
+grant select,insert,update,delete on v1.usergroups to lsdb;
 
 drop index if exists v1.pk_usergroups;
 
@@ -41,9 +41,10 @@ create table if not exists v1.users
 )
 tablespace pg_default;
 
-alter table if exists v1.users owner to "ssec-devuser";
+alter table v1.users owner to "ssec-devuser";
+grant select,insert,update,delete on v1.users to lsdb;
 
-drop index if exists v1.pk_users;
+drop index v1.pk_users;
 
 create unique index pk_users
           on v1.users
@@ -52,7 +53,7 @@ create unique index pk_users
         with (deduplicate_items=True)
   tablespace pg_default;
 
-alter table if exists v1.users cluster on pk_users;
+alter table v1.users cluster on pk_users;
 
 /*** test
 truncate table v1.usergroups;

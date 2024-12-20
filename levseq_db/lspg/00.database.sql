@@ -1,5 +1,5 @@
 /*
-   01.database.sql
+   00.database.sql
 
    Notes:
     Connect to database "postgres" to execute this script in pgadmin4.

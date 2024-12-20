@@ -1,5 +1,5 @@
 /*
-   02.tables.load.sql
+   12.tables.load.sql
 */
 
 /* ensure that the SQL schema exists */
@@ -62,19 +62,49 @@ insert into v1.load_states (status)
 select * from v1.load_states;
 
 
-/* table vi.load_log */
+/* table v1.load_log_msgs */
+-- drop table if exists v1.load_log_msgs
+create table if not exists v1.load_log_msgs
+(
+  pkey   smallint     not null generated always as identity,
+  msg    varchar(64)  not null );
+
+alter table if exists v1.load_log_msgs owner to "ssec-devuser";
+
+drop index if exists v1.pk_load_log_msgs;
+
+create unique index pk_load_log_msgs
+          on v1.load_log_msgs
+       using btree
+             (pkey asc)
+        with (deduplicate_items=True)
+  tablespace pg_default;
+
+truncate table v1.load_log_msgs;
+alter sequence v1.load_log_msgs_pkey_seq restart with 1;
+insert into v1.load_log_msgs (pkey, msg)
+     values (  0, ''),
+            (  1, 'invalid CAS: %s'),
+            (  2, 'whatever');
+select * from v1.load_log_msgs;
+
+
+
+/* table v1.load_log */
 -- drop table if exists v1.load_log;
 create table if not exists v1.load_log
 (
-  pkey      int               not null generated always as identity,
-  uid       smallint          not null constraint fk_load_log_users
-                                  references v1.users(pkey),
-  dt        timestamptz       not null default current_timestamp,
-  task      smallint          not null constraint fk_load_log_tasks
-                                  references v1.load_tasks(pkey),
-  status    smallint          not null constraint fk_load_log_status
-                                  references v1.load_tasks(pkey),
-  details   varchar(320)      null
+  pkey       int           not null generated always as identity,
+  uid        smallint      not null constraint fk_load_log_users
+                               references v1.users(pkey),
+  esn        int           not null constraint fk_data_files_experiments
+                               references v1.experiments(pkey),
+  task       smallint      not null constraint fk_load_log_tasks
+                               references v1.load_tasks(pkey),
+  filespec   varchar(320)  not null,
+  dt         timestamptz   not null default current_timestamp,
+  status     smallint      not null constraint fk_load_log_status
+                               references v1.load_tasks(pkey),
 );
 
 alter table if exists v1.load_log owner to "ssec-devuser";
@@ -83,12 +113,12 @@ drop index if exists v1.pk_load_log;
 
 create unique index pk_load_log
           on v1.load_log
-       using btree
-             (pkey asc)
+       using btree (pkey asc, uid  asc, experiment asc)
         with (deduplicate_items=True)
   tablespace pg_default;
 
 alter table if exists v1.load_log cluster on pk_load_log;
+
 /*** test
 insert into v1.load_log( uid, task, status, details)
 values (2, 1, 2, 'flatten_ep_processed_xy_cas.csv');
