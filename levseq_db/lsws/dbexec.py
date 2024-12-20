@@ -8,6 +8,13 @@
 #  We assume this application is running under user credentials that are also authenticated
 #   on the postgres server, so that no password is needed in the database connection string.
 #
+#  For all SQL queries initiated by a remote caller:
+#   - the verb is the name of a SQL stored procedure or function
+#   - the argument list is a query-dependent list of scalars (strings and/or numeric values)
+#      that may also be an empty list
+#  Any query may return either a rowset, a scalar, or nothing at all. We use the first few
+#   characters of the verb to choose among these possibilities.
+#
 
 import psycopg
 from psycopg import sql as scm  # "SQL composition utility module"
@@ -112,6 +119,8 @@ def QueryScalar(verb: str, args: Arglist = None) -> Scalar:
     return _doQuery(_fnExecuteScalar, verb, args) # type:ignore
 
 
+
+# TODO: USE OR LOSE
 # return a string that represents a row (tuple) from a result set
 def RowToString(row: tuple, sep: str = " ") -> str:
 
@@ -124,7 +133,7 @@ def RowToString(row: tuple, sep: str = " ") -> str:
     #
     return sep.join(tuple(str(c) for c in row))
 
-
+# TODO: USE OR LOSE
 def RowToDropdownOption(row: tuple, sep: str = " ") -> dict:
 
     # value: the first item

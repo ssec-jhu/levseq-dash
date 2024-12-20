@@ -27,25 +27,40 @@
 #   (https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.from_records.html)
 #
 #  The same rowset tuple (column names, rows) can be zipped into python Dict instances
-#   suitable for other kinds of data consumers, including Plotly Dash components (e.g.,
-#   DataTable) and HTML elements.
+#   suitable for other kinds of data consumers, including Plotly Dash components like
+#   DataTable (https://dash.plotly.com/datatable/reference) and HTML elements.
 
-import typing
 import re
+import fastapi
 import pydantic
 import dbexec
 import globals as g
 
+import psycopg  ### TODO: MOVE THIS TO dbexec.py
 
-# It would be possible to implement the jsonization of result sets in postgres using json_agg,
-#  jsonb_build_object, and so on, but it's probably more efficient (and certainly much less
-#  painful) to refrain from serializing result sets as json except to ship them from this
-#  webservice to a remote client.
+
+# It would be possible to serialize result sets as json in postgres using json_agg(),
+#  jsonb_build_object(), and so on, but it's probably more efficient (and certainly
+#  much less painful) to jsonize them only to ship them from this webservice to a
+#  remote client.
 #
 # FastAPI uses the pydantic BaseModel class to implement json serialization:
-class ResultSet(pydantic.BaseModel):
+class QueryRowset(pydantic.BaseModel):
     columns: list[str]
     rows: list[tuple]
+
+
+class QueryScalar(pydantic.BaseModel):
+    result: dbexec.Scalar
+
+
+class QueryParams(pydantic.BaseModel):
+    verb: str
+    params: list[dbexec.Scalar]
+
+
+# handy type aliases
+type QueryResponse = QueryRowset | QueryScalar | None
 
 
 #
@@ -55,31 +70,54 @@ class ResultSet(pydantic.BaseModel):
 #  If this operation succeeds, we must be connected end to end.
 #
 # FWIW, the FastAPI remote development client does this request at initialization.
-def GetImplementationInfo() -> ResultSet:
+def GetImplementationInfo() -> QueryResponse:
     c, r = dbexec.Query("get_pgid", [g.ID])
-    return ResultSet(columns=c, rows=r)
+    return QueryRowset(columns=c, rows=r)
 
 
 #
 # POST requests
 #
 # The verb prefix determines the way the database query executes.
+def _invalidVerbException(verb: str) -> None:
+    raise fastapi.HTTPException(status_code=404, detail=f"invalid query '{verb}'")
 
-# TODO: tighten up the type annotation
+
+# Reflect the postgres exception message
+def _postgresException(msg: str) -> None:
+    raise fastapi.HTTPException(status_code=422, detail=msg)
 
 
-def PostDatabaseQuery(verb: str, *args) -> typing.Any:
-    prefix = re.match(r"^\w+", verb)
-    match prefix:
-        case "get":
-            c, r = dbexec.Query(verb, [arg for arg in args])
-            return ResultSet(columns=c, rows=r)
+## TODO: HANDLE "BAD REQUEST" ERRORS FROM POSTGRES
+def PostDatabaseQuery(args: QueryParams) -> QueryResponse:
 
-        case "do":
-            return "Tuesday"
+    # extract the verb prefix:
+    #  \w+?  one or more alphanumeric characters, non-greedy capture
+    #  _     followed by underscore
+    m = re.match(r"^(\w+?)_", args.verb)
+    if m == None:
+        return _invalidVerbException(args.verb)
 
-        case "is" | "peek":
-            return "Wednesday"
+    try:
+        # dispatch according to the prefix
+        match m[1]:
+            case "get":
+                c, r = dbexec.Query(args.verb, [param for param in args.params])
+                return QueryRowset(columns=c, rows=r)
 
-        case _:
-            return "Invalid day number"  # TODO: HOW TO THROW THIS ERROR
+            case "do":
+                return dbexec.NonQuery(args.verb, [param for param in args.params])
+
+            case "is" | "peek":
+                rval = dbexec.QueryScalar(args.verb, [param for param in args.params])
+                return QueryScalar(result=rval)
+
+            case _:
+                return _invalidVerbException(args.verb)
+
+    ### TODO: repackage this so the postgres-specific stuff is in dbexec.py
+    except Exception as ex:
+        if isinstance(ex, psycopg.Error):
+            _postgresException(str(ex))
+        else:
+            raise

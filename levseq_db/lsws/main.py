@@ -36,46 +36,34 @@ app = FastAPI()
 
 
 # This webservice is simple:
-#  - We only expose one endpoint.
-#  - Every HTTP request maps to a postgres SQL stored procedure or function whose signature is:
-#      verb [optional parameters]
-#  - Every HTTP response is a json structure whose first member is "details", e.g.
-#      {
-#        "details": "whatever ??????"}
-#      }
-#    We do this because FastAPI formats error responses in the same way.  A remote client
-#     implementation can always expect the "details" member to be present regardless of what
-#     the HTTP response code might be.
+#  We only expose one endpoint.  (Two if you count the "ping" functionality.):
 #
+#   GET requests    response
+#   "/": ping       200 OK
+#   (all others)    404 Not Found
 #
-# GET requests      response
-#  - "/": ping      200 OK
-#  - (all others)   404 Not Found
-#
-# POST requests
-# - "/": queries    200 OK: good data
+#   POST requests   response
+#   "/": queries    200 OK: successful postgres SQL execution
 #                   400 Bad Request: bad parameter syntax (invalid verb, wrong number or format of parameters)
 #                   500 Internal Server Error (error raised in postgres SQL code)
-# - (all others)    404 Not Found
+#   (all others)    404 Not Found
+#
+#  FastAPI's default implementation differentiates among several different error response types.
+#   HTTP response 200 means "success", and HTTP response >= 400 means "failure" with FastAPI-
+#   provided response data:
+#
+#       [ "details": "(error details") ]
+#
 
 
 @app.get("/")
-async def getRoot() -> wsexec.ResultSet:
+async def getRoot() -> wsexec.QueryResponse:
     return wsexec.GetImplementationInfo()
 
 
-#
-# TODO
-#
-# @app.post("/items/")
-# async def create_item(item: Item):
-#     return item
-
-
-# TODO: CREATE A wsexec.Query class with members verb (str) and args (list)???
 @app.post("/")
-async def query() -> wsexec.ResultSet | None:
-    return wsexec.ResultSet(columns=["a", "b"], rows=[(1, 2), (3, 4)])
+async def query(args: wsexec.QueryParams) -> wsexec.QueryResponse:
+    return wsexec.PostDatabaseQuery(args)
 
 
 # Application setup
