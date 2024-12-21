@@ -7,9 +7,14 @@
 drop function if exists v1.get_user_experiments(int);
 
 create or replace function v1.get_user_experiments( in _uid int )
-returns table ( pkey       int,
-                dt         timestamptz,
-                experiment varchar(64) )
+returns table ( pkey            int,
+                experiment_name text,
+                experiment_dt   timestamptz,
+                n_plates        int,
+                cas_substrate   text,
+                cas_product     text,
+				assay           text )
+
 language plpgsql
 as $body$
 
@@ -17,12 +22,11 @@ as $body$
 
 begin
 
-    -- return experiment load date and name for the specified user
+-- return experiment info for the specified user
     return query
-    select pkey, dt_load, experiment
-      from v1.experiments
-     where pkey = _uid
-  order by dt_load desc
+    select 1, '* experiment name *', now(), 1,
+	          '64-17-5', '439-14-5',
+			  '* assay *';
 
 end;
 

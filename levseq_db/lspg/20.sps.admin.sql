@@ -16,7 +16,9 @@ begin
     return query
 	select 'wsid'::varchar, _wsid
 	 union
-	select 'pgid'::varchar, (regexp_match(version(), '(^.*\s[\d\.]+)\s'))[1];
+	select 'pgid'::varchar, (regexp_match(version(), '(^.*\s[\d\.]+)\s'))[1]
+	 union
+	select 'pgcu'::varchar, current_user::varchar;
 
 end;
 
@@ -32,69 +34,25 @@ select v1.get_pgid('LevSeq webservice v1.0');         -- (one column, comma-sepa
 drop function v1.get_usernames();
 
 create or replace function v1.get_usernames()
-returns table( json_row json )
-
-/***
 returns table ( pkey      int,
                 username  varchar(32),
                 groupname varchar(32)
               )
-***/
 language plpgsql
 as $body$
 
 begin
-/****
+
     return query
     select t1.pkey, t1.username, t2.groupname
 	  from v1.users t1
 	  join v1.usergroups t2 on t2.pkey = t1.usergroup
   order by t1.username;
-***/
 
-
-    return query
-	select json_build_object('uid',      t1.pkey,
-	                         'username', t1.username,
-							 'groupname', t2.groupname)
-	  from v1.users t1
-	  join v1.usergroups t2 on t2.pkey = t1.usergroup
-  order by t1.username;
-
-/*****
-
-"json_test"
-"{""promotions"" : {""one"": 1, ""two"": 2}, ""items"" : [1,2]}"
-select 
-select 
-    json_build_object('promotions',
-                      jsonb_build_object('one', 1, 'two', 2),
-                                         'items', ARRAY[1, 2]
-                     ) AS json_test;
-
-what about row_to_json ????
-
-
-  select *
-  select json_agg(
-          json_build_object(
-    t1.pkey, t1.username, t2.groupname
-	        from v1.users t1
-	        join v1.usergroups t2 on t2.pkey = t1.usergroup)
-			);
-			
-        order by t1.username
-		 ) as subquery;
-
-***/
 end;
 
 $body$;
 /*** test
--- when returning json:
-select * from v1.get_usernames();
-
--- when returning a raw SQL result set:
 select * from v1.get_usernames();  -- returns three columns
 select v1.get_usernames();         -- returns one column of comma-separated values
                                    --  (embedded commas are NOT escaped!)
@@ -106,8 +64,8 @@ select * from v1.users;
 drop function if exists v1.get_user_config(int);
 
 create or replace function v1.get_user_config( _uid int ) 
-returns table ( groupname varchar(32),
-                upload_dir varchar(320)
+returns table ( groupname text,
+                upload_dir text
               )
 language plpgsql
 as $body$
@@ -117,7 +75,7 @@ begin
     return query
     select t2.groupname, t2.upload_dir
       from v1.users t1
-      join v1.usergroups t2 on t2.pkey = t1.usergroup
+      join v1.usergroups t2 on t2.pkey = t1.grp
      where t1.pkey = _uid;
 
 end;

@@ -10,6 +10,13 @@
 	 See: https://www.cybertec-postgresql.com/en/binary-data-performance-in-postgresql/)
 */
 
+
+
+
+
+
+
+/* function v1.get_upload_directory */
 create or replace function v1.get_upload_directory( in _cas varchar(16) )
 returns smallint
 language plpgsql
@@ -82,9 +89,13 @@ end;
 
 $body$;
 /*** test
-select v1.is_valid_cas( '3459O5-97-7'::varchar );  -- fail: O, not zero
-select v1.is_valid_cas( '7732-18-5'::varchar );    -- ok
+select v1.is_valid_cas( '7732-18-5'::varchar );    -- ok: water
+select v1.is_valid_cas( '64-17-5'::varchar);       -- ok: ethanol
+select v1.is_valid_cas( '439-14-5'::varchar);      -- ok: diazepam
+select v1.is_valid_cas( '99685-96-8'::varchar);    -- ok: buckminsterfullerene
+
 select v1.is_valid_cas( '345905-97-7'::varchar );  -- ok:
+select v1.is_valid_cas( '3459O5-97-7'::varchar );  -- fail: O, not zero
 select v1.is_valid_cas( '345905-97-6'::varchar );  -- fail: checksum
 ***/
 
@@ -330,6 +341,25 @@ select t0.pkey, t1.username, dt, t2.task, t3.status, t0.details
   join v1.load_tasks t2 on t2.pkey = t0.task
   join v1.load_states t3 on t3.pkey = t0.status
  order by pkey asc;
+***/
+
+
+
+/* procedure do_something */
+drop procedure if exists v1.do_something( int );
+
+create or replace procedure v1.do_something(in _uid int )
+language plpgsql
+as $body$
+
+begin
+
+    raise notice '_uid: %', _uid;
+
+end;
+$body$;
+/*** test
+call v1.do_something( 12345 );
 ***/
 
 

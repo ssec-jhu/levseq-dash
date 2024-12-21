@@ -22,12 +22,12 @@ create schema if not exists "v1" authorization "ssec-devuser";
 -- drop table if exists v1.experiments
 create table if not exists v1.experiments
 (
-  pkey               int          not null generated always as identity,
-  dt_load            timestamptz  not null,
-  experiment_name    varchar(128) not null,
-  assay              varchar(128) not null,
-  mutagenesis_method int          not null,
-  dt_experiment      timestamptz  null
+  pkey                int          not null generated always as identity,
+  dt_load             timestamptz  not null,
+  experiment_name     text         not null,
+  assay               text         not null,
+  mutagenesis_method  smallint     not null,
+  dt_experiment       timestamptz  null
 );
 
 alter table if exists v1.experiments owner to "ssec-devuser";
@@ -57,7 +57,7 @@ create table if not exists v1.data_files
   pkey int                 not null generated always as identity,
   experiment  int          not null constraint fk_data_files_experiments
                                     references v1.experiments(pkey),
-  filespec    varchar(64)  not null,
+  filespec    text         not null,
   dt_upload   timestamptz  not null default current_timestamp,
   upload_by   smallint     not null constraint fk_data_files_users
                                     references v1.users(pkey),
@@ -89,3 +89,4 @@ alter sequence v1.data_files_pkey_seq restart with 1;
 
 select * from v1.data_files order by pkey;
 ***/
+
