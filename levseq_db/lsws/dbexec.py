@@ -10,10 +10,11 @@
 #
 #  For all SQL queries initiated by a remote caller:
 #   - the verb is the name of a SQL stored procedure or function
-#   - the argument list is a query-dependent list of scalars (strings and/or numeric values)
-#      that may also be an empty list
-#  Any query may return either a rowset, a scalar, or nothing at all. We use the first few
-#   characters of the verb to choose among these possibilities.
+#   - the argument list is a query-dependent list of scalars (strings and/or numeric values);
+#      the argument list may be empty
+#
+#  A query may return a rowset, a scalar, or nothing at all. We use the first few characters
+#   of the verb to choose among these possibilities.
 #
 
 import psycopg
@@ -69,8 +70,8 @@ def _fnExecuteQuery(cur: psycopg.Cursor, verb: str, args: Arglist) -> ResultSet:
 
 # execute a postgres SQL function and return the first value in the first column of the result set
 def _fnExecuteScalar(cur: psycopg.Cursor, verb: str, args: Arglist) -> Scalar:
-    cmd = _buildSqlCmd("select * from", verb, args)  # TODO: CAN THIS JUST BE "select"
-    cur.execute(cmd, args)  # execute and wait for a one-row result set
+    cmd = _buildSqlCmd("select", verb, args)
+    cur.execute(cmd, args)  # execute and wait for a one-row, one-column result set
     return cur.fetchone()[0]  # type:ignore
 
 
@@ -85,7 +86,7 @@ def _fnExecuteScalar(cur: psycopg.Cursor, verb: str, args: Arglist) -> Scalar:
 #
 # fmt:off
 def _doQuery(fn: typing.Callable, verb: str, args: Arglist) -> ResultSet | Scalar | None:
-# fmt:on
+
     # open a database connection; we don't bother with connection pooling for
     #  this lightweight, low-usage application
     with psycopg.connect(g.pgcs) as cn:
@@ -101,6 +102,7 @@ def _doQuery(fn: typing.Callable, verb: str, args: Arglist) -> ResultSet | Scala
             cur.close()
 
     return rval
+# fmt:on
 
 
 # execute a postgres SQL stored procedure that does not return a rowset (result set)
@@ -111,31 +113,43 @@ def NonQuery(verb: str, args: Arglist = None) -> None:
 
 # execute a postgres SQL function that returns a rowset (result set)
 def Query(verb: str, args: Arglist = None) -> ResultSet:
-    return _doQuery(_fnExecuteQuery, verb, args) # type:ignore
+    return _doQuery(_fnExecuteQuery, verb, args)  # type:ignore
 
 
 # execute a postgres SQL function that returns a scalar (number or string)
 def QueryScalar(verb: str, args: Arglist = None) -> Scalar:
-    return _doQuery(_fnExecuteScalar, verb, args) # type:ignore
+    return _doQuery(_fnExecuteScalar, verb, args)  # type:ignore
 
+
+# examine an Exception instance and conditionally return postgres error information
+def IsPostgresException(ex: Exception) -> str | None:
+
+    # If we have a postgres exception, we rely on the exception object's implementation
+    #  to return a useful message string.  But there is more detail in the exception
+    #  object if we ever need it (https://www.psycopg.org/psycopg3/docs/api/errors.html).
+    if isinstance(ex, psycopg.Error):
+        return str(ex)
+
+    return None
 
 
 # TODO: USE OR LOSE
-# return a string that represents a row (tuple) from a result set
-def RowToString(row: tuple, sep: str = " ") -> str:
+if False:
+    # return a string that represents a row (tuple) from a result set
+    def RowToString(row: tuple, sep: str = " ") -> str:
 
-    # Each row in the rowset is a python tuple.  Here we do a join on the string
-    #  representation of each item in a row tuple, using the specified separator.
-    #
-    # This ugly code could be avoided by letting the database server "stringify" the
-    #  rows, but there may be applications where the underlying typed data is needed
-    #  for computation.
-    #
-    return sep.join(tuple(str(c) for c in row))
+        # Each row in the rowset is a python tuple.  Here we do a join on the string
+        #  representation of each item in a row tuple, using the specified separator.
+        #
+        # This ugly code could be avoided by letting postgres "stringify" the rows,
+        #  but there may be applications where the underlying typed data is needed
+        #  for computation.
+        #
+        return sep.join(tuple(str(c) for c in row))
 
-# TODO: USE OR LOSE
-def RowToDropdownOption(row: tuple, sep: str = " ") -> dict:
+    # return a dict that is formatted for a Plotly Dash Dropdown component
+    def RowToDropdownOption(row: tuple, sep: str = " ") -> dict:
 
-    # value: the first item
-    # label: the remaining items concatenated into a string
-    return {"value": row[0], "label": RowToString(row[1:], sep)}
+        # value: the first item
+        # label: the remaining items concatenated into a string
+        return {"value": row[0], "label": RowToString(row[1:], sep)}

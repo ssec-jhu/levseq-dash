@@ -36,15 +36,18 @@ import pydantic
 import dbexec
 import globals as g
 
-import psycopg  ### TODO: MOVE THIS TO dbexec.py
-
 
 # It would be possible to serialize result sets as json in postgres using json_agg(),
 #  jsonb_build_object(), and so on, but it's probably more efficient (and certainly
-#  much less painful) to jsonize them only to ship them from this webservice to a
-#  remote client.
+#  much less painful) to let postgres/psycopg deliver python data structures (list,
+#  tuple, etc.) and jsonize them here.
 #
 # FastAPI uses the pydantic BaseModel class to implement json serialization:
+class QueryParams(pydantic.BaseModel):
+    verb: str
+    params: list[dbexec.Scalar]
+
+
 class QueryRowset(pydantic.BaseModel):
     columns: list[str]
     rows: list[tuple]
@@ -54,13 +57,19 @@ class QueryScalar(pydantic.BaseModel):
     result: dbexec.Scalar
 
 
-class QueryParams(pydantic.BaseModel):
-    verb: str
-    params: list[dbexec.Scalar]
-
-
 # handy type aliases
 type QueryResponse = QueryRowset | QueryScalar | None
+
+
+# conditionally reflect the postgres exception message; rethrow all other exceptions verbatim
+# fmt:off
+def _rethrowException(ex: Exception) -> None:
+    msg = dbexec.IsPostgresException(ex)
+    if msg is not None:
+        raise fastapi.HTTPException(status_code=422, detail=msg)    # 422: Unprocessable Content
+    else:
+        raise
+# fmt:on
 
 
 #
@@ -69,55 +78,49 @@ type QueryResponse = QueryRowset | QueryScalar | None
 # Request data from the postgres SQL implementation and from this webservice instance.
 #  If this operation succeeds, we must be connected end to end.
 #
-# FWIW, the FastAPI remote development client does this request at initialization.
+# FWIW, the FastAPI remote development client does this request by default when it
+#  connects to this webservice.
 def GetImplementationInfo() -> QueryResponse:
-    c, r = dbexec.Query("get_pgid", [g.ID])
-    return QueryRowset(columns=c, rows=r)
+    try:
+        c, r = dbexec.Query("get_pgid", [g.ID])
+        return QueryRowset(columns=c, rows=r)
+
+    except Exception as ex:
+        _rethrowException(ex)
 
 
 #
 # POST requests
 #
-# The verb prefix determines the way the database query executes.
-def _invalidVerbException(verb: str) -> None:
-    raise fastapi.HTTPException(status_code=404, detail=f"invalid query '{verb}'")
-
-
-# Reflect the postgres exception message
-def _postgresException(msg: str) -> None:
-    raise fastapi.HTTPException(status_code=422, detail=msg)
-
-
-## TODO: HANDLE "BAD REQUEST" ERRORS FROM POSTGRES
 def PostDatabaseQuery(args: QueryParams) -> QueryResponse:
 
     # extract the verb prefix:
+    #  ^     start at the beginning of the string
     #  \w+?  one or more alphanumeric characters, non-greedy capture
     #  _     followed by underscore
     m = re.match(r"^(\w+?)_", args.verb)
-    if m == None:
-        return _invalidVerbException(args.verb)
 
-    try:
+    if m != None:
+
         # dispatch according to the prefix
-        match m[1]:
-            case "get":
-                c, r = dbexec.Query(args.verb, [param for param in args.params])
-                return QueryRowset(columns=c, rows=r)
+        try:
+            match m[1]:
+                case "get":
+                    c, r = dbexec.Query(args.verb, [param for param in args.params])
+                    return QueryRowset(columns=c, rows=r)
 
-            case "do":
-                return dbexec.NonQuery(args.verb, [param for param in args.params])
+                case "do":
+                    return dbexec.NonQuery(args.verb, [param for param in args.params])
 
-            case "is" | "peek":
-                rval = dbexec.QueryScalar(args.verb, [param for param in args.params])
-                return QueryScalar(result=rval)
+                case "is" | "peek":
+                    rval = dbexec.QueryScalar(args.verb, [param for param in args.params])
+                    return QueryScalar(result=rval)
 
-            case _:
-                return _invalidVerbException(args.verb)
+                case _:
+                    pass
 
-    ### TODO: repackage this so the postgres-specific stuff is in dbexec.py
-    except Exception as ex:
-        if isinstance(ex, psycopg.Error):
-            _postgresException(str(ex))
-        else:
-            raise
+        except Exception as ex:
+            _rethrowException(ex)
+
+    # at this point the prefix is invalid; respond with HTTP 422 Unprocessable Content
+    raise fastapi.HTTPException(status_code=422, detail=f"invalid query '{args.verb}'")
