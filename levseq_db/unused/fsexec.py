@@ -16,29 +16,25 @@ import global_strings as gs
 
 # upload file data produced by the Dash Upload implementation to the
 #  database server machine
-def UploadBase64File(fileSpec: str, b64: str) -> int:
+def UploadExperimentFile(fileSpec: str, b64: str) -> int:
 
-    # The file produced by the dash core component Upload contains a mime type followed
-    #  by base64-encoded bytes:
-    #
-    #   data:text/plain;base64,xxxxx...
-    #
-    # where xxxxx... is the base64-encoded representation of the binary file contents.
-    #
-    # (Doing base64 encoding for HTTP file transfers may not be necessary, but it's common
-    #  practice and costs very little to ensure that nothing in binary file data can be
-    #  misinterpreted, so it's hard to argue with this aspect of the implementation of dcc.Upload.)
+    # the LevSeq files should rarely be more than a few MB in size, so we just ship
+    #  the filename and contents to the webservice and assume that the webservers,
+    #  postgres, and all the intermediate layers of code can handle a multi-megabyte
+    #  "parameter"
+    return dbexec.QueryScalar("save_file", [fileSpec, b64])  # type:ignore
 
-    # We want the os to write the base64-string as a sequence of bytes, so we encode
-    #  the python string as 8-bit bytes, split it on the characters ';base64,', and
-    #  grab just the utf8-encoded base64 string.
-    b64bytes = b64.encode("utf8").split(b";base64,")[1]
+    if False:
+        # We want the os to write the base64-string as a sequence of bytes, so we encode
+        #  the python string as 8-bit bytes, split it on the characters ';base64,', and
+        #  grab just the utf8-encoded base64 string.
+        b64bytes = b64.encode("utf8").split(b";base64,")[1]
 
-    # open the output file for binary write; the open() function returns an instance of io.BufferedWriter
-    with open(fileSpec, "wb") as bw:
+        # open the output file for binary write; the open() function returns an instance of io.BufferedWriter
+        with open(fileSpec, "wb") as bw:
 
-        # decode b64 to binary, write the bytes to the output file, and return the number of bytes written
-        return bw.write(base64.decodebytes(b64bytes))
+            # decode b64 to binary, write the bytes to the output file, and return the number of bytes written
+            return bw.write(base64.decodebytes(b64bytes))
 
 
 # download a file from a predefined directory on the database server machine

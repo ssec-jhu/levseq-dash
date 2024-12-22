@@ -25,7 +25,7 @@ create table if not exists v1.experiments
   pkey                int          not null generated always as identity,
   dt_load             timestamptz  not null,
   experiment_name     text         not null,
-  assay               text         not null,
+  assay               smallint     not null,
   mutagenesis_method  smallint     not null,
   dt_experiment       timestamptz  null
 );
@@ -35,18 +35,18 @@ alter table if exists v1.experiments owner to "ssec-devuser";
 drop index if exists v1.pk_experiments;
 
 create unique index pk_experiments
-          on v1.experiments
-       using btree
-             (pkey asc)
-        with (deduplicate_items=True)
-  tablespace pg_default;
+                 on v1.experiments
+              using btree (pkey asc)
+               with (deduplicate_items=True)
+         tablespace pg_default;
 
 /*** test
 truncate table v1.experiments;
 alter sequence v1.experiments_pkey_seq restart with 1;
 
-insert into v1.experiments( experiment ) values ('experiment 1');
-insert into v1.experiments( experiment ) values ('experiment 2');
+insert into v1.experiments( dt_load, experiment_name, assay, mutagenesis_method )
+     values (now(), 'experiment 1', 1, 1 );
+select * from v1.experiments;
 ***/
 
 
@@ -54,14 +54,16 @@ insert into v1.experiments( experiment ) values ('experiment 2');
 -- drop table if exists v1.data_files
 create table if not exists v1.data_files
 (
-  pkey int                 not null generated always as identity,
-  experiment  int          not null constraint fk_data_files_experiments
-                                    references v1.experiments(pkey),
-  filespec    text         not null,
-  dt_upload   timestamptz  not null default current_timestamp,
-  upload_by   smallint     not null constraint fk_data_files_users
-                                    references v1.users(pkey),
-  filesize    int          null
+  pkey       int          not null generated always as identity,
+  gid        int          not null constraint fk_data_files_group
+                                   references v1.usergroups(pkey),
+  eid        int          not null constraint fk_data_files_experiment
+                                   references v1.experiments(pkey),
+  filespec   text         not null,
+  dt_upload  timestamptz  not null default current_timestamp,
+  uid        smallint     not null constraint fk_data_files_users
+                                   references v1.users(pkey),
+  filesize   int          null
 );
 
 alter table if exists v1.data_files owner to "ssec-devuser";
@@ -69,18 +71,16 @@ alter table if exists v1.data_files owner to "ssec-devuser";
 drop index if exists v1.pk_data_files;
 
 create unique index pk_data_files
-          on v1.data_files
-       using btree
-             (pkey asc)
-        with (deduplicate_items=True)
-  tablespace pg_default;
+                 on v1.data_files
+              using btree (pkey asc)
+               with (deduplicate_items=True)
+         tablespace pg_default;
 
-create index Ix_data_files_experiment
-          on v1.data_files
-       using btree
-             (experiment asc)
-        with (deduplicate_items=True)
-  tablespace pg_default;
+create unique index ix_data_files_eid_gid_filespec
+                 on v1.data_files
+              using btree (eid asc, gid asc, filespec asc)
+               with (deduplicate_items=True)
+         tablespace pg_default;
 
 
 /*** test

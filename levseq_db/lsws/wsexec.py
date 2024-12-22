@@ -82,7 +82,7 @@ def _rethrowException(ex: Exception) -> None:
 #  connects to this webservice.
 def GetImplementationInfo() -> QueryResponse:
     try:
-        c, r = dbexec.Query("get_pgid", [g.ID])
+        c, r = dbexec.Query("get_pginfo", [g.ws_id])
         return QueryRowset(columns=c, rows=r)
 
     except Exception as ex:
@@ -116,11 +116,17 @@ def PostDatabaseQuery(args: QueryParams) -> QueryResponse:
                     rval = dbexec.QueryScalar(args.verb, [param for param in args.params])
                     return QueryScalar(result=rval)
 
+                # case "upload":
+                #     filespec = fsexec.UploadFile(args.params)
+                #     aParams = [filespec] + [param for param in args.params]
+                #     rval = dbexec.QueryScalar(args.verb, aParams)
+                #     return QueryScalar(result=rval)
+
                 case _:
                     pass
 
         except Exception as ex:
             _rethrowException(ex)
 
-    # at this point the prefix is invalid; respond with HTTP 422 Unprocessable Content
+    # at this point the prefix is invalid (HTTP 422 Unprocessable Content)
     raise fastapi.HTTPException(status_code=422, detail=f"invalid query '{args.verb}'")

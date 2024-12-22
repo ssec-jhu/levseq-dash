@@ -10,5 +10,5 @@ experiment_name_placeholder = "Enter a name for your experiment."
 dbc_template_name = "flatly"
 
 # postgres database connection string
-pgcs = "user=ssec-devuser dbname=LevSeq"  # database connection string
+pgcs = "user=lsdb dbname=LevSeq"  # database connection string
 schema = "v1"  # database schema

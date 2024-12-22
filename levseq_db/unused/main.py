@@ -39,8 +39,8 @@ def _initWebPage(debugDash: bool) -> None:
     # the database query returns a list of tuples, each of which contains one country name
     rows = dbexec.Query("get_usernames")
 
-    # convert each row tuple to a string
-    aUsers = [dbexec.RowToDropdownOption(r) for r in rows]
+    # build a KVP list of dropdown list items
+    aUsers = [{"value": r[0], "label": f"{r[1]} ({r[3]})"} for r in rows]
 
     # interaction layout: user ID (dropdown list)
     layout_dbexec = [
@@ -106,7 +106,7 @@ def selectUser(uid) -> list:
     dbexec.NonQuery("save_user_ip", [uid, remoteIPaddr])
 
     # get user session config
-    user_config = dbexec.Query("get_user_config", [uid])[0]
+    user_config = dbexec.Query("get_user_info", [uid])[0]
     flask.session["groupname"] = user_config[0]
     flask.session["hostUploadDir"] = user_config[1]
 
@@ -132,7 +132,7 @@ def writeUploadedFiles(aFileNames: list[str], aFileContents: list[str]) -> list:
         for fileName, fileContents in zip(aFileNames, aFileContents, strict=True):
             fileSpec = os.path.join(hostUploadDir, fileName)
 
-            cb = fsexec.UploadBase64File(fileSpec, fileContents)
+            cb = fsexec.UploadExperimentFile(fileSpec, fileContents)
 
         # load CSV file(s) into database tables
         for fileName, fileContents in zip(aFileNames, aFileContents, strict=True):

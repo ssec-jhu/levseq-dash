@@ -1,5 +1,5 @@
 /*
-   22.sps.load.sql
+   23.sps.load.sql
 
    Notes:
     We leave the uploaded CSV, PDB, and CIF files intact in the filesystem.
@@ -10,6 +10,107 @@
 	 See: https://www.cybertec-postgresql.com/en/binary-data-performance-in-postgresql/)
 */
 
+
+/* function v1.upload_experiment_file */
+drop function if exists v1.save_experiment_file(int,int,text,text);
+
+create or replace function v1.load_experiment_file
+( in _filespec text,   -- (see lsws fsexec.py)
+  in _uid int,
+  in _eid int,
+  in _filename text,
+  in _filedata text )
+returns int
+language plpgsql
+as $body$
+
+declare
+    gid      smallint;
+    fidprev  int;
+	exp_name text;
+	dirpath  text;
+    filespec text;
+	sqlcmd   text;
+
+begin
+
+    -- avoid duplicating the file for the current experiment
+	select t0.pkey into fidprev
+      from v1.experiment_files t0
+     where t0.eid = _eid and t0.filename = _filename;
+
+    if fidprev is not null
+    then
+        select t0.experiment_name into exp_name
+          from v1.experiments t0
+         where t0.pkey = _eid;
+
+        raise exception 'Duplicate filename %s for experiment %s', _filename, exp_name;
+		return 0;
+    end if;
+	  
+    -- get the upload directory for the user's group
+	select t0.pkey, t0.upload_dir into gid, dirpath
+	  from v1.usergroups t0
+	  join v1.users t1 on t1.gid = t0.pkey
+     where t1.pkey = _uid;
+
+    -- insert the current system login and group ID into the directory path
+    dirpath = format( dirpath, current_user, right('0000'||gid::text,5) );
+	if right(dirpath,1) != '/' then dirpath = dirpath || '/'; end if;
+
+    -- append the filename
+	filespec = dirpath || _filename;
+
+	-- create a temporary table that contains the file data
+    create temporary table _fc
+	( filedata text not null );
+	
+	insert into _fc(filedata) values(_filedata);
+
+    -- file contents are assumed to be non-binary (or is it genderfluid?)
+    sqlcmd = format('copy (select filedata from _fc) to ''%s'' with( encoding ''UTF8'')',
+                    filespec);
+	raise notice 'sqlcmd: -->%<--', sqlcmd;
+    execute sqlcmd;
+	
+raise notice 'filespec: %', filespec;
+
+    return 0;
+end;
+$body$;
+/*** test
+select v1.upload_experiment_file( 1, 1, 'tiny.csv',
+'id,barcode_plate,cas_number,plate,well,alignment_count,nucleotide_mutation,amino_acid_substitutions,alignment_probability,average_mutation_frequency,p_value,p_adj_value,nt_sequence,aa_sequence,x_coordinate,y_coordinate,fitness_value
+20241201-SSM-P1-A1,1,395683-37-1,20241201-SSM-P1,A1,2,G175A_C176A,#LOW#,0.5,0.5,0.009709951,0.9321553,ATGACTCCCTCGGACATCTCGGGGTATGATTATGGGCGTGTCGAGAAGTCACCCATCACGGACCTTGAGTTTGACCTTCTGAAGAAGACTGTCATGTTAGGTGAAGAGGACGTAATGTACTTGAAAAAGGCGGCTGACGTTCTGAAAGATCAAGTTGATGAGATCCTTGACCTGAAGGGTGGTTGGGCAGCATCAAATGAGCATTTGATTTATTACGGTTCCAATCCGGATACAGGAGCGCCTATTAAAGAATACCTGGAACGTGTACGCGCTCGCATTGGAGCCTGGGTTCTGGACACTACCTGCCGCGACTATAACCGTGAATGGTTAGACTACCAGTACGAAGTTGGGCTTCGTCATCACCGTTCAAAGAAAGGGGTCACAGACGGAGTACGCACCGTGCCCAATACCCCACTTCGTTATCTTATCGCAGGTATCTATCCTATCACCGCCACTATCAAGCCATTTTTAGCTAAGAAAGGTGGCTCTCCGGAGGACATCGAAGGGATGTACAACGCTTGGCTCAAGTCTGTAGTTCTACAAGTTGCCATCTGGTCACACCCTTATACTAAGGAGAATGACCGG,MTPSDISGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLKGGWAASNEHLIYYGSNPDTGAPIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRHHRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVVLQVAIWSHPYTKENDR,-0.12535994,-0.14982244,1496.4556
+20241201-SSM-P1-A2,1,395683-37-1,20241201-SSM-P1,A2,64,#PARENT#,#PARENT#,1,,,,ATGACTCCCTCGGACATCTCGGGGTATGATTATGGGCGTGTCGAGAAGTCACCCATCACGGACCTTGAGTTTGACCTTCTGAAGAAGACTGTCATGTTAGGTGAAGAGGACGTAATGTACTTGAAAAAGGCGGCTGACGTTCTGAAAGATCAAGTTGATGAGATCCTTGACCTGGCGGGTGGTTGGGCAGCATCAAATGAGCATTTGATTTATTACGGTTCCAATCCGGATACAGGAGCGCCTATTAAAGAATACCTGGAACGTGTACGCGCTCGCATTGGAGCCTGGGTTCTGGACACTACCTGCCGCGACTATAACCGTGAATGGTTAGACTACCAGTACGAAGTTGGGCTTCGTCATCACCGTTCAAAGAAAGGGGTCACAGACGGAGTACGCACCGTGCCCAATACCCCACTTCGTTATCTTATCGCAGGTATCTATCCTATCACCGCCACTATCAAGCCATTTTTAGCTAAGAAAGGTGGCTCTCCGGAGGACATCGAAGGGATGTACAACGCTTGGCTCAAGTCTGTAGTTCTACAAGTTGCCATCTGGTCACACCCTTATACTAAGGAGAATGACCGG,MTPSDISGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLAGGWAASNEHLIYYGSNPDTGAPIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRHHRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVVLQVAIWSHPYTKENDR,0.038451646,0.02593873,273777.8326');
+***/    
+
+
+select encode('abcde', 'base64')
+select decode('YWJjZGU=', 'base64')::text
+
+select * from v1.upload_base64_file( 1, 1, '/mnt/Data/lsdb/uploads', )
+COPY { table_name [ ( column_name [, ...] ) ] | ( query ) }
+    TO { 'filename' | PROGRAM 'command' | STDOUT }
+    [ [ WITH ] ( option [, ...] ) ]
+
+where option can be one of:
+
+    FORMAT format_name
+    FREEZE [ boolean ]
+    DELIMITER 'delimiter_character'
+    NULL 'null_string'
+    DEFAULT 'default_string'
+    HEADER [ boolean | MATCH ]
+    QUOTE 'quote_character'
+    ESCAPE 'escape_character'
+    FORCE_QUOTE { ( column_name [, ...] ) | * }
+    FORCE_NOT_NULL { ( column_name [, ...] ) | * }
+    FORCE_NULL { ( column_name [, ...] ) | * }
+    ON_ERROR error_action
+    ENCODING 'encoding_name'
+    LOG_VERBOSITY verbosity
 
 
 
@@ -115,7 +216,10 @@ create or replace function v1.init_load(
     in _cas_product        varchar(128) = '',  -- comma-separated list of CAS numbers
     in _assay              varchar(128) = '',
     in _mutagenesis_method int = 0,
-    in _dt_experiment      timestamptz = null
+    in _dt_experiment      timestamptz = null,
+	in _csvfile            bytea,
+	in _pdbfile            bytea = null,
+	in _ciffile            bytea = null
 )
 returns table ( pkey      int,
                 esn       char(6),
@@ -345,21 +449,18 @@ select t0.pkey, t1.username, dt, t2.task, t3.status, t0.details
 
 
 
-/* procedure do_something */
-drop procedure if exists v1.do_something( int );
+/* procedure do_nothing */
+drop procedure if exists v1.do_nothing( int );
 
-create or replace procedure v1.do_something(in _uid int )
+create or replace procedure v1.do_nothing(in _uid int )
 language plpgsql
 as $body$
-
 begin
-
-    raise notice '_uid: %', _uid;
-
+    raise notice '% nothing', _uid;
 end;
 $body$;
 /*** test
-call v1.do_something( 12345 );
+call v1.do_nothing( 12345 );
 ***/
 
 
@@ -459,3 +560,7 @@ select t0.pkey, t1.username, dt, t2.task, t3.status, t0.details
  order by pkey asc;
   
 ***/
+
+
+
+

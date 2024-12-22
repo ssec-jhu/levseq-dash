@@ -5,6 +5,51 @@
 /* ensure that the SQL schema exists */
 create schema if not exists "v1" authorization "ssec-devuser";
 
+/* table v1.experiment_files */
+-- drop table if exists v1.experiment_files
+create table if not exists v1.experiment_files
+(
+  pkey     int  not null generated always as identity,
+  eid      int  not null constraint fk_experiment_files_experiment
+                         references v1.experiments(pkey),
+  uid      int  not null constraint fk_experiment_files_user
+                         references v1.users(pkey),
+  dir      text not null,
+  filename text not null
+);
+
+alter table if exists v1.experiment_files owner to "ssec-devuser";
+
+drop index if exists v1.pk_experiment_files;
+drop index if exists v1.ix_experiment_files_eid_filename; 
+
+create unique index pk_experiment_files
+                 on v1.experiment_files
+              using btree (pkey asc)
+               with (deduplicate_items=True)
+         tablespace pg_default;
+
+create unique index ix_experiment_files_eid_filename
+                 on v1.experiment_files
+              using btree (eid asc, filename asc)
+               with (deduplicate_items=True)
+         tablespace pg_default;
+/*** test
+***/
+
+
+
+
+truncate table v1.load_tasks;
+alter sequence v1.load_tasks_pkey_seq restart with 1;
+insert into v1.load_tasks (task)
+     values ('upload'),      -- upload file to server filesystem (all file types)
+            ('load'),        -- copy file data to temporary table (CSV)
+            ('validate'),    -- validate file data (CSV)
+            ('save');        -- copy file data to tables (CSV)
+select * from v1.load_tasks;
+
+
 
 /* table v1.load_tasks */
 -- drop table if exists v1.load_tasks

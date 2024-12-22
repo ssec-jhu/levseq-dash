@@ -2,51 +2,91 @@
    20.sps.admin.sql
 */
 
-/* function get_pgid */
-drop function v1.get_pgid(varchar);
+/* function get_pginfo */
+drop function v1.get_pginfo(text);
 
-create or replace function v1.get_pgid( in _wsid varchar(32) )
-returns table( impl      varchar(32),
-               impl_info varchar(64) )
+create or replace function v1.get_pginfo( in _wsid text )
+returns table
+( wsinfo text,
+  pginfo text,
+  dt     timestamptz,
+  n      int,
+  f      double precision
+)
 language plpgsql
 as $body$
 
 begin
 
     return query
-	select 'wsid'::varchar, _wsid
-	 union
-	select 'pgid'::varchar, (regexp_match(version(), '(^.*\s[\d\.]+)\s'))[1]
-	 union
-	select 'pgcu'::varchar, current_user::varchar;
+    select _wsid,
+           (regexp_match(version(), '(^.*\s[\d\.]+)\s'))[1],
+           now(),
+		   (1e5*pi())::int,
+		   pi();
 
 end;
 
 $body$;
 /*** test
-select * from v1.get_pgid('LevSeq webservice v1.0');  -- tuples
-select v1.get_pgid('LevSeq webservice v1.0');         -- (one column, comma-separated)
+select * from v1.get_pginfo('LevSeq webservice v1.0');
+select v1.get_pginfo('LevSeq webservice v1.0');         -- (one column, comma-separated)
 ***/
 
 
+/* function get_group_info */
+drop function if exists v1.get_group_info(int);
 
-/* function get_usernames */
-drop function v1.get_usernames();
-
-create or replace function v1.get_usernames()
-returns table ( pkey      int,
-                username  varchar(32),
-                groupname varchar(32)
-              )
+create or replace function v1.get_group_info( in _gid int = null)
+returns table
+( gid        smallint,
+  groupname  text,
+  contact    text,
+  upload_dir text
+)
 language plpgsql
 as $body$
 
 begin
 
     return query
-    select t1.pkey, t1.username, t2.groupname
+    select pkey, t0.groupname, t0.contact, t0.upload_dir
+      from v1.usergroups t0
+     where pkey = _gid
+	    or _gid is null;
+
+end;
+
+$body$;
+/*** test
+select * from v1.usergroups;
+select * from v1.get_group_info();
+select * from v1.get_group_info(2);
+***/
+
+
+
+/* function get_usernames */
+drop function v1.get_usernames(int);
+
+create or replace function v1.get_usernames( in _gid int = null )
+returns table
+( uid       int,
+  username  text,
+  gid       smallint,
+  groupname text
+)
+language plpgsql
+as $body$
+
+begin
+
+    return query
+    select t1.pkey, t1.username, t2.pkey, t2.groupname
 	  from v1.users t1
-	  join v1.usergroups t2 on t2.pkey = t1.usergroup
+	  join v1.usergroups t2 on t2.pkey = t1.grp
+     where t2.pkey = _gid
+	    or _gid is null
   order by t1.username;
 
 end;
@@ -54,26 +94,33 @@ end;
 $body$;
 /*** test
 select * from v1.get_usernames();  -- returns three columns
+select * from v1.get_usernames( 2 );
 select v1.get_usernames();         -- returns one column of comma-separated values
                                    --  (embedded commas are NOT escaped!)
+select * from v1.usergroups;
 select * from v1.users;
+
+delete from v1.users where pkey = 2;
 ***/
 
 
-/* function get_user_config */
-drop function if exists v1.get_user_config(int);
+/* function get_user_info(int) */
+drop function if exists v1.get_user_info(int);
 
-create or replace function v1.get_user_config( _uid int ) 
-returns table ( groupname text,
-                upload_dir text
-              )
+create or replace function v1.get_user_info( in _uid int )
+returns table
+( groupname text,
+  firstname text,
+  lastname  text,
+  email     text
+)
 language plpgsql
 as $body$
 
 begin
 
     return query
-    select t2.groupname, t2.upload_dir
+    select t2.groupname, t1.firstname, t1.lastname, t1.email
       from v1.users t1
       join v1.usergroups t2 on t2.pkey = t1.grp
      where t1.pkey = _uid;
@@ -82,9 +129,87 @@ end;
 
 $body$;
 /*** test
-select * from v1.get_user_config( 1 );
+select * from v1.users
+select * from v1.get_user_info( 1 );
 ***/
 
+/* function get_user_info(text,text) */
+drop function if exists v1.get_user_info(text,text);
+
+create or replace function v1.get_user_info( in _u text, in _p text )
+returns table
+( uid       int,
+  groupname text,
+  firstname text,
+  lastname  text,
+  email     text
+)
+language plpgsql
+as $body$
+
+begin
+
+    return query
+    select t1.pkey, t2.groupname, t1.firstname, t1.lastname, t1.email
+      from v1.users t1
+      join v1.usergroups t2 on t2.pkey = t1.grp
+     where t1.username = _u;
+
+end;
+
+$body$;
+/*** test
+select * from v1.users
+select * from v1.get_user_info( 'Richard', '64-17-5' );
+***/
+
+/* function save_user_info */
+drop function if exists v1.save_user_info(text,text,text,text,text,text);
+
+create or replace function v1.save_user_info
+( in _username  text,
+  in _pwd       text,
+  in _firstname text,
+  in _lastname  text,
+  in _groupname text,
+  in _email     text )
+returns int
+language plpgsql
+as $body$
+
+declare
+    pkgrp smallint = (select pkey
+                        from v1.usergroups
+                       where groupname = _groupname);
+    rval int = 0;
+
+begin
+
+    -- insert/update the users table
+	insert into v1.users(username, pwd, firstname, lastname, grp, email)
+	     values (_username, _pwd, _firstname, _lastname, pkgrp, _email)
+    on conflict (username,grp)
+	  do update set username = _username,
+                    pwd = _pwd,
+                    firstname = _firstname,
+                    lastname = _lastname,
+                    grp = pkgrp,
+                    email = _email
+	  returning pkey into rval;
+
+	  return rval;
+
+end;
+
+$body$;
+/*** test
+delete from v1.users where pkey >= 1;
+alter sequence v1.users_pkey_seq restart with 1;
+select v1.save_user_info('Richard', 'monkey', 'Richard', 'Wilton', 'SSEC', 'a@b.com');
+select v1.save_user_info('RJSquirrel', 'nuts', 'Rocket J', 'Squirrel', 'SSEC', 'bull@winkle.com');
+select * from v1.users;
+delete from v1.users where pkey > 5
+***/
 
 /* procedure save_user_ip */
 drop procedure if exists v1.save_user_ip(int,varchar);

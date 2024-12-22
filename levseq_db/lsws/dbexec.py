@@ -31,13 +31,17 @@ type ResultSet = tuple[list[str], list[tuple]]
 type Scalar = typing.Union[int, float, str]
 type Arglist = typing.Union[abc.Params, None]
 
+# global variables
+_pgcs = f"user={g.linux_username} dbname=LevSeq"  # postgres database connection string
+_schema = "v1"  # database schema
+
 
 # build a postgres SQL command
 def _buildSqlCmd(execCmd: str, verb: str, args: Arglist) -> scm.Composed:
 
     # build the format string for the SQL command builder; this may be overkill, but doing it
     #  this way takes care of string formatting details (and should prevent SQL injection, too)
-    fmt = f"{execCmd} {g.schema}.{{}}("
+    fmt = f"{execCmd} {_schema}.{{}}("
 
     if args is not None:
         # build a comma-separated string of '%s' strings (one per argument)
@@ -89,7 +93,7 @@ def _doQuery(fn: typing.Callable, verb: str, args: Arglist) -> ResultSet | Scala
 
     # open a database connection; we don't bother with connection pooling for
     #  this lightweight, low-usage application
-    with psycopg.connect(g.pgcs) as cn:
+    with psycopg.connect(_pgcs) as cn:
 
         # open a postgres/psycopg "cursor" to perform database operations
         #  (for more info: https://www.psycopg.org/psycopg3/docs/advanced/cursors.html)
@@ -108,7 +112,7 @@ def _doQuery(fn: typing.Callable, verb: str, args: Arglist) -> ResultSet | Scala
 # execute a postgres SQL stored procedure that does not return a rowset (result set)
 def NonQuery(verb: str, args: Arglist = None) -> None:
     _doQuery(_fnExecuteNonQuery, verb, args)
-    return
+    return None
 
 
 # execute a postgres SQL function that returns a rowset (result set)

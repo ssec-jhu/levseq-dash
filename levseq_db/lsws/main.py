@@ -16,18 +16,22 @@
 
 import sys
 import os
+import pwd
 import uvicorn
 import wsexec
 from fastapi import FastAPI
 import globals as g
 
 
+# grab some linux system info
+sScriptName = os.path.basename(__file__)
+
 # emit a banner
 # fmt: off
-sScriptName = os.path.basename(__file__)
 print(f"\nStart {sScriptName} __name__={__name__} pid={os.getpid()}, python v{sys.version.split('|')[0]}...")
-print(f"Invoked as: {sys.argv[0]}" )
+print(f"Invoked as: {sys.argv[0]} by {g.linux_username}" )
 # fmt: on
+
 
 # Application setup
 if sys.argv[0] != sScriptName:
