@@ -1,12 +1,14 @@
 #
-# globals.py
+# global_vars.py
 #
 
 import os
 import pwd
 
-# ID
+# webservice implementation ID string
 ws_id = "LevSeq web service"
+
+# linux username
 linux_username = pwd.getpwuid(os.getuid()).pw_name
 
 # URL parameters for production

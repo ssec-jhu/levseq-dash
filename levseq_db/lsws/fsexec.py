@@ -2,62 +2,107 @@
 # fsexec.py
 #
 
-# The file upload mechanism is a bit clunky:
+# There are two or more files associated with each LevSeq experiment:
 #
-# - Ideally we would use the usual HTTP file-upload mechanisms to drop an uploaded file
-#    into the filesystem where the postgres database server can find it.  But it is
-#    awkward to route the upload from the remote client's browser to its web server and
-#    then to this webservice.
+#  - experimental data (*.csv): 1-3MB
+#  - protein databank file (*.pdb): 100-300KB
+#  - crystallographic information file (*.cif): 100-300KB
 #
-# - The files to be uploaded are relatively small non-binary files whose contents are
-#    delivered to the remote web server by a Plotly Dash Upload component as python
-#    strings.  We assume these can be transmitted as "parameters" in an HTTP request
-#    to this webservice.
-# 
-#  - But... we need to create a directory in which we can create a file whose permissions
-#     let the postgres server process read it.  If we simply pass the file contents as a
-#     parameter to a postgres SQL function, we need to write the file with a clunky
-#     dynamic SQL "copy to" command.  We also have to struggle with creating the directory
-#     and setting its permissions.
+# Since any of these three files may need to be served out to a remote client, we need
+#  to archive them somewhere:
 #
-# To avoid all that, we handle the filesystem management and file creation here.  (We
-#  assume that our linux system login gives us access to the postgres server's filesystem.)
-#  Then we pass things to the postgres server for subsequent processing of the file.
+#   - As postgres BLOBs: apart from initially loading the .csv data into relational
+#      tables, we have no requirement for doing relational operations on the contents
+#      of these files. So questions of simplicity and performance become priorities,
+#      and in this regard, postgres BLOBs are significantly less performant.  See here:
+#      https://www.cybertec-postgresql.com/en/binary-data-performance-in-postgresql
 #
-# This puts some constraints on the arguments passed with "upload" requests:
-#  args[0]: int  LevSeq user ID
-#  args[1]: int  LevSeq group ID
-#  args[2]: str  upload filename
-#  args[3]: str  upload file contents
-#  ...           ...
+#   - As filesystem files: better performance, but a bit of a pain to organize within a
+#      linux filesystem, since we have to worry about filenames, hierarchical directory
+#      structure, and permissions.
 #
-# Furthermore, we need to pass a directory path to the postgres server. 
-# 
-# Do this in two steps:
-#  - ask pg to verify uniqueness (gid+filename); if this succeeds, pg saves the filename in v1.experiment_files
-#  We do this
-#  by injecting an additional argument to the list.  This means the resulting SQL
-#  function signature must start like this:
+# Given that we choose to archive the files in the linux filesystem, the file upload
+#  mechanism implemented here is a bit clunky:
 #
-#    in _dirpath text,
-#    in _uid int,
-#    in _eid int,
-#    in _filename text,
-#    in _filedata text
+# - Ideally we would use the usual HTTP 'multipart/form-data' request mechanism to ship
+#    filename-plus-content from the remote client's browser to its web server and then
+#    to this webservice.  Easier said than done, however, because some kind of forwarding
+#    would have to be implemented on the web application server.
 #
-# (See the implementation of the SQL function upload_experiment_file for an example.)
+# - The files to be uploaded are small enough to be delivered as python strings to the web
+#    application server by a Plotly Dash Upload component.  We assume these can just as
+#    well be transmitted to this webservice as "parameters" in an HTTP request.
+#
+# - We also assume that this webservice has access to a filesystem that the postgres
+#    server can read.  That's a reasonable assumption since we already assume that the
+#    webservice uses linux system credentials that are authenticated as a postgres user
+#    (e.g., "lsdb").
+#
+# - So... we need to create a directory in which we can create a file whose permissions
+#    let the postgres server process read it.  If we simply pass the file contents as a
+#    parameter to a postgres SQL function, we need to write the file with a clunky
+#    dynamic SQL "copy to" command.  We also have to struggle with creating the directory
+#    and setting its permissions.
+#
+# Our strategy is thus to handle filesystem management and file creation here, and then
+#  to pass things to the postgres server for subsequent processing of each file:
+#
+#  - query the postgres server to verify that the experiment/group/filename tuple is
+#     unique, and to build the corresponding upload directory path
+#  - create the file
+#  - query the postgres server again to load file metadata (and, for .csv files, to
+#     load file contents into SQL tables)
+#
+# This puts a constraint on the arguments passed with "upload" requests:
+#
+#       args[0]: int  LevSeq user ID
+#       args[1]: int  LevSeq group ID
+#       args[2]: str  filename
+#       args[3]: str  file contents
+#       ...           ...
+#
+# The corresponding SQL function signatures are:
+#
+#       function get_upload_dirpath
+#       ( in _uid int,
+#         in _eid int,
+#         in _filename text)   [returns upload directory path]
+#
+#       function load_file
+#       ( in _uid int,
+#         in _eid int,
+#         in _filespec text)   [returns file size in bytes]
 #
 
+import pathlib
+import fastapi
 import dbexec
 
-    def UploadFile(args: dbexec.Arglist) -> str:
 
-        # build the filespec using the current system user and the specified user's group
-    ### TODO: QUERY FOR THE USER'S GROUP NAME!!!
-        filespec = f""
-        filespec = dbexec.QueryScalar( "peek_current_user", None )
+# fmt: off
+def UploadFile(params: dbexec.Arglist) -> str:
 
-        # verify that the specified file is not a duplicate
-        if dbexec.QueryScalar( "is_experiment_file_unique", [filespec])
+    # query the database to validate the group/experiment/filename and obtain
+    #  an upload filespec (i.e., a fully-qualified directory path and filename)
+    dirpath = str(dbexec.QueryScalar("get_upload_dirpath", params[:3]))  # type:ignore
 
-        return filespec;
+    # create the upload directory
+    pathlib.Path(dirpath).mkdir(parents=True, exist_ok=True)
+
+    # open the output file for text write; the open() function returns an instance of io.BufferedWriter
+    filespec = f"{dirpath}{params[2]}" # type:ignore
+    with open(filespec, mode="wt", encoding="utf-8") as bw:
+
+        # write the text to the output file and save the number of bytes written
+        cbw = bw.write(params[3])  # type: ignore
+
+    # load the file metadata (and, conditionally, the file contents) into the database
+    cbl = dbexec.QueryScalar("load_file", [params[:2], filespec] ) # type: ignore
+
+    # verify that the number of characters loaded equals the number of characters written to the file
+    if cbw != cbl:
+        msg = f"{filespec}: {cbl} bytes loaded / {cbw} bytes written"
+        raise fastapi.HTTPException(status_code=422, detail=msg)  # 422: Unprocessable Content        throw
+
+    return filespec
+# fmt: on

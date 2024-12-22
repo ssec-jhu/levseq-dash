@@ -10,9 +10,249 @@
 	 See: https://www.cybertec-postgresql.com/en/binary-data-performance-in-postgresql/)
 */
 
+/* function v1.get_upload_dirpath */
+drop function if exists v1.get_upload_dirpath(int,int,text);
 
-/* function v1.upload_experiment_file */
-drop function if exists v1.save_experiment_file(int,int,text,text);
+create or replace function v1.get_upload_dirpath
+( in _uid int,
+  in _eid int,
+  in _filename text )
+returns text
+language plpgsql
+as $body$
+
+declare
+    grp      int;
+	dirpath  text;
+	filepath text;
+	grpname  text;
+	expname  text;
+
+begin
+
+    -- get the LevSeq user's group ID
+	select t0.gid into grp
+	  from v1.users t0
+     where t0.pkey = _uid;
+
+    /* build the file specification by injecting the current database
+	    user name into the directory path */	    
+	select format(t0.upload_dir, current_user), t0.groupname
+      into dirpath, grpname
+      from v1.usergroups t0
+     where t0.pkey = grp;
+
+	-- limit the character set
+    dirpath = regexp_replace( dirpath, '[^A-Za-z0-9_\-\/]', '_', 'g' );
+	
+    -- append group and experiment subdirectories
+	dirpath = dirpath
+              || 'G' || right('0000'||grp, 5) || '/'
+              || 'E' || right('0000'||_eid, 5) || '/';
+
+    -- verify that the group/experiment/filename tuple is unique
+	filepath = dirpath || _filename;
+    if exists (select *
+                 from v1.data_files t0
+                where t0.filespec = filepath)
+    then
+        -- the specified file has already been uploaded
+        select t0.experiment_name into expname
+          from v1.experiments t0
+         where t0.pkey = _eid;
+		  
+        raise exception 'Duplicate filename % for group=%, experiment=%', _filename, grpname, expname;
+
+    end if;
+
+    -- return the slash-terminated directory path
+	return dirpath;
+
+end;
+$body$;
+/*** test
+select v1.get_upload_dirpath( 1, 1, 'tiny.csv' );
+***/
+
+/* procedure v1.load_csv_file
+
+   The call to copy ... from requires either superuser or
+    pg_read_server_files permission.
+*/
+drop procedure if exists v1.load_csv_file(text);
+
+create or replace procedure v1.load_csv_file( in _filespec text )
+language plpgsql
+as $body$
+
+declare
+    execsql  text = 'copy _rawcsv from '
+                    || quote_literal(_filespec)
+                    || ' with (format csv, header match)';
+
+begin
+    /* load csv into a temporary table */
+    create temporary table _rawcsv
+    (
+      "id"                        text             not null,
+      barcode_plate               integer          not null,
+      cas_number                  text             not null,
+      plate                       text             not null,
+      well                        text             not null,
+      alignment_count             smallint         not null,
+      nucleotide_mutation         text             null,
+      amino_acid_substitutions    text             null,
+      alignment_probability       double precision null,
+      average_mutation_frequency  double precision null,
+      p_value                     double precision null,
+      p_adj_value                 double precision null,
+      nt_sequence                 text             null,
+      aa_sequence                 text             null,
+      x_coordinate                double precision null,
+      y_coordinate                double precision null,
+      fitness_value               double precision null                
+    );
+
+    execute execsql;
+
+    -- TODO: spread the data to the tables
+	-- TODO: zap the temporary table
+
+end;
+$body$;
+/*** test
+***/
+
+/* function v1.load_file
+
+   The call to pg_stat_file requires either superuser or
+    pg_read_server_files permission.
+*/
+drop function if exists v1.load_file(int,int,text);
+
+create or replace function v1.load_file
+( in _uid int,
+  in _eid int,
+  in _filespec text )
+returns int
+language plpgsql
+as $body$
+
+declare
+    cb_file  int;
+    grp      int;
+    grpname  text;
+    expname  text;
+	filename text;
+	m        text[];
+
+begin
+
+    -- get the LevSeq user's group ID and name
+    select t1.pkey, t1.groupname into grp, grpname
+      from v1.users t0
+	  join v1.usergroups t1 on t1.pkey = t0.gid
+     where t0.pkey = _uid;
+
+    -- get the specified experiment name
+    select t0.experiment_name into expname
+      from v1.experiments t0
+     where t0.pkey = _eid;
+
+    -- ensure that the specified file exists and is not empty
+	select "size" into cb_file from pg_stat_file(_filespec, true);
+	if coalesce(cb_file, 0) = 0
+	then
+        m = regexp_split_to_array( _filespec, '/');
+        filename = m[cardinality(m)];
+        raise exception 'File % missing or empty (group=%, experiment=%)',
+		                filename, grpname, expname;
+    end if;
+
+    -- conditionally extract data from the uploaded file
+    if right(_filespec,4) = '.csv'
+	then
+	    call v1.load_csv_file( _filespec );
+	end if;
+
+	-- record successful upload
+	insert into v1.data_files( gid, eid, filespec, dt_upload, uid, filesize )
+	     values ( grp, _eid, _filespec, now(), _uid, cb_file );
+
+    -- return the number of bytes in the file
+	return cb_file;
+
+end;
+$body$;
+/*** test
+drop table _rawcsv;
+select v1.load_file( 1, 1, '/mnt/Data/ssec-devuser/uploads/G00001/E00001/tiny.csv' );
+select * from _rawcsv;
+select * from v1.data_files
+***/
+
+
+/* function is_valid_cas */
+drop function if exists v1.is_valid_cas(text);
+
+create or replace function v1.is_valid_cas( in _cas text )
+returns smallint
+language plpgsql
+as $body$
+
+declare
+    ccc int;
+    is_valid smallint;	
+
+begin
+
+    -- validate CAS syntax
+	if not regexp_like(_cas, '\d{2,7}-\d\d-\d') then return 0; end if;
+
+    -- validate checksum (https://en.wikipedia.org/wiki/CAS_Registry_Number)
+	create temporary table _casx
+	( ordinal smallint not null generated always as identity (minvalue 0),
+      digit   smallint not null );
+
+    insert into _casx(digit)
+    select cast(digit[1] as smallint)
+      from regexp_matches( reverse(_cas), '\d', 'g' ) as digit;
+
+    select sum(ordinal*digit) % 10 from _casx into ccc;
+    select digit-ccc from _casx where ordinal = 0 into is_valid;
+	is_valid = 1 - abs(sign(is_valid));
+
+    drop table _casx;
+
+	return is_valid;
+
+end;
+$body$;
+/*** test
+select v1.is_valid_cas( '7732-18-5'::varchar );    -- ok: water
+select v1.is_valid_cas( '64-17-5'::varchar);       -- ok: ethanol
+select v1.is_valid_cas( '439-14-5'::varchar);      -- ok: diazepam
+select v1.is_valid_cas( '99685-96-8'::varchar);    -- ok: buckminsterfullerene
+
+select v1.is_valid_cas( '345905-97-7'::varchar );  -- ok:
+select v1.is_valid_cas( '3459O5-97-7'::varchar );  -- fail: O, not zero
+select v1.is_valid_cas( '345905-97-6'::varchar );  -- fail: checksum
+***/
+
+
+
+
+
+
+
+
+
+
+/****************************************
+*******************************************************/
+
+/* function v1.load_file  asdfasdfasdf;lkasdjf; */
+drop function if exists v1.load_file(int,int,text,text);
 
 create or replace function v1.load_experiment_file
 ( in _filespec text,   -- (see lsws fsexec.py)
@@ -117,88 +357,6 @@ where option can be one of:
 
 
 
-/* function v1.get_upload_directory */
-create or replace function v1.get_upload_directory( in _cas varchar(16) )
-returns smallint
-language plpgsql
-as $body$
-
-declare
-    ccc int;
-    is_valid smallint;	
-
-begin
-
-    -- validate syntax: there must be
-	if not regexp_like(_cas, '\d{2,7}-\d\d-\d') then return 0; end if;
-
-    -- validate checksum (https://en.wikipedia.org/wiki/CAS_Registry_Number)
-	create temporary table _casx
-	( ordinal smallint not null generated always as identity (minvalue 0),
-      digit   smallint not null );
-
-    insert into _casx(digit)
-    select cast(digit[1] as smallint)
-      from regexp_matches( reverse(_cas), '\d', 'g' ) as digit;
-
-    select sum(ordinal*digit) % 10 from _casx into ccc;
-    select digit-ccc from _casx where ordinal = 0 into is_valid;
-	is_valid = 1 - abs(sign(is_valid));
-
-    drop table _casx;
-
-	return is_valid;
-
-end;
-
-
-/* function is_valid_cas */
-drop function if exists v1.is_valid_cas(varchar);
-
-create or replace function v1.is_valid_cas( in _cas varchar(16) )
-returns smallint
-language plpgsql
-as $body$
-
-declare
-    ccc int;
-    is_valid smallint;	
-
-begin
-
-    -- validate syntax: there must be
-	if not regexp_like(_cas, '\d{2,7}-\d\d-\d') then return 0; end if;
-
-    -- validate checksum (https://en.wikipedia.org/wiki/CAS_Registry_Number)
-	create temporary table _casx
-	( ordinal smallint not null generated always as identity (minvalue 0),
-      digit   smallint not null );
-
-    insert into _casx(digit)
-    select cast(digit[1] as smallint)
-      from regexp_matches( reverse(_cas), '\d', 'g' ) as digit;
-
-    select sum(ordinal*digit) % 10 from _casx into ccc;
-    select digit-ccc from _casx where ordinal = 0 into is_valid;
-	is_valid = 1 - abs(sign(is_valid));
-
-    drop table _casx;
-
-	return is_valid;
-
-end;
-
-$body$;
-/*** test
-select v1.is_valid_cas( '7732-18-5'::varchar );    -- ok: water
-select v1.is_valid_cas( '64-17-5'::varchar);       -- ok: ethanol
-select v1.is_valid_cas( '439-14-5'::varchar);      -- ok: diazepam
-select v1.is_valid_cas( '99685-96-8'::varchar);    -- ok: buckminsterfullerene
-
-select v1.is_valid_cas( '345905-97-7'::varchar );  -- ok:
-select v1.is_valid_cas( '3459O5-97-7'::varchar );  -- fail: O, not zero
-select v1.is_valid_cas( '345905-97-6'::varchar );  -- fail: checksum
-***/
 
 
 /* function init_load
@@ -448,20 +606,6 @@ select t0.pkey, t1.username, dt, t2.task, t3.status, t0.details
 ***/
 
 
-
-/* procedure do_nothing */
-drop procedure if exists v1.do_nothing( int );
-
-create or replace procedure v1.do_nothing(in _uid int )
-language plpgsql
-as $body$
-begin
-    raise notice '% nothing', _uid;
-end;
-$body$;
-/*** test
-call v1.do_nothing( 12345 );
-***/
 
 
 /* procedure load_csv_file */

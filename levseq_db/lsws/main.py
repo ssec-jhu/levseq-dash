@@ -16,11 +16,10 @@
 
 import sys
 import os
-import pwd
 import uvicorn
 import wsexec
 from fastapi import FastAPI
-import globals as g
+import global_vars as g
 
 
 # grab some linux system info

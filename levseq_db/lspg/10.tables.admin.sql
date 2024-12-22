@@ -2,31 +2,42 @@
    10.tables.admin.sql
 */
 
-/* ensure that the SQL schema exists */
-create schema if not exists v1 authorization "ssec-devuser";
 
+/* table v1.usergroups
 
-/* table v1.usergroups */
+   The upload directory path must...
+    - contain a wildcard into which the current database username
+	  is inserted (see function	v1.get_upload_dirpath())
+    - terminate with a path separator ('/')
+*/
 -- drop table if exists v1.usergroups cascade; 
 create table if not exists v1.usergroups
 (
-  pkey        smallint  not null generated always as identity,
+  pkey        smallint  not null generated always as identity primary key,
   groupname   text      not null,
   contact     text      not null default '',
-  upload_dir  text      not null default '/mnt/Data/%s/uploads/%s'
+  upload_dir  text      not null default '/mnt/Data/%s/uploads/'
 )
 tablespace pg_default;
-
-alter table v1.usergroups owner to "ssec-devuser";
 grant select,insert,update,delete on v1.usergroups to lsdb;
 
-drop index if exists v1.pk_usergroups;
+/* The SQL regex expression is:
+    /      slash
+    %      any sequence of characters (hopefully slashes, alphanumeric, and underscore)
+    /      slash
+    \%s    %s (format specifier; see v1.get_upload_dirpath())
+    /      slash
+    %      any sequence of characters
+    /      slash
 
-create unique index pk_usergroups
-                 on v1.usergroups
-              using btree (pkey asc)
-               with (deduplicate_items=True)
-         tablespace pg_default;
+   It's surely possible to use postgres's posix regex extension to
+    enforce the character set as well, but this is already ugly
+	enough as it is.
+*/	
+alter table v1.usergroups drop constraint if exists ck_usergroups_upload_dir;
+alter table v1.usergroups
+        add constraint ck_usergroups_upload_dir
+            check (upload_dir similar to '/%/\%s/%/');
 /*** test
 delete from v1.usergroups where pkey >= 1;
 alter sequence v1.usergroups_pkey_seq restart with 1;
@@ -35,16 +46,14 @@ insert into v1.usergroups (groupname, contact)
 	        ('SSEC',   'Fatemeh Abbasinejad fabbasinejad@jhu.edu');
 select * from v1.usergroups;
 
--- (use this elsewhere)
-select format( '/mnt/Data/%s/uploads', current_user )
-select regexp_replace('/mnt/Data/ssec-devuser/uploads/','[^A-Za-z0-9_\-\/]','_','g');
+update v1.usergroups set upload_dir = '/mnt/Data/%s/uploads/'
 ***/
 
 /* table v1.users */
 -- drop table if exists v1.users cascade;
 create table if not exists v1.users
 (
-  pkey      int       not null generated always as identity,
+  pkey      int       not null generated always as identity primary key,
   username  text      not null,
   pwd       text      not null default '64-17-5',
   firstname text      not null default '',
@@ -55,21 +64,9 @@ create table if not exists v1.users
   last_ip   text      not null default ''
 )
 tablespace pg_default;
-
-alter table v1.users owner to "ssec-devuser";
 grant select,insert,update,delete on v1.users to lsdb;
 
---drop index v1.pk_users;
-
-create unique index Pk_users
-                 on v1.users
-              using btree (pkey asc)
-               with (deduplicate_items=True)
-         tablespace pg_default;
-
-alter table v1.users cluster on pk_users;
-
-create unique index Ix_users_username_gid
+create unique index ix_users_username_gid
                  on v1.users
               using btree (username asc, gid asc)
 			   with (deduplicate_items=True)

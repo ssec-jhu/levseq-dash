@@ -34,7 +34,8 @@ import re
 import fastapi
 import pydantic
 import dbexec
-import globals as g
+import fsexec
+import global_vars as g
 
 
 # It would be possible to serialize result sets as json in postgres using json_agg(),
@@ -116,11 +117,9 @@ def PostDatabaseQuery(args: QueryParams) -> QueryResponse:
                     rval = dbexec.QueryScalar(args.verb, [param for param in args.params])
                     return QueryScalar(result=rval)
 
-                # case "upload":
-                #     filespec = fsexec.UploadFile(args.params)
-                #     aParams = [filespec] + [param for param in args.params]
-                #     rval = dbexec.QueryScalar(args.verb, aParams)
-                #     return QueryScalar(result=rval)
+                case "upload":
+                    rval = fsexec.UploadFile(args.params)
+                    return QueryScalar(result=rval)
 
                 case _:
                     pass

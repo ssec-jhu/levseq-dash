@@ -29,7 +29,6 @@ begin
 			  '* assay *';
 
 end;
-
 $body$;
 /*** test
 select * from v1.get_user_experiments( 1 );

@@ -22,9 +22,9 @@ def UploadExperimentFile(fileSpec: str, b64: str) -> int:
     #  the filename and contents to the webservice and assume that the webservers,
     #  postgres, and all the intermediate layers of code can handle a multi-megabyte
     #  "parameter"
-    return dbexec.QueryScalar("save_file", [fileSpec, b64])  # type:ignore
+    #  return dbexec.QueryScalar("save_file", [fileSpec, b64])  # type:ignore
 
-    if False:
+    if True:
         # We want the os to write the base64-string as a sequence of bytes, so we encode
         #  the python string as 8-bit bytes, split it on the characters ';base64,', and
         #  grab just the utf8-encoded base64 string.

@@ -2,6 +2,20 @@
    20.sps.admin.sql
 */
 
+/* procedure do_nothing */
+drop procedure if exists v1.do_nothing( int );
+
+create or replace procedure v1.do_nothing(in _uid int )
+language plpgsql
+as $body$
+begin
+    raise notice '% nothing', _uid;
+end;
+$body$;
+/*** test
+call v1.do_nothing( 12345 );
+***/
+
 /* function get_pginfo */
 drop function v1.get_pginfo(text);
 
@@ -15,7 +29,6 @@ returns table
 )
 language plpgsql
 as $body$
-
 begin
 
     return query
@@ -26,11 +39,10 @@ begin
 		   pi();
 
 end;
-
 $body$;
 /*** test
-select * from v1.get_pginfo('LevSeq webservice v1.0');
-select v1.get_pginfo('LevSeq webservice v1.0');         -- (one column, comma-separated)
+select * from v1.get_pginfo('LevSeq webservice');
+select v1.get_pginfo('LevSeq webservice');         -- (one column, comma-separated)
 ***/
 
 
@@ -46,7 +58,6 @@ returns table
 )
 language plpgsql
 as $body$
-
 begin
 
     return query
@@ -56,7 +67,6 @@ begin
 	    or _gid is null;
 
 end;
-
 $body$;
 /*** test
 select * from v1.usergroups;
@@ -78,19 +88,17 @@ returns table
 )
 language plpgsql
 as $body$
-
 begin
 
     return query
     select t1.pkey, t1.username, t2.pkey, t2.groupname
 	  from v1.users t1
-	  join v1.usergroups t2 on t2.pkey = t1.grp
+	  join v1.usergroups t2 on t2.pkey = t1.gid
      where t2.pkey = _gid
 	    or _gid is null
   order by t1.username;
 
 end;
-
 $body$;
 /*** test
 select * from v1.get_usernames();  -- returns three columns
@@ -116,17 +124,15 @@ returns table
 )
 language plpgsql
 as $body$
-
 begin
 
     return query
     select t2.groupname, t1.firstname, t1.lastname, t1.email
       from v1.users t1
-      join v1.usergroups t2 on t2.pkey = t1.grp
+      join v1.usergroups t2 on t2.pkey = t1.gid
      where t1.pkey = _uid;
 
 end;
-
 $body$;
 /*** test
 select * from v1.users
@@ -146,17 +152,15 @@ returns table
 )
 language plpgsql
 as $body$
-
 begin
 
     return query
     select t1.pkey, t2.groupname, t1.firstname, t1.lastname, t1.email
       from v1.users t1
-      join v1.usergroups t2 on t2.pkey = t1.grp
+      join v1.usergroups t2 on t2.pkey = t1.gid
      where t1.username = _u;
 
 end;
-
 $body$;
 /*** test
 select * from v1.users
@@ -176,7 +180,6 @@ create or replace function v1.save_user_info
 returns int
 language plpgsql
 as $body$
-
 declare
     pkgrp smallint = (select pkey
                         from v1.usergroups
@@ -186,21 +189,20 @@ declare
 begin
 
     -- insert/update the users table
-	insert into v1.users(username, pwd, firstname, lastname, grp, email)
+	insert into v1.users(username, pwd, firstname, lastname, gid, email)
 	     values (_username, _pwd, _firstname, _lastname, pkgrp, _email)
-    on conflict (username,grp)
+    on conflict (username,gid)
 	  do update set username = _username,
                     pwd = _pwd,
                     firstname = _firstname,
                     lastname = _lastname,
-                    grp = pkgrp,
+                    gid = pkgrp,
                     email = _email
 	  returning pkey into rval;
 
 	  return rval;
 
 end;
-
 $body$;
 /*** test
 delete from v1.users where pkey >= 1;
@@ -217,13 +219,13 @@ drop procedure if exists v1.save_user_ip(int,varchar);
 create procedure v1.save_user_ip( in _pkey int, in _ip varchar(24) )
 language plpgsql 
 as $body$
-
 begin
+
     update v1.users
 	   set last_ip = _ip
 	 where pkey = _pkey;
-end;
 
+end;
 $body$;
 
 /*** test
