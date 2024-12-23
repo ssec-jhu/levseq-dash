@@ -1,5 +1,5 @@
 #
-# dbexec.py
+# dbexec.py --- UNUSED IF WE'RE GOING THROUGH A WEBSERVICE!!!!!
 #
 # Notes:
 #  This module implements data transfers between this web application and a postgres database
@@ -13,7 +13,7 @@ import psycopg
 from psycopg import sql as scm  # "SQL composition utility module"
 from psycopg import abc  # typedef Params for cursor.execute()
 import typing
-import global_strings as gs
+import global_vars as gv
 
 
 # handy type aliases
@@ -27,7 +27,7 @@ def _buildSqlCmd(execCmd: str, verb: str, args: Arglist) -> scm.Composed:
 
     # build the format string for the SQL command builder; this may be overkill, but doing it
     #  this way takes care of string formatting details (and should prevent SQL injection, too)
-    fmt = f"{execCmd} {gs.schema}.{{}}("
+    fmt = f"{execCmd} {gv.schema}.{{}}("
 
     if args is not None:
         # build a comma-separated string of '%s' strings (one per argument)
@@ -75,7 +75,7 @@ def _doQuery(fn: typing.Callable, verb: str, args: Arglist) -> Rowset | Scalar |
 # fmt:on
     # open a database connection; we don't bother with connection pooling for
     #  this lightweight, low-usage application
-    with psycopg.connect(gs.pgcs) as cn:
+    with psycopg.connect(gv.pgcs) as cn:
 
         # open a postgres/psycopg "cursor" to perform database operations
         #  (for more info: https://www.psycopg.org/psycopg3/docs/advanced/cursors.html)

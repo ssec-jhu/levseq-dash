@@ -75,7 +75,6 @@ select * from v1.get_group_info(2);
 ***/
 
 
-
 /* function get_usernames */
 drop function v1.get_usernames(int);
 
@@ -214,9 +213,9 @@ delete from v1.users where pkey > 5
 ***/
 
 /* procedure save_user_ip */
-drop procedure if exists v1.save_user_ip(int,varchar);
+drop procedure if exists v1.save_user_ip(int,text);
 
-create procedure v1.save_user_ip( in _pkey int, in _ip varchar(24) )
+create procedure v1.save_user_ip( in _pkey int, in _ip text )
 language plpgsql 
 as $body$
 begin
@@ -227,7 +226,6 @@ begin
 
 end;
 $body$;
-
 /*** test
 call v1.save_user_ip(2, '123.456.789.000');
 select * from v1.users;

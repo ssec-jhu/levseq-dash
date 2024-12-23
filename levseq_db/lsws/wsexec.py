@@ -49,7 +49,7 @@ class QueryParams(pydantic.BaseModel):
     params: list[dbexec.Scalar]
 
 
-class QueryRowset(pydantic.BaseModel):
+class QueryResultSet(pydantic.BaseModel):
     columns: list[str]
     rows: list[tuple]
 
@@ -59,7 +59,7 @@ class QueryScalar(pydantic.BaseModel):
 
 
 # handy type aliases
-type QueryResponse = QueryRowset | QueryScalar | None
+type QueryResponse = QueryResultSet | QueryScalar | None
 
 
 # conditionally reflect the postgres exception message; rethrow all other exceptions verbatim
@@ -84,7 +84,7 @@ def _rethrowException(ex: Exception) -> None:
 def GetImplementationInfo() -> QueryResponse:
     try:
         c, r = dbexec.Query("get_pginfo", [g.ws_id])
-        return QueryRowset(columns=c, rows=r)
+        return QueryResultSet(columns=c, rows=r)
 
     except Exception as ex:
         _rethrowException(ex)
@@ -108,9 +108,9 @@ def PostDatabaseQuery(args: QueryParams) -> QueryResponse:
             match m[1]:
                 case "get":
                     c, r = dbexec.Query(args.verb, [param for param in args.params])
-                    return QueryRowset(columns=c, rows=r)
+                    return QueryResultSet(columns=c, rows=r)
 
-                case "do":
+                case "do" | "save":
                     return dbexec.NonQuery(args.verb, [param for param in args.params])
 
                 case "is" | "peek":

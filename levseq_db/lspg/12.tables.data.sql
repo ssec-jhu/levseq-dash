@@ -68,5 +68,6 @@ insert into v1.data_files( gid, eid, filespec, uid )
      values (2, 1, '/mnt/Data/ssec-devuser/uploads/G00002/E00001/tiny.csv', 1);
 	 
 select * from v1.data_files order by pkey;
+delete from v1.data_files where pkey >= 1;
 ***/
 

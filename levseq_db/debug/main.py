@@ -19,9 +19,9 @@ import flask
 from flask import Flask
 from dash import Dash, dcc, html, callback, Output, Input
 
-import dbexec
-import fsexec
-import global_strings as gs
+# import dbexec
+import wsexec
+import global_vars as gv
 
 
 # emit a banner
@@ -34,10 +34,11 @@ print(f"\nStart {sScriptName} __name__={__name__} pid={os.getpid()}, python v{sy
 # initial web page layout implementation
 def _initWebPage(debugDash: bool) -> None:
 
-    app.title = f"{gs.web_title}{' (DEBUG)' if debugDash else ''}"
+    app.title = f"{gv.web_title}{' (DEBUG)' if debugDash else ''}"
 
     # the database query returns a list of tuples, each of which contains one country name
-    rows = dbexec.Query("get_usernames")
+    # rows = dbexec.Query("get_usernames")
+    cols, rows = wsexec.Query("get_usernames", [])
 
     # build a KVP list of dropdown list items
     aUsers = [{"value": r[0], "label": f"{r[1]} ({r[3]})"} for r in rows]
@@ -97,18 +98,21 @@ def _initWebPage(debugDash: bool) -> None:
 def selectUser(uid) -> list:
 
     if flask.has_request_context():
-        remoteIPaddr = flask.request.remote_addr
+        remoteIPaddr = str(flask.request.remote_addr)
         flask.session["username"] = uid
     else:  # (this should not happen)
         remoteIPaddr = "?.?.?.?"
 
     # save the IP address in the database table of users
-    dbexec.NonQuery("save_user_ip", [uid, remoteIPaddr])
+    wsexec.Query("save_user_ip", [uid, remoteIPaddr])
 
     # get user session config
-    user_config = dbexec.Query("get_user_info", [uid])[0]
-    flask.session["groupname"] = user_config[0]
-    flask.session["hostUploadDir"] = user_config[1]
+    cols, rows = wsexec.Query("get_user_info", [uid])  # type:ignore
+    flask.session["groupname"] = rows[0][cols.index("groupname")]
+
+    # TODO: GET THE EXPERIMENT ID THROUGH THE UI AND A DATABASE QUERY!!!!
+    flask.session["experiment_name"] = "experiment one"
+    flask.session["eid"] = 1
 
     # return the current user name for HTML display
     return [f"Current user ID: {uid}"]
@@ -128,22 +132,16 @@ def writeUploadedFiles(aFileNames: list[str], aFileContents: list[str]) -> list:
 
         # upload the file data
         uid = flask.session["username"]
-        hostUploadDir = flask.session["hostUploadDir"]
+        eid = flask.session["eid"]
         for fileName, fileContents in zip(aFileNames, aFileContents, strict=True):
-            fileSpec = os.path.join(hostUploadDir, fileName)
 
-            cb = fsexec.UploadExperimentFile(fileSpec, fileContents)
+            # validate the group/experiment/filename tuple
+            cb = wsexec.Query("upload_file", [uid, eid, fileName, fileContents])
 
-        # load CSV file(s) into database tables
-        for fileName, fileContents in zip(aFileNames, aFileContents, strict=True):
-            if fileName[-4:].lower() == ".csv":
-                fileSpec = os.path.join(hostUploadDir, fileName)
-                dbexec.NonQuery("load_csv_file", [uid, fileSpec])
+            # get uploaded file status
+            rval += [html.Li(f"Uploaded {fileName}: ({cb} bytes)")]
 
-        # get uploaded file status
-        rows = dbexec.Query("get_file_load_status", [uid, hostUploadDir, aFileNames])
-        rval += [html.Li(f"Uploaded {r[0]}: (status: {r[1]} {r[2]})") for r in rows]
-
+    # let Dash inject the results into the HTML document
     return rval
 
 
@@ -165,7 +163,7 @@ if __name__ == "__main__":
     app = Dash(__name__)
     debugDash = True
     hostName = "localhost"
-    tcpPort = 8051
+    tcpPort = 8050
 
 else:
 
@@ -193,5 +191,5 @@ _initWebPage(debugDash)
 # gunicorn will not load this app correctly unless the script ends with the
 #  customary module-name validation:
 if __name__ == "__main__":
-    app.server.config.update(SECRET_KEY=gs.session_key)
+    app.server.config.update(SECRET_KEY=gv.session_key)
     app.run(host=hostName, port=str(tcpPort), debug=debugDash, use_reloader=debugDash)

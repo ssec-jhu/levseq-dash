@@ -75,6 +75,7 @@
 #
 
 import pathlib
+import base64
 import fastapi
 import dbexec
 
@@ -89,15 +90,34 @@ def UploadFile(params: dbexec.Arglist) -> str:
     # create the upload directory
     pathlib.Path(dirpath).mkdir(parents=True, exist_ok=True)
 
+    # convert to utf8 (which we need to do anyway if the file is base64-encoded)
+    fileBytes = str(params[3]).encode("utf-8") #type:ignore
+
+    # if the file content is base64-encoded, decode it
+    c100 = fileBytes[:100]
+    i = c100.find(b";base64,")
+    if i > 0:
+        # We want the os to write the base64-string as a sequence of bytes, so we encode
+        #  the python string as 8-bit bytes, split it on the characters ';base64,', and
+        #  grab just the utf8-encoded base64 string.
+        copyFrom = base64.decodebytes(fileBytes[i+8:])
+    
+    else:
+        # we presumably have plain text
+        copyFrom = fileBytes
+
+    # free no-longer-needed memory
+    del fileBytes
+
     # open the output file for text write; the open() function returns an instance of io.BufferedWriter
     filespec = f"{dirpath}{params[2]}" # type:ignore
-    with open(filespec, mode="wt", encoding="utf-8") as bw:
+    with open(filespec, mode="wb") as bw:
 
         # write the text to the output file and save the number of bytes written
-        cbw = bw.write(params[3])  # type: ignore
+        cbw = bw.write(copyFrom)
 
     # load the file metadata (and, conditionally, the file contents) into the database
-    cbl = dbexec.QueryScalar("load_file", [params[:2], filespec] ) # type: ignore
+    cbl = dbexec.QueryScalar("load_file", [params[0], params[1], filespec] ) # type: ignore
 
     # verify that the number of characters loaded equals the number of characters written to the file
     if cbw != cbl:

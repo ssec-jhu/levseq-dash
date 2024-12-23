@@ -117,6 +117,7 @@ begin
 
     -- TODO: spread the data to the tables
 	-- TODO: zap the temporary table
+	drop table _rawcsv;
 
 end;
 $body$;
@@ -184,10 +185,23 @@ begin
 
 end;
 $body$;
+
+GRANT { EXECUTE | ALL [ PRIVILEGES ] }
+    ON { { FUNCTION | PROCEDURE | ROUTINE } routine_name [ ( [ [ argmode ] [ arg_name ] arg_type [, ...] ] ) ] [, ...]
+         | ALL { FUNCTIONS | PROCEDURES | ROUTINES } IN SCHEMA schema_name [, ...] }
+    TO role_specification [, ...] [ WITH GRANT OPTION ]
+    [ GRANTED BY role_specification ]
+
 /*** test
 drop table _rawcsv;
 select v1.load_file( 1, 1, '/mnt/Data/ssec-devuser/uploads/G00001/E00001/tiny.csv' );
 select * from _rawcsv;
+
+select count(*) from _rawcsv;
+select count(*) as n, nt_sequence, count(*)
+  from _rawcsv
+group by nt_sequence;
+
 select * from v1.data_files
 ***/
 

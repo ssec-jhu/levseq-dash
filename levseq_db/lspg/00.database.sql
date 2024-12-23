@@ -40,7 +40,7 @@ create schema if not exists v1 authorization "ssec-devuser";
         (See https://www.postgresql.org/docs/current/sql-copy.html)
 */
 grant pg_write_server_files, pg_read_server_files to lsdb;
-   
+grant execute on function pg_stat_file(text,boolean) to lsdb;
 
 /* tables and indexes
 
