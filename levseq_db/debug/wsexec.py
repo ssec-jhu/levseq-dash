@@ -16,6 +16,7 @@ type QueryResponse = ResultSet | Scalar | None
 type Arglist = list[Scalar]
 
 
+# TODO: CLEAN UP THE CODE A BIT AND WRITE AN INTELLIGENT COMMENT
 class QueryPackage(dict):
 
     verb: str
@@ -37,14 +38,25 @@ class QueryPackage(dict):
     #     )
 
 
-# HTTP POST to the LevSeq webservice (always returns a ResultSet)
+# TODO: WRITE A "PING" TO THE LevSeq webservice
+# TODO: VERIFY timestamp datatype!!!!!!!
+
+
+# HTTP POST to the LevSeq webservice
+#
+# Return value depends on verb prefix (see below):
+#   - get:              ResultSet
+#   - do, save:         None
+#   - is, peek, upload: Scalar
+#
 def Query(verb: str, params: list[Scalar]) -> QueryResponse:
 
     pkg = QueryPackage(verb, params)
     # resp = requests.post(gv.lswsurl, pkg.to_json())
     resp = requests.post(gv.lswsurl, json=pkg)
     if not resp.ok:
-        raise ValueError(resp.json()["detail"])
+        j = resp.json()
+        raise ValueError(j["detail"])
 
     # cr = json.loads(resp.text)
     cr = resp.json()

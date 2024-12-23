@@ -55,7 +55,7 @@ class QueryResultSet(pydantic.BaseModel):
 
 
 class QueryScalar(pydantic.BaseModel):
-    result: dbexec.Scalar
+    details: dbexec.Scalar
 
 
 # handy type aliases

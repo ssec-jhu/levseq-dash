@@ -37,11 +37,20 @@ def _initWebPage(debugDash: bool) -> None:
     app.title = f"{gv.web_title}{' (DEBUG)' if debugDash else ''}"
 
     # the database query returns a list of tuples, each of which contains one country name
-    # rows = dbexec.Query("get_usernames")
-    cols, rows = wsexec.Query("get_usernames", [])
+    cols, rows = wsexec.Query("get_usernames", [])  # type:ignore
 
     # build a KVP list of dropdown list items
-    aUsers = [{"value": r[0], "label": f"{r[1]} ({r[3]})"} for r in rows]
+
+    # TODO: USE COLUMN NAMES TO INDEX THE ROWS!
+    iv = cols.index("uid")
+    iu = cols.index("username")
+    ig = cols.index("groupname")
+    aUsers = [{"value": r[iv], "label": f"{r[iu]} ({r[ig]})"} for r in rows]
+
+    ### CAN THIS BE DONE AS A DICT OF TUPLES, e.g.
+    ### { "value" : (row1_value, row2_value...),
+    ###  "label" : (row1_label, row2_label...)}
+    ### There might be an overload or a helper function in the Dash component
 
     # interaction layout: user ID (dropdown list)
     layout_dbexec = [
@@ -72,6 +81,7 @@ def _initWebPage(debugDash: bool) -> None:
             accept=".csv,.cif,.pdb",
         ),
         html.Ul(id="uploaded_filenames", children="(none yet)"),
+        html.Div(id="upload_error"),
     ]
 
     app.layout = [
@@ -118,13 +128,19 @@ def selectUser(uid) -> list:
     return [f"Current user ID: {uid}"]
 
 
+def _exception_writeUploadedFiles(ex: Exception) -> object:
+    # the return value maps to the callback Output(s)
+    return [html.Li("(error)")], str(ex)
+
+
 # callback: file upload
 @callback(
-    Output("uploaded_filenames", "children"),
+    [Output("uploaded_filenames", "children"), Output("upload_error", "children")],
     [Input("upload-data", "filename"), Input("upload-data", "contents")],
     prevent_initial_call=True,
+    on_error=_exception_writeUploadedFiles,
 )
-def writeUploadedFiles(aFileNames: list[str], aFileContents: list[str]) -> list:
+def writeUploadedFiles(aFileNames: list[str], aFileContents: list[str]) -> tuple:
 
     rval = []
 
@@ -142,7 +158,7 @@ def writeUploadedFiles(aFileNames: list[str], aFileContents: list[str]) -> list:
             rval += [html.Li(f"Uploaded {fileName}: ({cb} bytes)")]
 
     # let Dash inject the results into the HTML document
-    return rval
+    return (rval, "(no error)")
 
 
 # Dash/Flask application setup
