@@ -31,7 +31,6 @@
 #   DataTable (https://dash.plotly.com/datatable/reference) and HTML elements.
 
 import re
-import fastapi
 import pydantic
 import dbexec
 import fsexec
@@ -62,17 +61,6 @@ class QueryScalar(pydantic.BaseModel):
 type QueryResponse = QueryResultSet | QueryScalar | None
 
 
-# conditionally reflect the postgres exception message; rethrow all other exceptions verbatim
-# fmt:off
-def _rethrowException(ex: Exception) -> None:
-    msg = dbexec.IsPostgresException(ex)
-    if msg is not None:
-        raise fastapi.HTTPException(status_code=422, detail=msg)    # 422: Unprocessable Content
-    else:
-        raise
-# fmt:on
-
-
 #
 # GET requests
 #
@@ -82,12 +70,9 @@ def _rethrowException(ex: Exception) -> None:
 # FWIW, the FastAPI remote development client does this request by default when it
 #  connects to this webservice.
 def GetImplementationInfo() -> QueryResponse:
-    try:
-        c, r = dbexec.Query("get_pginfo", [g.ws_id])
-        return QueryResultSet(columns=c, rows=r)
 
-    except Exception as ex:
-        _rethrowException(ex)
+    c, r = dbexec.Query("get_pginfo", [g.ws_id])
+    return QueryResultSet(columns=c, rows=r)
 
 
 #
@@ -104,28 +89,28 @@ def PostDatabaseQuery(args: QueryParams) -> QueryResponse:
     if m != None:
 
         # dispatch according to the prefix
-        try:
-            match m[1]:
-                case "get":
-                    c, r = dbexec.Query(args.verb, [param for param in args.params])
-                    return QueryResultSet(columns=c, rows=r)
+        match m[1]:
+            case "get":
+                c, r = dbexec.Query(args.verb, [param for param in args.params])
+                return QueryResultSet(columns=c, rows=r)
 
-                case "do" | "save":
-                    return dbexec.NonQuery(args.verb, [param for param in args.params])
+            case "do" | "save":
+                return dbexec.NonQuery(args.verb, [param for param in args.params])
 
-                case "is" | "peek":
-                    rval = dbexec.QueryScalar(args.verb, [param for param in args.params])
-                    return QueryScalar(result=rval)
+            case "is" | "peek":
+                rval = dbexec.QueryScalar(args.verb, [param for param in args.params])
+                return QueryScalar(details=rval)
 
-                case "upload":
-                    rval = fsexec.UploadFile(args.params)
-                    return QueryScalar(result=rval)
+            case "load":
+                rval = fsexec.LoadFile(args.params)
+                return QueryScalar(details=rval)
 
-                case _:
-                    pass
+            case "unload":
+                fsexec.UnloadFile(args.params)
+                return None
 
-        except Exception as ex:
-            _rethrowException(ex)
+            case _:
+                pass
 
-    # at this point the prefix is invalid (HTTP 422 Unprocessable Content)
-    raise fastapi.HTTPException(status_code=422, detail=f"invalid query '{args.verb}'")
+    # at this point the prefix is invalid
+    raise ValueError(f"invalid query '{args.verb}'")

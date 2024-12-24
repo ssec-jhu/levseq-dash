@@ -17,6 +17,7 @@ import os
 
 import flask
 from flask import Flask
+import dash
 from dash import Dash, dcc, html, callback, Output, Input
 
 # import dbexec
@@ -47,11 +48,6 @@ def _initWebPage(debugDash: bool) -> None:
     ig = cols.index("groupname")
     aUsers = [{"value": r[iv], "label": f"{r[iu]} ({r[ig]})"} for r in rows]
 
-    ### CAN THIS BE DONE AS A DICT OF TUPLES, e.g.
-    ### { "value" : (row1_value, row2_value...),
-    ###  "label" : (row1_label, row2_label...)}
-    ### There might be an overload or a helper function in the Dash component
-
     # interaction layout: user ID (dropdown list)
     layout_dbexec = [
         html.H3("dropdown select -> query database -> result set -> dash"),
@@ -81,7 +77,14 @@ def _initWebPage(debugDash: bool) -> None:
             accept=".csv,.cif,.pdb",
         ),
         html.Ul(id="uploaded_filenames", children="(none yet)"),
-        html.Div(id="upload_error"),
+        html.Div(id="load_error"),
+    ]
+
+    layout_zapTiny = [
+        html.H3("Zap tiny.csv"),
+        html.Button("Zap", id="btn_zapTiny", n_clicks=0),
+        html.Div(id="zapped_filename", children="(none)"),
+        html.Div(id="unload_error"),
     ]
 
     app.layout = [
@@ -94,6 +97,11 @@ def _initWebPage(debugDash: bool) -> None:
         html.Div(
             id="fsexec_test",
             children=layout_fsexec,
+            style={"width": "100%", "border": "solid", "border-width": "1px"},
+        ),
+        html.Div(
+            id="zapTiny_test",
+            children=layout_zapTiny,
             style={"width": "100%", "border": "solid", "border-width": "1px"},
         ),
     ]
@@ -128,37 +136,79 @@ def selectUser(uid) -> list:
     return [f"Current user ID: {uid}"]
 
 
-def _exception_writeUploadedFiles(ex: Exception) -> object:
+def _exception_uploadFiles(ex: Exception) -> None:
     # the return value maps to the callback Output(s)
-    return [html.Li("(error)")], str(ex)
+    ###return [html.Li("(error)")], str(ex)
+
+    # convert embedded newline markers in the Exception string to HTML markup
+    aLines = str(ex).split("\n")
+    aText = [html.P(children=s) for s in aLines]
+
+    # return error info to the dedicated HTML DIV
+    dash.set_props("load_error", dict(children=aText))
+    return None
 
 
-# callback: file upload
+# callback: file load
 @callback(
-    [Output("uploaded_filenames", "children"), Output("upload_error", "children")],
+    [Output("uploaded_filenames", "children")],
     [Input("upload-data", "filename"), Input("upload-data", "contents")],
     prevent_initial_call=True,
-    on_error=_exception_writeUploadedFiles,
+    on_error=_exception_uploadFiles,
 )
-def writeUploadedFiles(aFileNames: list[str], aFileContents: list[str]) -> tuple:
+def uploadFiles(aFileNames: list[str], aFileContents: list[str]) -> list:
 
     rval = []
 
     if aFileNames is not None and aFileContents is not None:
 
-        # upload the file data
         uid = flask.session["username"]
         eid = flask.session["eid"]
+
         for fileName, fileContents in zip(aFileNames, aFileContents, strict=True):
 
-            # validate the group/experiment/filename tuple
-            cb = wsexec.Query("upload_file", [uid, eid, fileName, fileContents])
+            # upload the file data
+            cb = wsexec.Query("load_file", [uid, eid, fileName, fileContents])
 
-            # get uploaded file status
+            # show uploaded file size
             rval += [html.Li(f"Uploaded {fileName}: ({cb} bytes)")]
 
     # let Dash inject the results into the HTML document
-    return (rval, "(no error)")
+    dash.set_props("load_error", dict(children="(no error)"))
+    return rval
+
+
+def _exception_zapFile(ex: Exception) -> None:
+    # the return value maps to the callback Output(s)
+    ###return [html.Li("(error)")], str(ex)
+
+    # convert embedded newline markers in the Exception string to HTML markup
+    aLines = str(ex).split("\n")
+    aText = [html.P(children=s) for s in aLines]
+
+    # return error info to the dedicated HTML DIV
+    dash.set_props("unload_error", dict(children=aText))
+    return None
+
+
+# callback: file unload
+@callback(
+    [Output("zapped_filename", "children")],
+    [Input("btn_zapTiny", "n_clicks")],
+    prevent_initial_call=True,
+    on_error=_exception_zapFile,
+)
+def zapFile(n_clicks: int) -> list:
+
+    uid = flask.session["username"]
+    eid = flask.session["eid"]
+
+    # unload the file data and zap the file
+    wsexec.Query("unload_file", [uid, eid, "tiny.csv"])
+
+    # let Dash update the HTML document
+    dash.set_props("unload_error", dict(children="(no error)"))
+    return [f"Zapped tiny.csv"]
 
 
 # Dash/Flask application setup

@@ -16,9 +16,10 @@
 
 import sys
 import os
+import traceback
 import uvicorn
+import fastapi
 import wsexec
-from fastapi import FastAPI
 import global_vars as g
 
 
@@ -61,9 +62,9 @@ else:
 # instantiate FastAPI
 print(f"wantDeveloperEndpoints: {wantDeveloperEndpoints}")
 if wantDeveloperEndpoints:
-    app = FastAPI()
+    app = fastapi.FastAPI()
 else:
-    app = FastAPI(docs_url=None, redoc_url=None)
+    app = fastapi.FastAPI(docs_url=None, redoc_url=None)
 
 
 # Webservice endpoints
@@ -95,7 +96,20 @@ async def getRoot() -> wsexec.QueryResponse:
 
 @app.post("/")
 async def query(args: wsexec.QueryParams) -> wsexec.QueryResponse:
-    return wsexec.PostDatabaseQuery(args)
+
+    try:
+        return wsexec.PostDatabaseQuery(args)
+
+    except Exception as ex:
+
+        # all exceptions bubble up to here
+        aTrace = traceback.format_exception(ex)
+
+        # try to make the trace a bit more readable
+        msg = f"{aTrace[-1]}\\n{aTrace[-2:-1]}"
+
+        # return HTTP 422 Unprocessable Content
+        raise fastapi.HTTPException(status_code=422, detail=msg)
 
 
 # uvicorn will not load this app correctly unless the script ends with the

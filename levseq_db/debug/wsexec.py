@@ -55,38 +55,36 @@ def Query(verb: str, params: list[Scalar]) -> QueryResponse:
     # resp = requests.post(gv.lswsurl, pkg.to_json())
     resp = requests.post(gv.lswsurl, json=pkg)
     if not resp.ok:
-        j = resp.json()
-        raise ValueError(j["detail"])
 
-    # cr = json.loads(resp.text)
-    cr = resp.json()
-    ##    return cr["columns"], cr["rows"]
+        msg = f"LevSeq webservice response: {resp.status_code} {resp.reason}"
+        if resp.text != "null":
+            j = resp.json()
+            msg += f": \n{j["detail"]}"
+
+        raise ValueError(msg)
 
     # extract the verb prefix:
     #  ^     start at the beginning of the string
     #  \w+?  one or more alphanumeric characters, non-greedy capture
     #  _     followed by underscore
     m = re.match(r"^(\w+?)_", verb)
-
     if m != None:
 
         # return according to the prefix
-        try:
-            match m[1]:
-                case "get":
-                    return cr["columns"], cr["rows"]
+        match m[1]:
+            case "get":
+                cr = resp.json()
+                return cr["columns"], cr["rows"]
 
-                case "do" | "save":
-                    return None
+            case "do" | "save" | "unload":
+                return None
 
-                case "is" | "peek" | "upload":
-                    return cr["details"]
+            case "is" | "peek" | "load":
+                cr = resp.json()
+                return cr["details"]
 
-                case _:
-                    pass
-
-        except Exception as ex:
-            raise
+            case _:
+                pass
 
     # at this point the prefix is invalid
     raise ValueError(f"invalid request verb '{verb}'")

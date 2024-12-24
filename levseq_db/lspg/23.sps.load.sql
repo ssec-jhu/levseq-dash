@@ -3,17 +3,20 @@
 
    Notes:
     We leave the uploaded CSV, PDB, and CIF files intact in the filesystem.
-     There's no good reason to complicate things since their contents will not
-     be used in relational operations (they're just blobs), and performance
-     (i.e., delivering them on demand) is best this way.
-	 
-	 See: https://www.cybertec-postgresql.com/en/binary-data-performance-in-postgresql/)
+     There's no good reason to load them as blobs into the database since
+     their contents will not be used in relational operations.
+
+     In addition, performance (i.e., delivering them on demand) should be
+     better if we keep the files in the filesystem:
+
+     See: https://www.cybertec-postgresql.com/en/binary-data-performance-in-postgresql/)
 */
 
-/* function v1.get_upload_dirpath */
-drop function if exists v1.get_upload_dirpath(int,int,text);
 
-create or replace function v1.get_upload_dirpath
+/* function v1.get_load_dirpath */
+drop function if exists v1.get_load_dirpath(int,int,text);
+
+create or replace function v1.get_load_dirpath
 ( in _uid int,
   in _eid int,
   in _filename text )
@@ -65,146 +68,33 @@ begin
 
     end if;
 
-    -- return the slash-terminated directory path
-	return dirpath;
-
-end;
-$body$;
-/*** test
-select v1.get_upload_dirpath( 1, 1, 'tiny.csv' );
-***/
-
-/* procedure v1.load_csv_file
-
-   The call to copy ... from requires either superuser or
-    pg_read_server_files permission.
-*/
-drop procedure if exists v1.load_csv_file(text);
-
-create or replace procedure v1.load_csv_file( in _filespec text )
-language plpgsql
-as $body$
-
-declare
-    execsql  text = 'copy _rawcsv from '
-                    || quote_literal(_filespec)
-                    || ' with (format csv, header match)';
-
-begin
-    /* load csv into a temporary table */
-    create temporary table _rawcsv
-    (
-      "id"                        text             not null,
-      barcode_plate               integer          not null,
-      cas_number                  text             not null,
-      plate                       text             not null,
-      well                        text             not null,
-      alignment_count             smallint         not null,
-      nucleotide_mutation         text             null,
-      amino_acid_substitutions    text             null,
-      alignment_probability       double precision null,
-      average_mutation_frequency  double precision null,
-      p_value                     double precision null,
-      p_adj_value                 double precision null,
-      nt_sequence                 text             null,
-      aa_sequence                 text             null,
-      x_coordinate                double precision null,
-      y_coordinate                double precision null,
-      fitness_value               double precision null                
-    );
-
-    execute execsql;
-
-    -- TODO: spread the data to the tables
-	-- TODO: zap the temporary table
-	drop table _rawcsv;
-
-end;
-$body$;
-/*** test
-***/
-
-/* function v1.load_file
-
-   The call to pg_stat_file requires either superuser or
-    pg_read_server_files permission.
-*/
-drop function if exists v1.load_file(int,int,text);
-
-create or replace function v1.load_file
-( in _uid int,
-  in _eid int,
-  in _filespec text )
-returns int
-language plpgsql
-as $body$
-
-declare
-    cb_file  int;
-    grp      int;
-    grpname  text;
-    expname  text;
-	filename text;
-	m        text[];
-
-begin
-
-    -- get the LevSeq user's group ID and name
-    select t1.pkey, t1.groupname into grp, grpname
-      from v1.users t0
-	  join v1.usergroups t1 on t1.pkey = t0.gid
-     where t0.pkey = _uid;
-
-    -- get the specified experiment name
-    select t0.experiment_name into expname
-      from v1.experiments t0
-     where t0.pkey = _eid;
-
-    -- ensure that the specified file exists and is not empty
-	select "size" into cb_file from pg_stat_file(_filespec, true);
-	if coalesce(cb_file, 0) = 0
+	-- conditionally verify that the group/experiment/extension tuple is unique
+	if right(_filename,4) = '.csv'
 	then
-        m = regexp_split_to_array( _filespec, '/');
-        filename = m[cardinality(m)];
-        raise exception 'File % missing or empty (group=%, experiment=%)',
-		                filename, grpname, expname;
+        if exists (select *
+                     from v1.data_files t0
+                    where t0.gid = grp
+                      and t0.eid = _eid
+                      and right(filespec,4) = '.csv')
+        then
+            -- the specified file has already been uploaded
+            select t0.experiment_name into expname
+              from v1.experiments t0
+             where t0.pkey = _eid;
+		  
+            raise exception 'Experiment data in % has already been loaded for group=%, experiment=%',
+		                    _filename, grpname, expname;
+        end if;
     end if;
 
-    -- conditionally extract data from the uploaded file
-    if right(_filespec,4) = '.csv'
-	then
-	    call v1.load_csv_file( _filespec );
-	end if;
-
-	-- record successful upload
-	insert into v1.data_files( gid, eid, filespec, dt_upload, uid, filesize )
-	     values ( grp, _eid, _filespec, now(), _uid, cb_file );
-
-    -- return the number of bytes in the file
-	return cb_file;
+    -- return the slash-terminated directory path
+    return dirpath;
 
 end;
 $body$;
-
-GRANT { EXECUTE | ALL [ PRIVILEGES ] }
-    ON { { FUNCTION | PROCEDURE | ROUTINE } routine_name [ ( [ [ argmode ] [ arg_name ] arg_type [, ...] ] ) ] [, ...]
-         | ALL { FUNCTIONS | PROCEDURES | ROUTINES } IN SCHEMA schema_name [, ...] }
-    TO role_specification [, ...] [ WITH GRANT OPTION ]
-    [ GRANTED BY role_specification ]
-
 /*** test
-drop table _rawcsv;
-select v1.load_file( 1, 1, '/mnt/Data/ssec-devuser/uploads/G00001/E00001/tiny.csv' );
-select * from _rawcsv;
-
-select count(*) from _rawcsv;
-select count(*) as n, nt_sequence, count(*)
-  from _rawcsv
-group by nt_sequence;
-
-select * from v1.data_files
+select v1.get_load_dirpath( 5, 1, 'tiny.csv' );
 ***/
-
 
 /* function is_valid_cas */
 drop function if exists v1.is_valid_cas(text);
@@ -252,6 +142,133 @@ select v1.is_valid_cas( '345905-97-7'::varchar );  -- ok:
 select v1.is_valid_cas( '3459O5-97-7'::varchar );  -- fail: O, not zero
 select v1.is_valid_cas( '345905-97-6'::varchar );  -- fail: checksum
 ***/
+
+/* procedure v1.load_experiment_data
+
+   The call to copy ... from requires either superuser or
+    pg_read_server_files permission.
+*/
+drop procedure if exists v1.load_experiment_data(text);
+
+create or replace procedure v1.load_experiment_data( in _filespec text )
+language plpgsql
+as $body$
+
+declare
+    execsql  text = 'copy _rawcsv from '
+                    || quote_literal(_filespec)
+                    || ' with (format csv, header match)';
+
+begin
+    /* load csv into a temporary table */
+    create temporary table _rawcsv
+    ( "id"                        text             not null,
+      barcode_plate               integer          not null,
+      cas_number                  text             not null,
+      plate                       text             not null,
+      well                        text             not null,
+      alignment_count             smallint         not null,
+      nucleotide_mutation         text             null,
+      amino_acid_substitutions    text             null,
+      alignment_probability       double precision null,
+      average_mutation_frequency  double precision null,
+      p_value                     double precision null,
+      p_adj_value                 double precision null,
+      nt_sequence                 text             null,
+      aa_sequence                 text             null,
+      x_coordinate                double precision null,
+      y_coordinate                double precision null,
+      fitness_value               double precision null );
+
+    execute execsql;
+
+    -- TODO: spread the data to the tables
+
+
+    -- TODO: zap the temporary table
+    drop table _rawcsv;
+
+end;
+$body$;
+/*** test
+***/
+
+/* function v1.load_file
+
+   The call to pg_stat_file requires either superuser or
+    pg_read_server_files permission.
+*/
+drop function if exists v1.load_file(int,int,text);
+
+create or replace function v1.load_file
+( in _uid int,
+  in _eid int,
+  in _filespec text )
+returns int
+language plpgsql
+as $body$
+
+declare
+    cb_file  int;
+    grp      int;
+    grpname  text;
+    expname  text;
+	filename text;
+	m        text[];
+
+begin
+
+    -- get the LevSeq user's group ID and name
+    select t1.pkey, t1.groupname into grp, grpname
+      from v1.users t0
+	  join v1.usergroups t1 on t1.pkey = t0.gid
+     where t0.pkey = _uid;
+
+    -- get the specified experiment name
+    select t0.experiment_name into expname
+      from v1.experiments t0
+     where t0.pkey = _eid;
+
+    -- ensure that the specified file exists and is not empty
+    select "size" into cb_file from pg_stat_file(_filespec, true);
+    if coalesce(cb_file, 0) = 0
+    then
+        m = regexp_split_to_array( _filespec, '/');
+        filename = m[cardinality(m)];
+        raise exception 'File % missing or empty (group=%, experiment=%)',
+                        filename, grpname, expname;
+    end if;
+
+    -- conditionally extract data from the uploaded file
+    if right(_filespec,4) = '.csv'
+	then
+	    call v1.load_experiment_data( _filespec );
+        end if;
+
+        -- record successful upload
+        insert into v1.data_files( gid, eid, filespec, dt_upload, uid, filesize )
+            values ( grp, _eid, _filespec, now(), _uid, cb_file );
+
+    -- return the number of bytes in the file
+    return cb_file;
+
+end;
+$body$;
+/*** test
+drop table _rawcsv;
+select v1.load_file( 1, 1, '/mnt/Data/ssec-devuser/uploads/G00001/E00001/tiny.csv' );
+select * from _rawcsv;
+
+select count(*) from _rawcsv;
+select count(*) as n, nt_sequence, count(*)
+  from _rawcsv
+group by nt_sequence;
+
+truncate table v1.data_files;
+select * from v1.data_files;
+***/
+
+
 
 
 
@@ -619,105 +636,6 @@ select t0.pkey, t1.username, dt, t2.task, t3.status, t0.details
  order by pkey asc;
 ***/
 
-
-
-
-/* procedure load_csv_file */
-drop procedure if exists v1.load_csv_file(int,varchar);
-
-create or replace procedure v1.load_csv_file( in _uid int, in _expt int, in _filespec varchar(320) ) 
-language plpgsql
-as $body$
-
-declare
-    fileinfo varchar(128) = pg_stat_file(_filespec, true);  -- (requires su permission)
-    execsql varchar(360) = 'copy _rawcsv from '
-                           || quote_literal(_filespec)
-                           || ' with (format csv, header match)';
-
-begin
-	--raise notice 'Value: %', fileinfo;
-    --raise notice 'Value: %', execsql;
-
-    if fileinfo is null
-    then
-	
-        -- load log: file upload failed
-	insert into v1.load_log( uid, task, status, details)
-        select _uid, t1.pkey, t2.pkey, _filespec
-          from v1.load_tasks t1
-          join v1.load_states t2 on t2.status = 'failed'
-         where t1.task = 'upload';
-
-		 return;
-
-    end if;
-
-    /* at this point we have a file to load */
-	
-    -- load log: file upload completed
-    insert into v1.load_log( uid, task, status, details)
-    select _uid, t1.pkey, t2.pkey, _filespec
-      from v1.load_tasks t1
-      join v1.load_states t2 on t2.status = 'completed'
-     where t1.task = 'upload';
-
-	/* load csv into a temporary table */
-    create temporary table _rawcsv
-    (
-      "id"                        varchar(32)      not null,
-      barcode_plate               integer          not null,
-      cas_number                  varchar(12)      not null,
-      plate                       varchar(32)      not null,
-      well                        varchar(4)       not null,
-      alignment_count             double precision not null,
-      nucleotide_mutation         varchar(512)     null,
-      amino_acid_substitutions    varchar(64)      null,
-      alignment_probability       double precision null ,
-      average_mutation_frequency  double precision null,
-      p_value                     double precision null,
-      p_adj_value                 double precision null,
-      nt_sequence                 varchar(1024)    null,
-      aa_sequence                 varchar(512)     null,
-      x_coordinate                double precision null,
-      y_coordinate                double precision null,
-      fitness_value               double precision null                
-    );
-
-    execute execsql;
-
-    /* clean up */
-    drop table _rawcsv;
-
-    -- load log: file upload completed; the regex replaces everything before the
-	--  rightmost forward slash with an empty string, which leaves only the filename
-	insert into v1.load_log( uid, task, status, details)
-	select _uid, t1.pkey, t2.pkey,
-	       regexp_replace( _filespec, '.*/', '')
-      from v1.load_tasks t1
-	  join v1.load_states t2 on t2.status = 'completed'
-	 where t1.task = 'load';
-
-
-end;
-
-$body$;
-/*** test
-select pg_stat_file('/mnt/Data/ssec-devuser/uploads/flatten_ep_processed_xy_cas.csv', true);
-
-truncate table v1.load_log;
-call v1.load_csv_file(2, '/mnt/Data/ssec-devuser/uploads/flatten_ep_processed_xy_cas.csv');
-
-
-select * from v1.load_log;
-select t0.pkey, t1.username, dt, t2.task, t3.status, t0.details
-  from v1.load_log t0
-  join v1.users t1 on t1.pkey = t0.uid
-  join v1.load_tasks t2 on t2.pkey = t0.task
-  join v1.load_states t3 on t3.pkey = t0.status
- order by pkey asc;
-  
-***/
 
 
 
