@@ -19,6 +19,7 @@ import os
 import traceback
 import uvicorn
 import fastapi
+import psycopg
 import wsexec
 import global_vars as g
 
@@ -37,9 +38,9 @@ print(f"Invoked as: {sys.argv[0]} by {g.linux_username}" )
 if sys.argv[0] != sScriptName:
 
     # We assume we are running within a debugger like VSCode, which uses a fully-qualified
-    #  file specification instead of a bare filename. If we use localhost, we can debug on
-    #  the local machine or on a remote machine via port forwarding (which VSCode knows
-    #  how to do without being told).
+    #  file specification instead of a bare filename.  In this case we use localhost so we
+    #  can debug on the local machine or on a remote machine via port forwarding (which
+    #  VSCode knows how to do without being told).
     #
     hostName = g.devHost
     tcpPort = g.devPort
@@ -47,7 +48,11 @@ if sys.argv[0] != sScriptName:
 
 else:
 
-    # We assume that a loader (i.e., uvicorn) imports this script as a module.
+    # We assume that a loader (i.e., uvicorn) imports this script as a module.  This also
+    #  occurs when this webservice is loaded by python, so we can launch the webservice by
+    #  doing
+    #
+    #   python main.py [boolean]
     #
     # YMMV if you use a web server other than uvicorn, because we haven't tested this code
     #  with anything else!
@@ -103,10 +108,16 @@ async def query(args: wsexec.QueryParams) -> wsexec.QueryResponse:
     except Exception as ex:
 
         # all exceptions bubble up to here
-        aTrace = traceback.format_exception(ex)
+        if isinstance(ex, psycopg.Error):
 
-        # try to make the trace a bit more readable
-        msg = f"{aTrace[-1]}\\n{aTrace[-2:-1]}"
+            # postgres error: transmit the exception class and error info
+            msg = ex.__repr__()
+
+        else:
+
+            # python error: transmit only the last two lines of the stack trace
+            aTrace = traceback.format_exception(ex)
+            msg = f"{aTrace[-1]}\\n{aTrace[-2:-1]}" if len(aTrace) >= 2 else str(ex)
 
         # return HTTP 422 Unprocessable Content
         raise fastapi.HTTPException(status_code=422, detail=msg)

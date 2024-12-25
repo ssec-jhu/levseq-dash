@@ -13,13 +13,12 @@
 -- drop table if exists v1.usergroups cascade; 
 create table if not exists v1.usergroups
 (
-  pkey        smallint  not null generated always as identity primary key,
-  groupname   text      not null,
-  contact     text      not null default '',
-  upload_dir  text      not null default '/mnt/Data/%s/uploads/'
+  pkey        int   not null generated always as identity primary key,
+  groupname   text  not null,
+  contact     text  not null default '',
+  upload_dir  text  not null default '/mnt/Data/%s/uploads/'
 )
 tablespace pg_default;
-grant select,insert,update,delete on v1.usergroups to lsdb;
 
 /* The SQL regex expression is:
     /      slash
@@ -53,18 +52,17 @@ update v1.usergroups set upload_dir = '/mnt/Data/%s/uploads/'
 -- drop table if exists v1.users cascade;
 create table if not exists v1.users
 (
-  pkey      int       not null generated always as identity primary key,
-  username  text      not null,
-  pwd       text      not null default '64-17-5',
-  firstname text      not null default '',
-  lastname  text      not null default '',
-  gid       smallint  not null constraint fk_users_usergroup
-                               references v1.usergroups(pkey),
-  email     text      not null default '',
-  last_ip   text      not null default ''
+  pkey      int   not null generated always as identity primary key,
+  username  text  not null,
+  pwd       text  not null default '64-17-5',
+  firstname text  not null default '',
+  lastname  text  not null default '',
+  gid       int   not null constraint fk_users_usergroup
+                           references v1.usergroups(pkey),
+  email     text  not null default '',
+  last_ip   text  not null default ''
 )
 tablespace pg_default;
-grant select,insert,update,delete on v1.users to lsdb;
 
 create unique index ix_users_username_gid
                  on v1.users

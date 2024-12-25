@@ -99,13 +99,11 @@ def LoadFile(params: dbexec.Arglist) -> int:
         # we presumably have plain text
         copyFrom = fileBytes
 
-    # free no-longer-needed memory
+    # release no-longer-needed memory
     del fileBytes
 
-    # open the output file for text write; the open() function returns an instance of io.BufferedWriter
-    filespec = f"{dirpath}{params[2]}" # type:ignore
-    
     # write the text to the output file and save the number of bytes written
+    filespec = f"{dirpath}{params[2]}" # type:ignore
     cbw = pathlib.Path(filespec).write_bytes(copyFrom)
 
     # load the file metadata (and, conditionally, the file contents) into the database
@@ -127,7 +125,7 @@ def LoadFile(params: dbexec.Arglist) -> int:
 #       args[1]: int  LevSeq group ID
 #       args[2]: str  filename
 #
-def UnloadFile(params: dbexec.Arglist) -> None:
+def UnloadFile(params: dbexec.Arglist) -> str:
 
     # query the database to validate the group/experiment/filename and obtain
     #  a filespec (i.e., a fully-qualified directory path and filename)
@@ -140,9 +138,7 @@ def UnloadFile(params: dbexec.Arglist) -> None:
     # zap the experiment directory, too, if it exists and is empty
     p = pathlib.Path(dirpath)
     if p.exists() and not any(p.iterdir()):
-        pathlib.Path(dirpath).rmdir()
+        p.rmdir()
 
     # remove file metadata from the database
-    dbexec.NonQuery("unload_file", [params[0], params[1], filespec])  # type: ignore
-
-    return None
+    return dbexec.NonQuery("unload_file", [params[0], params[1], filespec])  # type: ignore

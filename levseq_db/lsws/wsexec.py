@@ -85,7 +85,6 @@ def PostDatabaseQuery(args: QueryParams) -> QueryResponse:
     #  \w+?  one or more alphanumeric characters, non-greedy capture
     #  _     followed by underscore
     m = re.match(r"^(\w+?)_", args.verb)
-
     if m != None:
 
         # dispatch according to the prefix
@@ -95,9 +94,10 @@ def PostDatabaseQuery(args: QueryParams) -> QueryResponse:
                 return QueryResultSet(columns=c, rows=r)
 
             case "do" | "save":
-                return dbexec.NonQuery(args.verb, [param for param in args.params])
+                rval = dbexec.NonQuery(args.verb, [param for param in args.params])
+                return QueryScalar(details=rval)
 
-            case "is" | "peek":
+            case "is" | "init":
                 rval = dbexec.QueryScalar(args.verb, [param for param in args.params])
                 return QueryScalar(details=rval)
 
@@ -106,8 +106,8 @@ def PostDatabaseQuery(args: QueryParams) -> QueryResponse:
                 return QueryScalar(details=rval)
 
             case "unload":
-                fsexec.UnloadFile(args.params)
-                return None
+                rval = fsexec.UnloadFile(args.params)
+                return QueryScalar(details=rval)
 
             case _:
                 pass

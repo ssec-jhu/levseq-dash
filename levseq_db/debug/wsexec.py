@@ -12,11 +12,12 @@ type Scalar = int | float | str
 type Rowset = list[tuple]
 type Columns = list[str]
 type ResultSet = tuple[Columns, Rowset]
-type QueryResponse = ResultSet | Scalar | None
+type QueryResponse = ResultSet | Scalar
 type Arglist = list[Scalar]
 
 
 # TODO: CLEAN UP THE CODE A BIT AND WRITE AN INTELLIGENT COMMENT
+# define a class that supports json serialization of HTTP request parameters
 class QueryPackage(dict):
 
     verb: str
@@ -32,11 +33,6 @@ class QueryPackage(dict):
         self.verb = verb
         self.params = params
 
-    # def to_json(self):
-    #     return json.dumps(
-    #         self, default=lambda o: o.__dict__, sort_keys=False, indent=None
-    #     )
-
 
 # TODO: WRITE A "PING" TO THE LevSeq webservice
 # TODO: VERIFY timestamp datatype!!!!!!!
@@ -44,15 +40,9 @@ class QueryPackage(dict):
 
 # HTTP POST to the LevSeq webservice
 #
-# Return value depends on verb prefix (see below):
-#   - get:              ResultSet
-#   - do, save:         None
-#   - is, peek, upload: Scalar
-#
 def Query(verb: str, params: list[Scalar]) -> QueryResponse:
 
     pkg = QueryPackage(verb, params)
-    # resp = requests.post(gv.lswsurl, pkg.to_json())
     resp = requests.post(gv.lswsurl, json=pkg)
     if not resp.ok:
 
@@ -63,44 +53,17 @@ def Query(verb: str, params: list[Scalar]) -> QueryResponse:
 
         raise ValueError(msg)
 
-    # extract the verb prefix:
-    #  ^     start at the beginning of the string
-    #  \w+?  one or more alphanumeric characters, non-greedy capture
-    #  _     followed by underscore
+    # use the verb prefix to determine the type of the result set
     m = re.match(r"^(\w+?)_", verb)
-    if m != None:
+    if m == None:
+        raise ValueError(f"invalid request verb '{verb}'")
 
-        # return according to the prefix
-        match m[1]:
-            case "get":
-                cr = resp.json()
-                return cr["columns"], cr["rows"]
+    # deserialize the json-formatted response
+    j = resp.json()
 
-            case "do" | "save" | "unload":
-                return None
+    # "get_" queries return a ResultSet
+    if m[1] == "get":
+        return j["columns"], j["rows"]
 
-            case "is" | "peek" | "load":
-                cr = resp.json()
-                return cr["details"]
-
-            case _:
-                pass
-
-    # at this point the prefix is invalid
-    raise ValueError(f"invalid request verb '{verb}'")
-
-
-# def NonQuery(verb: str, args: Arglist = []) -> None:
-#     _doQuery(verb, args)
-#     return None
-
-
-# # execute a postgres SQL function that returns a rowset (result set)
-# def Query(verb: str, args: Arglist = []) -> ResultSet:
-#     return _doQuery(verb, args)  # type:ignore
-
-
-# # execute a postgres SQL function that returns a scalar (number or string)
-# def QueryScalar(verb: str, args: Arglist = []) -> Scalar:
-#     j = _doQuery(verb, args)
-#     return json.loads(j)  # type:ignore
+    # all other queries return a Scalar (regardless of how the LevSeq webservice handles them)
+    return j["details"]

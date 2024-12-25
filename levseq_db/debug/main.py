@@ -14,11 +14,12 @@
 
 import sys
 import os
+import re
 
 import flask
 from flask import Flask
 import dash
-from dash import Dash, dcc, html, callback, Output, Input
+from dash import Dash, dcc, html, callback, Output, Input, State
 
 # import dbexec
 import wsexec
@@ -52,7 +53,7 @@ def _initWebPage(debugDash: bool) -> None:
     layout_dbexec = [
         html.H3("dropdown select -> query database -> result set -> dash"),
         dcc.Dropdown(aUsers, "", id="user_selection"),
-        html.Ul(id="selected_user"),
+        html.Div(id="selected_user"),
     ]
 
     # interaction layout: file upload
@@ -76,7 +77,7 @@ def _initWebPage(debugDash: bool) -> None:
             multiple=True,
             accept=".csv,.cif,.pdb",
         ),
-        html.Ul(id="uploaded_filenames", children="(none yet)"),
+        html.Div(id="uploaded_filenames", children="(none yet)"),
         html.Div(id="load_error"),
     ]
 
@@ -114,6 +115,7 @@ def _initWebPage(debugDash: bool) -> None:
     prevent_initial_call=True,
 )
 def selectUser(uid) -> list:
+    print("selectUser")
 
     if flask.has_request_context():
         remoteIPaddr = str(flask.request.remote_addr)
@@ -136,59 +138,102 @@ def selectUser(uid) -> list:
     return [f"Current user ID: {uid}"]
 
 
-def _exception_uploadFiles(ex: Exception) -> None:
-    # the return value maps to the callback Output(s)
-    ###return [html.Li("(error)")], str(ex)
+def _exception_uploadFiles(ex: Exception) -> tuple:
+    print("_exception_uploadFiles")
 
     # convert embedded newline markers in the Exception string to HTML markup
-    aLines = str(ex).split("\n")
+    aLines = re.split(r"\n|\\n", str(ex))
     aText = [html.P(children=s) for s in aLines]
 
-    # return error info to the dedicated HTML DIV
+    # update the HTML <div> that displays error information
     dash.set_props("load_error", dict(children=aText))
-    return None
+
+    # the return value is bound to the associated callback Output(s)
+    return (["(error)"], [], [])
 
 
 # callback: file load
+#
+# This Dash implementation is as ugly as it could possibly be:
+#
+#  - The Upload component triggers a callback only when the contents of its "filename"
+#     and/or "contents" properties change, even if the user re-selects the same file(s)
+#     in the component interactive dialog.
+#
+#  - This means we need to reset these properties explicitly by binding them as Output
+#     in this callback implementation.
+#
+#  - But changing the properties triggers another callback! So that means we need to
+#     handle the re-entrant condition explicitly.  We do it by examining the "filename"
+#     value.
+#
+#  - Finally, in the re-entrant situation, we need to preserve the state of any other Output
+#     components.
+#
+# Apparently this horrible implementation is by design.  See, for example,
+#  https://community.plotly.com/t/upload-attributes-not-cleared-after-callback-runs/40697
+#
 @callback(
-    [Output("uploaded_filenames", "children")],
-    [Input("upload-data", "filename"), Input("upload-data", "contents")],
+    [
+        Output("uploaded_filenames", "children"),
+        Output("upload-data", "filename"),
+        Output("upload-data", "contents"),
+    ],
+    [
+        Input("upload-data", "filename"),
+        Input("upload-data", "contents"),
+    ],
+    [
+        State("uploaded_filenames", "children"),
+    ],
     prevent_initial_call=True,
     on_error=_exception_uploadFiles,
 )
-def uploadFiles(aFileNames: list[str], aFileContents: list[str]) -> list:
+def uploadFiles(aFileNames: list[str], aFileContents: list[str], aUF: list[str]) -> tuple:
+    print(f"uploadFiles: aFileNames: {aFileNames}, aUF: {aUF}")
 
-    rval = []
+    # If this callback was triggered by resetting the Upload component's "filename" and/or
+    #  "contents" properties (see below), all we need to do is ensure that the UI state
+    #  doesn't change.
+    if len(aFileNames) == 0:
+        return (aUF, [], [])
 
-    if aFileNames is not None and aFileContents is not None:
+    uid = flask.session["username"]
+    eid = flask.session["eid"]
 
-        uid = flask.session["username"]
-        eid = flask.session["eid"]
+    rval = ""
+    for fileName, fileContents in zip(aFileNames, aFileContents, strict=True):
 
-        for fileName, fileContents in zip(aFileNames, aFileContents, strict=True):
+        # upload the file data
+        cb = wsexec.Query("load_file", [uid, eid, fileName, fileContents])
 
-            # upload the file data
-            cb = wsexec.Query("load_file", [uid, eid, fileName, fileContents])
+        # show uploaded file info
+        rval += f"Uploaded {fileName}: ({cb} bytes); "
 
-            # show uploaded file size
-            rval += [html.Li(f"Uploaded {fileName}: ({cb} bytes)")]
-
-    # let Dash inject the results into the HTML document
+    # update UI state
     dash.set_props("load_error", dict(children="(no error)"))
-    return rval
+    dash.set_props("unload_error", dict(children="(no error)"))
+    dash.set_props("zapped_filename", dict(children="(none)"))
+
+    # clear the Upload component filename and contents
+    dash.set_props("upload-data", dict(filename=None, contents=None))
+
+    # update the UI state and reset the Upload component's "filename" and "contents" properties
+    return ([rval], [], [])
 
 
-def _exception_zapFile(ex: Exception) -> None:
-    # the return value maps to the callback Output(s)
-    ###return [html.Li("(error)")], str(ex)
+def _exception_zapFile(ex: Exception) -> list[str]:
+    print("_exception_zapFile")
 
     # convert embedded newline markers in the Exception string to HTML markup
-    aLines = str(ex).split("\n")
+    aLines = re.split(r"\n|\\n", str(ex))
     aText = [html.P(children=s) for s in aLines]
 
     # return error info to the dedicated HTML DIV
     dash.set_props("unload_error", dict(children=aText))
-    return None
+
+    # the return value is bound to the associated callback Output(s)
+    return [""]
 
 
 # callback: file unload
@@ -198,7 +243,8 @@ def _exception_zapFile(ex: Exception) -> None:
     prevent_initial_call=True,
     on_error=_exception_zapFile,
 )
-def zapFile(n_clicks: int) -> list:
+def zapFile(n_clicks: int) -> list[str]:
+    print("zapFile...")
 
     uid = flask.session["username"]
     eid = flask.session["eid"]
@@ -206,8 +252,11 @@ def zapFile(n_clicks: int) -> list:
     # unload the file data and zap the file
     wsexec.Query("unload_file", [uid, eid, "tiny.csv"])
 
-    # let Dash update the HTML document
+    # update UI state
+    dash.set_props("load_error", dict(children="(no error)"))
     dash.set_props("unload_error", dict(children="(no error)"))
+    dash.set_props("uploaded_filenames", dict(children=""))
+
     return [f"Zapped tiny.csv"]
 
 

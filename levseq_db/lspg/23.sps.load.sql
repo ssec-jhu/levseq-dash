@@ -12,7 +12,208 @@
      See: https://www.cybertec-postgresql.com/en/binary-data-performance-in-postgresql/)
 */
 
+/* function is_valid_cas */
+drop function if exists v1.is_valid_cas(text);
 
+create or replace function v1.is_valid_cas( in _cas text )
+returns boolean
+language plpgsql
+as $body$
+
+declare
+    ccc int;
+    is_valid boolean;	
+
+begin
+
+    -- validate CAS syntax
+	if not regexp_like(_cas, '\d{2,7}-\d\d-\d') then return 0; end if;
+
+    -- validate checksum (https://en.wikipedia.org/wiki/CAS_Registry_Number)
+	create temporary table _casx
+	( ordinal smallint not null generated always as identity (minvalue 0),
+      digit   smallint not null );
+
+    -- there is one row for each digit; the ordinals correspond to right-to-left
+	--  positions of digits in the string
+    insert into _casx(digit)
+    select cast(digit[1] as smallint)
+      from regexp_matches( reverse(_cas), '\d', 'g' ) as digit;
+
+    -- compute the checksum
+    select sum(ordinal*digit) % 10 from _casx into ccc;
+
+	-- the checksum is valid if it matches the final cas digit
+    select (digit=ccc) from _casx where ordinal = 0 into is_valid;
+
+    drop table _casx;
+
+	return is_valid;
+
+end;
+$body$;
+/*** test
+select v1.is_valid_cas( '7732-18-5' );    -- ok: water
+select v1.is_valid_cas( '64-17-5');       -- ok: ethanol
+select v1.is_valid_cas( '439-14-5');      -- ok: diazepam
+select v1.is_valid_cas( '99685-96-8');    -- ok: buckminsterfullerene
+select v1.is_valid_cas( '57-88-5');       -- ok: cholesterol
+
+select v1.is_valid_cas( '345905-97-7' );  -- ok:
+select v1.is_valid_cas( '3459O5-97-7' );  -- fail: O, not zero
+select v1.is_valid_cas( '345905-97-6' );  -- fail: checksum
+***/
+
+/* function is_valid_cas_csv */
+drop function if exists v1.is_valid_cas_csv( text );
+
+create or replace function v1.is_valid_cas_csv( _cascsv text )
+returns text
+language plpgsql
+as $body$
+
+declare
+	details text = '';
+    i smallint;
+	s text;
+
+begin
+    -- split the list of comma-separated substrate CAS numbers
+    i = 1;
+    s = trim( both ' ' from split_part(_cascsv, ',', i) );
+
+    raise notice 'i: %, s: -->%<--', i, s;
+
+    while (details = '') and (s != '')
+    loop
+        -- verify that we have a valid CAS number
+        if not v1.is_valid_cas(s)
+        then
+            details = format( 'Invalid CAS number ''%s''', s );
+        end if;
+
+        -- iterate
+        i = i + 1;
+        s = trim( both ' ' from split_part(_cascsv, ',', i) );
+    end loop;
+
+    if (details != '') and (strpos( _cascsv, ',' ) > 0)
+	then
+	    details = details || ' in ''' || _cascsv || '''';
+	end if;
+	
+    return details;
+	
+end;
+$body$;
+/*** test
+select v1.is_valid_cas_csv( '7732-18-5' );                         -- ok
+select v1.is_valid_cas_csv( '7732-18-5,64-17-5,439-14-5' );        -- ok
+select v1.is_valid_cas_csv( ' 7732-18-5 , 64-17-5 , 439-14-5 ' );  -- ok
+
+select v1.is_valid_cas_csv( '' );
+select v1.is_valid_cas_csv( '7732-18-4' );                         -- bad check digit
+select v1.is_valid_cas_csv( '7732-19-5,64-17-5');                  -- bad CAS number
+select v1.is_valid_cas_csv( '7732-18-5,641-17-5,439-14-5');        -- bad CAS number
+***/
+    
+/* function init_load
+
+   Notes:
+    This function returns a unique experiment ID.
+*/
+drop function if exists v1.init_load(int,text,timestamptz,int,int,text,text);
+
+create or replace function v1.init_load
+(
+  in _uid                int,
+  in _experiment_name    text,
+  in _dt_experiment      timestamptz,
+  in _assay              int,
+  in _mutagenesis_method int,
+  in _cas_substrate      text = '',  -- comma-separated list of CAS numbers
+  in _cas_product        text = ''   -- comma-separated list of CAS numbers
+)
+returns int
+language plpgsql
+as $body$
+
+declare
+    details text = '';
+	dt_prev timestamptz;
+	eid int;
+	
+begin
+
+    -- verify that all the required elements are non-null and not empty strings
+	_experiment_name = trim(_experiment_name);
+	if( _experiment_name = '') is not false
+	then
+        details = 'missing experiment name.';
+	end if;
+
+    if details = '' then
+        if( _dt_experiment is null ) then details = 'missing experiment date'; end if;
+    end if;
+
+    if details = '' then
+        if( _assay is null ) then details = 'assay method not specified'; end if;
+    end if;
+
+    if details = '' then details = v1.is_valid_cas_csv( _cas_substrate ); end if;
+    if details = '' then details = v1.is_valid_cas_csv( _cas_product ); end if;
+
+	if exists (select *
+                 from v1.experiments t0
+                where t0.uid = _uid
+                  and t0.experiment_name = _experiment_name)
+    then
+        -- ensure that the user has not already used the specified experiment name
+	    select dt_experiment into dt_prev
+		  from v1.experiments t0
+         where t0.uid = _uid
+           and t0.experiment_name = _experiment_name;
+		   
+        details = format( '''%s'' identifies a previous experiment dated %s' ),
+                          _experiment_name, to_char(dt_prev, 'DD-Mon-YYYY');
+    end if;
+
+    -- throw an exception if anything failed validation
+    if details != ''
+	then
+        raise exception 'cannot initialize experiment metadata: %', details;
+    end if;
+
+    -- get a new primary key for the v1.experiments table
+    eid = nextval( 'v1.experiments_pkey_seq' );
+
+    -- add the experiment metadata to the "pending" table
+	insert into v1.experiments_pending( eid, uid, experiment_name,
+                                        assay, mutagenesis_method, dt_experiment,
+										 cas_substrate, cas_product )
+    values( eid, _uid, _experiment_name,
+            _assay, _mutagenesis_method, _dt_experiment,
+            _cas_substrate, _cas_product );
+
+    -- return the pending experiment ID
+    return eid;
+
+end;
+$body$;
+/*** test
+select * from v1.users;
+select v1.init_load( 5, 'an experiment', '2024-12-24', 8, 1, '7732-18-5', '64-17-5,439-14-5' );
+select * from v1.experiments_pending;
+
+select nextval( 'v1.experiments_pkey_seq' );					
+select * from v1.experiments;
+insert into v1.experiments (uid, experiment_name, assay, mutagenesis_method, dt_experiment)
+     values (5, 'whatever', 20, 2, '2020-12-20' );
+insert into v1.experiments overriding system value values (3, now(), 'bla', 2, 1 );
+***/
+
+
+select now())
 /* function v1.get_load_dirpath */
 drop function if exists v1.get_load_dirpath(int,int,text);
 
@@ -96,71 +297,38 @@ $body$;
 select v1.get_load_dirpath( 5, 1, 'tiny.csv' );
 ***/
 
-/* function is_valid_cas */
-drop function if exists v1.is_valid_cas(text);
-
-create or replace function v1.is_valid_cas( in _cas text )
-returns smallint
-language plpgsql
-as $body$
-
-declare
-    ccc int;
-    is_valid smallint;	
-
-begin
-
-    -- validate CAS syntax
-	if not regexp_like(_cas, '\d{2,7}-\d\d-\d') then return 0; end if;
-
-    -- validate checksum (https://en.wikipedia.org/wiki/CAS_Registry_Number)
-	create temporary table _casx
-	( ordinal smallint not null generated always as identity (minvalue 0),
-      digit   smallint not null );
-
-    insert into _casx(digit)
-    select cast(digit[1] as smallint)
-      from regexp_matches( reverse(_cas), '\d', 'g' ) as digit;
-
-    select sum(ordinal*digit) % 10 from _casx into ccc;
-    select digit-ccc from _casx where ordinal = 0 into is_valid;
-	is_valid = 1 - abs(sign(is_valid));
-
-    drop table _casx;
-
-	return is_valid;
-
-end;
-$body$;
-/*** test
-select v1.is_valid_cas( '7732-18-5'::varchar );    -- ok: water
-select v1.is_valid_cas( '64-17-5'::varchar);       -- ok: ethanol
-select v1.is_valid_cas( '439-14-5'::varchar);      -- ok: diazepam
-select v1.is_valid_cas( '99685-96-8'::varchar);    -- ok: buckminsterfullerene
-
-select v1.is_valid_cas( '345905-97-7'::varchar );  -- ok:
-select v1.is_valid_cas( '3459O5-97-7'::varchar );  -- fail: O, not zero
-select v1.is_valid_cas( '345905-97-6'::varchar );  -- fail: checksum
-***/
-
 /* procedure v1.load_experiment_data
 
    The call to copy ... from requires either superuser or
     pg_read_server_files permission.
 */
-drop procedure if exists v1.load_experiment_data(text);
+drop procedure if exists v1.load_experiment_data(int,text);
 
-create or replace procedure v1.load_experiment_data( in _filespec text )
+create or replace procedure v1.load_experiment_data( in _eid int, in _filespec text )
 language plpgsql
 as $body$
 
 declare
+    x int;
     execsql  text = 'copy _rawcsv from '
                     || quote_literal(_filespec)
                     || ' with (format csv, header match)';
 
 begin
-    /* load csv into a temporary table */
+
+    -- validate the experiment ID against the filespec
+    select cast((regexp_match( _filespec, '/E(\d+)/') )[1] as int) into x;
+	if x != _eid then
+        raise exception 'inconsistent file specification ''%'' for experiment ID %',
+                        _filespec, _eid;
+    end if;
+
+    -- ensure that we still have metadata for the specified experiment ID
+	if not exists (select * from v1.experiments_pending where eid = _eid) then
+        raise exception 'missing metadata for experiment ID %', _eid;
+    end if;
+
+    -- load csv into a temporary table
     create temporary table _rawcsv
     ( "id"                        text             not null,
       barcode_plate               integer          not null,
@@ -180,17 +348,25 @@ begin
       y_coordinate                double precision null,
       fitness_value               double precision null );
 
-    execute execsql;
-
-    -- TODO: spread the data to the tables
+--    execute execsql;
 
 
-    -- TODO: zap the temporary table
+
+
+
+
+
+    -- zap the temporary table
     drop table _rawcsv;
+
+    -- zap the metadata in the "pending" table
+	delete from v1.experiments_pending
+     where eid = _eid;
 
 end;
 $body$;
 /*** test
+call v1.load_experiment_data( 2, '/mnt/Data/lsdb/uploads/G00001/E12345/tiny.csv');
 ***/
 
 /* function v1.load_file
@@ -390,94 +566,6 @@ where option can be one of:
 
 
 
-/* function init_load
-
-   Notes:
-    This function returns a
-*/
-drop function if exists v1.init_load(int,timestamptz,varchar,varchar,varchar,int,timestamptz);
-
-create or replace function v1.init_load(
-    in _uid                int,
-	in _experiment_name    varchar(128) = '',
-    in _dt                 timestamptz = now(),
-    in _cas_substrate      varchar(128) = '',  -- comma-separated list of CAS numbers
-    in _cas_product        varchar(128) = '',  -- comma-separated list of CAS numbers
-    in _assay              varchar(128) = '',
-    in _mutagenesis_method int = 0,
-    in _dt_experiment      timestamptz = null,
-	in _csvfile            bytea,
-	in _pdbfile            bytea = null,
-	in _ciffile            bytea = null
-)
-returns table ( pkey      int,
-                esn       char(6),
-                task      varchar(32),
-                status    varchar(32),
-                details   varchar(128)
-              )
-language plpgsql
-as $body$
-
-declare
-    ok bool = True;
-    eid int = -1;
-	msg varchar(128) = '';
-    i smallint;
-    s varchar(128);
-
-begin
-
-    -- verify that the user has specified an experiment name
-	if( trim(_experiment_name) = '') is not false
-	then
-	    details = 'You must specify an experiment name.';
-	    ok = False;
-	end if;
-
-    if ok
-	then
-        -- split the list of substrate CAS numbers
-        i = 1;
-        s = trim( both ' ' from split_part(_cas_substrate, ',', i) );
-
-    raise notice 'i: %, s: -->%<--', i, s;
-
-        while s != ''
-		loop
-            -- verify that we have a valid CAS number
-            if not v1.is_valid_cas(s)
-		    then
-			    details = format('Invalid CAS number: %s', s);
-				ok = false;
-			end if;
-		end loop;		    
-
-        -- iterate
-        i = i + 1;
-        s = trim( both ' ' from split_part(_cas_substrate, ',', i) );
-    end loop;
-
-end;
-
-$body$;
-/*** test
-select * from v1.init_load( 1, now(),
-	'7732-18-5'::varchar,
-    '7732-18-5,345905-97-7'::varchar,
-	'some assay name'::varchar,
-	1, now() );
-***/
-
-	
-    in _uid int,
-    in _dt timestamptz,
-    in _cas_substrate varchar(130),   -- comma-separated list of up to 10 CAS numbers
-    in _cas_product varchar(130),     -- comma-separated list of up to 10 CAS numbers
-    in _assay varchar(128),
-    in _mutagenesis_method smallint,
-    in _dt_experiment timestamptz
-)
 
 
 

@@ -58,11 +58,11 @@ def _extractColumnNames(dsc: list[psycopg.Column]) -> Columns:
     return [c[0] for c in dsc]
 
 
-# execute a postgres SQL stored procedure
-def _fnExecuteNonQuery(cur: psycopg.Cursor, verb: str, args: Arglist) -> None:
+# execute a postgres SQL stored procedure and return "Ok"
+def _fnExecuteNonQuery(cur: psycopg.Cursor, verb: str, args: Arglist) -> Scalar:
     cmd = _buildSqlCmd("call", verb, args)
     cur.execute(cmd, args)  # execute and wait for completion
-    return None
+    return "Ok"
 
 
 # execute a postgres SQL function and return a rowset (result set)
@@ -89,7 +89,7 @@ def _fnExecuteScalar(cur: psycopg.Cursor, verb: str, args: Arglist) -> Scalar:
 #  Call for scalar result:   rval = dbexec.QueryScalar( 'get_upload_status', 'abc123.csv' )
 #
 # fmt:off
-def _doQuery(fn: typing.Callable, verb: str, args: Arglist) -> ResultSet | Scalar | None:
+def _doQuery(fn: typing.Callable, verb: str, args: Arglist) -> ResultSet | Scalar:
 
     # open a database connection; we don't bother with connection pooling for
     #  this lightweight, low-usage application
@@ -110,9 +110,8 @@ def _doQuery(fn: typing.Callable, verb: str, args: Arglist) -> ResultSet | Scala
 
 
 # execute a postgres SQL stored procedure that does not return a rowset (result set)
-def NonQuery(verb: str, args: Arglist = None) -> None:
-    _doQuery(_fnExecuteNonQuery, verb, args)
-    return None
+def NonQuery(verb: str, args: Arglist = None) -> Scalar:
+    return _doQuery(_fnExecuteNonQuery, verb, args)  # type:ignore
 
 
 # execute a postgres SQL function that returns a rowset (result set)
