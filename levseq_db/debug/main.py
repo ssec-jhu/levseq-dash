@@ -15,6 +15,7 @@
 import sys
 import os
 import re
+import datetime
 
 import flask
 from flask import Flask
@@ -38,22 +39,77 @@ def _initWebPage(debugDash: bool) -> None:
 
     app.title = f"{gv.web_title}{' (DEBUG)' if debugDash else ''}"
 
-    # the database query returns a list of tuples, each of which contains one country name
+    # dropdown list contents
     cols, rows = wsexec.Query("get_usernames", [])  # type:ignore
-
-    # build a KVP list of dropdown list items
-
-    # TODO: USE COLUMN NAMES TO INDEX THE ROWS!
     iv = cols.index("uid")
     iu = cols.index("username")
     ig = cols.index("groupname")
     aUsers = [{"value": r[iv], "label": f"{r[iu]} ({r[ig]})"} for r in rows]
 
+    cols, rows = wsexec.Query("get_assays", [])  # type:ignore
+    aAssays = [{"value": r[0], "label": r[1]} for r in rows]
+
+    cols, rows = wsexec.Query("get_mutagenesis_methods", [])  # type:ignore
+    aMutagenesisMethods = [{"value": r[0], "label": r[1]} for r in rows]
+
     # interaction layout: user ID (dropdown list)
     layout_dbexec = [
         html.H3("dropdown select -> query database -> result set -> dash"),
-        dcc.Dropdown(aUsers, "", id="user_selection"),
+        dcc.Dropdown(aUsers, value=5, id="user_selection"),
         html.Div(id="selected_user"),
+    ]
+
+    # interaction layout: experiment metadata
+    # fmt:off
+    layout_ui_experiment_name = [
+        html.Label("experiment name:", htmlFor="input_experiment_name"),
+        dcc.Input(id="input_experiment_name", type="text", value="expt1", style={"width": "128px"}),
+    ]
+    layout_ui_experiment_date = [
+        html.Label("experiment date:", htmlFor="input_experiment_date"),
+        dcc.DatePickerSingle(
+            id="input_experiment_date",
+            min_date_allowed=datetime.date(2020, 1, 1),
+            max_date_allowed=datetime.datetime.now(),
+            initial_visible_month=datetime.datetime.today(),
+            date=datetime.datetime.today(),
+            style={"height":"8px"}
+    ),
+    ]
+    layout_ui_cas_substrate = [
+        html.Label("CAS (substrate):", htmlFor="input_cascsv_substrate"),
+        dcc.Input(id="input_cascsv_substrate", type="text", value="345905-97-7", style={"width": "160px"}),
+    ]
+    layout_ui_cas_product = [
+        html.Label("CAS (product):", htmlFor="input_cascsv_product"),
+        dcc.Input(id="input_cascsv_product", type="text", value="395683-37-1", style={"width": "160px"}),
+    ]
+    layout_ui_assay = [
+        html.Label("assay technique:", htmlFor="input_assay"),
+        dcc.Dropdown(aAssays, value=8, id="dropdown_assay"),
+    ]
+    layout_ui_mutagenesis_method = [
+        html.Label("mutagenesis method:", htmlFor="dropdown_mm"),
+        dcc.Dropdown(aMutagenesisMethods, value=2, id="dropdown_mm"),
+    ]
+    layout_ui_experiment_id = [
+        html.Label("experiment ID:", htmlFor="div_eid"),
+        html.Div(id="div_eid", children="(none yet)", style={"width":"128px","borderStyle":"solid","borderWidth":"1px","borderColor":"green"}),
+        ##html.Div(id="div_eid_error", children="(no error)", style={"width":"100%","borderStyle":"solid","borderWidth":"1px","borderColor":"red"}),
+        dcc.Textarea(id="div_eid_error"),
+    ]
+    # fmt:on
+
+    layout_user_input = [
+        html.H3("experiment metadata -> database server -> scalar (experiment ID)"),
+        html.Div(id="div_experiment_name", children=layout_ui_experiment_name),
+        html.Div(id="div_experiment_date", children=layout_ui_experiment_date),
+        html.Div(id="div_cas_substrate", children=layout_ui_cas_substrate),
+        html.Div(id="div_cas_product", children=layout_ui_cas_product),
+        html.Div(id="div_assay", children=layout_ui_assay),
+        html.Div(id="div_mutagenesis_method", children=layout_ui_mutagenesis_method),
+        html.Button("Do it", id="btn_init_load", n_clicks=0),
+        html.Div(id="div_experiment_id", children=layout_ui_experiment_id),
     ]
 
     # interaction layout: file upload
@@ -77,15 +133,16 @@ def _initWebPage(debugDash: bool) -> None:
             multiple=True,
             accept=".csv,.cif,.pdb",
         ),
-        html.Div(id="uploaded_filenames", children="(none yet)"),
-        html.Div(id="load_error"),
+        html.Div(id="div_filenames", children="(none yet)"),
+        # html.Div(id="load_error"),
+        dcc.Textarea(id="load_error"),
     ]
 
-    layout_zapTiny = [
-        html.H3("Zap tiny.csv"),
-        html.Button("Zap", id="btn_zapTiny", n_clicks=0),
-        html.Div(id="zapped_filename", children="(none)"),
-        html.Div(id="unload_error"),
+    layout_zapExperiment = [
+        html.H3("Unload experiment"),
+        html.Button("Zap!", id="btn_zap_experiment", n_clicks=0),
+        html.Div(id="unload_experiment_info", children="(none)"),
+        html.Textarea(id="unload_error"),
     ]
 
     app.layout = [
@@ -96,13 +153,18 @@ def _initWebPage(debugDash: bool) -> None:
             style={"width": "100%", "border": "solid", "border-width": "1px"},
         ),
         html.Div(
+            id="user_input_test",
+            children=layout_user_input,
+            style={"width": "100%", "border": "solid", "border-width": "1px"},
+        ),
+        html.Div(
             id="fsexec_test",
             children=layout_fsexec,
             style={"width": "100%", "border": "solid", "border-width": "1px"},
         ),
         html.Div(
-            id="zapTiny_test",
-            children=layout_zapTiny,
+            id="expt_unload_test",
+            children=layout_zapExperiment,
             style={"width": "100%", "border": "solid", "border-width": "1px"},
         ),
     ]
@@ -130,23 +192,92 @@ def selectUser(uid) -> list:
     cols, rows = wsexec.Query("get_user_info", [uid])  # type:ignore
     flask.session["groupname"] = rows[0][cols.index("groupname")]
 
-    # TODO: GET THE EXPERIMENT ID THROUGH THE UI AND A DATABASE QUERY!!!!
-    flask.session["experiment_name"] = "experiment one"
-    flask.session["eid"] = 1
-
     # return the current user name for HTML display
     return [f"Current user ID: {uid}"]
+
+
+# try to clean the specified Exception string representation
+def getExceptionText(ex: Exception) -> list[str]:
+
+    # convert embedded newline markers in the Exception string to HTML markup
+    aLines = re.split(r"\n|\\n", str(ex))
+
+    # if we have only one line of text, return the repr (which includes the python exception name)
+    if len(aLines) == 1:
+        aLines = [ex.__repr__()]
+
+    return aLines
+
+
+def _exception_getExperimentID(ex: Exception) -> list[str]:
+    print("_exception_getExperimentID")
+
+    # emit exception text
+    aText = "\n".join(getExceptionText(ex))
+    dash.set_props("div_eid_error", dict(value=aText))
+
+    # the return value is bound to the associated callback Output(s)
+    return ["(error)"]
+
+
+# callback: experiment metadata validation / get new experiment ID
+@callback(
+    [Output("div_eid", "children")],
+    [Input("btn_init_load", "n_clicks")],
+    [
+        State("input_experiment_name", "value"),
+        State("input_experiment_date", "date"),
+        State("dropdown_assay", "value"),
+        State("dropdown_mm", "value"),
+        State("input_cascsv_substrate", "value"),
+        State("input_cascsv_product", "value"),
+    ],
+    prevent_initial_call=True,
+    on_error=_exception_getExperimentID,
+)
+def getExperimentID(
+    n_clicks: int,
+    experimentName: str,
+    experimentDate: str,
+    assay: int,
+    mutagenesis_method: int,
+    cas_substrate: str,
+    cas_product: str,
+) -> list[str]:
+    print("getExperimentID...")
+
+    uid = flask.session["username"]
+
+    # validate the user-entered experiment metadata and get a experiment ID
+    eid = wsexec.Query(
+        "init_load",
+        [
+            uid,
+            experimentName,
+            experimentDate,
+            assay,
+            mutagenesis_method,
+            cas_substrate,
+            cas_product,
+        ],
+    )  # type:ignore
+
+    # update session variables
+    flask.session["experiment_name"] = experimentName
+    flask.session["eid"] = eid
+
+    # update the UI state
+    dash.set_props("div_eid_error", dict(value="(no error)"))
+
+    return [str(eid)]
 
 
 def _exception_uploadFiles(ex: Exception) -> tuple:
     print("_exception_uploadFiles")
 
-    # convert embedded newline markers in the Exception string to HTML markup
-    aLines = re.split(r"\n|\\n", str(ex))
-    aText = [html.P(children=s) for s in aLines]
-
-    # update the HTML <div> that displays error information
-    dash.set_props("load_error", dict(children=aText))
+    # emit exception text
+    aText = "\n".join(getExceptionText(ex))
+    dash.set_props("load_error", dict(value=aText))
 
     # the return value is bound to the associated callback Output(s)
     return (["(error)"], [], [])
@@ -173,9 +304,14 @@ def _exception_uploadFiles(ex: Exception) -> tuple:
 # Apparently this horrible implementation is by design.  See, for example,
 #  https://community.plotly.com/t/upload-attributes-not-cleared-after-callback-runs/40697
 #
+# This entire trap can be avoided by NOT using the Upload component to actually upload
+#  anything!  Instead, the code can be written to keep the filenames and content around
+#  until some other UI component does something with them. (Typically "pythonic" approach:
+#  a few lines of code come at the expense of megabytes of bloat.) AARGH!
+#
 @callback(
     [
-        Output("uploaded_filenames", "children"),
+        Output("div_filenames", "children"),
         Output("upload-data", "filename"),
         Output("upload-data", "contents"),
     ],
@@ -184,7 +320,7 @@ def _exception_uploadFiles(ex: Exception) -> tuple:
         Input("upload-data", "contents"),
     ],
     [
-        State("uploaded_filenames", "children"),
+        State("div_filenames", "children"),
     ],
     prevent_initial_call=True,
     on_error=_exception_uploadFiles,
@@ -212,7 +348,7 @@ def uploadFiles(aFileNames: list[str], aFileContents: list[str], aUF: list[str])
 
     # update UI state
     dash.set_props("load_error", dict(children="(no error)"))
-    dash.set_props("unload_error", dict(children="(no error)"))
+    dash.set_props("unload_error", dict(value="(no error)"))
     dash.set_props("zapped_filename", dict(children="(none)"))
 
     # clear the Upload component filename and contents
@@ -222,42 +358,45 @@ def uploadFiles(aFileNames: list[str], aFileContents: list[str], aUF: list[str])
     return ([rval], [], [])
 
 
-def _exception_zapFile(ex: Exception) -> list[str]:
-    print("_exception_zapFile")
+def _exception_unloadExperiment(ex: Exception) -> list[str]:
+    print("_exception_unloadExperiment")
 
-    # convert embedded newline markers in the Exception string to HTML markup
-    aLines = re.split(r"\n|\\n", str(ex))
-    aText = [html.P(children=s) for s in aLines]
-
-    # return error info to the dedicated HTML DIV
-    dash.set_props("unload_error", dict(children=aText))
+    # emit exception text
+    aText = "\n".join(getExceptionText(ex))
+    dash.set_props("unload_error", dict(value=aText))
 
     # the return value is bound to the associated callback Output(s)
-    return [""]
+    return ["(error)"]
 
 
-# callback: file unload
+# callback: experiment unload
 @callback(
-    [Output("zapped_filename", "children")],
-    [Input("btn_zapTiny", "n_clicks")],
+    [Output("unload_experiment_info", "children")],
+    [Input("btn_zap_experiment", "n_clicks")],
     prevent_initial_call=True,
-    on_error=_exception_zapFile,
+    on_error=_exception_unloadExperiment,
 )
-def zapFile(n_clicks: int) -> list[str]:
-    print("zapFile...")
+def unloadExperiment(n_clicks: int) -> str:
+    print("unloadExperiment...")
 
     uid = flask.session["username"]
     eid = flask.session["eid"]
 
-    # unload the file data and zap the file
-    wsexec.Query("unload_file", [uid, eid, "tiny.csv"])
+    # unload the experiment data and delete all assocated uploaded files
+    wsexec.Query("unload_experiment", [uid, eid])
 
-    # update UI state
-    dash.set_props("load_error", dict(children="(no error)"))
-    dash.set_props("unload_error", dict(children="(no error)"))
+    msg = f"Unloaded experiment ID {flask.session["eid"]} ({flask.session["experiment_name"]})"
+
+    # update UI state (maybe return as Output(), but this seems simpler)
+    dash.set_props("load_error", dict(value="(no error)"))
+    dash.set_props("unload_error", dict(value="(no error)"))
     dash.set_props("uploaded_filenames", dict(children=""))
 
-    return [f"Zapped tiny.csv"]
+    # update session state
+    flask.session["eid"] = None
+    flask.session["experiment_name"] = None
+
+    return msg
 
 
 # Dash/Flask application setup

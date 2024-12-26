@@ -2,7 +2,7 @@
 # fsexec.py
 #
 
-# There are two or more files associated with each LevSeq experiment:
+# There may be one or more files associated with each LevSeq experiment:
 #
 #  - experimental data (*.csv): 1-3MB
 #  - protein databank file (*.pdb): 100-300KB
@@ -10,6 +10,11 @@
 #
 # Since any of these three files may need to be served out to a remote client, we need
 #  to archive them somewhere:
+#
+#   - As postgres data (i.e., reconstruct a file from data in tables): hard to ensure
+#      that a reconstructed file is identical to the original.  OTOH there is nothing
+#      in the filesystem to manage or to keep synchronized with the corresponding
+#      data in the database.
 #
 #   - As postgres BLOBs: apart from initially loading the .csv data into relational
 #      tables, we have no requirement for doing relational operations on the contents
@@ -19,7 +24,7 @@
 #
 #   - As filesystem files: better performance, but a bit of a pain to organize within a
 #      linux filesystem, since we have to worry about filenames, hierarchical directory
-#      structure, and permissions.
+#      structure, and filesystem permissions for the postgres server.
 #
 # Given that we choose to archive the files in the linux filesystem, the file upload
 #  mechanism implemented here is a bit clunky:
@@ -31,9 +36,9 @@
 #    webservice.
 #
 # - Fortunately, the files to be uploaded are small enough to be delivered by a Plotly
-#    Dash Upload component as python strings, so we assume that we can then use the same
-#    implementation to upload file contents to the webservice as we use to execute
-#    database queries.
+#    Dash Upload component as python strings, so we assume that we can use that
+#    implementation to forward file contents to the webservice just as we use it to
+#    execute database queries.
 #
 # - We also assume that this webservice has access to a filesystem that the postgres
 #    server can read.  That's a reasonable assumption since we already assume that we
@@ -69,9 +74,9 @@ import dbexec
 #  database contents accordingly.
 #
 #       args[0]: int  LevSeq user ID
-#       args[1]: int  LevSeq group ID
+#       args[1]: int  experiment ID
 #       args[2]: str  filename
-#       args[3]: str  file contents        [upload only]
+#       args[3]: str  file contents
 #
 # fmt: off
 def LoadFile(params: dbexec.Arglist) -> int:
@@ -118,27 +123,35 @@ def LoadFile(params: dbexec.Arglist) -> int:
 # fmt: on
 
 
-# Remove a file from the webservice/database server filesystem and update the database
-#  contents accordingly.
+# remove all files and subdirectories
+def rmr(dir: pathlib.Path) -> int:
+
+    nFilesDeleted = 0
+
+    # iterate through the files and subdirectories in the specified directory
+    for ford in dir.iterdir():
+        if ford.is_dir():
+            nFilesDeleted += rmr(ford)  # subdirectory: recurse
+        else:
+            ford.unlink()  # file: delete
+            nFilesDeleted += 1
+
+    # at this point the specified directory is empty
+    dir.rmdir()
+
+    return nFilesDeleted
+
+
+# Remove data for the specified experiment and delete all associated uploaded files
 #
 #       args[0]: int  LevSeq user ID
-#       args[1]: int  LevSeq group ID
-#       args[2]: str  filename
+#       args[1]: int  experiment ID
 #
-def UnloadFile(params: dbexec.Arglist) -> str:
+def UnloadFile(params: dbexec.Arglist) -> int:
 
     # query the database to validate the group/experiment/filename and obtain
     #  a filespec (i.e., a fully-qualified directory path and filename)
-    dirpath = str(dbexec.QueryScalar("get_unload_dirpath", params[:3]))  # type:ignore
+    dirpath = str(dbexec.QueryScalar("get_unload_dirpath", params[:2]))  # type:ignore
 
-    # zap the specified file if it exists
-    filespec = f"{dirpath}{params[2]}"  # type:ignore
-    pathlib.Path(filespec).unlink(missing_ok=True)
-
-    # zap the experiment directory, too, if it exists and is empty
-    p = pathlib.Path(dirpath)
-    if p.exists() and not any(p.iterdir()):
-        p.rmdir()
-
-    # remove file metadata from the database
-    return dbexec.NonQuery("unload_file", [params[0], params[1], filespec])  # type: ignore
+    # zap the directory and all its contents, and return the number of deleted files
+    return rmr(pathlib.Path(dirpath))

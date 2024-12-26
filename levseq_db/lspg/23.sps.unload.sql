@@ -4,12 +4,11 @@
 
 
 /* function v1.get_unload_dirpath */
-drop function if exists v1.get_unload_dirpath(int,int,text);
+drop function if exists v1.get_unload_dirpath(int,int);
 
 create or replace function v1.get_unload_dirpath
 ( in _uid int,
-  in _eid int,
-  in _filename text )
+  in _eid int )
 returns text
 language plpgsql
 as $body$
@@ -17,9 +16,7 @@ as $body$
 declare
     grp      int;
 	dirpath  text;
-	filepath text;
 	grpname  text;
-	expname  text;
 
 begin
 
@@ -49,14 +46,15 @@ begin
 end;
 $body$;
 /*** test
-select v1.get_unload_dirpath( 5, 1, 'tiny.csv' );
+select v1.get_unload_dirpath( 5, 1 );
 ***/
 
-/* procedure v1.unload_experiment_data */
-drop procedure if exists v1.unload_experiment_data(int);
+/* procedure v1.unload_experiment */
+drop procedure if exists v1.unload_experiment(int,int);
 
-create or replace procedure v1.unload_experiment_data
-( in _eid int )
+create or replace procedure v1.unload_experiment
+( in _uid int,
+  in _eid int )
 language plpgsql
 as $body$
 
@@ -64,18 +62,31 @@ declare
 
 begin
 
-    raise notice 'TODO: procedure unload_experiment_data';
+    -- delete the specified experiment in v1.experiments as well as
+    --  all rows with foreign key references to v1.experiments(pkey)
+    delete from v1.experiments cascade
+     where pkey = _eid;
+	 
+    -- remove pending references to the specified experiment
+    delete from v1.experiments_pending
+     where eid = _eid
+       and uid = _uid;
 
 end;
 $body$;
 /*** test
-call v1.unload_experiment_data( 1 );
+select * from v1.experiments;
+select * from v1.experiment_cas;
+call v1.unload_experiment( 5, 1 );
 ***/
 
-/* procedure v1.unload_file */
+
+
+
+/* procedure v1.unload_file UNUSED */
 drop procedure if exists v1.unload_file(int,int,text);
 
-create or replace procedure v1.unload_file
+--create or replace procedure v1.unload_file
 ( in _uid int,
   in _eid int,
   in _filespec text )

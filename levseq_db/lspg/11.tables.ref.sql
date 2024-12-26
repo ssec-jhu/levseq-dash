@@ -27,19 +27,19 @@ create table if not exists v1.assays
   technique text      not null,
   units     text      not null  
 );
-insert into v1.assays(technique, units)  -- ÅΔμ°²³¹⁻
+insert into v1.assays(technique, units)  -- ·ÅΔμ°²³¹⁻
      values ('LC-MS', 'M, μg/mL, ng/mL, counts'),
 	        ('GC-MS', 'ng/mL, μg/mL, ppm'),
 			('Fluorescence spectroscopy', 'AU, RFU, μM, mM'),
 			('UV-Vis spectroscopy', 'absorbance (unitless), M, mg/mL'),
 			('ELISA', 'ng/mL, pg/mL, counts'),
 			('Western blotting', 'relative expression levels (unitless), band intensity (AU)'),
-			('SPR', 'Kd (M), ka (1/(M²S)), kd (1/s)'), -- ?????
-			('ITC', 'Kd (M), ΔH (kcal/mol), ΔS (cal/(mol°K))'),  -- ?????
-			('CD spectroscopy', 'molar ellipticity (degrees²cm²/dmol)'), -- ?????
+			('SPR', 'Kd (M), ka (1/(M·s)), kd (1/s)'),
+			('ITC', 'Kd (M), ΔH (kcal/mol), ΔS (cal/(mol·K))'),
+			('CD spectroscopy', 'molar ellipticity (degrees·cm²/dmol)'),
             ('NMR spectroscopy', 'ppm, mM, unitless ratios'),
 			('X-ray crystallography', 'Å, degrees'),
-			('Flow Cytometry', 'AU, events/μL'),   -- ??????
+			('Flow cytometry', 'AU, events/μL'),
             ('MSIA', 'ng/mL, μg/mL, counts'),
 			('MRM', 'fmol/μL, amol/μL, counts'),
 			('SILAC', 'relative abundance ratios (unitless)'),
@@ -47,20 +47,13 @@ insert into v1.assays(technique, units)  -- ÅΔμ°²³¹⁻
 			('iTRAC', 'relative abundance ratios, reporter ion intensity (counts)'),
 			('Dynamic Light Scattering (DLS)', 'particle size (nm), intensity (AU)'),
 			('Microplate readers', 'absorbance (unitless), AU, RFU, RLU'),
-			('Capillary electrophoresis', 'seconds, cm²/V²s)'),
+			('Capillary electrophoresis', 'seconds, cm²/V·s)'),
 			('Thermal shift assays', 'Tm (°C)'),
 			('FTIR', 'wavenumber (cm⁻¹)'),
 			('HPLC', 'μg/mL, mg/mL, retention time (minutes), area'),
 			('Spectrofluorometers', 'ns, AU, RFU');
 /*** test
-select * from v1.assays;
-***/
-
-			
-/*** test
 truncate table v1.assays;
-insert into v1.assays(assay)
-     values ('assay 1'), ('assay 2'), ('assay 3');
 select * from v1.assays;
 ***/
 

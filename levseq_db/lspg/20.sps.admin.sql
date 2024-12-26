@@ -82,7 +82,7 @@ create or replace function v1.get_usernames( in _gid int = null )
 returns table
 ( uid       int,
   username  text,
-  gid       smallint,
+  gid       int,
   groupname text
 )
 language plpgsql

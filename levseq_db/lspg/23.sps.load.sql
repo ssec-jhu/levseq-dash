@@ -131,8 +131,8 @@ create or replace function v1.init_load
   in _dt_experiment      timestamptz,
   in _assay              int,
   in _mutagenesis_method int,
-  in _cas_substrate      text = '',  -- comma-separated list of CAS numbers
-  in _cas_product        text = ''   -- comma-separated list of CAS numbers
+  in _cas_substrate      text,  -- comma-separated list of CAS numbers
+  in _cas_product        text   -- comma-separated list of CAS numbers
 )
 returns int
 language plpgsql
@@ -141,7 +141,7 @@ as $body$
 declare
     details text = '';
 	dt_prev timestamptz;
-	eid int;
+	new_eid int;
 	
 begin
 
@@ -185,22 +185,29 @@ begin
     end if;
 
     -- get a new primary key for the v1.experiments table
-    eid = nextval( 'v1.experiments_pkey_seq' );
+    new_eid = nextval( 'v1.experiments_pkey_seq' );
 
     -- add the experiment metadata to the "pending" table
-	insert into v1.experiments_pending( eid, uid, experiment_name,
-                                        assay, mutagenesis_method, dt_experiment,
-										 cas_substrate, cas_product )
-    values( eid, _uid, _experiment_name,
+    delete from v1.experiments_pending
+     where uid = _uid
+       and experiment_name = _experiment_name;
+	
+    insert into v1.experiments_pending
+          ( eid, uid, experiment_name,
+            assay, mutagenesis_method, dt_experiment,
+            cas_substrate, cas_product )
+    values( new_eid, _uid, _experiment_name,
             _assay, _mutagenesis_method, _dt_experiment,
             _cas_substrate, _cas_product );
 
     -- return the pending experiment ID
-    return eid;
+    return new_eid;
 
 end;
 $body$;
 /*** test
+select * from v1.experiments_pending;
+truncate table v1.experiments_pending;
 select * from v1.users;
 select v1.init_load( 5, 'an experiment', '2024-12-24', 8, 1, '7732-18-5', '64-17-5,439-14-5' );
 select * from v1.experiments_pending;
@@ -228,7 +235,8 @@ as $body$
 declare
     grp      int;
 	dirpath  text;
-	filepath text;
+	cb_file  int;
+	filespec text;
 	grpname  text;
 	expname  text;
 
@@ -255,30 +263,30 @@ begin
               || 'E' || right('0000'||_eid, 5) || '/';
 
     -- verify that the group/experiment/filename tuple is unique
-	filepath = dirpath || _filename;
-    if exists (select *
-                 from v1.data_files t0
-                where t0.filespec = filepath)
+	filespec = dirpath || _filename;
+    select "size" into cb_file from pg_stat_file(filespec, true);
+    if cb_file > 0
     then
         -- the specified file has already been uploaded
         select t0.experiment_name into expname
           from v1.experiments t0
          where t0.pkey = _eid;
-		  
-        raise exception 'Duplicate filename % for group=%, experiment=%', _filename, grpname, expname;
 
+        raise exception 'Duplicate filename % for group=%, experiment ID=% (%)',
+                        _filename, grpname, _eid, coalesce(expname, 'pending');
     end if;
 
 	-- conditionally verify that the group/experiment/extension tuple is unique
 	if right(_filename,4) = '.csv'
 	then
         if exists (select *
-                     from v1.data_files t0
-                    where t0.gid = grp
-                      and t0.eid = _eid
-                      and right(filespec,4) = '.csv')
+                     from v1.experiments t0
+                     join v1.users t1 on t1.pkey = _uid
+                    where t0.experiment_name = expname
+                      and t1.gid = grp)
         then
-            -- the specified file has already been uploaded
+            -- the specified file has already been uploaded by the user or
+			--  by another member of the user's group
             select t0.experiment_name into expname
               from v1.experiments t0
              where t0.pkey = _eid;
@@ -302,9 +310,12 @@ select v1.get_load_dirpath( 5, 1, 'tiny.csv' );
    The call to copy ... from requires either superuser or
     pg_read_server_files permission.
 */
-drop procedure if exists v1.load_experiment_data(int,text);
+drop procedure if exists v1.load_experiment_data(int,int,text);
 
-create or replace procedure v1.load_experiment_data( in _eid int, in _filespec text )
+create or replace procedure v1.load_experiment_data
+( in _uid int,
+  in _eid int,
+  in _filespec text )
 language plpgsql
 as $body$
 
@@ -315,18 +326,6 @@ declare
                     || ' with (format csv, header match)';
 
 begin
-
-    -- validate the experiment ID against the filespec
-    select cast((regexp_match( _filespec, '/E(\d+)/') )[1] as int) into x;
-	if x != _eid then
-        raise exception 'inconsistent file specification ''%'' for experiment ID %',
-                        _filespec, _eid;
-    end if;
-
-    -- ensure that we still have metadata for the specified experiment ID
-	if not exists (select * from v1.experiments_pending where eid = _eid) then
-        raise exception 'missing metadata for experiment ID %', _eid;
-    end if;
 
     -- load csv into a temporary table
     create temporary table _rawcsv
@@ -348,9 +347,11 @@ begin
       y_coordinate                double precision null,
       fitness_value               double precision null );
 
---    execute execsql;
+    execute execsql;
 
-
+    -- accumula
+	select * from v1.experiment_cas
+	select * from v1.experiments_pending
 
 
 
@@ -359,9 +360,12 @@ begin
     -- zap the temporary table
     drop table _rawcsv;
 
-    -- zap the metadata in the "pending" table
+    -- zap all previous metadata in the "pending" table for...
+	--  - the specified experiment
+	--  - any other pending uploads by the LevSeq user that are over 24 hours old
 	delete from v1.experiments_pending
-     where eid = _eid;
+     where eid = _eid
+	    or (uid = _uid and dt_load < (now() - interval '24 hours'));
 
 end;
 $body$;
@@ -385,12 +389,13 @@ language plpgsql
 as $body$
 
 declare
-    cb_file  int;
-    grp      int;
-    grpname  text;
-    expname  text;
-	filename text;
-	m        text[];
+    grp           int;
+    grpname       text;
+    expname       text;
+	filespec_eid  int;
+    cb_file       int;
+	filename      text;
+	m             text[];
 
 begin
 
@@ -405,6 +410,18 @@ begin
       from v1.experiments t0
      where t0.pkey = _eid;
 
+    -- ensure that we still have metadata for the specified experiment ID
+	if not exists (select * from v1.experiments_pending where eid = _eid) then
+        raise exception 'missing metadata for experiment ID %', _eid;
+    end if;
+
+    -- validate the experiment ID against the filespec
+    select cast((regexp_match( _filespec, '/E(\d+)/') )[1] as int) into filespec_eid;
+	if filespec_eid != _eid then
+        raise exception 'inconsistent file specification ''%'' for experiment ID %',
+                        _filespec, _eid;
+    end if;	 
+
     -- ensure that the specified file exists and is not empty
     select "size" into cb_file from pg_stat_file(_filespec, true);
     if coalesce(cb_file, 0) = 0
@@ -417,13 +434,13 @@ begin
 
     -- conditionally extract data from the uploaded file
     if right(_filespec,4) = '.csv'
-	then
-	    call v1.load_experiment_data( _filespec );
-        end if;
+    then
+        call v1.load_experiment_data( _uid, _eid, _filespec );
+    end if;
 
-        -- record successful upload
-        insert into v1.data_files( gid, eid, filespec, dt_upload, uid, filesize )
-            values ( grp, _eid, _filespec, now(), _uid, cb_file );
+---        -- record successful upload
+---        insert into v1.data_files( gid, eid, filespec, dt_upload, uid, filesize )
+---            values ( grp, _eid, _filespec, now(), _uid, cb_file );
 
     -- return the number of bytes in the file
     return cb_file;

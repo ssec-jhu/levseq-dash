@@ -7,13 +7,13 @@
 drop function if exists v1.get_mutagenesis_methods();
 
 create or replace function v1.get_mutagenesis_methods()
-returns table( pkey               smallint,
-               mutagenesis_method text )
+returns table( pkey     smallint,
+               "method" text )
 language plpgsql
 as $body$
 begin
     return query
-    select t0.pkey, "method"
+    select t0.pkey, format( '%s - %s', t0.abbreviation, t0."method" )
       from v1.mutagenesis_methods t0;
 end;
 $body$;
@@ -31,11 +31,12 @@ language plpgsql
 as $body$
 begin
     return query
-    select t0.pkey, t0.assay
+    select t0.pkey, format( '%s (%s)', t0.technique, t0.units )
       from v1.assays t0
-  order by t0.assay;
+  order by t0.pkey;
 end;
 $body$;
 /*** test
+select * from v1.assays;
 select * from v1.get_assays();
 ***/
