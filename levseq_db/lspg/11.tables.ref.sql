@@ -58,7 +58,7 @@ select * from v1.assays;
 ***/
 
 /* table v1.cas */
--- drop table if exists v1.cas
+-- drop table if exists v1.cas cascade;
 create table if not exists v1.cas
 (
   pkey    int   not null generated always as identity primary key,
@@ -68,6 +68,7 @@ create table if not exists v1.cas
 create unique index ix_cas_cas
                  on v1.cas
               using btree (cas asc)
+            include (pkey)
                with (deduplicate_items=True)
          tablespace pg_default;
 /*** test

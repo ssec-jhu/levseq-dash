@@ -55,8 +55,8 @@ def _initWebPage(debugDash: bool) -> None:
     # interaction layout: user ID (dropdown list)
     layout_dbexec = [
         html.H3("dropdown select -> query database -> result set -> dash"),
-        dcc.Dropdown(aUsers, value=5, id="user_selection"),
-        html.Div(id="selected_user"),
+        dcc.Dropdown(aUsers, value=5, id="dropdown_users"),
+        html.Div(id="div_user_info"),
     ]
 
     # interaction layout: experiment metadata
@@ -95,7 +95,6 @@ def _initWebPage(debugDash: bool) -> None:
     layout_ui_experiment_id = [
         html.Label("experiment ID:", htmlFor="div_eid"),
         html.Div(id="div_eid", children="(none yet)", style={"width":"128px","borderStyle":"solid","borderWidth":"1px","borderColor":"green"}),
-        ##html.Div(id="div_eid_error", children="(no error)", style={"width":"100%","borderStyle":"solid","borderWidth":"1px","borderColor":"red"}),
         dcc.Textarea(id="div_eid_error"),
     ]
     # fmt:on
@@ -134,7 +133,6 @@ def _initWebPage(debugDash: bool) -> None:
             accept=".csv,.cif,.pdb",
         ),
         html.Div(id="div_filenames", children="(none yet)"),
-        # html.Div(id="load_error"),
         dcc.Textarea(id="load_error"),
     ]
 
@@ -172,16 +170,20 @@ def _initWebPage(debugDash: bool) -> None:
 
 # callback: user list dropdown selection
 @callback(
-    Output("selected_user", "children"),
-    Input("user_selection", "value"),
-    prevent_initial_call=True,
+    Output("div_user_info", "children"),
+    Input("dropdown_users", "value"),
+    prevent_initial_call=False,
 )
 def selectUser(uid) -> list:
     print("selectUser")
 
+    # do nothing if the user-selection dropdown has no current value
+    if uid is None:
+        return ["Current user ID: (none)"]
+
     if flask.has_request_context():
         remoteIPaddr = str(flask.request.remote_addr)
-        flask.session["username"] = uid
+        flask.session["uid"] = uid
     else:  # (this should not happen)
         remoteIPaddr = "?.?.?.?"
 
@@ -246,13 +248,11 @@ def getExperimentID(
 ) -> list[str]:
     print("getExperimentID...")
 
-    uid = flask.session["username"]
-
     # validate the user-entered experiment metadata and get a experiment ID
     eid = wsexec.Query(
         "init_load",
         [
-            uid,
+            flask.session["uid"],
             experimentName,
             experimentDate,
             assay,
@@ -334,7 +334,7 @@ def uploadFiles(aFileNames: list[str], aFileContents: list[str], aUF: list[str])
     if len(aFileNames) == 0:
         return (aUF, [], [])
 
-    uid = flask.session["username"]
+    uid = flask.session["uid"]
     eid = flask.session["eid"]
 
     rval = ""
@@ -349,7 +349,7 @@ def uploadFiles(aFileNames: list[str], aFileContents: list[str], aUF: list[str])
     # update UI state
     dash.set_props("load_error", dict(children="(no error)"))
     dash.set_props("unload_error", dict(value="(no error)"))
-    dash.set_props("zapped_filename", dict(children="(none)"))
+    dash.set_props("unload_experiment_info", dict(children="(none)"))
 
     # clear the Upload component filename and contents
     dash.set_props("upload-data", dict(filename=None, contents=None))
@@ -379,7 +379,7 @@ def _exception_unloadExperiment(ex: Exception) -> list[str]:
 def unloadExperiment(n_clicks: int) -> str:
     print("unloadExperiment...")
 
-    uid = flask.session["username"]
+    uid = flask.session["uid"]
     eid = flask.session["eid"]
 
     # unload the experiment data and delete all assocated uploaded files

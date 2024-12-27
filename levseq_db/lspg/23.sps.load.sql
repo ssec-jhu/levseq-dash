@@ -305,6 +305,154 @@ $body$;
 select v1.get_load_dirpath( 5, 1, 'tiny.csv' );
 ***/
 
+/* procedure v1.save_experiment_cas */
+drop procedure if exists v1.save_experiment_cas(int,int);
+
+create or replace procedure v1.save_experiment_cas
+( in _uid int,
+  in _eid int )
+language plpgsql
+as $body$
+
+declare
+    bad_cas text;
+
+begin
+
+    /* verify that CAS numbers in the data match the user-specified lists */
+
+	-- get CAS numbers from user-specified metadata
+    drop table if exists _rawcas;
+    create temporary table _rawcas
+    ( cas       text not null,
+      substrate bool not null default False,
+      product   bool not null default False,
+	  n         int  not null default 0 );
+
+    insert into _rawcas (cas, substrate)
+    select unnest(regexp_matches( cas_substrate, '\d+-\d+-\d', 'g')), True
+      from v1.experiments_pending
+     where eid = _eid
+       and uid = _uid;
+
+    insert into _rawcas (cas, product)
+    select unnest(regexp_matches( cas_product, '\d+-\d+-\d', 'g')), True
+      from v1.experiments_pending
+     where eid = _eid
+       and uid = _uid;
+
+    -- get CAS numbers from CSV data
+    drop table if exists _csvcas;
+	create temporary table _csvcas
+    ( cas  text not null,
+      n    int  not null );
+
+    insert into _csvcas( cas, n )
+    select cas_number, count(*) as n
+      from _rawcsv
+     group by cas_number;
+ 
+	update _rawcas t0
+	   set n = t1.n
+      from _csvcas t1
+	 where t1.cas = t0.cas;
+
+    -- look for user-specified CAS numbers that did not appear in the data
+    select cas into bad_cas
+      from _rawcas
+     where n = 0;
+
+    if bad_cas is not null
+	then
+        raise exception 'No data for specified CAS number %', bad_cas;
+	end if;
+
+    -- look for CAS numbers in the data that were not specified by the user
+    select t0.cas into bad_cas
+      from _csvcas t0
+    except
+    select t1.cas
+      from _rawcas t1;
+ 
+	if bad_cas is not null
+	then
+		raise exception 'CAS number % is not identified as substrate or product', bad_cas;
+	end if;
+	
+    /* conditionally add CAS numbers to the reference list */
+	insert into v1.cas (cas)
+	select cas
+      from _rawcas
+     where cas not in (select cas from v1.cas);
+
+	/* save CAS numbers for the specified experiment */
+	insert into v1.experiment_cas (pkexp, pkcas, substrate, product, n)
+	select _eid, t1.pkey, t0.substrate, t0.product, t0.n
+      from _rawcas t0
+	  join v1.cas t1 on t1.cas = t0.cas
+on conflict (pkexp,pkcas) do
+    update set substrate = excluded.substrate,
+               product = excluded.product,
+               n = excluded.n;
+
+    return;
+end;
+$body$;
+/*** test
+truncate table v1.cas cascade;
+truncate table v1.experiment_cas cascade;
+select * from v1.cas;
+select * from v1.experiment_cas;
+***/
+
+/* procedure v1.save_mutations */
+drop procedure if exists v1.save_mutations(int);
+
+create or replace procedure v1.save_mutations
+( in _eid int
+)
+language plpgsql
+as $body$
+
+declare
+
+begin
+
+    -- delete any previously-loaded rows for the specified experiment
+    delete from v1.variants t0 where pkexp = _eid;
+
+    -- insert new rows
+	select cas_number, count(*) from _rawcsv group by cas_number;
+	select plate_name, count(*) from _rawcsv group by plate_name;
+	select nt_sequence, count(*) from _rawcsv group by nt_sequence;
+	select * from _rawcsv where nt_sequence not like 'ATGGC%'
+	select * from v1.parent_sequences;
+	
+    insert into v1.variants( pkexp, pkcas, pkplate,
+                             barcode_plate, well, alignment_count, parent_seqs,
+                             alignment_probability, avg_mutation_freq,
+                             p_value, p_adj_value, x_coordinate, y_coordinate )
+    select /*_eid,*/ distinct t0.plate_name, t1.pkey, t2.pkey,
+           barcode_plate, well, alignment_count, t3.pkey,
+           alignment_probability, average_mutation_frequency,
+		   case when p_value >= 1E-5 then p_value else 0.0 end case,
+		   case when p_adj_value >= 1e-5 then p_adj_value else 0.0 end case,
+		   x_coordinate, y_coordinate
+	  from _rawcsv t0
+      join v1.cas t1 on t1.cas = t0.cas_number
+	  join v1.plates t2 on t2.plate = t0.plate_name
+	  join v1.parent_sequences t3 on t3.seqnt = t0.nt_sequence
+  order by plate_name, well;
+  
+	  select avg(p_value) from _rawcsv where p_value >= 0.001
+  
+end;
+$body$;
+/*** test
+
+***/
+
+
 /* procedure v1.load_experiment_data
 
    The call to copy ... from requires either superuser or
@@ -320,16 +468,41 @@ language plpgsql
 as $body$
 
 declare
-    x int;
-    execsql  text = 'copy _rawcsv from '
+    execsql  text = 'copy _rawcsv ("id", barcode_plate, cas_number, plate, well,'
+                    || ' alignment_count, nucleotide_mutation, amino_acid_substitutions,'
+                    || ' alignment_probability, average_mutation_frequency, p_value,'					
+                    || ' p_adj_value, nt_sequence, aa_sequence, x_coordinate, y_coordinate,'
+                    || ' fitness_value)'					
+                    || ' from '
                     || quote_literal(_filespec)
                     || ' with (format csv, header match)';
-
 begin
 
-    -- load csv into a temporary table
+    /* Load csv into a temporary table.
+
+       We can extract the plate string from either of the "id" and "plate"
+        columns, which are formatted like this:
+
+            "id":    <tag>-<barcode_plate>-<well>
+            "plate": <tag>-<barcode_plate>
+
+        For example:
+            "id":            20240422-ParLQ-ep1-300-1-A1
+            "plate":         20240422-ParLQ-ep1-300-1
+            "barcode_plate": 1
+            "well":          A1
+            --->             20240422-ParLQ-ep1-300
+
+        Here we use a regex to capture the given "plate" string without
+         the trailing "barcode_plate" value.
+    */
+	drop table if exists _rawcsv;
     create temporary table _rawcsv
-    ( "id"                        text             not null,
+    ( ordinal                     int              not null generated always as identity,
+      plate_name                  text             generated always as (
+                                                    (regexp_match(plate, '([\w\W]+)-\d+$'))[1]
+                                                   ) stored,
+	  "id"                        text             not null,
       barcode_plate               integer          not null,
       cas_number                  text             not null,
       plate                       text             not null,
@@ -349,28 +522,98 @@ begin
 
     execute execsql;
 
-    -- accumula
-	select * from v1.experiment_cas
-	select * from v1.experiments_pending
+    /* add a new row to the experiments list; if a row already exists for the
+        specified experiment ID and user ID, we update the existing row */
+    insert into v1.experiments( pkey, uid, experiment_name, assay, mutagenesis_method, dt_experiment, dt_load)
+           overriding system value
+	select eid, uid, experiment_name, assay, mutagenesis_method, dt_experiment, dt_load
+      from v1.experiments_pending
+     where eid = _eid
+       and uid = _uid
+on conflict (pkey) do
+    update set experiment_name = excluded.experiment_name,
+               assay = excluded.assay,
+			   mutagenesis_method = excluded.mutagenesis_method,
+			   dt_experiment = excluded.dt_experiment,
+			   dt_load = excluded.dt_load;
 
+    /* save CAS numbers */
+    call v1.save_experiment_cas( _uid, _eid );
 
+    /* save parent sequences */
+    with cte as (select nt_sequence, aa_sequence, count(*)
+                   from _rawcsv
+                  where nucleotide_mutation like '%PARENT%'
+               group by nt_sequence, aa_sequence)
+        insert into v1.parent_sequences (seqnt, seqaa)
+		select nt_sequence, aa_sequence
+		  from cte
+   on conflict (seqnt) do nothing;
 
+    /* save plate names */
+	with cte as (select distinct plate_name
+                   from _rawcsv)
+        insert into v1.plates(plate)
+        select plate_name
+          from cte
+   on conflict (plate) do nothing;
 
+    /* save mutation data */
+	call v1.save_mutations( _eid );
 
-    -- zap the temporary table
-    drop table _rawcsv;
+	/* save mutations */
 
+--    select nucleotide_mutation from _rawcsv
+  --  select regexp_matches( 'T62G_G273A_A284G', '([ACGT]\d+[ACGT])', 'g')
+
+	
+
+	
+	
     -- zap all previous metadata in the "pending" table for...
 	--  - the specified experiment
 	--  - any other pending uploads by the LevSeq user that are over 24 hours old
-	delete from v1.experiments_pending
-     where eid = _eid
-	    or (uid = _uid and dt_load < (now() - interval '24 hours'));
+--	delete from v1.experiments_pending
+ --    where eid = _eid
+	--    or (uid = _uid and dt_load < (now() - interval '24 hours'));
 
 end;
 $body$;
 /*** test
-call v1.load_experiment_data( 2, '/mnt/Data/lsdb/uploads/G00001/E12345/tiny.csv');
+call v1.load_experiment_data( 5, 28, '/mnt/Data/lsdb/uploads/G00002/E00028/flatten_ep_processed_xy_cas.csv');
+select * from _rawcsv
+select * from _rawcas
+select * from _csvcas
+select * from v1.experiments
+select * from v1.experiments_pending
+select * from v1.parent_sequences
+select * from v1.plates
+select * from v1.variants
+
+
+
+
+update v1.experiments_pending set cas_product = '395683-37-1' where eid = 28
+
+
+select * from v1.cas
+select * from v1.experiment_cas
+
+select alignment_count, amino_acid_substitutions, count(*)
+  from _rawcsv
+ group by alignment_count, amino_acid_substitutions
+ order by alignment_count, amino_acid_substitutions
+
+select * from _rawcsv where amino_acid_substitutions = '-'
+
+ select cas_number, count(*) as n
+      from _rawcsv
+     group by cas_number;
+	 select *
+	  from _csvcas
+     where cas not in (select cas from _rawcas);
+	 select cas from _rawcas
+	 select cas from _csvcas
 ***/
 
 /* function v1.load_file
