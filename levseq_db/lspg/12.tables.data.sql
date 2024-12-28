@@ -89,17 +89,37 @@ create index ix_experiment_cas_cas
         with (deduplicate_items=True)
   tablespace pg_default;
 
+/* table v1.reference_sequences */
+-- drop table if exists v1.reference_sequences cascade;
+create table if not exists v1.reference_sequences
+( pkey   int   not null generated always as identity primary key,
+  seqnt  text  not null,
+  seqaa  text  not null
+);
+
+create unique index ix_reference_sequences_seqnt
+           on v1.reference_sequences
+        using btree (seqnt asc)
+      include (pkey)
+         with (deduplicate_items=True)
+   tablespace pg_default;
+
 /* table v1.parent_sequences */
 -- drop table if exists v1.parent_sequences cascade;
 create table if not exists v1.parent_sequences
-( pkey   int   not null generated always as identity primary key,
-  seqnt  text  not null,
-  seqaa  text  not null );
+( pkey           int       not null generated always as identity primary key,
+  pkexp          int       not null constraint fk_parent_sequences_pkexp
+                                    references v1.experiments(pkey),
+  pkplate        int       not null constraint fk_parent_sequences_pkplate
+                                    references v1.plates(pkey),
+  barcode_plate  int       not null,
+  pkseqs         int       not null constraint fk_parent_sequences_pkseqs
+                                    references v1.reference_sequences(pkey),
+  n              smallint  not null );
 
-create unique index ix_parent_sequences_seq
+create unique index ix_parent_sequences_pkexp_pkplate_barcode_plate
           on v1.parent_sequences
-       using btree (seqnt asc)
-     include (pkey)
+       using btree (pkexp asc, pkplate asc, barcode_plate asc)
         with (deduplicate_items=True)
   tablespace pg_default;
 
@@ -109,14 +129,12 @@ create table if not exists v1.variants
 ( pkey                   int              not null generated always as identity primary key,
   pkexp                  int              not null constraint fk_variants_pkexp
                                                    references v1.experiments(pkey),
-  pkcas                  int              not null constraint fk_variants_pkcas
-                                                   references v1.cas(pkey),
   pkplate                int              not null constraint fk_variants_pkplate
                                                    references v1.plates(pkey),
   barcode_plate          int              not null,
   well                   text             not null,
   alignment_count        int              null,
-  parent_seqs            int              not null constraint fk_variants_parent_sequence
+  parent_seq             int              not null constraint fk_variants_parent_sequence
                                                    references v1.parent_sequences(pkey),
   alignment_probability  double precision null,
   avg_mutation_freq      double precision null,
@@ -132,34 +150,40 @@ create index ix_variants_pkexp
         with (deduplicate_items=True)
   tablespace pg_default;
   
-create index ix_variants_pkcas
-          on v1.variants
-       using btree (pkcas asc)
-        with (deduplicate_items=True)
-  tablespace pg_default;
   
-  
-/* table v1.mutations */
+/* table v1.variant_mutations */
 -- drop table if exists v1.variant_mutations;
 create table if not exists v1.variant_mutations
 ( pkey      int     not null generated always as identity primary key,
   pkvar     int     not null constraint fk_variant_mutations_pkvar
-                             references v1.variants(pkey),
-  pkpar     int     not null constraint fk_variant_mutations_pkpar
-                             references v1.parent_sequences(pkey),
-  varposnt  int     not null,
+                             references v1.variants(pkey)
+                             on delete cascade,
   vartype   char(1) not null, -- s: substitution; i: insertion; d: deletion
+  varposnt  int     not null, -- 1-based position in parent (reference) sequence
   varparnt  char(1) null,     -- nucleotide in parent (reference) sequence
   varsubnt  char(1) null,     -- variant nucleotide
+  varposaa  int     null,     -- 1-based position in parent (reference) sequence
   varparaa  char(1) null,     -- amino acid in parent (reference) sequence
-  varsubaa  char(1) null,     -- variant amino acid
-  fitness   double precision null
+  varsubaa  char(1) null      -- variant amino acid
 );
 
-
-
-
-
+create index ix_variant_mutations_pkvar
+          on v1.variant_mutations
+       using btree (pkvar asc)
+        with (deduplicate_items=True)
+  tablespace pg_default;
+  
+/* table v1.fitness */
+-- drop table if exists v1.fitness;
+create table if not exists v1.fitness
+( pkey      int               not null generated always as identity primary key,
+  pkvar     int               not null constraint fk_fitness_pkvar
+                                       references v1.variants(pkey)
+                                       on delete cascade,
+  pkexpcas  int               not null constraint fk_fitness_pkexpcas
+                                       references v1.experiment_cas(pkey),
+  fitness   double precision  not null
+);
 
 
 

@@ -61,8 +61,8 @@ select * from v1.assays;
 -- drop table if exists v1.cas cascade;
 create table if not exists v1.cas
 (
-  pkey    int   not null generated always as identity primary key,
-  cas     text  not null
+  pkey  int   not null generated always as identity primary key,
+  cas   text  not null
 );
 
 create unique index ix_cas_cas
