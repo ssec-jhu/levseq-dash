@@ -53,8 +53,11 @@ select * from v1.experiments;
 -- drop table if exists v1.plates cascade;
 create table if not exists v1.plates
 (
-  pkey  int   not null generated always as identity primary key,
-  plate text  not null
+  pkey   int   not null generated always as identity primary key,
+  pkexp  int   not null constraint fk_plates_pkexp
+                        references v1.experiments(pkey)
+                        on delete cascade,
+  plate  text  not null
 );
 
 create unique index ix_plates_plate
@@ -63,13 +66,17 @@ create unique index ix_plates_plate
      include (pkey)
         with (deduplicate_items=True)
   tablespace pg_default;
+/*** test
+select * from v1.plates;
+***/
  
 /* table v1.experiment_cas */
 -- drop table if exists v1.experiment_cas cascade;
 create table if not exists v1.experiment_cas
 ( pkey      int      not null generated always as identity primary key,
   pkexp     int      not null constraint fk_experiment_cas_pkexp
-                              references v1.experiments(pkey),
+                              references v1.experiments(pkey)
+                              on delete cascade,
   pkcas     int      not null constraint fk_experiment_cas_pkcas
                               references v1.cas(pkey),
   substrate boolean  not null default false,
@@ -88,6 +95,12 @@ create index ix_experiment_cas_cas
        using btree (pkcas asc)
         with (deduplicate_items=True)
   tablespace pg_default;
+/*** test
+select * from v1.experiment_cas;
+select *
+  from v1.experiment_cas t0
+  join v1.cas t1 on t1.pkey = t0.pkcas;
+***/
 
 /* table v1.reference_sequences */
 -- drop table if exists v1.reference_sequences cascade;
@@ -103,15 +116,20 @@ create unique index ix_reference_sequences_seqnt
       include (pkey)
          with (deduplicate_items=True)
    tablespace pg_default;
+/*** test
+select * from v1.reference_sequences;
+***/
 
 /* table v1.parent_sequences */
 -- drop table if exists v1.parent_sequences cascade;
 create table if not exists v1.parent_sequences
 ( pkey           int       not null generated always as identity primary key,
   pkexp          int       not null constraint fk_parent_sequences_pkexp
-                                    references v1.experiments(pkey),
+                                    references v1.experiments(pkey)
+                                    on delete cascade,
   pkplate        int       not null constraint fk_parent_sequences_pkplate
-                                    references v1.plates(pkey),
+                                    references v1.plates(pkey)
+                                    on delete cascade,
   barcode_plate  int       not null,
   pkseqs         int       not null constraint fk_parent_sequences_pkseqs
                                     references v1.reference_sequences(pkey),
@@ -122,20 +140,26 @@ create unique index ix_parent_sequences_pkexp_pkplate_barcode_plate
        using btree (pkexp asc, pkplate asc, barcode_plate asc)
         with (deduplicate_items=True)
   tablespace pg_default;
+/*** test
+select * from v1.parent_sequences;
+***/
 
 /* table v1.variants */
 -- drop table if exists v1.variants cascade;
 create table if not exists v1.variants
 ( pkey                   int              not null generated always as identity primary key,
   pkexp                  int              not null constraint fk_variants_pkexp
-                                                   references v1.experiments(pkey),
+                                                   references v1.experiments(pkey)
+                                                   on delete cascade,
   pkplate                int              not null constraint fk_variants_pkplate
-                                                   references v1.plates(pkey),
+                                                   references v1.plates(pkey)
+                                                   on delete cascade,
   barcode_plate          int              not null,
   well                   text             not null,
   alignment_count        int              null,
   parent_seq             int              not null constraint fk_variants_parent_sequence
-                                                   references v1.parent_sequences(pkey),
+                                                   references v1.parent_sequences(pkey)
+                                                   on delete cascade,
   alignment_probability  double precision null,
   avg_mutation_freq      double precision null,
   p_value                double precision null,
@@ -149,7 +173,9 @@ create index ix_variants_pkexp
        using btree (pkexp asc)
         with (deduplicate_items=True)
   tablespace pg_default;
-  
+/*** test
+select * from v1.variants order by pkexp, pkplate, barcode_plate, well;
+***/
   
 /* table v1.variant_mutations */
 -- drop table if exists v1.variant_mutations;
@@ -172,7 +198,15 @@ create index ix_variant_mutations_pkvar
        using btree (pkvar asc)
         with (deduplicate_items=True)
   tablespace pg_default;
-  
+/*** test
+select * from v1.variant_mutations;
+select varposnt, count(*) as n
+  from v1.variant_mutations
+ group by varposnt
+ order by n desc;
+select * from v1.variant_mutations where varposnt = 72;
+***/
+
 /* table v1.fitness */
 -- drop table if exists v1.fitness;
 create table if not exists v1.fitness
@@ -181,49 +215,18 @@ create table if not exists v1.fitness
                                        references v1.variants(pkey)
                                        on delete cascade,
   pkexpcas  int               not null constraint fk_fitness_pkexpcas
-                                       references v1.experiment_cas(pkey),
+                                       references v1.experiment_cas(pkey)
+                                       on delete cascade,
   fitness   double precision  not null
 );
-
-
-
-
-
-/***********************************************************
-unused
-*****************************/
-/* table v1.data_files */
--- drop table if exists v1.data_files
---create table if not exists v1.data_files
-(
-  pkey       int          not null generated always as identity primary key,
-  gid        int          not null constraint fk_data_files_group
-                                   references v1.usergroups(pkey),
-  eid        int          not null constraint fk_data_files_experiment
-                                   references v1.experiments(pkey),
-  filespec   text         not null,
-  dt_upload  timestamptz  not null default current_timestamp,
-  uid        smallint     not null constraint fk_data_files_users
-                                   references v1.users(pkey),
-  filesize   int          null
-);
-
-create unique index ix_data_files_gid_eid_filespec
-                 on v1.data_files
-              using btree (gid asc, eid asc, filespec asc)
-               with (deduplicate_items=True)
-         tablespace pg_default;
 /*** test
-truncate table v1.data_files;
-alter sequence v1.data_files_pkey_seq restart with 1;
-
-select * from v1.users
-select * from v1.usergroups
-select * from v1.experiments
-insert into v1.data_files( gid, eid, filespec, uid )
-     values (2, 1, '/mnt/Data/ssec-devuser/uploads/G00002/E00001/tiny.csv', 1);
-	 
-select * from v1.data_files order by pkey;
-delete from v1.data_files where pkey >= 1;
+explain analyze
+select t0.*, t2.*, t3.*, t4.*
+  from v1.variants t0
+  join v1.variant_mutations t1 on t1.pkvar = t0.pkey
+  join v1.fitness t2 on t2.pkvar = t0.pkey
+  join v1.experiment_cas t3 on t3.pkey = t2.pkexpcas
+  join v1.cas t4 on t4.pkey = t3.pkcas
+ where t1.varposnt = 72
+   and t1.varposaa is not null;
 ***/
-

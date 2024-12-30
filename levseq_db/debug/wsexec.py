@@ -3,7 +3,6 @@
 #
 
 import re
-import json
 import requests
 import global_vars as gv
 

@@ -3,8 +3,7 @@
 */
 
 /* procedure do_nothing */
-drop procedure if exists v1.do_nothing( int );
-
+-- drop procedure if exists v1.do_nothing( int );
 create or replace procedure v1.do_nothing(in _uid int )
 language plpgsql
 as $body$
@@ -17,8 +16,7 @@ call v1.do_nothing( 12345 );
 ***/
 
 /* function get_pginfo */
-drop function v1.get_pginfo(text);
-
+-- drop function v1.get_pginfo(text);
 create or replace function v1.get_pginfo( in _wsid text )
 returns table
 ( wsinfo text,
@@ -47,8 +45,7 @@ select v1.get_pginfo('LevSeq webservice');         -- (one column, comma-separat
 
 
 /* function get_group_info */
-drop function if exists v1.get_group_info(int);
-
+-- drop function if exists v1.get_group_info(int);
 create or replace function v1.get_group_info( in _gid int = null)
 returns table
 ( gid        smallint,
@@ -76,8 +73,7 @@ select * from v1.get_group_info(2);
 
 
 /* function get_usernames */
-drop function v1.get_usernames(int);
-
+-- drop function v1.get_usernames(int);
 create or replace function v1.get_usernames( in _gid int = null )
 returns table
 ( uid       int,
@@ -112,8 +108,7 @@ delete from v1.users where pkey = 2;
 
 
 /* function get_user_info(int) */
-drop function if exists v1.get_user_info(int);
-
+-- drop function if exists v1.get_user_info(int);
 create or replace function v1.get_user_info( in _uid int )
 returns table
 ( groupname text,
@@ -139,8 +134,7 @@ select * from v1.get_user_info( 1 );
 ***/
 
 /* function get_user_info(text,text) */
-drop function if exists v1.get_user_info(text,text);
-
+-- drop function if exists v1.get_user_info(text,text);
 create or replace function v1.get_user_info( in _u text, in _p text )
 returns table
 ( uid       int,
@@ -167,8 +161,7 @@ select * from v1.get_user_info( 'Richard', '64-17-5' );
 ***/
 
 /* function save_user_info */
-drop function if exists v1.save_user_info(text,text,text,text,text,text);
-
+-- drop function if exists v1.save_user_info(text,text,text,text,text,text);
 create or replace function v1.save_user_info
 ( in _username  text,
   in _pwd       text,
@@ -213,8 +206,7 @@ delete from v1.users where pkey > 5
 ***/
 
 /* procedure save_user_ip */
-drop procedure if exists v1.save_user_ip(int,text);
-
+-- drop procedure if exists v1.save_user_ip(int,text);
 create procedure v1.save_user_ip( in _pkey int, in _ip text )
 language plpgsql 
 as $body$
@@ -229,4 +221,69 @@ $body$;
 /*** test
 call v1.save_user_ip(2, '123.456.789.000');
 select * from v1.users;
+***/
+
+
+/* function get_experiment_row_counts */
+-- drop function if exists v1.get_experiment_row_counts(int);
+create or replace function v1.get_experiment_row_counts( in _eid int )
+returns table
+( "table_name"  text,
+  n_rows        bigint )
+language plpgsql
+as $body$
+begin
+
+    return query
+    select 'v1.fitness', count(*)
+      from v1.fitness t0
+      join v1.experiment_cas t1 on t1.pkey = t0.pkexpcas
+      join v1.experiments t2 on t2.pkey = t1.pkexp
+     where t2.pkey = _eid;
+
+    return query
+    select 'v1.variant_mutations', count(*)
+      from v1.variant_mutations t0
+      join v1.variants t1 on t1.pkey = t0.pkvar
+      join v1.experiments t2 on t2.pkey = t1.pkexp
+     where t2.pkey = _eid;
+
+    return query
+    select 'v1.variants', count(*)
+      from v1.variants t0
+      join v1.experiments t1 on t1.pkey = t0.pkexp
+     where t1.pkey = _eid;
+
+    return query
+    select 'v1.parent_sequences', count(*)
+      from v1.parent_sequences t0
+      join v1.experiments t1 on t1.pkey = t0.pkexp
+     where t1.pkey = _eid;
+
+    return query
+    select 'v1.experiment_cas', count(*)
+      from v1.experiment_cas t0
+      join v1.experiments t1 on t1.pkey = t0.pkexp
+     where t1.pkey = _eid;
+
+    return query
+    select 'v1.plates', count(*)
+      from v1.plates t0
+      join v1.experiments t1 on t1.pkey = t0.pkexp
+     where t1.pkey = _eid;
+
+    return query
+    select 'v1.experiments', count(*)
+      from v1.experiments
+     where pkey = _eid;
+
+    return query
+    select 'v1.experiments_pending', count(*)
+      from v1.experiments_pending
+     where eid = _eid;
+
+end;
+$body$;
+/*** test
+select * from v1.get_experiment_row_counts(28);
 ***/

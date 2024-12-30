@@ -22,7 +22,7 @@
 
         (See https://www.postgresql.org/docs/current/sql-copy.html)
 */
-grant pg_write_server_files, pg_read_server_files to lsdb;
+grant pg_read_server_files to lsdb;
 grant execute on function pg_stat_file(text,boolean) to lsdb;
 
 /* 10.tables.admin.sql */
@@ -32,11 +32,11 @@ grant select,insert,update,delete on v1.users to lsdb;
 /* 11.tables.ref.sql */
 grant select on v1.mutagenesis_methods to lsdb;
 grant select on v1.assays to lsdb;
+grant select,insert,update on v1.cas to lsdb;
 
 /* 12.tables.data.sql */
-grant select,insert,update,delete on v1.experiment_cas to lsdb;
 grant select,insert,update,delete on v1.experiments to lsdb;
-grant select,insert,update,delete on v1.data_files to lsdb;
+grant select,insert,update,delete on v1.experiment_cas to lsdb;
 
 /* 13.tables.load.sql */
 grant select,insert,update,delete on v1.experiments_pending to lsdb;

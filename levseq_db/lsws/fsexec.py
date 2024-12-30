@@ -123,7 +123,7 @@ def LoadFile(params: dbexec.Arglist) -> int:
 # fmt: on
 
 
-# remove all files and subdirectories
+# remove all files and subdirectories (like rm -r)
 def rmr(dir: pathlib.Path) -> int:
 
     nFilesDeleted = 0
@@ -152,6 +152,9 @@ def UnloadFile(params: dbexec.Arglist) -> int:
     # query the database to validate the group/experiment/filename and obtain
     #  a filespec (i.e., a fully-qualified directory path and filename)
     dirpath = str(dbexec.QueryScalar("get_unload_dirpath", params[:2]))  # type:ignore
+
+    # remove data for the specified experiment from database tables
+    dbexec.NonQuery("unload_experiment", params[:2])  # type:ignore
 
     # zap the directory and all its contents, and return the number of deleted files
     return rmr(pathlib.Path(dirpath))

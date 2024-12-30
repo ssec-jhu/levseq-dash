@@ -23,13 +23,12 @@ from psycopg import abc  # typedef Params for cursor.execute()
 import typing
 import global_vars as g
 
-
 # handy type aliases
 type Rowset = list[tuple]
 type Columns = list[str]
 type ResultSet = tuple[list[str], list[tuple]]
 type Scalar = typing.Union[int, float, str]
-type Arglist = typing.Union[abc.Params, None]
+type Arglist = abc.Params
 
 # global variables
 _pgcs = f"user={g.linux_username} dbname=LevSeq"  # postgres database connection string
@@ -110,15 +109,15 @@ def _doQuery(fn: typing.Callable, verb: str, args: Arglist) -> ResultSet | Scala
 
 
 # execute a postgres SQL stored procedure that does not return a rowset (result set)
-def NonQuery(verb: str, args: Arglist = None) -> Scalar:
+def NonQuery(verb: str, args: Arglist = []) -> Scalar:
     return _doQuery(_fnExecuteNonQuery, verb, args)  # type:ignore
 
 
 # execute a postgres SQL function that returns a rowset (result set)
-def Query(verb: str, args: Arglist = None) -> ResultSet:
+def Query(verb: str, args: Arglist = []) -> ResultSet:
     return _doQuery(_fnExecuteQuery, verb, args)  # type:ignore
 
 
 # execute a postgres SQL function that returns a scalar (number or string)
-def QueryScalar(verb: str, args: Arglist = None) -> Scalar:
+def QueryScalar(verb: str, args: Arglist = []) -> Scalar:
     return _doQuery(_fnExecuteScalar, verb, args)  # type:ignore

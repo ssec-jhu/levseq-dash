@@ -50,8 +50,7 @@ select v1.get_unload_dirpath( 5, 1 );
 ***/
 
 /* procedure v1.unload_experiment */
-drop procedure if exists v1.unload_experiment(int,int);
-
+-- drop procedure if exists v1.unload_experiment(int,int);
 create or replace procedure v1.unload_experiment
 ( in _uid int,
   in _eid int )
@@ -75,12 +74,35 @@ begin
 end;
 $body$;
 /*** test
+select * from v1.fitness;              -- v1.experiment_cas, v1.variants
+select * from v1.variant_mutations;    -- v1.variants
+select * from v1.variants;             -- v1.plates v1.experiments
+select * from v1.parent_sequences;     -- v1.plates v1.experiments
+select * from v1.reference_sequences;  -- ok to leave as is
+select * from v1.cas;                  -- ok to leave as is
+select * from v1.experiment_cas;       -- v1.experiments;
+select * from v1.plates;               -- v1.experiments;
 select * from v1.experiments;
-select * from v1.experiment_cas;
-call v1.unload_experiment( 5, 1 );
+select * from v1.experiments_pending;
+
+
+call v1.unload_experiment( 5, 28 );
+
+insert into v1.experiments_pending(eid,uid,dt_load,experiment_name,assay,mutagenesis_method,dt_experiment,cas_substrate,cas_product)
+values(28,5,now(),'expt1',8,2,'2024-12-26','345905-97-7','395683-37-1')
+
+delete from v1.experiments_pending where eid = 228;
+
+
+"v1.fitness"	1903
+"v1.variant_mutations"	1732
+"v1.variants"	960
+"v1.parent_sequences"	10
+"v1.experiment_cas"	2
+"v1.plates"	4
+"v1.experiments"	1
+"v1.experiments_pending"	0
 ***/
-
-
 
 
 /* procedure v1.unload_file UNUSED */

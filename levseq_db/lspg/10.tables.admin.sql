@@ -20,7 +20,7 @@ create table if not exists v1.usergroups
 )
 tablespace pg_default;
 
-/* The SQL regex expression is:
+/* The SQL regex in the check expression is:
     /      slash
     %      any sequence of characters (hopefully slashes, alphanumeric, and underscore)
     /      slash

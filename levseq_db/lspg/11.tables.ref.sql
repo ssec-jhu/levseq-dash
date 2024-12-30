@@ -4,18 +4,19 @@
 
 
 /* table v1.mutagenesis_methods */
--- drop table if exists v1.mutagenesis_methods
+-- drop table if exists v1.mutagenesis_methods cascade;
 create table if not exists v1.mutagenesis_methods
 (
   pkey          smallint  not null generated always as identity primary key,
   "method"      text      not null,
   abbreviation  text      not null
 );
-/*** test
-delete from v1.pk_mutagenesis_methods where pkey > 0;
+
 insert into v1.mutagenesis_methods( method, abbreviation )
      values ( 'site-saturation mutagenesis', 'SSM' ),
             ( 'error-prone', 'EP' );
+			
+/*** test
 select * from v1.mutagenesis_methods;
 ***/
 
@@ -55,6 +56,7 @@ insert into v1.assays(technique, units)  -- ·ÅΔμ°²³¹⁻
 /*** test
 truncate table v1.assays;
 select * from v1.assays;
+explain analyze select * from v1.assays;
 ***/
 
 /* table v1.cas */

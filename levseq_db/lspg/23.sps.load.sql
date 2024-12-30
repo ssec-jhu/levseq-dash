@@ -220,7 +220,6 @@ insert into v1.experiments overriding system value values (3, now(), 'bla', 2, 1
 ***/
 
 
-select now())
 /* function v1.get_load_dirpath */
 drop function if exists v1.get_load_dirpath(int,int,text);
 
@@ -596,6 +595,16 @@ declare
                     || ' with (format csv, header match)';
 begin
 
+    if not exists (select *
+                     from v1.experiments_pending
+                    where eid = _eid
+                          and
+                          uid = _uid)
+    then						  
+        raise exception 'missing experiment metadata for user %, experiment ID %',
+                        _uid, _eid;
+    end if;
+	
     /* Load csv into a temporary table.
 
        We can extract the plate string from either of the "id" and "plate"
@@ -651,20 +660,21 @@ begin
 on conflict (pkey) do
     update set experiment_name = excluded.experiment_name,
                assay = excluded.assay,
-			   mutagenesis_method = excluded.mutagenesis_method,
-			   dt_experiment = excluded.dt_experiment,
-			   dt_load = excluded.dt_load;
+               mutagenesis_method = excluded.mutagenesis_method,
+               dt_experiment = excluded.dt_experiment,
+               dt_load = excluded.dt_load;
 
     /* save CAS numbers */
     call v1.save_experiment_cas( _uid, _eid );
 
     /* save plate names */
+    delete from v1.plates where pkexp = _eid;
+
 	with cte as (select distinct plate_name
                    from _rawcsv)
-        insert into v1.plates(plate)
-        select plate_name
-          from cte
-   on conflict (plate) do nothing;
+        insert into v1.plates(pkexp, plate)
+        select _eid, plate_name
+          from cte;
 
 	/* save parent sequences */
 	call v1.save_parent_sequences( _eid );
@@ -674,14 +684,13 @@ on conflict (pkey) do
 
 	/* save fitness values */
 	call v1.save_fitness_values( _eid );
-
 	
     -- zap all previous metadata in the "pending" table for...
 	--  - the specified experiment
 	--  - any other pending uploads by the LevSeq user that are over 24 hours old
---	delete from v1.experiments_pending
- --    where eid = _eid
-	--    or (uid = _uid and dt_load < (now() - interval '24 hours'));
+	delete from v1.experiments_pending
+     where eid = _eid
+        or (uid = _uid and dt_load < (now() - interval '24 hours'));
 
 end;
 $body$;
@@ -706,13 +715,11 @@ group by varposnt
 order by n desc;
 
 
-
-
 update v1.experiments_pending set cas_product = '395683-37-1' where eid = 28
 
 
-select * from v1.cas
-select * from v1.experiment_cas
+select * from v1.cas;
+select * from v1.experiment_cas;
 
 select alignment_count, amino_acid_substitutions, count(*)
   from _rawcsv
@@ -769,16 +776,6 @@ begin
      where t0.pkey = _eid;
 
     -- ensure that we still have metadata for the specified experiment ID
-
-
-
-  
-    -- get the specified experiment name
-    select t0.experiment_name into expname
-      from v1.experiments t0
-     where t0.pkey = _eid;
-
-    -- ensure that we still have metadata for the specified experiment ID
 	if not exists (select * from v1.experiments_pending where eid = _eid) then
         raise exception 'missing metadata for experiment ID %', _eid;
     end if;
@@ -805,10 +802,6 @@ begin
     then
         call v1.load_experiment_data( _uid, _eid, _filespec );
     end if;
-
----        -- record successful upload
----        insert into v1.data_files( gid, eid, filespec, dt_upload, uid, filesize )
----            values ( grp, _eid, _filespec, now(), _uid, cb_file );
 
     -- return the number of bytes in the file
     return cb_file;
@@ -838,288 +831,3 @@ with cte as (select pkvar, nucleotide_mutation, amino_acid_substitutions
 	  from cte;
 ----
 ***/
-
-
-
-
-
-
-
-
-
-
-
-
-/****************************************
-*******************************************************/
-
-/* function v1.load_file  asdfasdfasdf;lkasdjf; */
-drop function if exists v1.load_file(int,int,text,text);
-
-create or replace function v1.load_experiment_file
-( in _filespec text,   -- (see lsws fsexec.py)
-  in _uid int,
-  in _eid int,
-  in _filename text,
-  in _filedata text )
-returns int
-language plpgsql
-as $body$
-
-declare
-    gid      smallint;
-    fidprev  int;
-	exp_name text;
-	dirpath  text;
-    filespec text;
-	sqlcmd   text;
-
-begin
-
-    -- avoid duplicating the file for the current experiment
-	select t0.pkey into fidprev
-      from v1.experiment_files t0
-     where t0.eid = _eid and t0.filename = _filename;
-
-    if fidprev is not null
-    then
-        select t0.experiment_name into exp_name
-          from v1.experiments t0
-         where t0.pkey = _eid;
-
-        raise exception 'Duplicate filename %s for experiment %s', _filename, exp_name;
-		return 0;
-    end if;
-	  
-    -- get the upload directory for the user's group
-	select t0.pkey, t0.upload_dir into gid, dirpath
-	  from v1.usergroups t0
-	  join v1.users t1 on t1.gid = t0.pkey
-     where t1.pkey = _uid;
-
-    -- insert the current system login and group ID into the directory path
-    dirpath = format( dirpath, current_user, right('0000'||gid::text,5) );
-	if right(dirpath,1) != '/' then dirpath = dirpath || '/'; end if;
-
-    -- append the filename
-	filespec = dirpath || _filename;
-
-	-- create a temporary table that contains the file data
-    create temporary table _fc
-	( filedata text not null );
-	
-	insert into _fc(filedata) values(_filedata);
-
-    -- file contents are assumed to be non-binary (or is it genderfluid?)
-    sqlcmd = format('copy (select filedata from _fc) to ''%s'' with( encoding ''UTF8'')',
-                    filespec);
-	raise notice 'sqlcmd: -->%<--', sqlcmd;
-    execute sqlcmd;
-	
-raise notice 'filespec: %', filespec;
-
-    return 0;
-end;
-$body$;
-/*** test
-select v1.upload_experiment_file( 1, 1, 'tiny.csv',
-'id,barcode_plate,cas_number,plate,well,alignment_count,nucleotide_mutation,amino_acid_substitutions,alignment_probability,average_mutation_frequency,p_value,p_adj_value,nt_sequence,aa_sequence,x_coordinate,y_coordinate,fitness_value
-20241201-SSM-P1-A1,1,395683-37-1,20241201-SSM-P1,A1,2,G175A_C176A,#LOW#,0.5,0.5,0.009709951,0.9321553,ATGACTCCCTCGGACATCTCGGGGTATGATTATGGGCGTGTCGAGAAGTCACCCATCACGGACCTTGAGTTTGACCTTCTGAAGAAGACTGTCATGTTAGGTGAAGAGGACGTAATGTACTTGAAAAAGGCGGCTGACGTTCTGAAAGATCAAGTTGATGAGATCCTTGACCTGAAGGGTGGTTGGGCAGCATCAAATGAGCATTTGATTTATTACGGTTCCAATCCGGATACAGGAGCGCCTATTAAAGAATACCTGGAACGTGTACGCGCTCGCATTGGAGCCTGGGTTCTGGACACTACCTGCCGCGACTATAACCGTGAATGGTTAGACTACCAGTACGAAGTTGGGCTTCGTCATCACCGTTCAAAGAAAGGGGTCACAGACGGAGTACGCACCGTGCCCAATACCCCACTTCGTTATCTTATCGCAGGTATCTATCCTATCACCGCCACTATCAAGCCATTTTTAGCTAAGAAAGGTGGCTCTCCGGAGGACATCGAAGGGATGTACAACGCTTGGCTCAAGTCTGTAGTTCTACAAGTTGCCATCTGGTCACACCCTTATACTAAGGAGAATGACCGG,MTPSDISGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLKGGWAASNEHLIYYGSNPDTGAPIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRHHRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVVLQVAIWSHPYTKENDR,-0.12535994,-0.14982244,1496.4556
-20241201-SSM-P1-A2,1,395683-37-1,20241201-SSM-P1,A2,64,#PARENT#,#PARENT#,1,,,,ATGACTCCCTCGGACATCTCGGGGTATGATTATGGGCGTGTCGAGAAGTCACCCATCACGGACCTTGAGTTTGACCTTCTGAAGAAGACTGTCATGTTAGGTGAAGAGGACGTAATGTACTTGAAAAAGGCGGCTGACGTTCTGAAAGATCAAGTTGATGAGATCCTTGACCTGGCGGGTGGTTGGGCAGCATCAAATGAGCATTTGATTTATTACGGTTCCAATCCGGATACAGGAGCGCCTATTAAAGAATACCTGGAACGTGTACGCGCTCGCATTGGAGCCTGGGTTCTGGACACTACCTGCCGCGACTATAACCGTGAATGGTTAGACTACCAGTACGAAGTTGGGCTTCGTCATCACCGTTCAAAGAAAGGGGTCACAGACGGAGTACGCACCGTGCCCAATACCCCACTTCGTTATCTTATCGCAGGTATCTATCCTATCACCGCCACTATCAAGCCATTTTTAGCTAAGAAAGGTGGCTCTCCGGAGGACATCGAAGGGATGTACAACGCTTGGCTCAAGTCTGTAGTTCTACAAGTTGCCATCTGGTCACACCCTTATACTAAGGAGAATGACCGG,MTPSDISGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLAGGWAASNEHLIYYGSNPDTGAPIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRHHRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVVLQVAIWSHPYTKENDR,0.038451646,0.02593873,273777.8326');
-***/    
-
-
-select encode('abcde', 'base64')
-select decode('YWJjZGU=', 'base64')::text
-
-select * from v1.upload_base64_file( 1, 1, '/mnt/Data/lsdb/uploads', )
-COPY { table_name [ ( column_name [, ...] ) ] | ( query ) }
-    TO { 'filename' | PROGRAM 'command' | STDOUT }
-    [ [ WITH ] ( option [, ...] ) ]
-
-where option can be one of:
-
-    FORMAT format_name
-    FREEZE [ boolean ]
-    DELIMITER 'delimiter_character'
-    NULL 'null_string'
-    DEFAULT 'default_string'
-    HEADER [ boolean | MATCH ]
-    QUOTE 'quote_character'
-    ESCAPE 'escape_character'
-    FORCE_QUOTE { ( column_name [, ...] ) | * }
-    FORCE_NOT_NULL { ( column_name [, ...] ) | * }
-    FORCE_NULL { ( column_name [, ...] ) | * }
-    ON_ERROR error_action
-    ENCODING 'encoding_name'
-    LOG_VERBOSITY verbosity
-
-
-
-
-
-
-
-
-
-
-
-
-
-		
- 
-
-
-
-
-check whether the file exists in the specified upload directory
-		filespec = u || f;
-        fileinfo = pg_stat_file(filespec, true);  -- (requires su permission)
-		s = case when fileinfo is not null then 'completed' else 'failed' end;
-
-		-- conditionally log the result ("upsert)"
-        insert into v1.load_log( uid, task, status, details)
-        select _uid, t1.pkey, t2.pkey, filespec
-          from v1.load_tasks t1
-    cross join v1.load_states t2
-         where t1.task = 'upload'
-		   and t2.status = s
-     returning pkey into pkey_log;
-
-        -- track the pkey of the first logged row
-        if pkey_result is null then pkey_result = pkey_log; end if;
-
-	 raise notice 'pkey_log: %  pkey_result: %', pkey_log, pkey_result;
-
-        -- iterate
-        i = i + 1;
-        f = trim( both ' ' from split_part(_filenames, ',', i) );
-    end loop;
-***/
-
-    -- return upload status for each file
-    return query
-    select regexp_replace( t0.details, '.*/', '')::varchar, t2.task::varchar, t3.status::varchar
-      from v1.load_log t0
-      join v1.users t1 on t1.pkey = t0.uid
-      join v1.load_tasks t2 on t2.pkey = t0.task
-      join v1.load_states t3 on t3.pkey = t0.status
-	 where t0.pkey >= pkey_result
-	   and t0.uid = _uid
-	   and t2.task = 'upload'
-  order by t0.pkey asc;
-
-end;
-
-$body$;
-/*** test
-truncate table v1.load_log;
-select * from v1.get_file_load_status(
-  2,
-
-
-
-
-
-
-
-
-/* function get_file_load_status */
-drop function if exists v1.get_file_load_status(int,varchar,varchar);
-
-create or replace function v1.get_file_load_status(
-    in _uid int,
-    in _upload_dir varchar(256),
-	in _filenames varchar ) 
-returns table ( filename  varchar(64),
-                task      varchar(32),
-                status    varchar(32) )
-language plpgsql
-as $body$
-
-declare
-    u varchar(256) = rtrim(_upload_dir,'/') || '/';   -- ensure trailing separator
-    i smallint = 1;
-    f varchar(64) = '';
-	filespec varchar(320);
-	s varchar(10);
-	fileinfo varchar(128) = null;
-	pkey_log int;
-	pkey_result int = null;
-	load_status varchar(512) = 'none';
-
-begin
-
-    -- split the list of filenames
-    f = trim( both ' ' from split_part(_filenames, ',', i) );
-    while f != '' loop
-        raise notice 'i: %, f: %', i, f;
-
-		-- check whether the file exists in the specified upload directory
-		filespec = u || f;
-        fileinfo = pg_stat_file(filespec, true);  -- (requires su permission)
-		s = case when fileinfo is not null then 'completed' else 'failed' end;
-
-		-- conditionally log the result ("upsert)"
-        insert into v1.load_log( uid, task, status, details)
-        select _uid, t1.pkey, t2.pkey, filespec
-          from v1.load_tasks t1
-    cross join v1.load_states t2
-         where t1.task = 'upload'
-		   and t2.status = s
-     returning pkey into pkey_log;
-
-        -- track the pkey of the first logged row
-        if pkey_result is null then pkey_result = pkey_log; end if;
-
-	 raise notice 'pkey_log: %  pkey_result: %', pkey_log, pkey_result;
-
-        -- iterate
-        i = i + 1;
-        f = trim( both ' ' from split_part(_filenames, ',', i) );
-    end loop;
-***/
-
-    -- return upload status for each file
-    return query
-    select regexp_replace( t0.details, '.*/', '')::varchar, t2.task::varchar, t3.status::varchar
-      from v1.load_log t0
-      join v1.users t1 on t1.pkey = t0.uid
-      join v1.load_tasks t2 on t2.pkey = t0.task
-      join v1.load_states t3 on t3.pkey = t0.status
-	 where t0.pkey >= pkey_result
-	   and t0.uid = _uid
-	   and t2.task = 'upload'
-  order by t0.pkey asc;
-
-end;
-
-$body$;
-/*** test
-truncate table v1.load_log;
-select * from v1.get_file_load_status(
-  2,
-  '/mnt/Data/ssec-devuser/uploads',
-  'flatten_ep_processed_xy_cas.csv,ligand_bound.cif,ligand_bound.pdb, nosuch.file'
-);
-
-select * from v1.get_file_load_status(
-  1,
-  '/mnt/Data/ssec-devuser/uploads',
-  'flatten_ep_processed_xy_cas.csv,ligand_bound.cif,ligand_bound.pdb'
-);
-
-
-select * from v1.load_log;
-select t0.pkey, t1.username, dt, t2.task, t3.status, t0.details
-  from v1.load_log t0
-  join v1.users t1 on t1.pkey = t0.uid
-  join v1.load_tasks t2 on t2.pkey = t0.task
-  join v1.load_states t3 on t3.pkey = t0.status
- order by pkey asc;
-***/
-
-
-
-
-
