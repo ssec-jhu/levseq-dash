@@ -19,6 +19,8 @@ import os
 import traceback
 import uvicorn
 import fastapi
+from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
 import psycopg
 import wsexec
 import global_vars as g
@@ -86,12 +88,11 @@ else:
 #                   500 Internal Server Error (error raised in postgres SQL code)
 #   (all others)    404 Not Found
 #
-#  FastAPI's default implementation differentiates among several error response types.
+#  FastAPI's default implementation differentiates among several error response categories.
 #   HTTP response 200 means "success", and HTTP response >= 400 means "failure" with FastAPI-
 #   provided response data:
 #
 #       [ "details": "(error details") ]
-#
 
 
 @app.get("/")
@@ -103,6 +104,12 @@ async def getRoot() -> wsexec.QueryResponse:
 async def query(args: wsexec.QueryParams) -> wsexec.QueryResponse:
 
     try:
+
+        # conditionally emit query arguments as JSON
+        if wantDeveloperEndpoints:
+            print(JSONResponse(content=jsonable_encoder(args)).body.decode())  # type:ignore
+
+        # process the HTTP request; FastAPI handles serialization (see wsexec.py)
         return wsexec.PostDatabaseQuery(args)
 
     except Exception as ex:

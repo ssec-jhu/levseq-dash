@@ -3,61 +3,18 @@
 */
 
 
-/* function v1.get_unload_dirpath */
-drop function if exists v1.get_unload_dirpath(int,int);
-create or replace function v1.get_unload_dirpath
-( in _uid int,
-  in _eid int )
-returns text
-language plpgsql
-as $body$
+/* procedure v1.unload_experiment
 
-declare
-    grp      int;
-	dirpath  text;
-	grpname  text;
-
-begin
-
-    -- get the LevSeq user's group ID
-	select t0.gid into grp
-	  from v1.users t0
-     where t0.pkey = _uid;
-
-    /* build the file specification by injecting the current database
-	    user name into the directory path */	    
-	select format(t0.upload_dir, current_user), t0.groupname
-      into dirpath, grpname
-      from v1.usergroups t0
-     where t0.pkey = grp;
-
-	-- limit the character set
-    dirpath = regexp_replace( dirpath, '[^A-Za-z0-9_\-\/]', '_', 'g' );
-	
-    -- append group and experiment subdirectories
-    dirpath = dirpath
-              || 'G' || right('0000'||grp, 5) || '/'
-              || 'E' || right('0000'||_eid, 5) || '/';
-
-    -- return the slash-terminated directory path
-    return dirpath;
-
-end;
-$body$;
-/*** test
-select v1.get_unload_dirpath( 5, 3 );
-***/
-
-/* procedure v1.unload_experiment */
+   Notes:
+    This procedure does NOT delete uploaded files associated with
+     the specified experiment.
+*/
 -- drop procedure if exists v1.unload_experiment(int,int);
 create or replace procedure v1.unload_experiment
 ( in _uid int,
   in _eid int )
 language plpgsql
 as $body$
-
-declare
-
 begin
 
     -- delete the specified experiment in v1.experiments as well as
@@ -85,14 +42,14 @@ select * from v1.experiments;
 select * from v1.experiments_pending;
 
 
-call v1.unload_experiment( 5, 27 );
+call v1.unload_experiment( 5, 25 );
 
 insert into v1.experiments_pending(eid,uid,dt_load,experiment_name,assay,mutagenesis_method,dt_experiment,cas_substrate,cas_product)
 values(28,5,now(),'expt1',8,2,'2024-12-26','345905-97-7','395683-37-1')
 
 
 select * from v1.experiments;
-select * from v1.get_experiment_row_counts(27);
+select * from v1.get_experiment_row_counts(25);
 
 
 "v1.fitness"	1903

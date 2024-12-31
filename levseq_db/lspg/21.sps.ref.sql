@@ -25,8 +25,10 @@ select * from v1.get_mutagenesis_methods();
 drop function if exists v1.get_assays();
 
 create or replace function v1.get_assays()
-returns table( pkey  smallint,
-               assay text )
+returns table
+( pkey  smallint,
+  assay text
+)
 language plpgsql
 as $body$
 begin
@@ -39,4 +41,5 @@ $body$;
 /*** test
 select * from v1.assays;
 select * from v1.get_assays();
+select v1.get_assays();
 ***/

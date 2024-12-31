@@ -16,11 +16,56 @@ call v1.do_nothing( 12345 );
 ***/
 
 
+/* function v1.get_experiment_dirpath */
+drop function if exists v1.get_experiment_dirpath(int,int);
+create or replace function v1.get_experiment_dirpath
+( in _uid int,
+  in _eid int )
+returns text
+language plpgsql
+as $body$
+
+declare
+    grp      int;
+	dirpath  text;
+	grpname  text;
+
+begin
+
+    -- get the LevSeq user's group ID
+	select t0.gid into grp
+	  from v1.users t0
+     where t0.pkey = _uid;
+
+    /* build the file specification by injecting the current database
+	    user name into the directory path */	    
+	select format(t0.upload_dir, current_user), t0.groupname
+      into dirpath, grpname
+      from v1.usergroups t0
+     where t0.pkey = grp;
+
+	-- limit the character set
+    dirpath = regexp_replace( dirpath, '[^A-Za-z0-9_\-\/]', '_', 'g' );
+	
+    -- append group and experiment subdirectories
+    dirpath = dirpath
+              || 'G' || right('0000'||grp, 5) || '/'
+              || 'E' || right('0000'||_eid, 5) || '/';
+
+    -- return the slash-terminated directory path
+    return dirpath;
+
+end;
+$body$;
+/*** test
+select v1.get_experiment_dirpath( 5, 3 );
+***/
+
+
 /* function v1.files_in_dir */
 -- drop function if exists v1.files_in_dir(text);
 create or replace function v1.files_in_dir( in _dir text )
-returns table
-( filename text )
+returns text[]
 language plpgsql
 as $body$
 
@@ -33,7 +78,7 @@ begin
 
     -- if the specified directory does not exist, return an empty result set
     select "size" into cb_file from pg_stat_file(_dir, true);
-    if coalesce(cb_file, 0) = 0 then return; end if;
+    if coalesce(cb_file, 0) = 0 then return array[]::text[]; end if;
 
     -- use Linux "find" to list files in the specified directory
     drop table if exists _fid;
@@ -45,14 +90,15 @@ begin
 	
 	execute execcmd;
 
-    return query
-    select fname
-      from _fid
-  order by fname asc;
+    -- return the list of filenames as a text array
+    return array( select fname
+                    from _fid
+                order by fname asc );
 
 end;
 $body$;
 /*** test
+select v1.files_in_dir( '/mnt/Data/lsdb/uploads/G00002/E00026' );
 select v1.files_in_dir( '/mnt/Data/lsdb/uploads/G00002/E00027' );
 ***/
 

@@ -23,6 +23,7 @@
         (See https://www.postgresql.org/docs/current/sql-copy.html)
 */
 grant pg_read_server_files to lsdb;
+grant pg_execute_server_program to lsdb;
 grant execute on function pg_stat_file(text,boolean) to lsdb;
 
 /* 10.tables.admin.sql */

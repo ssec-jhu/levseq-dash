@@ -8,10 +8,10 @@
 import flask
 import dash
 from dash import dcc, html, callback, Input
-import pandas
 
 import wsexec
 from ui_base import UIbase
+from ui_unload import UIunloadData
 
 
 class UIuploadData(UIbase):
@@ -46,7 +46,7 @@ class UIuploadData(UIbase):
                 multiple=True,
                 accept=".csv,.cif,.pdb",
             ),
-            html.Div(id="div_filenames", children="(none yet)"),
+            html.Div(id="div_filenames", children="(none yet)", style={"whiteSpace": "pre-line"}),
         ]
 
         return
@@ -111,16 +111,13 @@ class UIuploadData(UIbase):
             print("UIuploadData callback: query ends")
 
             # append uploaded file info
-            rval += f"Uploaded {fileName}: ({cb} bytes); "
+            rval += f"Uploaded {fileName}: ({cb} bytes)\n"
 
         # show uploaded file info
         dash.set_props("div_filenames", dict(children=rval))
 
         # refresh the user experiment list
-        cols, rows = wsexec.Query("get_user_experiments", [uid])  # type:ignore
-        df = pandas.DataFrame(data=rows, columns=cols)  # type:ignore
-        dash.set_props("tbl_experiment_list", dict(selected_rows=[]))
-        dash.set_props("tbl_experiment_list", dict(data=df.to_dict("records")))
+        UIunloadData.RefreshUserExperimentList(uid)
 
         # clear the Upload component filename and contents
         dash.set_props("UIuploadData::trigger", dict(filename=[], contents=[]))

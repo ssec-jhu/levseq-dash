@@ -13,3 +13,8 @@ input.DateInput_input
     font-size: 0.85em;
     padding: 0px 0px 0px 4px;
 }
+
+div.Select-control, div.Select-input
+{
+    height: 24px;
+}

@@ -8,10 +8,10 @@
 import flask
 import dash
 from dash import dcc, html, callback, Input
-import pandas
 
 import wsexec
 from ui_base import UIbase
+from ui_unload import UIunloadData
 
 
 class UIsetUser(UIbase):
@@ -37,7 +37,7 @@ class UIsetUser(UIbase):
         # layout
         self.contents = [
             html.H3("Select LevSeqUser"),
-            dcc.Dropdown(aUsers, id="UIsetUser::trigger", style={"width": "160px"}),
+            dcc.Dropdown(aUsers, id="UIsetUser::trigger", style={"width": "160px"}, optionHeight=20),
             html.Label("Current user ID:", htmlFor="div_uid", style={"display": "inline-block"}),
             html.Div(
                 id="div_uid",
@@ -80,13 +80,10 @@ class UIsetUser(UIbase):
 
         # update UI state
         dash.set_props("div_uid", dict(children=msg))
+        dash.set_props("UIsetUser::error", dict(value=""))
 
         # refresh the user experiment list
-        cols, rows = wsexec.Query("get_user_experiments", [uid])  # type:ignore
-        df = pandas.DataFrame(data=rows, columns=cols)  # type:ignore
-        dash.set_props("tbl_experiment_list", dict(selected_rows=[]))
-        dash.set_props("tbl_experiment_list", dict(data=df.to_dict("records")))
-        dash.set_props("UIunloadData::error", dict(value=""))
+        UIunloadData.RefreshUserExperimentList(uid)
 
         # (we use dash.set_props instead of Output bindings)
         return

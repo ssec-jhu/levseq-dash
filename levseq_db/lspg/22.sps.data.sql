@@ -49,8 +49,10 @@ end;
 $body$;
 /*** test
 select * from v1.get_assays();
-select * from v1.get_user_experiments( 1 );
+select * from v1.experiments;
+select * from v1.get_user_experiments( 5 );
 ***/
+
 
 /* function get_user_experiments */
 -- drop function if exists v1.get_user_experiments(int);
@@ -64,10 +66,13 @@ returns table
   cas_substrate      text,
   cas_product        text,
   mutagenesis_method text,
-  assay              text
+  assay              text,
+  filenames          text
 )
 language plpgsql
 as $body$
+declare
+
 begin
 
     return query
@@ -83,7 +88,8 @@ begin
               join v1.cas u2 on u2.pkey = u1.pkcas
              where u1.pkexp = t0.pkey
                and u1.product),
-           t1.abbreviation, t2.technique
+           t1.abbreviation, t2.technique,
+           array_to_string(v1.files_in_dir(v1.get_experiment_dirpath(_uid,t0.pkey)), ', ')
       from v1.experiments t0
       join v1.mutagenesis_methods t1 on t1.pkey = t0.mutagenesis_method
       join v1.assays t2 on t2.pkey = t0.assay
@@ -92,6 +98,7 @@ begin
 end;
 $body$;
 /*** test
+select * from _expdirs;
 select * from v1.experiments;
 select * from v1.get_user_experiments( 5 );
 select * from v1.get_user_experiments( null );

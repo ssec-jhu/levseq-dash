@@ -36,7 +36,7 @@ class UIunloadData(UIbase):
                 data=[],
                 page_size=5,
                 row_selectable="single",
-                style_cell={"font-size": "0.9em"},
+                style_cell={"font-size": "0.9em", "whiteSpace": "pre-line"},
             ),
             html.Button("Zap!", id="UIunloadData::trigger", n_clicks=0, style={"width": "32px"}),
             html.Div(id="div_unload_experiment_info", children="(none)"),
@@ -82,5 +82,20 @@ class UIunloadData(UIbase):
         # update session state
         flask.session["eid"] = None
         flask.session["experiment_name"] = None
+
+        return None
+
+    @staticmethod
+    def RefreshUserExperimentList(uid: int) -> None:
+        dash.set_props("UIunloadData::error", dict(value=""))
+
+        cols, rows = wsexec.Query("get_user_experiments", [uid])  # type:ignore
+        df = pandas.DataFrame(data=rows, columns=cols)  # type:ignore
+
+        df["dt_experiment"] = pandas.to_datetime(df["dt_experiment"]).dt.date
+        df["dt_load"] = pandas.to_datetime(df["dt_load"]).dt.date
+
+        dash.set_props("tbl_experiment_list", dict(selected_rows=[]))
+        dash.set_props("tbl_experiment_list", dict(data=df.to_dict("records")))
 
         return None

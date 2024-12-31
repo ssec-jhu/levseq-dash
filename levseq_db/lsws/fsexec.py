@@ -165,7 +165,7 @@ def UnloadFile(params: dbexec.Arglist) -> int:
 
     # query the database to validate the group/experiment/filename and obtain
     #  a filespec (i.e., a fully-qualified directory path and filename)
-    dirpath = str(dbexec.QueryScalar("get_unload_dirpath", params[:2]))  # type:ignore
+    dirpath = str(dbexec.QueryScalar("get_experiment_dirpath", params[:2]))  # type:ignore
 
     # remove data for the specified experiment from database tables
     dbexec.NonQuery("unload_experiment", params[:2])  # type:ignore

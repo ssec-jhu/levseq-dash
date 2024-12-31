@@ -67,8 +67,9 @@ type QueryResponse = QueryResultSet | QueryScalar | None
 # Request data from the postgres SQL implementation and from this webservice instance.
 #  If this operation succeeds, we must be connected end to end.
 #
-# FWIW, the FastAPI remote development client does this request by default when it
-#  connects to this webservice.
+# FWIW, the FastAPI remote development client ("Swagger UI") does this request by default
+#  when a connection is established to this webservice at the /docs endpoint.
+#
 def GetImplementationInfo() -> QueryResponse:
 
     c, r = dbexec.Query("get_pginfo", [g.ws_id])

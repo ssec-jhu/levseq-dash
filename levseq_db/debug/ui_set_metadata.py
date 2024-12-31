@@ -66,12 +66,12 @@ class UIsetMetadata(UIbase):
 
         layout_ui_assay = [
             html.Label("assay technique:", htmlFor="input_assay"),
-            dcc.Dropdown(aAssays, value=8, id="dropdown_assay"),
+            dcc.Dropdown(aAssays, value=8, id="dropdown_assay", optionHeight=20),
         ]
 
         layout_ui_mutagenesis_method = [
             html.Label("mutagenesis method:", htmlFor="dropdown_mm"),
-            dcc.Dropdown(aMutagenesisMethods, value=2, id="dropdown_mm"),
+            dcc.Dropdown(aMutagenesisMethods, value=2, id="dropdown_mm", optionHeight=20),
         ]
 
         layout_ui_experiment_id = [
