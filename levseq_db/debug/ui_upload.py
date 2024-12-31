@@ -5,11 +5,10 @@
 #  Defines a user interface for uploading experiment metadata and files.
 #
 
-import datetime
-
 import flask
 import dash
 from dash import dcc, html, callback, Input
+import pandas
 
 import wsexec
 from ui_base import UIbase
@@ -20,15 +19,12 @@ class UIuploadData(UIbase):
     def __init__(self):
         super().__init__(type(self).__name__)
 
-    # initialize data (if any) and layout
-    def Init(self) -> None:
-
         # CSS style for the DIV wrapper
-        self.wrapperStyle = {
+        self.outerStyle = {
             "width": "fit-content",
             "border": "solid",
             "border-width": "1px",
-            "clear": "both",
+            "float": "left",
         }
 
         # interaction layout: file upload
@@ -87,7 +83,7 @@ class UIuploadData(UIbase):
             Input("UIuploadData::trigger", "contents"),
         ],
         prevent_initial_call=True,
-        on_error=UIbase.callbackException,  # _exception_uploadFiles,
+        on_error=UIbase.callbackException,
     )
     @staticmethod
     def callbackImpl(aFileNames: list[str], aFileContents: list[str]) -> None:
@@ -103,11 +99,16 @@ class UIuploadData(UIbase):
         uid = flask.session["uid"]
         eid = flask.session["eid"]
 
+        # clear any previous error info
+        dash.set_props("UIuploadData::error", dict(value=""))
+
         rval = ""
         for fileName, fileContents in zip(aFileNames, aFileContents, strict=True):
 
             # upload the file data
+            print("UIuploadData callback: start query...")
             cb = wsexec.Query("load_file", [uid, eid, fileName, fileContents])
+            print("UIuploadData callback: query ends")
 
             # append uploaded file info
             rval += f"Uploaded {fileName}: ({cb} bytes); "
@@ -115,12 +116,18 @@ class UIuploadData(UIbase):
         # show uploaded file info
         dash.set_props("div_filenames", dict(children=rval))
 
-        # update UI state  TODO
-        # dash.set_props("unload_error", dict(value="(no error)"))
-        # dash.set_props("unload_experiment_info", dict(children="(none)"))
+        # refresh the user experiment list
+        cols, rows = wsexec.Query("get_user_experiments", [uid])  # type:ignore
+        df = pandas.DataFrame(data=rows, columns=cols)  # type:ignore
+        dash.set_props("tbl_experiment_list", dict(selected_rows=[]))
+        dash.set_props("tbl_experiment_list", dict(data=df.to_dict("records")))
 
         # clear the Upload component filename and contents
-        dash.set_props("UIuploadData::trigger", dict(filename=None, contents=None))
+        dash.set_props("UIuploadData::trigger", dict(filename=[], contents=[]))
+
+        # update UI state
+        dash.set_props("div_eid", dict(children=""))
+        flask.session["eid"] = None
 
         # (we use dash.set_props instead of Output bindings)
         return

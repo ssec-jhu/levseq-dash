@@ -122,8 +122,7 @@ select v1.is_valid_cas_csv( '7732-18-5,641-17-5,439-14-5');        -- bad CAS nu
    Notes:
     This function returns a unique experiment ID.
 */
-drop function if exists v1.init_load(int,text,timestamptz,int,int,text,text);
-
+-- drop function if exists v1.init_load(int,text,timestamptz,int,int,text,text);
 create or replace function v1.init_load
 (
   in _uid                int,
@@ -174,8 +173,8 @@ begin
          where t0.uid = _uid
            and t0.experiment_name = _experiment_name;
 		   
-        details = format( '''%s'' identifies a previous experiment dated %s' ),
-                          _experiment_name, to_char(dt_prev, 'DD-Mon-YYYY');
+        details = format( '''%s'' identifies a previous experiment dated %s',
+                          _experiment_name, to_char(dt_prev, 'DD-Mon-YYYY') );
     end if;
 
     -- throw an exception if anything failed validation
@@ -187,11 +186,12 @@ begin
     -- get a new primary key for the v1.experiments table
     new_eid = nextval( 'v1.experiments_pkey_seq' );
 
+    -- zap all previous metadata in the "pending" table for all other
+	--  pending uploads by the LevSeq user
+	delete from v1.experiments_pending
+     where uid = _uid;
+
     -- add the experiment metadata to the "pending" table
-    delete from v1.experiments_pending
-     where uid = _uid
-       and experiment_name = _experiment_name;
-	
     insert into v1.experiments_pending
           ( eid, uid, experiment_name,
             assay, mutagenesis_method, dt_experiment,
@@ -610,8 +610,8 @@ begin
        We can extract the plate string from either of the "id" and "plate"
         columns, which are formatted like this:
 
-            "id":    <tag>-<barcode_plate>-<well>
-            "plate": <tag>-<barcode_plate>
+            "id":    <plate>-<barcode_plate>-<well>
+            "plate": <plate>-<barcode_plate>
 
         For example:
             "id":            20240422-ParLQ-ep1-300-1-A1
@@ -687,10 +687,10 @@ on conflict (pkey) do
 	
     -- zap all previous metadata in the "pending" table for...
 	--  - the specified experiment
-	--  - any other pending uploads by the LevSeq user that are over 24 hours old
+	--  - any other pending uploads by any LevSeq user that are over 24 hours old
 	delete from v1.experiments_pending
      where eid = _eid
-        or (uid = _uid and dt_load < (now() - interval '24 hours'));
+        or dt_load < (now() - interval '24 hours');
 
 end;
 $body$;
@@ -719,6 +719,7 @@ update v1.experiments_pending set cas_product = '395683-37-1' where eid = 28
 
 
 select * from v1.cas;
+select * from v1.experiments_pending;
 select * from v1.experiment_cas;
 
 select alignment_count, amino_acid_substitutions, count(*)
@@ -743,8 +744,7 @@ select * from _rawcsv where amino_acid_substitutions = '-'
    The call to pg_stat_file requires either superuser or
     pg_read_server_files permission.
 */
-drop function if exists v1.load_file(int,int,text);
-
+-- drop function if exists v1.load_file(int,int,text);
 create or replace function v1.load_file
 ( in _uid int,
   in _eid int,
@@ -775,11 +775,6 @@ begin
       from v1.experiments t0
      where t0.pkey = _eid;
 
-    -- ensure that we still have metadata for the specified experiment ID
-	if not exists (select * from v1.experiments_pending where eid = _eid) then
-        raise exception 'missing metadata for experiment ID %', _eid;
-    end if;
-
     -- validate the experiment ID against the filespec
     select cast((regexp_match( _filespec, '/E(\d+)/') )[1] as int) into filespec_eid;
 	if filespec_eid != _eid then
@@ -800,6 +795,12 @@ begin
     -- conditionally extract data from the uploaded file
     if right(_filespec,4) = '.csv'
     then
+
+        -- ensure that we still have metadata for the specified experiment ID
+	    if not exists (select * from v1.experiments_pending where eid = _eid) then
+            raise exception 'missing metadata for experiment ID %', _eid;
+        end if;
+
         call v1.load_experiment_data( _uid, _eid, _filespec );
     end if;
 
@@ -810,7 +811,7 @@ end;
 $body$;
 /*** test
 drop table _rawcsv;
-select v1.load_file( 1, 1, '/mnt/Data/ssec-devuser/uploads/G00001/E00001/tiny.csv' );
+select v1.load_file( 1, 1, '/mnt/Data/ssec-devuser/uploads/G00001/E00014/tiny.csv' );
 select * from _rawcsv;
 
 select count(*) from _rawcsv;
@@ -821,13 +822,4 @@ group by nt_sequence;
 truncate table v1.data_files;
 select * from v1.data_files;
 
-----
-with cte as (select pkvar, nucleotide_mutation, amino_acid_substitutions
-               from _rawvm1)
-
-	select pkvar,
-	       regexp_matches( nucleotide_mutation, '([ACGT])(\d+)([ACGTDEL]+)', 'g') as nm,
-           regexp_matches( amino_acid_substitutions, '([A-Z])(\d+)([A-Z]|\*)', 'g') as pm
-	  from cte;
-----
 ***/

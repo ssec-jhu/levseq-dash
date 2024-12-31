@@ -36,7 +36,13 @@ grant select,insert,update on v1.cas to lsdb;
 
 /* 12.tables.data.sql */
 grant select,insert,update,delete on v1.experiments to lsdb;
+grant select,insert,update,delete on v1.plates to lsdb;
 grant select,insert,update,delete on v1.experiment_cas to lsdb;
+grant select,insert,update,delete on v1.reference_sequences to lsdb;
+grant select,insert,update,delete on v1.parent_sequences to lsdb;
+grant select,insert,update,delete on v1.variants to lsdb;
+grant select,insert,update,delete on v1.variant_mutations to lsdb;
+grant select,insert,update,delete on v1.fitness to lsdb;
 
 /* 13.tables.load.sql */
 grant select,insert,update,delete on v1.experiments_pending to lsdb;

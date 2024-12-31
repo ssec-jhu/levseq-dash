@@ -20,11 +20,8 @@ class UIsetMetadata(UIbase):
     def __init__(self):
         super().__init__(type(self).__name__)
 
-    # initialize data (if any) and layout
-    def Init(self) -> None:
-
         # CSS style for the DIV wrapper
-        self.wrapperStyle = {
+        self.outerStyle = {
             "width": "fit-content",
             "border": "solid",
             "border-width": "1px",
@@ -42,7 +39,7 @@ class UIsetMetadata(UIbase):
         # fmt:off
         layout_ui_experiment_name = [
             html.Label("experiment name:", htmlFor="input_experiment_name"),
-            dcc.Input(id="input_experiment_name", type="text", value="expt1", style={"width": "128px"}),
+            dcc.Input(id="input_experiment_name", type="text", value="expt1", style={"width": "320px"}),
         ]
 
         layout_ui_experiment_date = [
@@ -53,7 +50,7 @@ class UIsetMetadata(UIbase):
                 max_date_allowed=datetime.datetime.now(),
                 initial_visible_month=datetime.datetime.today(),
                 date=datetime.datetime.today(),
-                style={"height":"8px"}
+                # (see assets/main.py for CSS style)
         ),
         ]
         
@@ -78,8 +75,8 @@ class UIsetMetadata(UIbase):
         ]
 
         layout_ui_experiment_id = [
-            html.Label("experiment ID:", htmlFor="div_eid"),
-            html.Div(id="div_eid", children="(none yet)", style={"width":"128px","borderStyle":"solid","borderWidth":"1px","borderColor":"green"}),
+            html.Label("experiment ID:", htmlFor="div_eid", style={"display": "inline-block"}),
+            html.Div(id="div_eid", children="(none yet)", style={"width":"128px", "display": "inline-block", "margin-left": "4px"}),
         ]
         # fmt:on
 
@@ -110,7 +107,7 @@ class UIsetMetadata(UIbase):
             State("input_cascsv_product", "value"),
         ],
         prevent_initial_call=True,
-        on_error=UIbase.callbackException,  # exception_getExperimentID,
+        on_error=UIbase.callbackException,
     )
     @staticmethod
     def callbackImpl(
@@ -123,6 +120,10 @@ class UIsetMetadata(UIbase):
         cas_product: str,
     ) -> None:
         print("UIsetMetadata callback")
+
+        ### TODO: GET RID OF THIS HACK (SEE ui_set_user.py)
+        if "uid" not in flask.session:
+            flask.session["uid"] = 5
 
         # validate the user-entered experiment metadata and get a experiment ID
         eid = wsexec.Query(
@@ -144,7 +145,7 @@ class UIsetMetadata(UIbase):
 
         # update the UI state
         dash.set_props("div_eid", dict(children=str(eid)))
-        dash.set_props("UIsetMetadata::error", dict(value="(no error)"))
+        dash.set_props("UIsetMetadata::error", dict(value=""))
 
         # (we use dash.set_props instead of Output bindings)
         return

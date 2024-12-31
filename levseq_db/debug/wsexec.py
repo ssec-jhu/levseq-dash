@@ -15,7 +15,6 @@ type QueryResponse = ResultSet | Scalar
 type Arglist = list[Scalar]
 
 
-# TODO: CLEAN UP THE CODE A BIT AND WRITE AN INTELLIGENT COMMENT
 # define a class that supports json serialization of HTTP request parameters
 class QueryPackage(dict):
 
@@ -31,10 +30,6 @@ class QueryPackage(dict):
 
         self.verb = verb
         self.params = params
-
-
-# TODO: WRITE A "PING" TO THE LevSeq webservice
-# TODO: VERIFY timestamp datatype!!!!!!!
 
 
 # HTTP POST to the LevSeq webservice

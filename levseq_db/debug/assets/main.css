@@ -1,0 +1,15 @@
+/*
+   main.css
+*/
+
+body
+{
+    background-color: #fafae0;
+}
+
+/* the following hacks around the Dash singledatepicker component's default style */
+input.DateInput_input
+{
+    font-size: 0.85em;
+    padding: 0px 0px 0px 4px;
+}

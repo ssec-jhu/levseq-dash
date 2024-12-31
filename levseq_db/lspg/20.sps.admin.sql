@@ -15,6 +15,48 @@ $body$;
 call v1.do_nothing( 12345 );
 ***/
 
+
+/* function v1.files_in_dir */
+-- drop function if exists v1.files_in_dir(text);
+create or replace function v1.files_in_dir( in _dir text )
+returns table
+( filename text )
+language plpgsql
+as $body$
+
+declare
+    pgm     text = 'find ' || _dir || ' -maxdepth 1 -type f -printf "%f\n"';
+    execcmd text = 'copy _fid from program ' || quote_literal(pgm);
+    cb_file int;
+	
+begin
+
+    -- if the specified directory does not exist, return an empty result set
+    select "size" into cb_file from pg_stat_file(_dir, true);
+    if coalesce(cb_file, 0) = 0 then return; end if;
+
+    -- use Linux "find" to list files in the specified directory
+    drop table if exists _fid;
+	create temporary table _fid
+	( fname text not null );
+
+    raise notice 'pgm: %', pgm;
+	raise notice 'execcmd: %', execcmd;
+	
+	execute execcmd;
+
+    return query
+    select fname
+      from _fid
+  order by fname asc;
+
+end;
+$body$;
+/*** test
+select v1.files_in_dir( '/mnt/Data/lsdb/uploads/G00002/E00027' );
+***/
+
+
 /* function get_pginfo */
 -- drop function v1.get_pginfo(text);
 create or replace function v1.get_pginfo( in _wsid text )
@@ -285,5 +327,6 @@ begin
 end;
 $body$;
 /*** test
-select * from v1.get_experiment_row_counts(28);
+select * from v1.experiments;
+select * from v1.get_experiment_row_counts(27);
 ***/

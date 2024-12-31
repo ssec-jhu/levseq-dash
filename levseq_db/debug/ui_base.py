@@ -2,7 +2,9 @@
 # ui_base.py
 #
 # Notes:
-#  Implements a base class for UI units (Dash control layout and exception handling).
+#  Implements a base class for Dash control layout and exception handling.
+#   The idea is to clump UI interactions together, with multiple display and
+#   data-entry components bound to each Dash callback.
 #
 #  To make this work, a class derived from UIbase must do the following:
 #
@@ -11,6 +13,12 @@
 #
 #  - Use dash.set_prop() instead of binding to Output component properties.  (Both
 #     the callback and exception-handler methods must return None.)
+#
+#  - Designate the Dash callback implementation as a static method (@staticmethod)
+#
+#  - [optionally] Use the general-purpose exception handler by using the following
+#     parameter in the @callback decorator:
+#       on_error=UIbase.callbackException
 #
 # We wrap the layout defined in a derived class inside an HTML DIV in order to add
 #  a Dash Textarea that can display error text.
@@ -30,12 +38,12 @@ class UIbase:
     def __init__(self, _baseName):
         self.baseName = _baseName
         self.outerStyle = {"width": "fit-content"}
-        self.wrapperStyle = {"width": "fit-content", "textAlign": "center"}
+        self.innerStyle = {"width": "fit-content"}
 
         self.contents = html.Div(
             id=f"{self.baseName}::placeholder",
             children=f"({self.baseName}::placeholder)",
-            style=self.wrapperStyle,
+            style=self.innerStyle,
         )
 
     # initialize bound data and layout
@@ -51,7 +59,7 @@ class UIbase:
             html.Div(
                 id=f"{self.baseName}::contents",
                 children=self.contents,
-                style=self.wrapperStyle,
+                style=self.innerStyle,
             ),
             html.Textarea(id=f"{self.baseName}::error", style={"width": "auto"}),
         ]
@@ -73,42 +81,50 @@ class UIbase:
 
     @staticmethod
     def callbackException(ex: Exception) -> None:
-        print("callbackException")
+        print(f"callbackException: {ctx.triggered_id}")
 
         # emit exception text
         aText = "\n".join(UIbase.getExceptionText(ex))
 
         # put error text into the corresponding Textarea
-        baseName = ctx.triggered_id.split("::")[0]
+        baseName = ctx.triggered_id.split("::")[0]  # type:ignore
         dash.set_props(f"{baseName}::error", dict(value=aText))
 
         # callbacks must not bind to Output properties (use dash.set_props() instead)
         return None
 
-    # scrape the entire Dash app layout for the component that triggered the callback exception
+    # Scrape the entire Dash app layout for the component with the specified "id" property
+    #  value.
+    #
     #  (we don't use this here, but maybe it will come in handy someday)
     #
-    # (call like this:  UIbase.getTriggeredComponent(dash.get_app().layout))
     # @staticmethod
-    # def getTriggeredComponent(p):
-    #     rval = None
+    # def FindDashComponentById(id: str):
 
-    #     if isinstance(p, list):
-    #         for c in p:
-    #             rval = UIbase.getTriggeredComponent(c)
-    #             if rval is not None:
-    #                 return rval
+    #     # we use a closure here to keep the specified string in scope without passing it
+    #     #  as a parameter
+    #     @staticmethod
+    #     def getTriggeredComponent(p):
+    #         rval = None
 
-    #     if "id" in p.__dict__:
-    #         if p.__getattribute__("id") == ctx.triggered_id:
-    #             return p
-
-    #     if "children" in p.__dict__:
-    #         ac = p.__getattribute__("children")
-    #         if ac is not None and not isinstance(ac, str):
-    #             for c in ac:
-    #                 rval = UIbase.getTriggeredComponent(c)
+    #         if isinstance(p, list):
+    #             for c in p:
+    #                 rval = getTriggeredComponent(c)
     #                 if rval is not None:
     #                     return rval
 
-    #     return rval
+    #         if "id" in p.__dict__:
+    #             if p.__getattribute__("id") == id:
+    #                 return p
+
+    #         if "children" in p.__dict__:
+    #             ac = p.__getattribute__("children")
+    #             if ac is not None and not isinstance(ac, str):
+    #                 for c in ac:
+    #                     rval = getTriggeredComponent(c)
+    #                     if rval is not None:
+    #                         return rval
+
+    #         return rval
+
+    #     return getTriggeredComponent(dash.get_app().layout)

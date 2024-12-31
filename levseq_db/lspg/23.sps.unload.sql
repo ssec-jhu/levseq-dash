@@ -5,7 +5,6 @@
 
 /* function v1.get_unload_dirpath */
 drop function if exists v1.get_unload_dirpath(int,int);
-
 create or replace function v1.get_unload_dirpath
 ( in _uid int,
   in _eid int )
@@ -46,7 +45,7 @@ begin
 end;
 $body$;
 /*** test
-select v1.get_unload_dirpath( 5, 1 );
+select v1.get_unload_dirpath( 5, 3 );
 ***/
 
 /* procedure v1.unload_experiment */
@@ -86,12 +85,14 @@ select * from v1.experiments;
 select * from v1.experiments_pending;
 
 
-call v1.unload_experiment( 5, 28 );
+call v1.unload_experiment( 5, 27 );
 
 insert into v1.experiments_pending(eid,uid,dt_load,experiment_name,assay,mutagenesis_method,dt_experiment,cas_substrate,cas_product)
 values(28,5,now(),'expt1',8,2,'2024-12-26','345905-97-7','395683-37-1')
 
-delete from v1.experiments_pending where eid = 228;
+
+select * from v1.experiments;
+select * from v1.get_experiment_row_counts(27);
 
 
 "v1.fitness"	1903
@@ -106,6 +107,7 @@ delete from v1.experiments_pending where eid = 228;
 
 
 /* procedure v1.unload_file UNUSED */
+/*****************************
 drop procedure if exists v1.unload_file(int,int,text);
 
 --create or replace procedure v1.unload_file
@@ -152,6 +154,7 @@ begin
 	   
 end;
 $body$;
+*********************/
 /*** test
 select * from v1.users;
 select * from v1.data_files;

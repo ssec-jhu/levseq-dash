@@ -8,6 +8,7 @@
 import flask
 import dash
 from dash import dcc, html, callback, Input
+import pandas
 
 import wsexec
 from ui_base import UIbase
@@ -18,11 +19,8 @@ class UIsetUser(UIbase):
     def __init__(self):
         super().__init__(type(self).__name__)
 
-    # initialize data (if any) and layout
-    def Init(self) -> None:
-
         # CSS style for the DIV wrapper
-        self.wrapperStyle = {
+        self.outerStyle = {
             "width": "fit-content",
             "border": "solid",
             "border-width": "1px",
@@ -37,27 +35,32 @@ class UIsetUser(UIbase):
         aUsers = [{"value": r[iv], "label": f"{r[iu]} ({r[ig]})"} for r in rows]
 
         # layout
-        # TODO: DON'T HARDCODE THE INITIALLY SELECTED USER!!!
         self.contents = [
             html.H3("Select LevSeqUser"),
-            dcc.Dropdown(aUsers, value=5, id="dropdown_users", style={"width": "160px"}),
-            html.Div(id="div_user_info"),
+            dcc.Dropdown(aUsers, id="UIsetUser::trigger", style={"width": "160px"}),
+            html.Label("Current user ID:", htmlFor="div_uid", style={"display": "inline-block"}),
+            html.Div(
+                id="div_uid",
+                children="(not selected)",
+                style={"display": "inline-block", "margin-left": "4px"},
+            ),
         ]
 
         return
 
     # callback: user list dropdown selection
     @callback(
-        Input("dropdown_users", "value"),
-        prevent_initial_call=False,
+        Input("UIsetUser::trigger", "value"),
+        prevent_initial_call=True,
+        on_error=UIbase.callbackException,
     )
     @staticmethod
-    def selectUser(uid) -> None:
-        print("UIsetMetadata callback...")
+    def callbackImpl(uid) -> None:
+        print("UIsetUser callback...")
 
         # do nothing if the user-selection dropdown has no current value
         if uid is None:
-            msg = ["Current user ID: (none)"]
+            msg = "(not selected)"
 
         else:
 
@@ -73,11 +76,17 @@ class UIsetUser(UIbase):
             # get user session config
             cols, rows = wsexec.Query("get_user_info", [uid])  # type:ignore
             flask.session["groupname"] = rows[0][cols.index("groupname")]
-
-            msg = f"Current user ID: {uid}"
+            msg = str(uid)
 
         # update UI state
-        dash.set_props("div_user_info", dict(children=msg))
+        dash.set_props("div_uid", dict(children=msg))
+
+        # refresh the user experiment list
+        cols, rows = wsexec.Query("get_user_experiments", [uid])  # type:ignore
+        df = pandas.DataFrame(data=rows, columns=cols)  # type:ignore
+        dash.set_props("tbl_experiment_list", dict(selected_rows=[]))
+        dash.set_props("tbl_experiment_list", dict(data=df.to_dict("records")))
+        dash.set_props("UIunloadData::error", dict(value=""))
 
         # (we use dash.set_props instead of Output bindings)
         return

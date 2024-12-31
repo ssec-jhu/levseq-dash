@@ -81,6 +81,8 @@ import dbexec
 # fmt: off
 def LoadFile(params: dbexec.Arglist) -> int:
 
+    print( "lsws: LoadFile starts...")
+
     # query the database to validate the group/experiment/filename and obtain
     #  an upload filespec (i.e., a fully-qualified directory path and filename)
     dirpath = str(dbexec.QueryScalar("get_load_dirpath", params[:3]))  # type:ignore
@@ -111,13 +113,25 @@ def LoadFile(params: dbexec.Arglist) -> int:
     filespec = f"{dirpath}{params[2]}" # type:ignore
     cbw = pathlib.Path(filespec).write_bytes(copyFrom)
 
+
+    print( "lsws: LoadFile starts postgres query...: ")
+
+
     # load the file metadata (and, conditionally, the file contents) into the database
     cbl = dbexec.QueryScalar("load_file", [params[0], params[1], filespec] ) # type: ignore
+
+
+    print( "lsws: LoadFile postgres query ends...: ")
+
+
 
     # verify that the number of characters loaded equals the number of characters written to the file
     if cbw != cbl:
         msg = f"{filespec}: {cbl} bytes loaded / {cbw} bytes written"
         raise fastapi.HTTPException(status_code=422, detail=msg)  # 422: Unprocessable Content        throw
+
+
+    print( "lsws: LoadFile ends")
 
     return cbw
 # fmt: on

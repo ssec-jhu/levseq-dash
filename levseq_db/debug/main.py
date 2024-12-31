@@ -15,16 +15,14 @@
 import sys
 import os
 
-import flask
 from flask import Flask
-import dash
-from dash import Dash, dcc, html, callback, Output, Input, State
+from dash import Dash, html
 
 from ui_set_user import UIsetUser
 from ui_set_metadata import UIsetMetadata
 from ui_upload import UIuploadData
+from ui_unload import UIunloadData
 
-import wsexec
 import global_vars as gv
 
 
@@ -44,81 +42,16 @@ def _initWebPage(debugDash: bool) -> None:
     uiSetUser = UIsetUser()
     uiSetMetadata = UIsetMetadata()
     uiUploadData = UIuploadData()
+    uiUnloadData = UIunloadData()
 
-    # initialize
-    uiSetUser.Init()
-    uiSetMetadata.Init()
-    uiUploadData.Init()
-
-    layout_zapExperiment = [
-        html.H3("Unload experiment"),
-        html.Button("Zap!", id="btn_zap_experiment", n_clicks=0),
-        html.Div(id="unload_experiment_info", children="(none)"),
-        html.Textarea(id="unload_error"),
-    ]
-
+    # page layout (see assets/main.py for additional CSS styles)
     app.layout = [
         html.H1(children=app.title, style={"textAlign": "center", "color": "brown"}),
         uiSetUser.Layout(),
         uiSetMetadata.Layout(),
         uiUploadData.Layout(),
-        # html.Div(
-        #     id="user_input_test",
-        #     children=layout_user_input,
-        #     style={"width": "100%", "border": "solid", "border-width": "1px"},
-        # ),
-        # html.Div(
-        #     id="fsexec_test",
-        #     children=layout_fsexec,
-        #     style={"width": "100%", "border": "solid", "border-width": "1px"},
-        # ),
-        html.Div(
-            id="expt_unload_test",
-            children=layout_zapExperiment,
-            style={"width": "100%", "border": "solid", "border-width": "1px"},
-        ),
+        uiUnloadData.Layout(),
     ]
-
-
-def _exception_unloadExperiment(ex: Exception) -> list[str]:
-    print("_exception_unloadExperiment")
-
-    # emit exception text
-    aText = "\n".join(getExceptionText(ex))
-    dash.set_props("unload_error", dict(value=aText))
-
-    # the return value is bound to the associated callback Output(s)
-    return ["(error)"]
-
-
-# callback: experiment unload
-@callback(
-    [Output("unload_experiment_info", "children")],
-    [Input("btn_zap_experiment", "n_clicks")],
-    prevent_initial_call=True,
-    on_error=_exception_unloadExperiment,
-)
-def unloadExperiment(n_clicks: int) -> str:
-    print("unloadExperiment...")
-
-    uid = flask.session["uid"]
-    eid = flask.session["eid"]
-
-    # unload the experiment data and delete all assocated uploaded files
-    wsexec.Query("unload_experiment", [uid, eid])
-
-    msg = f"Unloaded experiment ID {flask.session["eid"]} ({flask.session["experiment_name"]})"
-
-    # update UI state (maybe return as Output(), but this seems simpler)
-    dash.set_props("load_error", dict(value="(no error)"))
-    dash.set_props("unload_error", dict(value="(no error)"))
-    dash.set_props("uploaded_filenames", dict(children=""))
-
-    # update session state
-    flask.session["eid"] = None
-    flask.session["experiment_name"] = None
-
-    return msg
 
 
 # Dash/Flask application setup
@@ -153,13 +86,11 @@ else:
     # YMMV if you use a web server other than gunicorn, because we haven't tested this code
     #  with anything else!
     #
-    # fmt:off
     srvFlask = Flask(__name__)
     app = Dash(__name__, server=srvFlask)  # (corresponds to gunicorn parameter "main:srvFlask")
     debugDash = False
-    hostName = 'hplc-pc.che.caltech.edu'
+    hostName = "hplc-pc.che.caltech.edu"
     tcpPort = 8051
-    # fmt:on
 
 # initialize the web page layout
 _initWebPage(debugDash)
@@ -167,5 +98,5 @@ _initWebPage(debugDash)
 # gunicorn will not load this app correctly unless the script ends with the
 #  customary module-name validation:
 if __name__ == "__main__":
-    app.server.config.update(SECRET_KEY=gv.session_key)
+    app.server.config.update(SECRET_KEY=gv.flask_session_key)
     app.run(host=hostName, port=str(tcpPort), debug=debugDash, use_reloader=debugDash)
