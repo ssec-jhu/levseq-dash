@@ -70,6 +70,25 @@ import fastapi
 import dbexec
 
 
+# remove all files and subdirectories (like rm -r)
+def _rmr(dir: pathlib.Path) -> int:
+
+    nFilesDeleted = 0
+
+    # iterate through the files and subdirectories in the specified directory
+    for ford in dir.iterdir():
+        if ford.is_dir():
+            nFilesDeleted += _rmr(ford)  # subdirectory: recurse
+        else:
+            ford.unlink()  # file: delete
+            nFilesDeleted += 1
+
+    # at this point the specified directory is empty, so delete it
+    dir.rmdir()
+
+    return nFilesDeleted
+
+
 # Upload a file to the webservice/database server filesystem and update the
 #  database contents accordingly.
 #
@@ -86,7 +105,8 @@ def LoadFile(params: dbexec.Arglist) -> int:
     dirpath = str(dbexec.QueryScalar("get_load_dirpath", params[:3]))  # type:ignore
 
     # create the upload directory if it does not already exist
-    pathlib.Path(dirpath).mkdir(parents=True, exist_ok=True)
+    pDir = pathlib.Path(dirpath)
+    pDir.mkdir(parents=True, exist_ok=True)
 
     # convert to utf8 (which we need to do anyway if the file is base64-encoded)
     fileBytes = str(params[3]).encode("utf-8") #type:ignore
@@ -109,7 +129,8 @@ def LoadFile(params: dbexec.Arglist) -> int:
 
     # write the text to the output file and save the number of bytes written
     filespec = f"{dirpath}{params[2]}" # type:ignore
-    cbw = pathlib.Path(filespec).write_bytes(copyFrom)
+    pFile = pathlib.Path(filespec)
+    cbw = pFile.write_bytes(copyFrom)
 
     try:
         # load the file contents into the database
@@ -117,7 +138,11 @@ def LoadFile(params: dbexec.Arglist) -> int:
 
     except :
         # the database operation failed, so zap the newly-created file
-        pathlib.Path(filespec).unlink()  # file: delete
+        pFile.unlink()  # file: delete
+
+        # if the directory is now empty, delete it as well
+        if not any(pDir.iterdir()):
+            pDir.rmdir()
 
         # rethrow the exception
         raise
@@ -129,25 +154,6 @@ def LoadFile(params: dbexec.Arglist) -> int:
 
     return cbw
 # fmt: on
-
-
-# remove all files and subdirectories (like rm -r)
-def _rmr(dir: pathlib.Path) -> int:
-
-    nFilesDeleted = 0
-
-    # iterate through the files and subdirectories in the specified directory
-    for ford in dir.iterdir():
-        if ford.is_dir():
-            nFilesDeleted += _rmr(ford)  # subdirectory: recurse
-        else:
-            ford.unlink()  # file: delete
-            nFilesDeleted += 1
-
-    # at this point the specified directory is empty
-    dir.rmdir()
-
-    return nFilesDeleted
 
 
 # Remove data for the specified experiment and delete all associated uploaded files

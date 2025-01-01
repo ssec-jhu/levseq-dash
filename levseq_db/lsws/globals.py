@@ -1,9 +1,10 @@
 #
-# global_vars.py
+# globals.py
 #
 
 import os
 import pwd
+import builtins
 import requests
 
 # webservice implementation ID string
@@ -23,3 +24,10 @@ prodPort = 8051
 # URL parameters for debugging
 devHost = "localhost"
 devPort = 8052
+
+
+# print with formatting consistent with gunicorn; ANSI terminal escape codes from here:
+#  https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
+def DebugPrint(*args, **kwargs):
+    builtins.print("\x1B[38:5:178mlsws\x1B[0m:     ", end="")
+    builtins.print(*args, **kwargs)

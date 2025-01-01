@@ -4,7 +4,7 @@
 
 import re
 import requests
-import global_vars as gv
+import globals as g
 
 # handy type aliases
 type Scalar = int | float | str
@@ -36,8 +36,13 @@ class QueryPackage(dict):
 #
 def Query(verb: str, params: list[Scalar]) -> QueryResponse:
 
+    # sanity check parameters
+    if not isinstance(params, list) or not all(isinstance(p, (int, float, str)) for p in params):
+        raise ValueError("query parameters are not list[Scalar]")
+
+    # HTTP request/response
     pkg = QueryPackage(verb, params)
-    resp = requests.post(gv.lswsurl, json=pkg)
+    resp = requests.post(g.lswsurl, json=pkg)
     if not resp.ok:
 
         msg = f"LevSeq webservice response: {resp.status_code} {resp.reason}"

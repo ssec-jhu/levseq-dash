@@ -21,7 +21,7 @@ import psycopg
 from psycopg import sql as scm  # "SQL composition utility module"
 from psycopg import abc  # typedef Params for cursor.execute()
 import typing
-import global_vars as g
+import globals as g
 
 # handy type aliases
 type Rowset = list[tuple]

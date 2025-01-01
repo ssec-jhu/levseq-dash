@@ -56,18 +56,19 @@ class UIuploadData(UIbase):
     # This Dash implementation is as ugly as it could possibly be:
     #
     #  - The Upload component triggers a callback only when the contents of its "filename"
-    #     and/or "contents" properties change, even if the user re-selects the same file(s)
-    #     in the component interactive dialog.
+    #     and/or "contents" properties change, i.e., no callback is triggered when the user
+    #     re-selects the same file(s) as are in the component's "filename" list.
     #
     #  - This means we need to reset these properties explicitly by binding them as Output
     #     in this callback implementation.
     #
-    #  - But changing the properties triggers another callback! So that means we need to
+    #  - But changing the properties triggers another callback!  That means we need to
     #     handle the re-entrant condition explicitly.  We do it by examining the "filename"
     #     value.
     #
-    #  - Finally, in the re-entrant situation, we need to preserve the state of any other Output
-    #     components.
+    #  - Finally, in the re-entrant situation, we need to preserve the state of any other
+    #     Output components.  (Fortunately, we don't have any here because we use
+    #     Dash.set_props() instead.)
     #
     # Apparently this horrible implementation is by design.  See, for example,
     #  https://community.plotly.com/t/upload-attributes-not-cleared-after-callback-runs/40697
@@ -93,9 +94,13 @@ class UIuploadData(UIbase):
         #  "contents" properties (see below), all we need to do is ensure that the UI state
         #  doesn't change.
         if len(aFileNames) == 0:
-            ## TODO: set_props here???
             return
 
+        # clear the Upload component filename and contents
+        dash.set_props("UIuploadData::trigger", dict(filename=[], contents=[]))
+
+        # get the user ID and pending experiment ID from session variables (which may not be
+        #  the best way to do this)
         uid = flask.session["uid"]
         eid = flask.session["eid"]
 
@@ -118,9 +123,6 @@ class UIuploadData(UIbase):
 
         # refresh the user experiment list
         UIunloadData.RefreshUserExperimentList(uid)
-
-        # clear the Upload component filename and contents
-        dash.set_props("UIuploadData::trigger", dict(filename=[], contents=[]))
 
         # update UI state
         dash.set_props("div_eid", dict(children=""))

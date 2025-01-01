@@ -47,6 +47,10 @@ call v1.unload_experiment( 5, 25 );
 insert into v1.experiments_pending(eid,uid,dt_load,experiment_name,assay,mutagenesis_method,dt_experiment,cas_substrate,cas_product)
 values(28,5,now(),'expt1',8,2,'2024-12-26','345905-97-7','395683-37-1')
 
+expt2
+99685-96-8
+7732-18-5
+
 
 select * from v1.experiments;
 select * from v1.get_experiment_row_counts(25);

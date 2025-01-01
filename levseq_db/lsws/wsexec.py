@@ -11,7 +11,7 @@
 #    Query         get_*          column names (list[str]), rows (list[tuple])
 #
 #  For Query requests, the remote consumer of rowsets returned through this webservice
-#   is intended to be a pandas DataFrame, which has a simple initializer:
+#   can be a pandas DataFrame, which has a simple initializer:
 #
 #       rows = [(3, 'a'), (2, 'b'), (1, 'c'), (0, 'd')]
 #       cols = ['col_1', 'col_2']
@@ -34,7 +34,7 @@ import re
 import pydantic
 import dbexec
 import fsexec
-import global_vars as g
+import globals as g
 
 
 # It would be possible to serialize result sets as json in postgres using json_agg(),

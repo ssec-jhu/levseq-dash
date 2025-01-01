@@ -5,7 +5,6 @@
 #  This script is the web application program entry point.
 #
 #  Dash "core components" are documented here: https://dash.plotly.com/dash-core-components/
-#
 #  Flask is documented here: https://flask.palletsprojects.com/en/stable/
 #
 #  Autoformatter: black
@@ -23,7 +22,7 @@ from ui_set_metadata import UIsetMetadata
 from ui_upload import UIuploadData
 from ui_unload import UIunloadData
 
-import global_vars as gv
+import globals as g
 
 
 # emit a banner
@@ -36,7 +35,7 @@ print(f"\nStart {sScriptName} __name__={__name__} pid={os.getpid()}, python v{sy
 # initial web page layout implementation
 def _initWebPage(debugDash: bool) -> None:
 
-    app.title = f"{gv.web_title}{' (DEBUG)' if debugDash else ''}"
+    app.title = f"{g.web_title}{' (DEBUG)' if debugDash else ''}"
 
     # instantiate user interactions
     uiSetUser = UIsetUser()
@@ -98,5 +97,5 @@ _initWebPage(debugDash)
 # gunicorn will not load this app correctly unless the script ends with the
 #  customary module-name validation:
 if __name__ == "__main__":
-    app.server.config.update(SECRET_KEY=gv.flask_session_key)
+    app.server.config.update(SECRET_KEY=g.flask_session_key)
     app.run(host=hostName, port=str(tcpPort), debug=debugDash, use_reloader=debugDash)

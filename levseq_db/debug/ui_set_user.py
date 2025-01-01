@@ -84,6 +84,7 @@ class UIsetUser(UIbase):
 
         # refresh the user experiment list
         UIunloadData.RefreshUserExperimentList(uid)
+        dash.set_props("div_unload_experiment_info", dict(children=""))
 
         # (we use dash.set_props instead of Output bindings)
         return

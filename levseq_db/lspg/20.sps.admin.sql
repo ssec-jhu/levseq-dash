@@ -104,31 +104,45 @@ select v1.files_in_dir( '/mnt/Data/lsdb/uploads/G00002/E00027' );
 
 
 /* function get_pginfo */
--- drop function v1.get_pginfo(text);
+drop function if exists v1.get_pginfo(text);
 create or replace function v1.get_pginfo( in _wsid text )
 returns table
-( wsinfo text,
-  pginfo text,
-  dt     timestamptz,
-  n      int,
-  f      double precision
+( wsinfo         text,
+  pginfo         text,
+  n_groups       int,
+  n_users        int,
+  n_experiments  int,
+  dt_last_update timestamptz
 )
 language plpgsql
 as $body$
+declare
+    dtlu timestamptz;
 begin
 
+    -- get a "last update" timestamp
+    select max(dt_load) into dtlu
+      from v1.experiments;
+
+    if dtlu is null
+    then
+        select max(last_dt) into dtlu
+          from v1.users;
+    end if;
+	
     return query
     select _wsid,
            (regexp_match(version(), '(^.*\s[\d\.]+)\s'))[1],
-           now(),
-		   (1e5*pi())::int,
-		   pi();
+           (select count(*)::int from v1.usergroups),
+           (select count(*)::int from v1.users where enabled),
+           (select count(*)::int from v1.experiments),
+           dtlu;
 
 end;
 $body$;
 /*** test
-select * from v1.get_pginfo('LevSeq webservice');
-select v1.get_pginfo('LevSeq webservice');         -- (one column, comma-separated)
+select * from v1.get_pginfo('LevSeq webservice');  -- result set
+select v1.get_pginfo('LevSeq webservice');         -- record
 ***/
 
 
@@ -249,10 +263,11 @@ select * from v1.get_user_info( 'Richard', '64-17-5' );
 ***/
 
 /* function save_user_info */
--- drop function if exists v1.save_user_info(text,text,text,text,text,text);
+drop function if exists v1.save_user_info(text,text,bool,text,text,text,text);
 create or replace function v1.save_user_info
 ( in _username  text,
   in _pwd       text,
+  in _enabled   bool,
   in _firstname text,
   in _lastname  text,
   in _groupname text,
@@ -269,11 +284,12 @@ declare
 begin
 
     -- insert/update the users table
-	insert into v1.users(username, pwd, firstname, lastname, gid, email)
-	     values (_username, _pwd, _firstname, _lastname, pkgrp, _email)
+	insert into v1.users(username, pwd, enabled, firstname, lastname, gid, email)
+	     values (_username, _pwd, _enabled, _firstname, _lastname, pkgrp, _email)
     on conflict (username,gid)
 	  do update set username = _username,
                     pwd = _pwd,
+                    enabled = _enabled,
                     firstname = _firstname,
                     lastname = _lastname,
                     gid = pkgrp,
@@ -287,10 +303,12 @@ $body$;
 /*** test
 delete from v1.users where pkey >= 1;
 alter sequence v1.users_pkey_seq restart with 1;
-select v1.save_user_info('Richard', 'monkey', 'Richard', 'Wilton', 'SSEC', 'a@b.com');
-select v1.save_user_info('RJSquirrel', 'nuts', 'Rocket J', 'Squirrel', 'SSEC', 'bull@winkle.com');
+select v1.save_user_info('Fatemeh', 'pwdF', true, 'Fatemeh', 'Abbasinejad', 'SSEC', 'fabbasinejad@jhu.edu');
+select v1.save_user_info('Yueming', 'pwdY', true, 'Yueming', 'Long', 'FHALAB', 'ylong@caltech.edu');
+select v1.save_user_info('Richard', 'pwdR', true, 'Richard', 'Wilton', 'SSEC', 'a@b.com');
+select v1.save_user_info('RJSquirrel', 'nuts', true, 'Rocket J', 'Squirrel', 'SSEC', 'moose@bullwinkle.com');
 select * from v1.users;
-delete from v1.users where pkey > 5
+select * from v1.usergroups;
 ***/
 
 /* procedure save_user_ip */

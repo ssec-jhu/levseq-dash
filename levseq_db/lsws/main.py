@@ -23,7 +23,7 @@ from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 import psycopg
 import wsexec
-import global_vars as g
+import globals as g
 
 
 # grab some linux system info
@@ -31,8 +31,8 @@ sScriptName = os.path.basename(__file__)
 
 # emit a banner
 # fmt: off
-print(f"\nStart {sScriptName} __name__={__name__} pid={os.getpid()}, python v{sys.version.split('|')[0]}...")
-print(f"Invoked as: {sys.argv[0]} by {g.linux_username}" )
+g.DebugPrint(f"Start {sScriptName} __name__={__name__} pid={os.getpid()}, python v{sys.version.split('|')[0]}...")
+g.DebugPrint(f"Invoked as: {sys.argv[0]} by {g.linux_username}" )
 # fmt: on
 
 
@@ -67,7 +67,7 @@ else:
     wantDeveloperEndpoints = (len(sys.argv) >= 2) and (sys.argv[1])
 
 # instantiate FastAPI
-print(f"wantDeveloperEndpoints: {wantDeveloperEndpoints}")
+g.DebugPrint(f"wantDeveloperEndpoints: {wantDeveloperEndpoints}")
 if wantDeveloperEndpoints:
     app = fastapi.FastAPI()
 else:
@@ -107,7 +107,7 @@ async def query(args: wsexec.QueryParams) -> wsexec.QueryResponse:
 
         # conditionally emit query arguments as JSON
         if wantDeveloperEndpoints:
-            print(JSONResponse(content=jsonable_encoder(args)).body.decode())  # type:ignore
+            g.DebugPrint(JSONResponse(content=jsonable_encoder(args)).body.decode())  # type:ignore
 
         # process the HTTP request; FastAPI handles serialization (see wsexec.py)
         return wsexec.PostDatabaseQuery(args)

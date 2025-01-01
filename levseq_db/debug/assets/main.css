@@ -10,6 +10,7 @@ body
 /* the following hacks around the Dash singledatepicker component's default style */
 input.DateInput_input
 {
+    line-height: inherit;
     font-size: 0.85em;
     padding: 0px 0px 0px 4px;
 }

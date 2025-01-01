@@ -52,15 +52,17 @@ update v1.usergroups set upload_dir = '/mnt/Data/%s/uploads/'
 -- drop table if exists v1.users cascade;
 create table if not exists v1.users
 (
-  pkey      int   not null generated always as identity primary key,
-  username  text  not null,
-  pwd       text  not null default '64-17-5',
-  firstname text  not null default '',
-  lastname  text  not null default '',
-  gid       int   not null constraint fk_users_usergroup
-                           references v1.usergroups(pkey),
-  email     text  not null default '',
-  last_ip   text  not null default ''
+  pkey      int          not null generated always as identity primary key,
+  username  text         not null,
+  pwd       text         not null default '64-17-5',
+  enabled   bool         not null default true,
+  firstname text         not null default '',
+  lastname  text         not null default '',
+  gid       int          not null constraint fk_users_usergroup
+                                  references v1.usergroups(pkey),
+  email     text         not null default '',
+  last_dt   timestamptz  not null default now(),
+  last_ip   text         not null default ''
 )
 tablespace pg_default;
 
@@ -70,9 +72,5 @@ create unique index ix_users_username_gid
 			   with (deduplicate_items=True)
          tablespace pg_default;
 /*** test
-truncate table v1.users;
-alter sequence v1.users_pkey_seq restart with 1;
-insert into v1.users(username, gid)
-     values ('Fatemeh', 2), ('Yueming', 1), ('Richard', 2);
-select * from v1.users;
+(use v1.save_user_info)
 ***/
