@@ -74,10 +74,7 @@ class UIunloadData(UIbase):
         dash.set_props("UIunloadData::error", dict(value=""))
 
         # refresh the user experiment list
-        cols, rows = wsexec.Query("get_user_experiments", [uid])  # type:ignore
-        df = pandas.DataFrame(data=rows, columns=cols)  # type:ignore
-        dash.set_props("tbl_experiment_list", dict(selected_rows=[]))
-        dash.set_props("tbl_experiment_list", dict(data=df.to_dict("records")))
+        UIunloadData.RefreshUserExperimentList(uid)
 
         # update session state
         flask.session["eid"] = None
@@ -89,7 +86,7 @@ class UIunloadData(UIbase):
     def RefreshUserExperimentList(uid: int) -> None:
         dash.set_props("UIunloadData::error", dict(value=""))
 
-        cols, rows = wsexec.Query("get_user_experiments", [uid])  # type:ignore
+        cols, rows = wsexec.Query("get_experiments_u", [uid])  # type:ignore
         df = pandas.DataFrame(data=rows, columns=cols)  # type:ignore
 
         df["dt_experiment"] = pandas.to_datetime(df["dt_experiment"]).dt.date

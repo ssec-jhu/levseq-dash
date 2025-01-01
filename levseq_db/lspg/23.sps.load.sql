@@ -306,7 +306,6 @@ select v1.get_load_dirpath( 5, 1, 'tiny.csv' );
 
 /* procedure v1.save_experiment_cas */
 drop procedure if exists v1.save_experiment_cas(int,int);
-
 create or replace procedure v1.save_experiment_cas
 ( in _uid int,
   in _eid int )
@@ -347,7 +346,7 @@ begin
       n    int  not null );
 
     insert into _csvcas( cas, n )
-    select cas_number, count(*) as n
+    select cas_number, count(*)
       from _rawcsv
      group by cas_number;
  
@@ -422,7 +421,7 @@ begin
    on conflict (seqnt) do nothing;
 
     /* save reference sequences for each plate/barcode_plate combination */
-    insert into v1.parent_sequences(pkexp, pkplate, barcode_plate, pkseqs, n)
+    insert into v1.parent_sequences(pkexp, pkplate, barcode_plate, pkseq, n)
 	select _eid, t1.pkey, t0.barcode_plate, t2.pkey, count(*)
 	  from _rawcsv t0
       join v1.plates t1 on t1.plate = t0.plate_name
@@ -430,11 +429,12 @@ begin
 	 where t0.nucleotide_mutation like '%PARENT%'
   group by t1.pkey, t0.barcode_plate, t2.pkey
 on conflict (pkexp, pkplate, barcode_plate) do
-    update set pkseqs = excluded.pkseqs,
+    update set pkseq = excluded.pkseq,
                n = excluded.n;
 end;
 $body$;
 /*** test
+select * from v1.plates;
 ***/
 
 

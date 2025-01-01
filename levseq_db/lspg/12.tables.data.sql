@@ -131,7 +131,7 @@ create table if not exists v1.parent_sequences
                                     references v1.plates(pkey)
                                     on delete cascade,
   barcode_plate  int       not null,
-  pkseqs         int       not null constraint fk_parent_sequences_pkseqs
+  pkseq          int       not null constraint fk_parent_sequences_pkseqs
                                     references v1.reference_sequences(pkey),
   n              smallint  not null );
 

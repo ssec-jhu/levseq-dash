@@ -81,13 +81,11 @@ import dbexec
 # fmt: off
 def LoadFile(params: dbexec.Arglist) -> int:
 
-    print( "lsws: LoadFile starts...")
-
     # query the database to validate the group/experiment/filename and obtain
     #  an upload filespec (i.e., a fully-qualified directory path and filename)
     dirpath = str(dbexec.QueryScalar("get_load_dirpath", params[:3]))  # type:ignore
 
-    # create the upload directory
+    # create the upload directory if it does not already exist
     pathlib.Path(dirpath).mkdir(parents=True, exist_ok=True)
 
     # convert to utf8 (which we need to do anyway if the file is base64-encoded)
@@ -113,39 +111,35 @@ def LoadFile(params: dbexec.Arglist) -> int:
     filespec = f"{dirpath}{params[2]}" # type:ignore
     cbw = pathlib.Path(filespec).write_bytes(copyFrom)
 
+    try:
+        # load the file contents into the database
+        cbl = dbexec.QueryScalar("load_file", [params[0], params[1], filespec] ) # type: ignore
 
-    print( "lsws: LoadFile starts postgres query...: ")
+    except :
+        # the database operation failed, so zap the newly-created file
+        pathlib.Path(filespec).unlink()  # file: delete
 
-
-    # load the file metadata (and, conditionally, the file contents) into the database
-    cbl = dbexec.QueryScalar("load_file", [params[0], params[1], filespec] ) # type: ignore
-
-
-    print( "lsws: LoadFile postgres query ends...: ")
-
-
+        # rethrow the exception
+        raise
 
     # verify that the number of characters loaded equals the number of characters written to the file
     if cbw != cbl:
         msg = f"{filespec}: {cbl} bytes loaded / {cbw} bytes written"
-        raise fastapi.HTTPException(status_code=422, detail=msg)  # 422: Unprocessable Content        throw
-
-
-    print( "lsws: LoadFile ends")
+        raise fastapi.HTTPException(status_code=422, detail=msg)  # 422: Unprocessable Content
 
     return cbw
 # fmt: on
 
 
 # remove all files and subdirectories (like rm -r)
-def rmr(dir: pathlib.Path) -> int:
+def _rmr(dir: pathlib.Path) -> int:
 
     nFilesDeleted = 0
 
     # iterate through the files and subdirectories in the specified directory
     for ford in dir.iterdir():
         if ford.is_dir():
-            nFilesDeleted += rmr(ford)  # subdirectory: recurse
+            nFilesDeleted += _rmr(ford)  # subdirectory: recurse
         else:
             ford.unlink()  # file: delete
             nFilesDeleted += 1
@@ -161,7 +155,7 @@ def rmr(dir: pathlib.Path) -> int:
 #       args[0]: int  LevSeq user ID
 #       args[1]: int  experiment ID
 #
-def UnloadFile(params: dbexec.Arglist) -> int:
+def UnloadFiles(params: dbexec.Arglist) -> int:
 
     # query the database to validate the group/experiment/filename and obtain
     #  a filespec (i.e., a fully-qualified directory path and filename)
@@ -171,4 +165,4 @@ def UnloadFile(params: dbexec.Arglist) -> int:
     dbexec.NonQuery("unload_experiment", params[:2])  # type:ignore
 
     # zap the directory and all its contents, and return the number of deleted files
-    return rmr(pathlib.Path(dirpath))
+    return _rmr(pathlib.Path(dirpath))

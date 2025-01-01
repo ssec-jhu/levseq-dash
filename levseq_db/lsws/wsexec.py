@@ -107,7 +107,7 @@ def PostDatabaseQuery(args: QueryParams) -> QueryResponse:
                 return QueryScalar(details=rval)
 
             case "unload":
-                rval = fsexec.UnloadFile(args.params)
+                rval = fsexec.UnloadFiles(args.params)
                 return QueryScalar(details=rval)
 
             case _:
