@@ -58,7 +58,7 @@ select * from v1.get_user_experiments( 5 );
 drop function if exists v1.get_experiments(int,int,int);
 create or replace function v1.get_experiments( in _eid int, in _uid int, in _gid int )
 returns table
-( "id"               int,       -- experiment ID (pkey to v1.experiments)
+( eid                int,
   experiment_name    text,
   dt_experiment      timestamptz,
   dt_load            timestamptz,
@@ -104,7 +104,7 @@ $body$;
 select * from _expdirs;
 select * from v1.experiments;
 select * from v1.get_experiments( null, null, null );
-select * from v1.get_experiments( 48, null, null );    -- eid
+select * from v1.get_experiments( 60, null, null );    -- eid
 select * from v1.get_experiments( null, 5, null );     -- uid
 select * from v1.get_experiments( null, null, 1 );     -- gid
 ***/
@@ -114,7 +114,7 @@ select * from v1.get_experiments( null, null, 1 );     -- gid
 drop function if exists v1.get_experiments_e(int);
 create or replace function v1.get_experiments_e( in _eid int )
 returns table
-( "id"               int,       -- experiment ID (pkey to v1.experiments)
+( eid                int,
   experiment_name    text,
   dt_experiment      timestamptz,
   dt_load            timestamptz,
@@ -138,14 +138,14 @@ end;
 $body$;
 /*** test
 select * from v1.get_experiments_e( null );
-select * from v1.get_experiments_e( 51 );
+select * from v1.get_experiments_e( 66 );
 ***/
 
 /* function get_experiments_u */
 drop function if exists v1.get_experiments_u(int);
 create or replace function v1.get_experiments_u( in _uid int )
 returns table
-( "id"               int,       -- experiment ID (pkey to v1.experiments)
+( eid                int,
   experiment_name    text,
   dt_experiment      timestamptz,
   dt_load            timestamptz,
@@ -168,7 +168,7 @@ begin
 end;
 $body$;
 /*** test
-select * from v1.get_experiments_u( 5 );
+select * from v1.get_experiments_u( 4 );
 select * from v1.get_experiments_u( 2 );
 ***/
 
@@ -176,7 +176,7 @@ select * from v1.get_experiments_u( 2 );
 drop function if exists v1.get_experiments_g(int);
 create or replace function v1.get_experiments_g( in _gid int )
 returns table
-( "id"               int,       -- experiment ID (pkey to v1.experiments)
+( eid                int,
   experiment_name    text,
   dt_experiment      timestamptz,
   dt_load            timestamptz,
@@ -208,7 +208,7 @@ select * from v1.get_experiments_g( 2 );
 drop function if exists v1.get_experiments_ug(int);
 create or replace function v1.get_experiments_ug( in _uid int )
 returns table
-( "id"               int,       -- experiment ID (pkey to v1.experiments)
+( eid                int,
   experiment_name    text,
   dt_experiment      timestamptz,
   dt_load            timestamptz,
@@ -247,6 +247,7 @@ select * from v1.get_experiments_ug( 4 );
 select * from v1.get_experiments_ug( 5 );
 ***/
 
+
 /* function v1.get_experiment_parent_sequence */
 drop function if exists v1.get_experiment_parent_sequence(int);
 create or replace function v1.get_experiment_parent_sequence( in _eid int )
@@ -271,4 +272,34 @@ select * from v1.parent_sequences;
 select * from v1.reference_sequences;
 select * from v1.get_experiment_parent_sequence( 47 );
 select v1.get_experiment_parent_sequence( 51 );
+***/
+
+
+/* function v1.get_experiment_alignments */
+drop function if exists v1.get_experiment_alignments(int);
+create or replace function v1.get_experiment_alignments( in _eid int )
+returns table
+( plate           text,
+  barcode_plate   int,
+  well            text,
+  alignment_count int
+)
+language plpgsql
+as $body$
+begin
+
+    return query
+    select distinct t1.plate, t0.barcode_plate, t0.well, t0.alignment_count
+      from v1.variants t0
+      join v1.plates t1 on t1.pkey = t0.pkplate
+     where t0.pkexp = _eid
+  order by t1.plate, t0.barcode_plate, t0.well;
+
+end;
+$body$;
+/*** test
+select * from v1.variants;
+select * from v1.plates;
+select * from v1.experiments;
+select * from v1.get_experiment_alignments( 60 );
 ***/

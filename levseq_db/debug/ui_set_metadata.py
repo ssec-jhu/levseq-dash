@@ -75,8 +75,8 @@ class UIsetMetadata(UIbase):
         ]
 
         layout_ui_experiment_id = [
-            html.Label("experiment ID:", htmlFor="div_eid", style={"display": "inline-block"}),
-            html.Div(id="div_eid", children="(none yet)", style={"width":"128px", "display": "inline-block", "margin-left": "4px"}),
+            html.Label("experiment ID:", htmlFor="div_eid_pending", style={"display": "inline-block"}),
+            html.Div(id="div_eid_pending", children="(none yet)", style={"width":"128px", "display": "inline-block", "margin-left": "4px"}),
         ]
         # fmt:on
 
@@ -89,7 +89,7 @@ class UIsetMetadata(UIbase):
             html.Div(id="div_assay", children=layout_ui_assay),
             html.Div(id="div_mutagenesis_method", children=layout_ui_mutagenesis_method),
             html.Button("Do it", id="UIsetMetadata::trigger", n_clicks=0),
-            html.Div(id="div_experiment_id", children=layout_ui_experiment_id),
+            html.Div(id="div_eid_pending_wrapper", children=layout_ui_experiment_id),
         ]
 
         return
@@ -140,11 +140,10 @@ class UIsetMetadata(UIbase):
         )  # type:ignore
 
         # update session variables
-        flask.session["experiment_name"] = experimentName
-        flask.session["eid"] = eid
+        flask.session["eid_pending"] = eid
 
         # update the UI state
-        dash.set_props("div_eid", dict(children=str(eid)))
+        dash.set_props("div_eid_pending", dict(children=str(eid)))
         dash.set_props("UIsetMetadata::error", dict(value=""))
 
         # (we use dash.set_props instead of Output bindings)

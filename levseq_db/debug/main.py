@@ -20,7 +20,9 @@ from dash import Dash, html
 from ui_set_user import UIsetUser
 from ui_set_metadata import UIsetMetadata
 from ui_upload import UIuploadData
+from ui_expt_list import UIexptList
 from ui_unload import UIunloadData
+from ui_query import UIquery
 
 import globals as g
 
@@ -41,7 +43,9 @@ def _initWebPage(debugDash: bool) -> None:
     uiSetUser = UIsetUser()
     uiSetMetadata = UIsetMetadata()
     uiUploadData = UIuploadData()
+    uiExptList = UIexptList()
     uiUnloadData = UIunloadData()
+    uiQuery = UIquery()
 
     # page layout (see assets/main.py for additional CSS styles)
     app.layout = [
@@ -49,7 +53,9 @@ def _initWebPage(debugDash: bool) -> None:
         uiSetUser.Layout(),
         uiSetMetadata.Layout(),
         uiUploadData.Layout(),
+        uiExptList.Layout(),
         uiUnloadData.Layout(),
+        uiQuery.Layout(),
     ]
 
 

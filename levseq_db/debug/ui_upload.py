@@ -11,7 +11,7 @@ from dash import dcc, html, callback, Input
 
 import wsexec
 from ui_base import UIbase
-from ui_unload import UIunloadData
+from ui_expt_list import UIexptList
 
 
 class UIuploadData(UIbase):
@@ -102,7 +102,7 @@ class UIuploadData(UIbase):
         # get the user ID and pending experiment ID from session variables (which may not be
         #  the best way to do this)
         uid = flask.session["uid"]
-        eid = flask.session["eid"]
+        eid = flask.session["eid_pending"]
 
         # clear any previous error info
         dash.set_props("UIuploadData::error", dict(value=""))
@@ -122,11 +122,11 @@ class UIuploadData(UIbase):
         dash.set_props("div_filenames", dict(children=rval))
 
         # refresh the user experiment list
-        UIunloadData.RefreshUserExperimentList(uid)
+        UIexptList.RefreshUserExperimentList()
 
         # update UI state
-        dash.set_props("div_eid", dict(children=""))
-        flask.session["eid"] = None
+        flask.session["eid_pending"] = None
+        dash.set_props("div_eid_pending", dict(children=""))
 
         # (we use dash.set_props instead of Output bindings)
         return

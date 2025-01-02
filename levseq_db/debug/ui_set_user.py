@@ -11,10 +11,13 @@ from dash import dcc, html, callback, Input
 
 import wsexec
 from ui_base import UIbase
-from ui_unload import UIunloadData
+from ui_expt_list import UIexptList
 
 
 class UIsetUser(UIbase):
+
+    # class-scope (static) variables
+    UserDict = {}
 
     def __init__(self):
         super().__init__(type(self).__name__)
@@ -32,9 +35,10 @@ class UIsetUser(UIbase):
         iv = cols.index("uid")
         iu = cols.index("username")
         ig = cols.index("groupname")
-        aUsers = [{"value": r[iv], "label": f"{r[iu]} ({r[ig]})"} for r in rows]
 
         # layout
+        aUsers = [{"value": r[iv], "label": f"{r[iu]} ({r[ig]})"} for r in rows]
+
         self.contents = [
             html.H3("Select LevSeqUser"),
             dcc.Dropdown(aUsers, id="UIsetUser::trigger", style={"width": "160px"}, optionHeight=20),
@@ -64,18 +68,17 @@ class UIsetUser(UIbase):
 
         else:
 
-            if flask.has_request_context():
-                remoteIPaddr = str(flask.request.remote_addr)
-                flask.session["uid"] = uid
-            else:  # (this should not happen)
-                remoteIPaddr = "?.?.?.?"
+            # save user ID, user name, group ID, and group name in session variables
+            cols, rows = wsexec.Query("get_user_info", [uid])  # type:ignore
+            flask.session["uid"] = uid
+            flask.session["uname"] = rows[0][cols.index("username")]
+            flask.session["gid"] = rows[0][cols.index("gid")]
+            flask.session["groupname"] = rows[0][cols.index("groupname")]
 
             # save the IP address in the database table of users
+            remoteIPaddr = str(flask.request.remote_addr)
             wsexec.Query("save_user_ip", [uid, remoteIPaddr])
 
-            # get user session config
-            cols, rows = wsexec.Query("get_user_info", [uid])  # type:ignore
-            flask.session["groupname"] = rows[0][cols.index("groupname")]
             msg = str(uid)
 
         # update UI state
@@ -83,7 +86,7 @@ class UIsetUser(UIbase):
         dash.set_props("UIsetUser::error", dict(value=""))
 
         # refresh the user experiment list
-        UIunloadData.RefreshUserExperimentList(uid)
+        UIexptList.RefreshUserExperimentList()
         dash.set_props("div_unload_experiment_info", dict(children=""))
 
         # (we use dash.set_props instead of Output bindings)

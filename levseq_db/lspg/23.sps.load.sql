@@ -535,6 +535,8 @@ begin
 end;
 $body$;
 /*** test
+select * from v1.experiments
+select * from v1.variants
 select * from v1.variant_mutations
 ***/
 

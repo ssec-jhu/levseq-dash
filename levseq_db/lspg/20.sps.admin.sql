@@ -210,57 +210,37 @@ delete from v1.users where pkey = 2;
 
 
 /* function get_user_info(int) */
--- drop function if exists v1.get_user_info(int);
+drop function if exists v1.get_user_info(int);
 create or replace function v1.get_user_info( in _uid int )
 returns table
-( groupname text,
+( username  text,
+  pwd       text,
+  enabled   bool,
   firstname text,
   lastname  text,
-  email     text
-)
-language plpgsql
-as $body$
-begin
-
-    return query
-    select t2.groupname, t1.firstname, t1.lastname, t1.email
-      from v1.users t1
-      join v1.usergroups t2 on t2.pkey = t1.gid
-     where t1.pkey = _uid;
-
-end;
-$body$;
-/*** test
-select * from v1.users
-select * from v1.get_user_info( 1 );
-***/
-
-/* function get_user_info(text,text) */
--- drop function if exists v1.get_user_info(text,text);
-create or replace function v1.get_user_info( in _u text, in _p text )
-returns table
-( uid       int,
+  gid       int,
   groupname text,
-  firstname text,
-  lastname  text,
-  email     text
+  email     text,
+  last_dt   timestamptz
 )
 language plpgsql
 as $body$
 begin
 
     return query
-    select t1.pkey, t2.groupname, t1.firstname, t1.lastname, t1.email
-      from v1.users t1
-      join v1.usergroups t2 on t2.pkey = t1.gid
-     where t1.username = _u;
+    select t0.username, t0.pwd, t0.enabled, t0.firstname, t0.lastname, t0.gid,
+           t1.groupname, t0.email, t0.last_dt
+      from v1.users t0
+      join v1.usergroups t1 on t1.pkey = t0.gid
+     where t0.pkey = _uid;
 
 end;
 $body$;
 /*** test
 select * from v1.users
-select * from v1.get_user_info( 'Richard', '64-17-5' );
+select * from v1.get_user_info( 4 );
 ***/
+
 
 /* function save_user_info */
 drop function if exists v1.save_user_info(text,text,bool,text,text,text,text);
@@ -312,7 +292,7 @@ select * from v1.usergroups;
 ***/
 
 /* procedure save_user_ip */
--- drop procedure if exists v1.save_user_ip(int,text);
+drop procedure if exists v1.save_user_ip(int,text);
 create procedure v1.save_user_ip( in _pkey int, in _ip text )
 language plpgsql 
 as $body$
@@ -329,9 +309,16 @@ call v1.save_user_ip(2, '123.456.789.000');
 select * from v1.users;
 ***/
 
+/*****************************************************************************/
+/*****************************************************************************/
+/*                                                                           */
+/* The following functions are for interest and/or test purposes only.       */
+/*                                                                           */
+/*****************************************************************************/
+/*****************************************************************************/
 
 /* function get_experiment_row_counts */
--- drop function if exists v1.get_experiment_row_counts(int);
+drop function if exists v1.get_experiment_row_counts(int);
 create or replace function v1.get_experiment_row_counts( in _eid int )
 returns table
 ( "table_name"  text,
@@ -393,4 +380,35 @@ $body$;
 /*** test
 select * from v1.experiments;
 select * from v1.get_experiment_row_counts(27);
+***/
+
+
+/* function get_example_queries */
+drop function if exists v1.get_example_queries(int,int,int);
+create or replace function v1.get_example_queries( in _eid int, in _uid int, in _gid int )
+returns table
+( verb     text,
+  param1   int,
+  param2   int,
+  param3   int
+)
+language plpgsql
+as $body$
+declare
+    nint int = null;
+	
+begin
+
+    return query
+    values ( 'get_experiment_row_counts', _eid, nint, nint ),
+           ( 'get_experiments_u', _uid, nint, nint ),
+           ( 'get_experiments_g', _gid, nint, nint ),
+	       ( 'get_experiment_parent_sequence', _eid, nint, nint ),
+	       ( 'get_experiment_alignments', _eid, nint, nint );
+
+end;
+$body$;
+/*** test
+select * from v1.experiments;
+select * from v1.get_example_queries( 77, 4, 2 );
 ***/
