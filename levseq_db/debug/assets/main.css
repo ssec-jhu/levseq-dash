@@ -4,7 +4,15 @@
 
 body
 {
-    background-color: #fafae0;
+    background-color: #f8f8f8;
+}
+
+div.UIbase
+{
+    background-color: #fafae8;
+    border: solid;
+    border-width: 1px;
+    border-color: #c0c0c0;
 }
 
 /* the following hacks around the Dash singledatepicker component's default style */
@@ -15,7 +23,9 @@ input.DateInput_input
     padding: 0px 0px 0px 4px;
 }
 
-div.Select-control, div.Select-input
+/* the following hacks around the Dash dropdown component's default style */
+div.Select-control, div.Select-input, div.Select-value
 {
     height: 24px;
+    line-height: 24px;
 }

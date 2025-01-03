@@ -303,3 +303,155 @@ select * from v1.plates;
 select * from v1.experiments;
 select * from v1.get_experiment_alignments( 60 );
 ***/
+
+
+/* function v1.get_experiment_alignment_probabilities */
+drop function if exists v1.get_experiment_alignment_probabilities(int);
+create or replace function v1.get_experiment_alignment_probabilities( in _eid int )
+returns table
+( plate                 text,
+  barcode_plate         int,
+  well                  text,
+  alignment_probability double precision
+)
+language plpgsql
+as $body$
+begin
+
+    return query
+    select t1.plate, t0.barcode_plate, t0.well, t0.alignment_probability
+      from v1.variants t0
+      join v1.plates t1 on t1.pkey = t0.pkplate
+     where t0.pkexp = _eid
+  order by t1.plate, t0.barcode_plate, t0.well;
+
+end;
+$body$;
+/*** test
+select * from v1.get_experiment_alignment_probabilities( 79 );
+***/
+
+
+/* function v1.get_experiment_p_values */
+drop function if exists v1.get_experiment_p_values(int);
+create or replace function v1.get_experiment_p_values( in _eid int )
+returns table
+( plate          text,
+  barcode_plate  int,
+  well           text,
+  p              double precision,
+  p_adj          double precision
+)
+language plpgsql
+as $body$
+begin
+
+    return query
+    select t1.plate, t0.barcode_plate, t0.well, t0.p_value, t0.p_adj_value
+      from v1.variants t0
+      join v1.plates t1 on t1.pkey = t0.pkplate
+     where t0.pkexp = _eid
+  order by t1.plate, t0.barcode_plate, t0.well;
+
+end;
+$body$;
+/*** test
+select * from v1.get_experiment_p_values( 79 );
+***/
+
+/* function v1.get_mutation_counts
+
+   The specified CAS number must identify a substrate.
+*/
+drop function if exists v1.get_mutation_counts(text);
+create or replace function v1.get_mutation_counts( in _cas text )
+returns table
+( posnt        int,
+  n_mutations  int
+)
+language plpgsql
+as $body$
+begin
+
+    -- build a temporary table of experiment IDs for the specified substrate CAS
+	drop table if exists _eidcas;
+    create temporary table _eidcas
+    ( eid int not null );
+
+    insert _eidcas( eid )
+	select t0.pkexp
+      from v1.experiment_cas t0
+      join v1.cas t1 on t1.pkey = t0.pkcas
+     where t0.substrate
+       and t1.cas = _cas;
+
+    return query
+    select posnt, count(*)
+      from v1.mutations t0
+      join v1.variants t1 on t1.pkey = t0.pkvar
+      join _eidcas t2 on t2.eid = t1.pkexp
+     where t1.pkexp
+
+	  select * from v1.mutations
+	  select * from v1.variants
+	  select * from v1.cas
+	  select * from v1.experiment_cas
+group by posnt
+order by n desc;
+
+
+
+
+
+/* function v1.get_mutations_at_pos
+
+   The specified CAS number must identify a substrate.
+
+   The specified mutation must be in the format
+        <base><pos><base>
+   where
+        <base> := 'A', 'C', 'G', 'T', 'INS', or 'DEL'
+*/
+drop function if exists v1.get_mutations_at_pos(text,text);
+create or replace function v1.get_mutations_at_pos( in _cas text, in _mut text)
+returns table
+( experiment_name    text,
+  plate              text,
+  barcode_plate      int,
+  well               text,
+  mutagenesis_method text,
+  nt_mutation        text,
+  aa_mutation        text
+)
+language plpgsql
+as $body$
+begin
+
+    -- build a temporary table of experiment IDs for the specified substrate CAS
+	drop table if exists _eidcas;
+    create temporary table _eidcas
+    ( eid int not null );
+
+    insert _eidcas( eid )
+	select t0.pkexp
+      from v1.experiment_cas t0
+      join v1.cas t1 on t1.pkey = t0.pkcas
+     where t0.substrate
+       and t1.cas = _cas;
+
+    return query
+    select t0.experiment_name
+      from v1.experiments t0
+
+
+	  select * from v1.experiments
+	   select * from v1.cas
+	  select * from v1.experiment_cas
+	select * from v1.mutations
+
+
+
+end;
+$body$;
+/*** test
+select * from v1.get_mutations_at_pos( '')

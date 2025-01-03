@@ -22,8 +22,6 @@ class UIunloadData(UIbase):
         # CSS style for the DIV wrapper
         self.outerStyle = {
             "width": "fit-content",
-            "border": "solid",
-            "border-width": "1px",
             "float": "left",
         }
 

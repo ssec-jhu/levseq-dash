@@ -309,6 +309,7 @@ call v1.save_user_ip(2, '123.456.789.000');
 select * from v1.users;
 ***/
 
+
 /*****************************************************************************/
 /*****************************************************************************/
 /*                                                                           */
@@ -335,8 +336,8 @@ begin
      where t2.pkey = _eid;
 
     return query
-    select 'v1.variant_mutations', count(*)
-      from v1.variant_mutations t0
+    select 'v1.mutations', count(*)
+      from v1.mutations t0
       join v1.variants t1 on t1.pkey = t0.pkvar
       join v1.experiments t2 on t2.pkey = t1.pkexp
      where t2.pkey = _eid;
@@ -379,36 +380,35 @@ end;
 $body$;
 /*** test
 select * from v1.experiments;
-select * from v1.get_experiment_row_counts(27);
+select * from v1.get_experiment_row_counts(77);
 ***/
 
 
-/* function get_example_queries */
-drop function if exists v1.get_example_queries(int,int,int);
-create or replace function v1.get_example_queries( in _eid int, in _uid int, in _gid int )
+/* function get_test_queries */
+drop function if exists v1.get_test_queries(int,int,int);
+create or replace function v1.get_test_queries( in _eid int, in _uid int, in _gid int )
 returns table
 ( verb     text,
-  param1   int,
-  param2   int,
-  param3   int
+  param1   text,
+  param2   text
 )
 language plpgsql
 as $body$
-declare
-    nint int = null;
-	
 begin
 
     return query
-    values ( 'get_experiment_row_counts', _eid, nint, nint ),
-           ( 'get_experiments_u', _uid, nint, nint ),
-           ( 'get_experiments_g', _gid, nint, nint ),
-	       ( 'get_experiment_parent_sequence', _eid, nint, nint ),
-	       ( 'get_experiment_alignments', _eid, nint, nint );
+    values ( 'get_pginfo', 'Dash', null ),
+           ( 'get_experiment_row_counts', _eid::text, null ),
+           ( 'get_experiments_u', _uid::text, null ),
+           ( 'get_experiments_g', _gid::text, null ),
+	       ( 'get_experiment_parent_sequence', _eid::text, null ),
+	       ( 'get_experiment_alignments', _eid::text, null ),
+           ( 'get_experiment_alignment_probabilities', _eid::text, null ),
+           ( 'get_experiment_p_values', _eid::text, null );		   
 
 end;
 $body$;
 /*** test
 select * from v1.experiments;
-select * from v1.get_example_queries( 77, 4, 2 );
+select * from v1.get_test_queries( 79, 4, 2 );
 ***/

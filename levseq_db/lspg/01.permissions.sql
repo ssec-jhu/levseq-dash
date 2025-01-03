@@ -42,7 +42,7 @@ grant select,insert,update,delete on v1.experiment_cas to lsdb;
 grant select,insert,update,delete on v1.reference_sequences to lsdb;
 grant select,insert,update,delete on v1.parent_sequences to lsdb;
 grant select,insert,update,delete on v1.variants to lsdb;
-grant select,insert,update,delete on v1.variant_mutations to lsdb;
+grant select,insert,update,delete on v1.mutations to lsdb;
 grant select,insert,update,delete on v1.fitness to lsdb;
 
 /* 13.tables.load.sql */

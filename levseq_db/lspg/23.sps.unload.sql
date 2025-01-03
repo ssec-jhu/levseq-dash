@@ -31,7 +31,7 @@ end;
 $body$;
 /*** test
 select * from v1.fitness;              -- v1.experiment_cas, v1.variants
-select * from v1.variant_mutations;    -- v1.variants
+select * from v1.mutations;            -- v1.variants
 select * from v1.variants;             -- v1.plates v1.experiments
 select * from v1.parent_sequences;     -- v1.plates v1.experiments
 select * from v1.reference_sequences;  -- ok to leave as is
@@ -57,7 +57,7 @@ select * from v1.get_experiment_row_counts(25);
 
 
 "v1.fitness"	1903
-"v1.variant_mutations"	1732
+"v1.mutations"	1732
 "v1.variants"	960
 "v1.parent_sequences"	10
 "v1.experiment_cas"	2

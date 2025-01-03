@@ -6,9 +6,10 @@ import os
 import pwd
 import builtins
 import requests
+import fastapi
 
 # webservice implementation ID string
-ws_id = "LevSeq database web service"
+wsid = f"LevSeq database web service (FastAPI v{fastapi.__version__})"
 
 # linux username
 linux_username = pwd.getpwuid(os.getuid()).pw_name

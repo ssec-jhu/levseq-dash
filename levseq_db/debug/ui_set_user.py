@@ -12,6 +12,7 @@ from dash import dcc, html, callback, Input
 import wsexec
 from ui_base import UIbase
 from ui_expt_list import UIexptList
+from ui_query import UIquery
 
 
 class UIsetUser(UIbase):
@@ -25,8 +26,6 @@ class UIsetUser(UIbase):
         # CSS style for the DIV wrapper
         self.outerStyle = {
             "width": "fit-content",
-            "border": "solid",
-            "border-width": "1px",
             "float": "left",
         }
 
@@ -85,8 +84,9 @@ class UIsetUser(UIbase):
         dash.set_props("div_uid", dict(children=msg))
         dash.set_props("UIsetUser::error", dict(value=""))
 
-        # refresh the user experiment list
+        # refresh the UI
         UIexptList.RefreshUserExperimentList()
+        UIquery.RefreshTestQueryList
         dash.set_props("div_unload_experiment_info", dict(children=""))
 
         # (we use dash.set_props instead of Output bindings)

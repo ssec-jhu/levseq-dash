@@ -513,13 +513,13 @@ begin
           from cte;
 
     -- delete previously-stored mutation details (this should normally be a noop)
-    delete from v1.variant_mutations
+    delete from v1.mutations
           where pkvar in (select distinct pkvar from _rawvm2);
 	
     -- save mutation details for each variant
-    insert into v1.variant_mutations( pkvar, vartype, varposnt,
-                                      varparnt, varsubnt,
-                                      varposaa, varparaa, varsubaa)
+    insert into v1.mutations( pkvar, vartype,
+                              posnt, parnt, subnt,
+                              posaa, paraa, subaa)
     select pkvar,
            case when nm3[1] = 'INS' or nm3[3] = 'INS' then 'i'
                 when nm3[1] = 'DEL' or nm3[3] = 'DEL' then 'd'
@@ -537,7 +537,7 @@ $body$;
 /*** test
 select * from v1.experiments
 select * from v1.variants
-select * from v1.variant_mutations
+select * from v1.mutations
 ***/
 
 
@@ -711,14 +711,7 @@ select * from v1.variants
 select * from v1.fitness
 
 
-select varposnt, count(*) as n
-  from v1.variant_mutations
-group by varposnt
-order by n desc;
-
-
 update v1.experiments_pending set cas_product = '395683-37-1' where eid = 28
-
 
 select * from v1.cas;
 select * from v1.experiments_pending;

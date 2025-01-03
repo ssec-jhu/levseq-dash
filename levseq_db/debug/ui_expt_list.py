@@ -23,8 +23,6 @@ class UIexptList(UIbase):
         # CSS style for the DIV wrapper
         self.outerStyle = {
             "width": "100%",
-            "border": "solid",
-            "border-width": "1px",
             "float": "left",
             "clear": "both",
         }
@@ -38,6 +36,7 @@ class UIexptList(UIbase):
                 page_size=5,
                 row_selectable="single",
                 style_cell={"font-size": "0.9em", "whiteSpace": "pre-line"},
+                style_header={"background-color": "#f0f0f0", "font-weight": "bold"},
             ),
         ]
 
@@ -57,7 +56,7 @@ class UIexptList(UIbase):
         isSelected = isinstance(selectedRows, list) and len(selectedRows) > 0
         flask.session["iexpt"] = selectedRows[0] if isSelected else None
 
-        # enable the list of available test queries
+        # refresh the list of available test queries
         UIquery.RefreshTestQueryList()
 
         # (we use dash.set_props instead of Output bindings)
@@ -94,5 +93,6 @@ class UIexptList(UIbase):
 
         # reset any selection in the displayed list of experiments
         dash.set_props("UIexptList::trigger", dict(selected_rows=[]))
+        flask.session["iexpt"] = None
 
         return None

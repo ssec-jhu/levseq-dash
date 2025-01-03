@@ -72,7 +72,7 @@ type QueryResponse = QueryResultSet | QueryScalar | None
 #
 def GetImplementationInfo() -> QueryResponse:
 
-    c, r = dbexec.Query("get_pginfo", [g.ws_id])
+    c, r = dbexec.Query("get_pginfo", [g.wsid])
     return QueryResultSet(columns=c, rows=r)
 
 

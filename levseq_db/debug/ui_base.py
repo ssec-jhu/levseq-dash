@@ -9,7 +9,8 @@
 #  To make this work, a class derived from UIbase must do the following:
 #
 #  - Set the "id" property of the Dash component that triggers the callback to
-#    "<classname>::trigger".
+#    "<classname>::trigger" or "<classname>--<additional_name>::trigger".  (See
+#    the implementation of callbackException() below.)
 #
 #  - Use dash.set_prop() instead of binding to Output component properties.  (Both
 #     the callback and exception-handler methods must return None.)
@@ -64,7 +65,7 @@ class UIbase:
             html.Textarea(id=f"{self.baseName}::error", style={"width": "auto"}),
         ]
 
-        return html.Div(id=f"{self.baseName}", children=inner, style=self.outerStyle)
+        return html.Div(id=f"{self.baseName}", className="UIbase", children=inner, style=self.outerStyle)
 
     # try to clean the specified Exception string representation
     @staticmethod
@@ -86,8 +87,12 @@ class UIbase:
         # emit exception text
         aText = "\n".join(UIbase.getExceptionText(ex))
 
-        # put error text into the corresponding Textarea
+        # extract the basename from the ID of the component that triggered the callback;
+        #  (the ID must be formatted as "<basename>[--<other_characters>]::trigger")
         baseName = ctx.triggered_id.split("::")[0]  # type:ignore
+        baseName = baseName.split("--")[0]
+
+        # put error text into the corresponding Textarea; the Textarea id is
         dash.set_props(f"{baseName}::error", dict(value=aText))
 
         # callbacks must not bind to Output properties (use dash.set_props() instead)

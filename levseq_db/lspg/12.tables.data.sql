@@ -177,34 +177,34 @@ create index ix_variants_pkexp
 select * from v1.variants order by pkexp, pkplate, barcode_plate, well;
 ***/
   
-/* table v1.variant_mutations */
--- drop table if exists v1.variant_mutations;
-create table if not exists v1.variant_mutations
-( pkey      int     not null generated always as identity primary key,
-  pkvar     int     not null constraint fk_variant_mutations_pkvar
-                             references v1.variants(pkey)
-                             on delete cascade,
-  vartype   char(1) not null, -- s: substitution; i: insertion; d: deletion
-  varposnt  int     not null, -- 1-based position in parent (reference) sequence
-  varparnt  char(1) null,     -- nucleotide in parent (reference) sequence
-  varsubnt  char(1) null,     -- variant nucleotide
-  varposaa  int     null,     -- 1-based position in parent (reference) sequence
-  varparaa  char(1) null,     -- amino acid in parent (reference) sequence
-  varsubaa  char(1) null      -- variant amino acid
+/* table v1.mutations */
+-- drop table if exists v1.mutations;
+create table if not exists v1.mutations
+( pkey    int     not null generated always as identity primary key,
+  pkvar   int     not null constraint fk_mutations_pkvar
+                           references v1.variants(pkey)
+                           on delete cascade,
+  vartype char(1) not null, -- s: substitution; i: insertion; d: deletion
+  posnt   int     not null, -- 1-based position in parent (reference) sequence
+  parnt   char(1) null,     -- nucleotide in parent (reference) sequence
+  subnt   char(1) null,     -- variant nucleotide
+  posaa   int     null,     -- 1-based position in parent (reference) sequence
+  paraa   char(1) null,     -- amino acid in parent (reference) sequence
+  subaa   char(1) null      -- variant amino acid
 );
 
-create index ix_variant_mutations_pkvar
-          on v1.variant_mutations
+create index ix_mutations_pkvar
+          on v1.mutations
        using btree (pkvar asc)
         with (deduplicate_items=True)
   tablespace pg_default;
 /*** test
-select * from v1.variant_mutations;
-select varposnt, count(*) as n
-  from v1.variant_mutations
- group by varposnt
+select * from v1.mutations;
+select posnt, count(*) as n
+  from v1.mutations
+ group by posnt
  order by n desc;
-select * from v1.variant_mutations where varposnt = 72;
+select * from v1.mutations where posnt = 72;
 ***/
 
 /* table v1.fitness */
@@ -223,10 +223,10 @@ create table if not exists v1.fitness
 explain analyze
 select t0.*, t2.*, t3.*, t4.*
   from v1.variants t0
-  join v1.variant_mutations t1 on t1.pkvar = t0.pkey
+  join v1.mutations t1 on t1.pkvar = t0.pkey
   join v1.fitness t2 on t2.pkvar = t0.pkey
   join v1.experiment_cas t3 on t3.pkey = t2.pkexpcas
   join v1.cas t4 on t4.pkey = t3.pkcas
- where t1.varposnt = 72
-   and t1.varposaa is not null;
+ where t1.posnt = 72
+   and t1.posaa is not null;
 ***/
