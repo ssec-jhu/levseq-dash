@@ -76,17 +76,21 @@ if __name__ == "__main__":
     #
     app = Dash(__name__)
     debugDash = True
-    hostName = "localhost"
-    tcpPort = 8050
+    hostName = g.devHost
+    tcpPort = g.devPort
 
 else:
 
     # We assume that a loader (e.g., gunicorn) imports this script as a module
-    #  and calls variable app directly.  This means...
+    #  and calls the Flask server instance directly.  This means...
     #
     # - __name__ == 'main' (not '__main__').
     #
-    # - We need to provide a flask wrapper.
+    # - The gunicorn command line would then be:
+    #        gunicorn -b hplc-pc.che.caltech.edu:8050 main:srvFlask
+    #
+    #    and a remote client would connect to this web application like this:
+    #        http://hplc-pc.che.caltech.edu:8050
     #
     # YMMV if you use a web server other than gunicorn, because we haven't tested this code
     #  with anything else!
@@ -94,8 +98,11 @@ else:
     srvFlask = Flask(__name__)
     app = Dash(__name__, server=srvFlask)  # (corresponds to gunicorn parameter "main:srvFlask")
     debugDash = False
-    hostName = "hplc-pc.che.caltech.edu"
-    tcpPort = 8051
+    hostName = g.prodHost  # (probably not needed because overridden in the command line)
+    tcpPort = g.prodPort
+
+# the Flask client-side HTTP session implementation requires a "secret key"
+app.server.config.update(SECRET_KEY=g.flask_session_key)
 
 # initialize the web page layout
 _initWebPage(debugDash)
@@ -103,5 +110,4 @@ _initWebPage(debugDash)
 # gunicorn will not load this app correctly unless the script ends with the
 #  customary module-name validation:
 if __name__ == "__main__":
-    app.server.config.update(SECRET_KEY=g.flask_session_key)
     app.run(host=hostName, port=str(tcpPort), debug=debugDash, use_reloader=debugDash)

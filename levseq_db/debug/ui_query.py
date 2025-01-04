@@ -70,12 +70,16 @@ class UIquery(UIbase):
 
         self.tbl = [
             dash_table.DataTable(
-                id="UIquery_query_result",
+                id="UIquery_result_set",
                 data=[],
                 page_size=5,
                 style_header={"background-color": "#f0f0f0", "font-weight": "bold"},
                 style_cell={"font-size": "0.9em", "white-space": "pre-line"},
-                style_table=dict(display="inline-block", float="left", clear="both", overflowX="auto"),
+                style_table={
+                    "display": "inline-block",
+                    "float": "left",
+                    "clear": "both",
+                },
             ),
         ]
 
@@ -113,7 +117,7 @@ class UIquery(UIbase):
         dash.set_props("UIquery--btn::trigger", dict(disabled=False))
 
         # clear the DataTable component
-        dash.set_props("UIquery_query_result", dict(data=[]))
+        dash.set_props("UIquery_result_set", dict(data=[]))
 
         # update UI state
         dash.set_props("UIquery::error", dict(value=""))
@@ -154,7 +158,7 @@ class UIquery(UIbase):
         # TODO some kind of foreach to find date columns
         # df["dt_experiment"] = pandas.to_datetime(df["dt_experiment"]).dt.date
 
-        dash.set_props("UIquery_query_result", dict(data=df.to_dict("records")))
+        dash.set_props("UIquery_result_set", dict(data=df.to_dict("records")))
 
         # update UI state
         dash.set_props("UIquery::error", dict(value=""))

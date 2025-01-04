@@ -145,4 +145,4 @@ class UIsetMetadata(UIbase):
         dash.set_props("UIsetMetadata::error", dict(value=""))
 
         # (we use dash.set_props instead of Output bindings)
-        return
+        return None

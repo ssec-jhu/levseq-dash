@@ -60,7 +60,7 @@ class UIexptList(UIbase):
         UIquery.RefreshTestQueryList()
 
         # (we use dash.set_props instead of Output bindings)
-        return
+        return None
 
     @staticmethod
     def RefreshUserExperimentList() -> None:

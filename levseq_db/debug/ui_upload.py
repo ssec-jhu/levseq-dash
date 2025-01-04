@@ -127,4 +127,4 @@ class UIuploadData(UIbase):
         dash.set_props("div_eid_pending", dict(children=""))
 
         # (we use dash.set_props instead of Output bindings)
-        return
+        return None

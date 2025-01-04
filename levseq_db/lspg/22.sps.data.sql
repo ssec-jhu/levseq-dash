@@ -400,58 +400,178 @@ group by posnt
 order by n desc;
 
 
+/* function v1.get_mutation_counts
 
-
-
-/* function v1.get_mutations_at_pos
-
-   The specified CAS number must identify a substrate.
-
-   The specified mutation must be in the format
-        <base><pos><base>
-   where
-        <base> := 'A', 'C', 'G', 'T', 'INS', or 'DEL'
+   The specified sequence ID must identify a parent (reference) sequence.
 */
-drop function if exists v1.get_mutations_at_pos(text,text);
-create or replace function v1.get_mutations_at_pos( in _cas text, in _mut text)
+drop function if exists v1.get_mutation_counts(int);
+create or replace function v1.get_mutation_counts( in _pkseq int )
 returns table
-( experiment_name    text,
-  plate              text,
-  barcode_plate      int,
-  well               text,
-  mutagenesis_method text,
-  nt_mutation        text,
-  aa_mutation        text
+( pos         int,
+  n_mutations int
 )
 language plpgsql
 as $body$
 begin
 
-    -- build a temporary table of experiment IDs for the specified substrate CAS
-	drop table if exists _eidcas;
-    create temporary table _eidcas
-    ( eid int not null );
-
-    insert _eidcas( eid )
-	select t0.pkexp
-      from v1.experiment_cas t0
-      join v1.cas t1 on t1.pkey = t0.pkcas
-     where t0.substrate
-       and t1.cas = _cas;
-
     return query
-    select t0.experiment_name
-      from v1.experiments t0
-
-
-	  select * from v1.experiments
-	   select * from v1.cas
-	  select * from v1.experiment_cas
-	select * from v1.mutations
-
-
+    select t0.posnt, count(*)::int as n
+      from v1.mutations t0
+      join v1.variants t1 on t1.pkey = t0.pkvar
+      join v1.parent_sequences t2 on t2.pkey = t1.pkpar
+     where t2.pkseq = _pkseq	  
+     group by t0.posnt
+     order by n desc;
 
 end;
 $body$;
 /*** test
-select * from v1.get_mutations_at_pos( '')
+select * from v1.get_mutation_counts( 1 );
+***/
+
+
+/* function v1.get_variant_sequences
+
+   Notes:
+    It would be nice to represent sequences as text[] and update each of them
+     "in place" in a table row.  But this doesn't work.
+
+    Apparently an update statement such as this
+
+        update _seqs t0
+           set seq[t1.posnt] = t1.subnt
+          from _muts t1;
+         where t1.pkvar = t0.pkvar;
+
+     only updates the text array once, even if multiple positions are
+     encountered in the join.
+
+    For this reason we split each sequence string into a table, do the
+     join, and then recompose the strings.
+
+    This implementation returns the entire nucleotide sequence, but it should
+     probably be updated at some point:
+
+        - if no experiment ID is specified, limit the result set to experiments
+           in the LevSeq user's group
+        - either truncate sequences that contain deletions, or else exclude them
+           from the result set altogether
+        - produce the corresponding amino acid sequence
+*/
+drop function if exists v1.get_variant_sequences(int,int);
+create or replace function v1.get_variant_sequences( in _pkseq int, in _eid int )
+returns table
+( pkvar           int,
+  experiment_name text,
+  plate           text,
+  barcode_plate   int,
+  well            text,
+  seqnt           text
+)
+language plpgsql
+as $body$
+begin
+
+    -- get the specified reference sequence nucleotides as rows in a table
+    drop table if exists _refseqnts;
+    create temporary table _refseqnts
+    ( pos  int generated always as identity primary key, 
+      nt   char(1)
+    );
+
+    insert into _refseqnts(nt)
+    select string_to_table(t0.seqnt, null)
+      from v1.reference_sequences t0;
+
+    -- get a set of reference sequence nucleotides for each mutation of the
+    --  specified parent (reference) sequence
+    drop table if exists _xseqnts;
+    create temporary table _xseqnts
+    ( pkvar  int not null,
+      pos    int not null, 
+      nt     char(1)
+    );
+
+    /* initial performance testing indicates that indexing does nothing, but
+        if performance ever becomes an issue, we can try this:
+
+        create index ix_xseqnts
+                  on _xseqnts
+               using btree (pkvar asc, pos asc)
+             include (nt);
+
+             cluster _xseqnts using ix_xseqnts;
+    */
+
+    /* produce a list of nucleotides and positions for each sequence that contains
+        at least one variant (mutation); the CTE produces a row for each such
+		sequence */
+    with cte as (select distinct t0.pkvar
+                   from v1.mutations t0
+                   join v1.variants t1 on t1.pkey = t0.pkvar
+                   join v1.parent_sequences t2 on t2.pkey = t1.pkpar
+                  where t2.pkseq = _pkseq
+                    and t1.pkexp = coalesce(_eid, t1.pkexp)
+                 )
+        insert into _xseqnts( pkvar, pos, nt )
+        select t0.pkvar, t1.pos, t1.nt
+          from cte t0
+    cross join _refseqnts t1
+      order by t0.pkvar, t1.pos;
+
+    -- build a temporary table of mutations
+	drop table if exists _muts;
+	create temporary table _muts
+	( pkvar int not null,
+      pos   int not null,
+      nt    char(1)
+	);
+
+    /* (same non-optimization as above)
+
+        create index ix_muts
+                  on _muts
+         using btree (pkvar asc, pos asc)
+       include (nt);
+    */
+
+    insert into _muts( pkvar, pos, nt )
+    select t0.pkvar, t0.posnt,
+           case t0.vartype when 'd' then '*' else t0.subnt end as nt
+     from v1.mutations t0
+     join v1.variants t1 on t1.pkey = t0.pkvar
+     join v1.parent_sequences t2 on t2.pkey = t1.pkpar
+    where t2.pkseq = _pkseq
+      and t1.pkexp = coalesce(_eid,t1.pkexp)
+ order by t0.pkvar, t0.posnt;
+
+    -- from the list of all nucleotides, remove nucleotides at positions
+	--  where a mutation exists
+    delete from _xseqnts t0
+     using _muts t1
+     where t0.pkvar = t1.pkvar
+       and t0.pos = t1.pos;
+   
+    -- insert the mutated nucleotides
+    insert into _xseqnts(pkvar, pos, nt)
+    select t0.pkvar, t0.pos, t0.nt
+	  from _muts t0;
+
+    -- generate a result set
+	return query
+    select t0.pkvar, t2.experiment_name, t3.plate, t1.barcode_plate, t1.well,
+           string_agg( t0.nt, null order by t0.pos )
+	  from _xseqnts t0
+	  join v1.variants t1 on t1.pkey = t0.pkvar
+	  join v1.experiments t2 on t2.pkey = t1.pkexp
+	  join v1.plates t3 on t3.pkey = t1.pkplate
+	 group by t0.pkvar, t2.experiment_name, t3.plate, t1.barcode_plate, t1.well
+	 order by t0.pkvar, t2.experiment_name, t3.plate, t1.barcode_plate, t1.well;
+	 
+end;
+$body$;
+/*** test
+select * from v1.reference_sequences;
+select * from v1.experiments;
+select * from v1.get_variant_sequences( 1, 83 );
+***/

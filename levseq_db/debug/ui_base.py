@@ -92,7 +92,7 @@ class UIbase:
         baseName = ctx.triggered_id.split("::")[0]  # type:ignore
         baseName = baseName.split("--")[0]
 
-        # put error text into the corresponding Textarea; the Textarea id is
+        # put error text into the corresponding Textarea; the Textarea id is "<basename>::error"
         dash.set_props(f"{baseName}::error", dict(value=aText))
 
         # callbacks must not bind to Output properties (use dash.set_props() instead)

@@ -157,7 +157,7 @@ create table if not exists v1.variants
   barcode_plate          int              not null,
   well                   text             not null,
   alignment_count        int              null,
-  parent_seq             int              not null constraint fk_variants_parent_sequence
+  pkpar                  int              not null constraint fk_variants_pkpar
                                                    references v1.parent_sequences(pkey)
                                                    on delete cascade,
   alignment_probability  double precision null,

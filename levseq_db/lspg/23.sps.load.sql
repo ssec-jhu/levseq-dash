@@ -450,7 +450,7 @@ begin
 
     -- insert new rows for the specified experiment into the table of variants
     insert into v1.variants( pkexp, pkplate, barcode_plate, well,
-                             alignment_count, parent_seq,
+                             alignment_count, pkpar,
                              alignment_probability, avg_mutation_freq,
                              p_value, p_adj_value,
                              x_coordinate, y_coordinate )

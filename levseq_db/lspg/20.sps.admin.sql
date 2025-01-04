@@ -380,7 +380,7 @@ end;
 $body$;
 /*** test
 select * from v1.experiments;
-select * from v1.get_experiment_row_counts(77);
+select * from v1.get_experiment_row_counts(83);
 ***/
 
 
@@ -394,8 +394,12 @@ returns table
 )
 language plpgsql
 as $body$
+declare
+    _pkseq int = null::int;
+
 begin
 
+    -- a few stereotyped queries that return results to the remote client
     return query
     values ( 'get_pginfo', 'Dash', null ),
            ( 'get_experiment_row_counts', _eid::text, null ),
@@ -404,11 +408,29 @@ begin
 	       ( 'get_experiment_parent_sequence', _eid::text, null ),
 	       ( 'get_experiment_alignments', _eid::text, null ),
            ( 'get_experiment_alignment_probabilities', _eid::text, null ),
-           ( 'get_experiment_p_values', _eid::text, null );		   
+           ( 'get_experiment_p_values', _eid::text, null );
+
+
+    if _eid is not null
+    then
+
+        -- get the parent sequence for the specified experiment
+        select pkseq into _pkseq
+          from v1.parent_sequences
+         where pkexp = _eid
+         limit 1;
+
+        if _pkseq is not null
+        then
+            return query
+            values ( 'get_mutation_counts', _pkseq::text, null ),
+                   ( 'get_variant_sequences', _pkseq::text, _eid::text );
+        end if;
+    end if;
 
 end;
 $body$;
 /*** test
 select * from v1.experiments;
-select * from v1.get_test_queries( 79, 4, 2 );
+select * from v1.get_test_queries( 83, 4, 2 );
 ***/
