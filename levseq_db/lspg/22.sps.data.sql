@@ -359,45 +359,76 @@ $body$;
 select * from v1.get_experiment_p_values( 79 );
 ***/
 
-/* function v1.get_mutation_counts
 
-   The specified CAS number must identify a substrate.
+/* function v1.mutation_string_agg
+
+   Notes:
+    This simple aggregate function builds a string that represents
+     the list of mutations for a given sequence relative to its
+     parent (reference) sequence, e.g.
+
+        T62G_G273A_A284G
 */
-drop function if exists v1.get_mutation_counts(text);
-create or replace function v1.get_mutation_counts( in _cas text )
-returns table
-( posnt        int,
-  n_mutations  int
+drop function if exists v1.mutation_string_agg_state(text,char,int,char,char) cascade;
+create or replace function v1.mutation_string_agg_state
+( in _prev    text,
+  in _vartype char(1),
+  in _posnt   int,
+  in _parnt   char(1),
+  in _subnt   char(1)
 )
+returns text
 language plpgsql
 as $body$
+declare
+    sep text;
+	
 begin
 
-    -- build a temporary table of experiment IDs for the specified substrate CAS
-	drop table if exists _eidcas;
-    create temporary table _eidcas
-    ( eid int not null );
+    -- use underscore as separator
+	if length(coalesce(_prev,'')) > 0 then
+        sep = '_';
+    else
+        sep = '';
+    end if;
 
-    insert _eidcas( eid )
-	select t0.pkexp
-      from v1.experiment_cas t0
-      join v1.cas t1 on t1.pkey = t0.pkcas
-     where t0.substrate
-       and t1.cas = _cas;
+    -- append to the nascent string
+    return _prev
+           || sep
+           || case _vartype
+                   when 's' then _parnt || _posnt::text || _subnt
+                   when 'd' then _parnt || _posnt::text || 'DEL'
+                   else          'INS' || _posnt::text || _subnt
+              end case;
 
-    return query
-    select posnt, count(*)
-      from v1.mutations t0
-      join v1.variants t1 on t1.pkey = t0.pkvar
-      join _eidcas t2 on t2.eid = t1.pkexp
-     where t1.pkexp
+end;
+$body$;
+/*** test
+select * from v1.mutation_string_agg_state( '', 's', 123, 'A', 'T' );
+select * from v1.mutation_string_agg_state( '', 'd', 123, 'C', null );
+select * from v1.mutation_string_agg_state( '', 'i', 123, null, 'G' );
 
-	  select * from v1.mutations
-	  select * from v1.variants
-	  select * from v1.cas
-	  select * from v1.experiment_cas
-group by posnt
-order by n desc;
+select * from v1.mutation_string_agg_state( 'X012Y', 's', 123, 'A', 'T' );
+***/
+
+drop aggregate if exists v1.mutation_string_agg(char,int,char,char);
+create or replace aggregate v1.mutation_string_agg
+( in _vartype char(1),
+  in _posnt   int,
+  in _parnt   char(1),
+  in _subnt   char(1)
+)
+(
+    sfunc = v1.mutation_string_agg_state,
+	stype = text,
+	initcond = ''
+);
+/*** test
+select * from v1.mutations where pkvar = 4802;
+select v1.mutation_string_agg(vartype,posnt,parnt,subnt)
+  from v1.mutations
+ where pkvar = 4802;
+***/
 
 
 /* function v1.get_mutation_counts
@@ -466,6 +497,7 @@ returns table
   plate           text,
   barcode_plate   int,
   well            text,
+  mutations       text,
   seqnt           text
 )
 language plpgsql
@@ -560,10 +592,13 @@ begin
     -- generate a result set
 	return query
     select t0.pkvar, t2.experiment_name, t3.plate, t1.barcode_plate, t1.well,
+           (select v1.mutation_string_agg( u0.vartype, u0.posnt, u0.parnt, u0.subnt order by u0.posnt )
+              from v1.mutations u0
+             where u0.pkvar = t0.pkvar),
            string_agg( t0.nt, null order by t0.pos )
 	  from _xseqnts t0
 	  join v1.variants t1 on t1.pkey = t0.pkvar
-	  join v1.experiments t2 on t2.pkey = t1.pkexp
+      join v1.experiments t2 on t2.pkey = t1.pkexp
 	  join v1.plates t3 on t3.pkey = t1.pkplate
 	 group by t0.pkvar, t2.experiment_name, t3.plate, t1.barcode_plate, t1.well
 	 order by t0.pkvar, t2.experiment_name, t3.plate, t1.barcode_plate, t1.well;
@@ -573,5 +608,13 @@ $body$;
 /*** test
 select * from v1.reference_sequences;
 select * from v1.experiments;
-select * from v1.get_variant_sequences( 1, 83 );
+
+select * from v1.mutations;
+select v1.mutation_string_agg(vartype,posnt,parnt,subnt)
+  from v1.mutations
+ where pkvar = 4802;	  
+
+select * from v1.fitness
+
+select * from v1.get_variant_sequences( 1, 86 );
 ***/

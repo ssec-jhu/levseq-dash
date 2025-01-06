@@ -184,7 +184,8 @@ create table if not exists v1.mutations
   pkvar   int     not null constraint fk_mutations_pkvar
                            references v1.variants(pkey)
                            on delete cascade,
-  vartype char(1) not null, -- s: substitution; i: insertion; d: deletion
+  vartype char(1) not null  -- s: substitution; i: insertion; d: deletion
+                           check (vartype in ('s','d','i')),  
   posnt   int     not null, -- 1-based position in parent (reference) sequence
   parnt   char(1) null,     -- nucleotide in parent (reference) sequence
   subnt   char(1) null,     -- variant nucleotide

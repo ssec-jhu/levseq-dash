@@ -119,15 +119,17 @@ async def query(args: wsexec.QueryParams) -> wsexec.QueryResponse:
 
             # postgres error: transmit the exception class and error info
             msg = ex.__repr__()
+            rcode = 500  # Internal Server Error
 
         else:
 
             # python error: transmit only the last two lines of the stack trace
             aTrace = traceback.format_exception(ex)
             msg = f"{aTrace[-1]}\\n{aTrace[-2:-1]}" if len(aTrace) >= 2 else str(ex)
+            rcode = 422  # Unprocessable Content
 
-        # return HTTP 422 Unprocessable Content
-        raise fastapi.HTTPException(status_code=422, detail=msg)
+        # respond with HTTP error code and message
+        raise fastapi.HTTPException(status_code=rcode, detail=msg)
 
 
 # uvicorn will not load this app correctly unless the script ends with the
