@@ -1,7 +1,7 @@
 import dash_bootstrap_components as dbc
 from dash import dcc, html
 
-from levseq_dash.app import components
+from levseq_dash.app import components, inline_styles
 from levseq_dash.app import global_strings as gs
 
 # TODO: all placeholders must be in strings file
@@ -14,7 +14,12 @@ form = dbc.Form(
             [
                 components.get_label(gs.experiment_name),
                 dbc.Col(
-                    dbc.Input(type="text", id="id-input-experiment-name", placeholder=gs.experiment_name_placeholder),
+                    dbc.Input(
+                        type="text",
+                        id="id-input-experiment-name",
+                        placeholder=gs.experiment_name_placeholder,
+                        debounce=True,
+                    ),
                 ),
             ],
             className="mb-3",
@@ -45,6 +50,7 @@ form = dbc.Form(
                         id="id-input-substrate-cas",
                         # TODO: place holder should be an example CAS number format
                         placeholder="Enter Substrate CAS Number",
+                        debounce=True,
                     ),
                 ),
             ],
@@ -58,6 +64,7 @@ form = dbc.Form(
                         type="text",
                         id="id-input-product-cas",
                         placeholder="Enter Product CAS Number",
+                        debounce=True,
                     ),
                 ),
             ],
@@ -90,11 +97,11 @@ form = dbc.Form(
                                 dbc.RadioItems(
                                     options=[
                                         {
-                                            "label": "EPR",
+                                            "label": gs.eppcr,
                                             "value": 1,
                                         },
                                         {
-                                            "label": "SSM",
+                                            "label": gs.ssm,
                                             "value": 2,
                                         },
                                     ],
@@ -121,34 +128,29 @@ form = dbc.Form(
                         id="id-button-upload-data",
                         children=dbc.Button(gs.button_upload_csv, color="secondary", outline=True),
                         multiple=False,
-                        style={
-                            "borderWidth": "1px",
-                            "borderStyle": "dashed",
-                            "padding": "10px",
-                            "textAlign": "center",
-                            "cursor": "pointer",
-                        },
+                        style=inline_styles.upload_default,
                     ),
                     width=6,
                 ),
                 dbc.Col(
                     dcc.Upload(
-                        id="id-button-upload-pdb",
+                        id="id-button-upload-structure",
                         children=dbc.Button(gs.button_upload_pdb, color="secondary", outline=True),
                         multiple=False,
-                        style={
-                            "borderWidth": "1px",
-                            "borderStyle": "dashed",
-                            "padding": "10px",
-                            "textAlign": "center",
-                            "cursor": "pointer",
-                        },
+                        style=inline_styles.upload_default,
                     ),
                     width=6,
                 ),
             ],
             className="mb-3",
         ),
+        dbc.Row(
+            [
+                dbc.Col(html.Div(id="id-button-upload-data-info"), width=6),
+                dbc.Col(html.Div(id="id-button-upload-structure-info"), width=6),
+            ]
+        ),
+        html.Br(),
         dbc.Row(
             [
                 dbc.Col(
@@ -158,7 +160,7 @@ form = dbc.Form(
                         class_name="btn-primary",
                         size="md",
                         children="Submit",
-                        disabled="True",
+                        # disabled="True",  # TODO: must be disabled at first
                     ),
                     width=6,
                     className="d-grid gap-2 col-12 mx-auto",
@@ -175,7 +177,7 @@ upload_form_layout = html.Div(
         "width": "70%",  # 50% width
         "margin": "0 auto",  # Center horizontally
         # "text-align": "center",  # Center text inside the div
-        # "border": "1px solid black",  # Optional: for visual debugging
-        # "padding": "10px",  # Optional: spacing inside the div
+        # "border": "1px solid black",  # for visual debugging
+        # "padding": "10px",  #spacing inside the div
     },
 )

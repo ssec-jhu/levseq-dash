@@ -7,7 +7,9 @@ experiment_date = "Experiment Date"
 substrate_cas = "Substrate CAS Number"
 product_cas = "Product CAS Number"
 assay = "Assay"
-tech = "Technique"
+tech = "Site Saturation Technique"
+eppcr = "epPCR"
+ssm = "SSM"
 
 experiment_name_placeholder = "Enter a name for your experiment."
 
