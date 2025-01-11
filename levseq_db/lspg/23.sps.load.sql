@@ -322,23 +322,35 @@ begin
 	-- get CAS numbers from user-specified metadata
     drop table if exists _rawcas;
     create temporary table _rawcas
-    ( cas       text not null,
+    ( cas       text not null unique,
       substrate bool not null default False,
       product   bool not null default False,
 	  n         int  not null default 0 );
 
     insert into _rawcas (cas, substrate)
-    select unnest(regexp_matches( cas_substrate, '\d+-\d+-\d', 'g')), True
+    select distinct unnest(regexp_matches( cas_substrate, '\d+-\d+-\d', 'g')), True
       from v1.experiments_pending
      where eid = _eid
        and uid = _uid;
 
     insert into _rawcas (cas, product)
-    select unnest(regexp_matches( cas_product, '\d+-\d+-\d', 'g')), True
+    select distinct unnest(regexp_matches( cas_product, '\d+-\d+-\d', 'g')), True
       from v1.experiments_pending
      where eid = _eid
-       and uid = _uid;
+       and uid = _uid
+on conflict (cas) do
+    update set product = true;
 
+    -- look for CAS numbers that the user specified both as a substrate and as a product
+    select t0.cas into bad_cas
+      from _rawcas t0
+     where substrate and product;
+ 
+	if bad_cas is not null
+	then
+		raise exception 'CAS number % is specified as both substrate and product', bad_cas;
+	end if;
+	
     -- get CAS numbers from CSV data
     drop table if exists _csvcas;
 	create temporary table _csvcas
@@ -355,6 +367,7 @@ begin
       from _csvcas t1
 	 where t1.cas = t0.cas;
 
+/* (unused)
     -- look for user-specified CAS numbers that did not appear in the data
     select cas into bad_cas
       from _rawcas
@@ -364,7 +377,7 @@ begin
 	then
         raise exception 'No data for specified CAS number %', bad_cas;
 	end if;
-
+*/
     -- look for CAS numbers in the data that were not specified by the user
     select t0.cas into bad_cas
       from _csvcas t0
@@ -401,6 +414,13 @@ truncate table v1.cas cascade;
 truncate table v1.experiment_cas cascade;
 select * from v1.cas;
 select * from v1.experiment_cas;
+
+select * from v1.experiments_pending;
+update v1.experiments_pending set cas_product = '395683-37-1,345905-97-7,439-14-5' ;
+call v1.save_experiment_cas( 4, 95 );
+select * from _rawcsv;
+select * from _rawcas;
+select * from _csvcas;
 ***/
 
 /* procedure v1.save_parent_sequences */
@@ -629,7 +649,7 @@ begin
     create temporary table _rawcsv
     ( ordinal                     int              not null generated always as identity,
       plate_name                  text             generated always as (
-                                                    (regexp_match(plate, '([\w\W]+)-\d+$'))[1]
+                                                    (regexp_match(plate, '([\w\W]+)-\w+$'))[1]
                                                    ) stored,
 	  "id"                        text             not null,
       barcode_plate               integer          not null,
@@ -697,11 +717,14 @@ on conflict (pkey) do
 end;
 $body$;
 /*** test
-call v1.load_experiment_data( 5, 28, '/mnt/Data/lsdb/uploads/G00002/E00028/flatten_ep_processed_xy_cas.csv');
+call v1.load_experiment_data( 4, 95, '/mnt/Data/lsdb/uploads/G00002/E00095/ssm.expt3.csv');
+
+select * from v1.plates
 
 select * from _rawcsv
 select * from _rawcas
 select * from _csvcas
+select * from v1.experiment_cas
 select * from v1.experiments
 select * from v1.experiments_pending
 select * from v1.reference_sequences

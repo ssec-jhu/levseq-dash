@@ -54,12 +54,12 @@ class UIsetMetadata(UIbase):
         
         layout_ui_cas_substrate = [
             html.Label("CAS (substrate):", htmlFor="input_cascsv_substrate"),
-            dcc.Input(id="input_cascsv_substrate", type="text", value="345905-97-7", style={"width": "160px"}),
+            dcc.Input(id="input_cascsv_substrate", type="text", value="439-14-5", style={"width": "160px"}),
         ]
 
         layout_ui_cas_product = [
             html.Label("CAS (product):", htmlFor="input_cascsv_product"),
-            dcc.Input(id="input_cascsv_product", type="text", value="395683-37-1", style={"width": "160px"}),
+            dcc.Input(id="input_cascsv_product", type="text", value="395683-37-1,345905-97-7", style={"width": "160px"}),
         ]
 
         layout_ui_assay = [
@@ -119,10 +119,6 @@ class UIsetMetadata(UIbase):
     ) -> None:
         print("UIsetMetadata callback")
 
-        ### TODO: GET RID OF THIS HACK (SEE ui_set_user.py)
-        if "uid" not in flask.session:
-            flask.session["uid"] = 5
-
         # validate the user-entered experiment metadata and get a experiment ID
         eid = wsexec.Query(
             "init_load",
@@ -143,6 +139,7 @@ class UIsetMetadata(UIbase):
         # update the UI state
         dash.set_props("div_eid_pending", dict(children=str(eid)))
         dash.set_props("UIsetMetadata::error", dict(value=""))
+        dash.set_props("UIuploadData::error", dict(value=""))
 
         # (we use dash.set_props instead of Output bindings)
         return None

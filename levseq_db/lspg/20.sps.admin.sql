@@ -380,7 +380,7 @@ end;
 $body$;
 /*** test
 select * from v1.experiments;
-select * from v1.get_experiment_row_counts(83);
+select * from v1.get_experiment_row_counts(88);
 ***/
 
 
