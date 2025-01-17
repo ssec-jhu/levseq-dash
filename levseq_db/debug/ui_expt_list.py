@@ -25,6 +25,7 @@ class UIexptList(UIbase):
             "width": "100%",
             "float": "left",
             "clear": "both",
+            "border-width": "4px 1px 1px 1px",
         }
 
         # layout

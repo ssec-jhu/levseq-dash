@@ -137,6 +137,9 @@ class UIquery(UIbase):
         print("UIquery--btn callback...")
 
         # get the "verb"
+        if "verb" not in flask.session:
+            return None
+
         verb = flask.session["verb"]
 
         # get the parameter values as integers
@@ -154,8 +157,8 @@ class UIquery(UIbase):
         # bind to a pandas DataFrame
         df = pandas.DataFrame(data=rows, columns=cols)  # type:ignore
 
-        # # we only want to see dates, not microseconds
-        # TODO some kind of foreach to find date columns
+        # we only want to see dates, not microseconds, so
+        #  it might be worth doing some kind of foreach to find date columns
         # df["dt_experiment"] = pandas.to_datetime(df["dt_experiment"]).dt.date
 
         dash.set_props("UIquery_result_set", dict(data=df.to_dict("records")))
