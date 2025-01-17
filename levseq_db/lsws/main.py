@@ -17,6 +17,7 @@
 import sys
 import os
 import traceback
+import argparse
 import uvicorn
 import fastapi
 from fastapi.responses import JSONResponse
@@ -37,34 +38,45 @@ g.DebugPrint(f"Invoked as: {sys.argv[0]} by {g.linux_username}" )
 
 
 # Application setup
-if sys.argv[0] != sScriptName:
 
-    # We assume we are running within a debugger like VSCode, which uses a fully-qualified
-    #  file specification instead of a bare filename.  In this case we use localhost so we
-    #  can debug on the local machine or on a remote machine via port forwarding (which
-    #  VSCode knows how to do without being told).
-    #
+# We use the way this application is invoked to determine whether to emit debugging information:
+#
+#  invoked as        argv[0]    __name__     wantDeveloperEndpoints
+#  python -m main    main.py    "__main__"   yes
+#  python main.py    main.py    "__main__"   yes
+#  VSCode            main.py    "__main__"   yes
+#  uvicorn           uvicorn    "main"       yes iff --workers<2
+#
+# Typical uvicorn invocation looks like this:
+#  uvicorn --host hplc-pc.che.caltech.edu --port 8051 --workers 4 main:app
+#
+# YMMV if you use a web server other than uvicorn, because we haven't tested this code
+#  with anything else!
+#
+# Debugging information includes:
+#  - Request logging
+#  - FastAPI documentation endpoints:
+#       /docs (Swagger UI)
+#       /redoc (OpenAPI ReDoc)
+#
+if __name__ == "__main__":
+
     hostName = g.devHost
     tcpPort = g.devPort
+
+    # enable debugging information
     wantDeveloperEndpoints = True
 
 else:
 
-    # We assume that a loader (i.e., uvicorn) imports this script as a module.  This also
-    #  occurs when this webservice is loaded by python, so we can launch the webservice by
-    #  doing
-    #
-    #   python main.py [boolean]
-    #
-    # YMMV if you use a web server other than uvicorn, because we haven't tested this code
-    #  with anything else!
-    #
     hostName = g.prodHost
     tcpPort = g.prodPort
 
-    # The first command-line parameter (e.g., python main.py True) controls whether the
-    #  webservice exposes FastAPI's /docs (Swagger UI) and /redoc (OpenAPI ReDoc) endpoints.
-    wantDeveloperEndpoints = (len(sys.argv) >= 2) and (sys.argv[1])
+    # enable debugging information unless there are two or more uvicorn worker processes
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--workers", action="store", type=int)
+    ka = parser.parse_known_args()[0]
+    wantDeveloperEndpoints = (ka.workers is None) or (ka.workers == 1)
 
 # instantiate FastAPI
 g.DebugPrint(f"wantDeveloperEndpoints: {wantDeveloperEndpoints}")

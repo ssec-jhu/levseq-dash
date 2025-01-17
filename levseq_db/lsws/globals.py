@@ -24,7 +24,7 @@ prodPort = 8051
 
 # URL parameters for debugging
 devHost = "localhost"
-devPort = 8052
+devPort = 8051
 
 
 # print with formatting consistent with gunicorn; ANSI terminal escape codes from here:
