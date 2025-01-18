@@ -38,7 +38,7 @@ g.DebugPrint(f"Invoked as: {sys.argv[0]} by {g.linux_username}" )
 
 
 # Application setup
-
+#
 # We use the way this application is invoked to determine whether to emit debugging information:
 #
 #  invoked as        argv[0]    __name__     wantDeveloperEndpoints
