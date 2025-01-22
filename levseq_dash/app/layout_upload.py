@@ -3,6 +3,7 @@ from dash import dcc, html
 
 from levseq_dash.app import components, inline_styles
 from levseq_dash.app import global_strings as gs
+from levseq_dash.app.data_manager import MutagenesisMethod
 
 # TODO: all placeholders must be in strings file
 
@@ -30,7 +31,7 @@ form = dbc.Form(
                 dbc.Col(
                     [
                         dcc.DatePickerSingle(
-                            id="id-experiment-date",
+                            id="id-input-experiment-date",
                             clearable=True,
                             # className="dbc",
                             # TODO: what should be the placeholder
@@ -74,15 +75,31 @@ form = dbc.Form(
             [
                 components.get_label(gs.assay),
                 dbc.Col(
-                    dcc.Dropdown(
-                        id="id-list-assay",
-                        options=[
-                            {"label": "Option 1", "value": "1"},
-                            {"label": "Option 2", "value": "2"},
-                            {"label": "Option 3", "value": "3"},
-                        ],
-                        placeholder="Select Assay Technique.",
-                    ),
+                    [
+                        # html.Div(
+                        #     [
+                        #         dcc.Dropdown(
+                        #             ["Apple", "Carrots", "Chips", "Cookies"],
+                        #             "Cookies"
+                        #         ),
+                        #     ],
+                        #     className="dbc"
+                        # ),
+                        html.Div(
+                            [
+                                dcc.Dropdown(
+                                    id="id-list-assay",
+                                    placeholder="Select Assay Technique.",
+                                ),
+                            ],
+                            className="dbc",
+                        ),
+                        # dcc.Dropdown(
+                        #     id="id-list-assay",
+                        #     placeholder="Select Assay Technique.",
+                        #     className="dbc"
+                        # ),
+                    ]
                 ),
             ],
             className="mb-3",
@@ -95,17 +112,8 @@ form = dbc.Form(
                         html.Div(
                             [
                                 dbc.RadioItems(
-                                    options=[
-                                        {
-                                            "label": gs.eppcr,
-                                            "value": 1,
-                                        },
-                                        {
-                                            "label": gs.ssm,
-                                            "value": 2,
-                                        },
-                                    ],
-                                    value=1,
+                                    options=[MutagenesisMethod.epPCR, MutagenesisMethod.SSM],
+                                    value=MutagenesisMethod.epPCR,
                                     id="id-radio-epr",
                                     inline=True,
                                 ),

@@ -1,0 +1,25 @@
+Technique,Units
+LC-MS,"M, µg/mL, ng/mL, counts"
+GC-MS,"ng/mL, µg/mL, ppm"
+Fluorescence Spectroscopy,"AU, RFU, µM, mM"
+UV-Vis Spectroscopy,"Absorbance (unitless), M, mg/mL"
+ELISA,"ng/mL, pg/mL, counts"
+Western Blotting,"Relative expression levels (unitless), band intensity (AU)"
+SPR,"Kd (M), ka (1/(M∑s)), kd (1/s)"
+ITC,"Kd (M), ŒîH (kcal/mol), ŒîS (cal/(mol∑K))"
+CD Spectroscopy,Molar ellipticity (degrees∑cm≤/dmol)
+NMR Spectroscopy,"ppm, mM, unitless ratios"
+X-ray Crystallography,"√Ö, degrees"
+Flow Cytometry,"AU, events/µL"
+MSIA,"ng/mL, µg/mL, counts"
+MRM,"fmol/µL, amol/µL, counts"
+SILAC,Relative abundance ratios (unitless)
+ICAT,Relative abundance ratios (unitless)
+iTRAQ,"Relative abundance ratios, reporter ion intensity (counts)"
+Dynamic Light Scattering (DLS),"Particle size (nm), intensity (AU)"
+Microplate Readers,"Absorbance (unitless), AU, RFU, RLU"
+Capillary Electrophoresis,"Seconds, cm≤/(V∑s)"
+Thermal Shift Assays,Tm (∞C)
+FTIR,Wavenumber (cm‚Åªπ)
+HPLC,"µg/mL, mg/mL, retention time (minutes),area"
+Spectrofluorometers,"ns, AU, RFU"
