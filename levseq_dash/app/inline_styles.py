@@ -16,7 +16,7 @@ upload_success = success_style = {
 
 border_row = {"border": "0px solid blue"}
 border_column = {"border": "0px solid red"}
-border_table = {"border": "1px solid magenta"}
+border_table = {"border": "0px solid magenta"}
 card_shadow = {"box-shadow": "1px 2px 7px 0px grey", "border-radius": "5px"}
 
 top_card_head = "card-title fw-bold custom-card-header"
