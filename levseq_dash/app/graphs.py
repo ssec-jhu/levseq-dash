@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import plotly_express as px
 import regex as re
@@ -6,38 +7,41 @@ from levseq_dash.app import global_strings as gs
 
 
 def creat_heatmap(df, plate_number, property_stat, cas_number):
-    filtered_df = df[(df[gs.c_cas] == cas_number) & (df[gs.c_plate] == plate_number)]
+    # Need to create a .copy() of the original df. Pandas did not like appending the columns
+    # to the original later in the code here, and it raised many warnings.
+    # https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
 
-    well_letters = filtered_df[gs.c_well].str[0]
-    filtered_df["X-L"] = well_letters
-    well_numbers = filtered_df[gs.c_well].str[1:].astype(int)
-    filtered_df["Y-N"] = well_numbers
+    filtered_df = df[(df[gs.c_cas] == cas_number) & (df[gs.c_plate] == plate_number)].copy()
+
+    # set up the well indices for the grid
+    filtered_df["X-L"] = filtered_df[gs.c_well].str[0]
+    filtered_df["Y-N"] = filtered_df[gs.c_well].str[1:].astype(int)
 
     heatmap_data = filtered_df.pivot(index="Y-N", columns="X-L", values=property_stat)
 
     annotations_data = filtered_df.pivot(index="Y-N", columns="X-L", values=gs.mutations)
-    # extract = df["amino_acid_substitutions"].to_list()
 
     fig = px.imshow(
         heatmap_data.values,
-        labels=dict(x="(A-H)", y="(1-12)", color="Values"),
-        x=heatmap_data.columns,  # X-axis labels (letters A-H)
-        y=heatmap_data.index,  # Y-axis labels (numbers 1-12)
-        # color_continuous_scale="Viridis",
-        color_continuous_scale="RdBu_r",
-        # color_continuous_scale="turbo",
+        # labels=dict(x="testing", y="", color="Values"),
+        x=heatmap_data.columns,
+        y=heatmap_data.index,
+        color_continuous_scale="Viridis",  # uncomment to pickup the dbc tempalte
+        # color_continuous_scale="RdBu_r",
         aspect="auto",
-        # labels={
-        #     "x": "Amino acid substitutions",
-        #     "y": "Position",
-        #     "color": y,
-        # },
         # aspect argument to "auto" will instead fill the plotting area with the heatmap, using non-square tiles
     )
-    fig.update_traces(text=annotations_data, texttemplate="%{text}")
-    # fig.add_annotation( x=x_label, y=y_label, text=str(annotation),  # Annotation text from column F
-    # showarrow=False, font=dict(color="white" if heatmap_data.loc[y_label, x_label] < max(
-    # heatmap_data.values.flatten()) / 2 else "black")
+    # annotations_data = annotations_data.applymap(lambda x: x.replace("_", " "))
+    annotations_data = annotations_data.map(lambda x: x.replace("_", ", ").replace(" ", "<br>", 1))
+    # formatted_text = annotations_data.applymap(lambda x: f"<b>{x}</b>" if "#PARENT#" in x else x)
+
+    fig.update_traces(
+        text=annotations_data,
+        # text=formatted_text.values,
+        texttemplate="%{text}",
+        textfont_size=10,
+        hovertemplate="<b>Value</b>: %{z}<br>" + "<b>Well</b>: %{x}%{y}<br>",
+    )
 
     fig.update_xaxes(
         tickmode="array",
@@ -49,6 +53,8 @@ def creat_heatmap(df, plate_number, property_stat, cas_number):
         tickvals=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],  # list(range(len(heatmap_data.index))),  # Tick positions
         ticktext=heatmap_data.index,  # Custom tick labels (numbers 1-12, reversed)
     )
+    # fig.update_xaxes(visible=False)
+    # fig.update_yaxes(visible=False)
 
     # removing paddings
     fig.update_layout(
@@ -57,10 +63,13 @@ def creat_heatmap(df, plate_number, property_stat, cas_number):
         height=600,  # Adjust figure height
         xaxis_title="",
         yaxis_title="",
+        template=gs.dbc_template_name,
     )
     fig.update_coloraxes(colorbar=dict(thickness=10, xpad=0))  # shrink the axes on the right
+    # fig.update_coloraxes(showscale=False)
     # fig.update_layout(autosize=False)  # TODO: do I need this
 
+    fig.show()
     # # #####
     # # Create the surface plot using Plotly Express
     # filtered_df_2 = df[(df[gs.c_cas] == cas_number) & (df[gs.c_plate] == plate_number)]
@@ -136,7 +145,7 @@ def create_sunburst(df):
                 processed_data.append(
                     {
                         "Index": int(numeric_part),
-                        "Group Size": f"Group-{n_components}",
+                        "Group Size": f"PairingSize={n_components}",
                         "Combination": item,  # "_".join(components),
                         "Fitness": row["fitness_value"],
                     }
@@ -145,12 +154,13 @@ def create_sunburst(df):
     # Convert processed data to a DataFrame for sunburst and treemap charts
     df_hierarchy = pd.DataFrame(processed_data)
 
-    group_count = df_hierarchy.groupby("Group Size")["Index"].transform("count")
-    df_hierarchy["group_count"] = group_count
+    pairing_size = df_hierarchy.groupby("Group Size")["Index"].transform("count")
+    df_hierarchy["pairing_size"] = pairing_size
 
     df_hierarchy = df_hierarchy.sort_values(by="Index", ascending=True)
-    fig_sunburst = px.sunburst(
+    fig_sunburst_color_by_fitness = px.sunburst(
         df_hierarchy,
+        title=" colored by fitness",
         path=["Index", "Group Size", "Combination"],  # Hierarchical path
         color="Fitness",
         color_continuous_scale="RdBu",
@@ -160,60 +170,73 @@ def create_sunburst(df):
         # to use with the custom colors
         # color="Custom Color",  # Use the custom color column
     )
-    fig_sunburst.show()
-    fig_sunburst.update_traces(sort=False, selector=dict(type="sunburst"))
-
-    fig_sunburst = px.sunburst(
+    fig_sunburst_color_by_fitness.update_traces(sort=False, selector=dict(type="sunburst"))
+    # ------------------------------
+    fig_sunburst_no_index = px.sunburst(
         df_hierarchy,
+        title=" colored by fitness - no index",
         path=["Group Size", "Combination"],  # Hierarchical path
-        color="Fitness",
         color_continuous_scale="RdBu",
-        # color="GroupOrder",  # Use the GroupOrder to influence the display order
-        # values="Group Size",
-        # color_discrete_map={'5': 'black', '1': 'gold'}
-        # title="Hierarchical Relationships by Index (Sunburst)"
-        # to use with the custom colors
-        # color="Custom Color",  # Use the custom color column
+        color="Fitness",
     )
-
-    fig_sunburst.update_traces(sort=False, selector=dict(type="sunburst"))
-
-    fig_sunburst.show()
-
-    # Calculate the count of items for each parent category
-
-    fig_ice = px.icicle(
+    fig_sunburst_no_index.update_traces(sort=False, selector=dict(type="sunburst"))
+    # ------------------------------
+    fig_sunburst_color_by_paring = px.sunburst(
         df_hierarchy,
+        title=" colored by pairing size",
+        path=["Index", "Group Size", "Combination"],  # Hierarchical path
+        color_continuous_scale="RdBu",
+        color="pairing_size",  # Use the count of items for coloring
+    )
+    # ------------------------------
+
+    fig_ice_color_by_paring = px.icicle(
+        df_hierarchy,
+        title=" same as previous: colored by pairing size",
         path=["Index", "Group Size", "Combination"],  # Hierarchical path
         # color="count",
         # color_continuous_scale="RdBu",
-        color="group_count",  # Use the count of items for coloring
-        color_continuous_scale="Blues",  # Customize the color scale
-        # values="Group Size",
-        # color_discrete_map={'5': 'black', '1': 'gold'}
-        # title="Hierarchical Relationships by Index (Sunburst)"
-        # to use with the custom colors
-        # color="Custom Color",  # Use the custom color column
+        color="pairing_size",  # Use the count of items for coloring
+        color_continuous_scale="RdBu",  # Customize the color scale
     )
-    fig_ice.show()
+    fig_ice_color_by_paring.update_traces(root_color="lightblue")  # Set root node's color explicitly
 
-    fig_sunburst = px.sunburst(
-        df_hierarchy,
+    # ------------------------------
+
+    # size_counts = df_hierarchy.groupby("Index")["Group Size"].nunique()
+    size_counts_2 = df_hierarchy.groupby("Index")["Group Size"].nunique().reset_index(name="Unique Group Sizes")
+    # Merge back to the original DataFrame
+    df_hierarchy_with_group_counts = df_hierarchy.merge(size_counts_2, on="Index", how="left")
+    fig_sunburst_color_by_group_size = px.sunburst(
+        df_hierarchy_with_group_counts,
+        title=" colored by unique group size",
         path=["Index", "Group Size", "Combination"],  # Hierarchical path
         # color="Fitness",
-        color_continuous_scale="RdBu",
-        color="group_count",  # Use the count of items for coloring
-        # color_continuous_scale="Blues",  # Customize the color scale
-        # values="Group Size",
-        # color_discrete_map={'5': 'black', '1': 'gold'}
-        # title="Hierarchical Relationships by Index (Sunburst)"
-        # to use with the custom colors
-        # color="Custom Color",  # Use the custom color column
+        color_continuous_scale="Blues",
+        color="Unique Group Sizes",  # Use the count of items for coloring
     )
-    fig_sunburst.show()
+    fig_sunburst_color_by_group_size_ice = px.icicle(
+        df_hierarchy_with_group_counts,
+        title=" colored by unique group size",
+        path=["Index", "Group Size", "Combination"],  # Hierarchical path
+        # color="Fitness",
+        color_continuous_scale="Blues",
+        color="Unique Group Sizes",  # Use the count of items for coloring
+    )
+
+    # fig_sunburst_color_by_fitness.show()
+    # fig_sunburst_no_index.show()
+    # fig_sunburst_color_by_paring.show()
+    # fig_ice_color_by_paring.show()
+    fig_sunburst_color_by_group_size.show()
+    fig_sunburst_color_by_group_size_ice.show()
 
 
-# from levseq_dash.app.file_manager import experiment_ep_example
+# from levseq_dash.app.tests.conftest import experiment_ep_example
 #
-# exp = experiment_ep_example
-# create_sunburst(exp.data_df)
+# # create_sunburst(experiment_ep_example.data_df)
+#
+# creat_heatmap(df=experiment_ep_example.data_df,
+#               plate_number=experiment_ep_example.plates[0],
+#               property_stat=gs.stat_list[0],
+#               cas_number=experiment_ep_example.cas_unique_values[0])

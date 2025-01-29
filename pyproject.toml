@@ -70,8 +70,8 @@ lint.select = ["ALL"]
 lint.ignore = [
     "ANN002",  # https://docs.astral.sh/ruff/rules/missing-type-args/
     "ANN003",  # https://docs.astral.sh/ruff/rules/missing-type-kwargs/
-    "ANN101",  # https://docs.astral.sh/ruff/rules/missing-type-self/
-    "ANN102",  # https://docs.astral.sh/ruff/rules/missing-type-cls/
+    #"ANN101",  # https://docs.astral.sh/ruff/rules/missing-type-self/
+    #"ANN102",  # https://docs.astral.sh/ruff/rules/missing-type-cls/
     "ANN401",  # https://docs.astral.sh/ruff/rules/any-type/
     "PLR0913",  # https://docs.astral.sh/ruff/rules/too-many-arguments/
     "EM101",  # https://docs.astral.sh/ruff/rules/raw-string-in-exception/
@@ -80,6 +80,7 @@ lint.ignore = [
     "D407",  # https://docs.astral.sh/ruff/rules/dashed-underline-after-section/
     "COM812", # https://docs.astral.sh/ruff/rules/missing-trailing-comma/
     "ISC001", # https://docs.astral.sh/ruff/rules/single-line-implicit-string-concatenation/
+    "F841", # https://docs.astral.sh/ruff/rules/unused-variable/
 ]
 exclude = [
     ".bzr",
