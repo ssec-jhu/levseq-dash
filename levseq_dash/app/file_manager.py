@@ -1,84 +1,16 @@
-import base64
-import os
 from collections import defaultdict
-from datetime import datetime
-
-import pandas as pd
 
 from levseq_dash.app import parser
 from levseq_dash.app.data_manager import DataManager, MutagenesisMethod
-
-
-class Experiment:
-    def __init__(
-        self,
-        data_df,
-        experiment_name=None,
-        experiment_date=None,
-        experiment_time_stamp=None,
-        substrate_cas_number=None,
-        product_cas_number=None,
-        assay=None,
-        mutagenesis_method=None,
-        geometry_file=None,
-    ):
-        self.data_df = data_df
-        self.experiment_name = experiment_name
-        self.experiment_time_stamp = experiment_time_stamp
-
-        if experiment_date is None:
-            experiment_date = "TBD"
-        self.experiment_time = experiment_date
-
-        self.cas_unique_values = data_df["cas_number"].unique()
-        if substrate_cas_number or product_cas_number is None:
-            substrate_cas_number = product_cas_number = self.cas_unique_values
-        self.substrate_cas_number = substrate_cas_number
-        self.product_cas_number = product_cas_number
-
-        self.assay = assay
-        self.mutagenesis_method = mutagenesis_method
-
-        # manual calculations
-        self.upload_time_stamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-        plates = data_df["plate"].unique()
-        self.plates_count = len(plates)
-
-        # parent_sequences = data_df["amino_acid_substitutions"] == "#PARENT#"
-        self.parent_sequence = data_df[data_df["amino_acid_substitutions"] == "#PARENT#"]["aa_sequence"].iloc[0]
-
-        # TODO: format needs to be fed in
-        if os.path.isfile(geometry_file):
-            self.geometry_file = geometry_file
-        else:
-            self.geometry_file = base64.b64decode(geometry_file)
-
-
-experiment_1 = Experiment(
-    data_df=pd.read_csv("./tests/data/flatten_ep_processed_xy_cas.csv"),
-    experiment_name="ep_file",
-    experiment_date="TBD",
-    mutagenesis_method="epPcR",
-    geometry_file="./tests/data/flatten_ep_processed_xy_cas_row8.cif",
-)
-
-experiment_2 = Experiment(
-    data_df=pd.read_csv("./tests/data/flatten_ssm_processed_xy_cas.csv"),
-    experiment_name="ssm_file",
-    experiment_date="TBD",
-    mutagenesis_method="SSM",
-    geometry_file="./tests/data/flatten_ssm_processed_xy_cas_row3.cif",
-)
+from levseq_dash.app.experiment import Experiment
+from levseq_dash.app.tests.conftest import test_assay_df
 
 
 class FileManager(DataManager):
     def __init__(self):
-        # load csv files
         # super().__init__()
         self.experiments_dict = defaultdict(Experiment)
-        assay_df = pd.read_csv("./tests/data/assay_measure_list.csv", encoding="utf-8", usecols=["Technique"])
-        self.assay_list = assay_df["Technique"].tolist()
+        self.assay_list = test_assay_df
 
     def add_new_experiment(
         self,
@@ -160,3 +92,9 @@ class FileManager(DataManager):
     def get_experiment(self, experiment_id: int) -> Experiment:
         exp = self.experiments_dict[experiment_id]
         return exp
+
+    def get_plates(self):
+        return None
+
+    def get_cas_numbers(self):
+        return None

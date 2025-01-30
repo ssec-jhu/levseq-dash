@@ -30,3 +30,19 @@ viewer_header = "Protein Structure"
 data_header = "Top Variants"
 # DO NOT CHANGE
 dbc_template_name = "flatly"
+
+# DO NOT CHANGE PAST HERE
+
+c_cas = "cas_number"
+c_plate = "plate"
+c_well = "well"
+c_fitness = "fitness_value"
+mutations = "amino_acid_substitutions"
+stat_list = [
+    "fitness_value",  # must remain first
+    "alignment_count",
+    "alignment_probability",
+    # "average_mutation_frequency", # removed
+    # "p_value", # removed
+    # "p_adj_value", # removed
+]

@@ -6,3 +6,4 @@ dash-iconify==0.1.2
 pandas==2.2.3
 dash-loading-spinners==1.0.3
 gunicorn==23.0.0
+pyyaml==6.0.2

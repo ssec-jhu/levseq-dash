@@ -8,15 +8,17 @@ from dash_bootstrap_templates import load_figure_template
 from dash_molstar.utils import molstar_helper
 
 from levseq_dash.app import global_strings as gs
-from levseq_dash.app import layout_experiment, layout_upload, parser
+from levseq_dash.app import graphs, layout_experiment, layout_upload, parser
 from levseq_dash.app.file_manager import FileManager
+from levseq_dash.app.settings import CONFIG
+from levseq_dash.app.tests.conftest import experiment_ep_example
 
 # Initialize the app
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
 app = Dash(
     __name__,
     title=gs.web_title,
-    external_stylesheets=[dbc.themes.PULSE, dbc_css, dbc.icons.BOOTSTRAP, dbc.icons.FONT_AWESOME],
+    external_stylesheets=[dbc.themes.MINTY, dbc_css, dbc.icons.BOOTSTRAP, dbc.icons.FONT_AWESOME],
 )
 
 # VERY important line of code for running with gunicorn
@@ -24,7 +26,8 @@ app = Dash(
 server = app.server
 
 load_figure_template(gs.dbc_template_name)
-# Define the form layout
+
+app.server.config.update(SECRET_KEY=CONFIG["db-service"]["session_key"])
 
 # app keeps one instance of the db manager
 # TODO: this may be replaced
@@ -39,6 +42,7 @@ app.layout = dbc.Container(
         layout_experiment.layout,
         dcc.Store(id="id-data-exp"),
         dcc.Store(id="id-data-structure"),
+        # dcc.Store(id="id-experiment-selected"),
     ],
     fluid=True,
 )
@@ -53,7 +57,7 @@ app.layout = dbc.Container(
     State("id-button-upload-data", "filename"),
     State("id-button-upload-data", "last_modified"),
 )
-def on_upload_experiment(contents, filename, last_modified):
+def on_upload_experiment_file(contents, filename, last_modified):
     if not contents:
         # TODO add the alert
         return "No file uploaded.", no_update
@@ -75,7 +79,7 @@ def on_upload_experiment(contents, filename, last_modified):
     State("id-button-upload-structure", "filename"),
     State("id-button-upload-structure", "last_modified"),
 )
-def on_upload_structure(contents, filename, last_modified):
+def on_upload_structure_file(contents, filename, last_modified):
     if not contents:
         # TODO add the alert
         return "No file uploaded.", no_update
@@ -89,17 +93,7 @@ def on_upload_structure(contents, filename, last_modified):
 
 
 @app.callback(
-    Output("id-table-top-variants", "rowData"),
     Output("temp-output", "children"),
-    Output("id-experiment-name", "children"),
-    Output("id-experiment-sequence", "children"),
-    Output("id-experiment-mutagenesis-method", "children"),
-    Output("id-experiment-date", "children"),
-    Output("id-experiment-plate-count", "children"),
-    Output("id-experiment-sub-cas", "children"),
-    Output("id-experiment-product-cas", "children"),
-    Output("id-experiment-assay", "children"),
-    Output("id-viewer", "data"),
     Input("id-button-submit", "n_clicks"),
     State("id-input-experiment-name", "value"),
     State("id-input-experiment-date", "date"),
@@ -127,6 +121,17 @@ def on_submit_experiment(
         df = parser.convert_experiment_upload_to_dataframe(experiment_content)
         rows, cols = df.shape
 
+        # TODO: fix the splitting here
+        # sub_cas_split = substrate_cas.split(';')
+        # substrate_cas_numbers = [item for item in sub_cas_split if item]
+        #
+        # product_cas_split = product_cas.split(';')
+        # product_cas_numbers = [item for item in product_cas_split if item]
+
+        # TODO: verify the CAS numbers somewhere or in another callback
+        # verify the experiment here or on another callback
+        # file_bytes = base64.b64decode(content_string)
+
         index = data_mgr.add_new_experiment(
             user_id="uer_name",
             experiment_name=experiment_name,
@@ -140,16 +145,55 @@ def on_submit_experiment(
             geometry_content=structure_content,
         )
 
-        info = f"Experiment contains {rows} rows and {cols} columns."
+        # you can verify the information here
+        # exp = data_mgr.get_experiment(index)
+        # TODO: return a success alert here
+        info = f"Experiment {index} added."
+        return info
+    else:
+        return no_update
 
-        exp = data_mgr.get_experiment(index)
-        # TODO: verify the CAS numbers somewhere or in another callback
-        # verify the experiment here or on another callback
-        # file_bytes = base64.b64decode(content_string)
+
+@app.callback(
+    Output("id-table-top-variants", "rowData"),
+    Output("id-experiment-name", "children"),
+    Output("id-experiment-sequence", "children"),
+    Output("id-experiment-mutagenesis-method", "children"),
+    Output("id-experiment-date", "children"),
+    Output("id-experiment-plate-count", "children"),
+    Output("id-experiment-sub-cas", "children"),
+    Output("id-experiment-product-cas", "children"),
+    Output("id-experiment-assay", "children"),
+    Output("id-viewer", "data"),
+    Output("id-list-plates", "options"),
+    Output("id-list-plates", "value"),
+    Output("id-list-cas-numbers", "options"),
+    Output("id-list-cas-numbers", "value"),
+    Output("id-list-properties", "options"),
+    Output("id-list-properties", "value"),
+    Output("id-experiment-heatmap", "figure"),
+    Input("id-button-temp-use", "n_clicks"),
+    prevent_initial_call=True,
+)
+def on_load_experiment_dashboard(n_clicks):
+    # TODO: remove this button trigger and replace with table click trigger adn input experiment ID
+    if ctx.triggered_id == "id-button-temp-use":
+        # TODO: load from file for now
+        exp = experiment_ep_example
+
+        # viewer data
+        # TODO : this needs to be moved out of here so it can pickup the file format
+        # in the component. Hardcoded here for now.
         pdb_cif = molstar_helper.parse_molecule(exp.geometry_file, fmt="cif")
+
+        # load the dropdown for the plots with default values
+        default_plate = exp.plates[0]
+        default_cas = exp.cas_unique_values[0]
+        default_stat = gs.stat_list[0]
+        stat_heatmap = graphs.creat_heatmap(exp.data_df, default_plate, default_stat, default_cas)
+
         return (
             exp.data_df.to_dict("records"),
-            info,
             exp.experiment_name,
             exp.parent_sequence,
             exp.mutagenesis_method,
@@ -159,12 +203,48 @@ def on_submit_experiment(
             exp.product_cas_number,
             exp.assay,
             pdb_cif,
+            exp.plates,
+            default_plate,
+            exp.cas_unique_values,
+            default_cas,
+            gs.stat_list,
+            gs.stat_list[0],
+            stat_heatmap,
         )
     else:
         return no_update
 
 
-@app.callback(Output("selected-row-value", "children"), Input("id-table-top-variants", "selectedRows"))
+@app.callback(
+    Output("id-experiment-heatmap", "figure", allow_duplicate=True),
+    Output("id-list-cas-numbers", "disabled"),
+    Output("id-list-cas-numbers", "className"),
+    Input("id-list-plates", "value"),
+    Input("id-list-cas-numbers", "value"),
+    Input("id-list-properties", "value"),
+    prevent_initial_call=True,
+)
+def on_heatmap_selection(selected_plate, selected_cas_number, selected_stat_property):
+    # TODO: transfer of data here
+    exp = experiment_ep_example
+
+    show_cas_numbers = selected_stat_property == gs.stat_list[0]
+
+    stat_heatmap = graphs.creat_heatmap(
+        exp.data_df, plate_number=selected_plate, property_stat=selected_stat_property, cas_number=selected_cas_number
+    )
+    if not show_cas_numbers:
+        class_name = "opacity-50 text-secondary dbc"
+    else:
+        class_name = "dbc"
+    return stat_heatmap, not show_cas_numbers, class_name
+
+
+@app.callback(
+    Output("selected-row-value", "children"),
+    Input("id-table-top-variants", "selectedRows"),
+    prevent_initial_call=True,
+)
 def display_selected_row(selected_rows):
     if selected_rows:
         return f"Selected Column B Value: {selected_rows[0]['amino_acid_substitutions']}"
