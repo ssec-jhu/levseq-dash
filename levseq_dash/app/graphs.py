@@ -12,7 +12,7 @@ def creat_heatmap(df, plate_number, property_stat, cas_number):
     # https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
 
     filtered_df = df[(df[gs.c_cas] == cas_number) & (df[gs.c_plate] == plate_number)].copy()
-
+    filtered_df = filtered_df.fillna(0)
     # set up the well indices for the grid
     filtered_df["X-L"] = filtered_df[gs.c_well].str[0]
     filtered_df["Y-N"] = filtered_df[gs.c_well].str[1:].astype(int)
@@ -69,7 +69,8 @@ def creat_heatmap(df, plate_number, property_stat, cas_number):
     # fig.update_coloraxes(showscale=False)
     # fig.update_layout(autosize=False)  # TODO: do I need this
 
-    fig.show()
+    # fig.show()
+
     # # #####
     # # Create the surface plot using Plotly Express
     # filtered_df_2 = df[(df[gs.c_cas] == cas_number) & (df[gs.c_plate] == plate_number)]
@@ -224,18 +225,18 @@ def create_sunburst(df):
         color="Unique Group Sizes",  # Use the count of items for coloring
     )
 
-    # fig_sunburst_color_by_fitness.show()
-    # fig_sunburst_no_index.show()
-    # fig_sunburst_color_by_paring.show()
+    fig_sunburst_color_by_fitness.show()
+    fig_sunburst_no_index.show()
+    fig_sunburst_color_by_paring.show()
     # fig_ice_color_by_paring.show()
     fig_sunburst_color_by_group_size.show()
     fig_sunburst_color_by_group_size_ice.show()
 
 
 # from levseq_dash.app.tests.conftest import experiment_ep_example
-#
-# # create_sunburst(experiment_ep_example.data_df)
-#
+
+# create_sunburst(experiment_ep_example.data_df)
+
 # creat_heatmap(df=experiment_ep_example.data_df,
 #               plate_number=experiment_ep_example.plates[0],
 #               property_stat=gs.stat_list[0],
