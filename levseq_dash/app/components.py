@@ -1,11 +1,17 @@
 import dash_bootstrap_components as dbc
 
+from levseq_dash.app.example_aggrid_barchart import data_bars_dynamic, data_bars_hsv, dynamdata_bars_dynamic_2
+
 
 def get_label(string):
     return dbc.Label(string, width=3, className="fs-6")
 
 
-def get_top_variant_column_defs():
+def get_top_variant_column_defs(df):
+    # mean_value = df.loc[df["amino_acid_substitutions"] == "#PARENT#", "fitness_value"].mean()
+    # df["ratio"] = df["fitness_value"] / mean_value
+
+    mean_values = df[df["amino_acid_substitutions"] == "#PARENT#"].groupby("cas_number")["fitness_value"].mean()
     return [
         {
             "field": "cas_number",
@@ -30,26 +36,9 @@ def get_top_variant_column_defs():
         {
             "field": "fitness_value",
             "filter": "agNumberColumnFilter",
-            "cellStyle": {
-                "function": """
-                function(params) {
-                    let value = params.value;
-                    let min = 0;
-                    let max = 1000000;
-
-                    if (value === null || value === undefined) return {}; // Handle missing values
-
-                    let percent = (value - min) / (max - min);
-                    percent = Math.max(0, Math.min(1, percent));  // Clamp between 0 and 1
-
-                    let red = Math.round(255 * (1 - percent));
-                    let green = Math.round(255 * percent);
-                    let blue = 100; // Keeps a soft tint
-
-                    return { backgroundColor: `rgb(${red}, ${green}, ${blue})`, color: 'black' };
-                }
-                """
-            },
+            "cellStyle": {"styleConditions": data_bars_dynamic(df, "fitness_value")},
+            # TODO: this doens't work yet. it needs to color off fromt he mean
+            # "cellStyle": {"styleConditions": dynamdata_bars_dynamic_2(df)}
         },
     ]
 
@@ -60,6 +49,7 @@ def get_all_experiments_column_defs():
         {
             "field": "experiment_id",
             "filter": "agNumberColumnFilter",
+            # "checkboxSelection": True,
         },
         {
             "field": "experiment_name",

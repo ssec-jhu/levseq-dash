@@ -6,8 +6,8 @@ from dash.exceptions import PreventUpdate
 from dash_bootstrap_templates import load_figure_template
 from dash_molstar.utils import molstar_helper
 
+from levseq_dash.app import components, graphs, layout_experiment, layout_landing, parser
 from levseq_dash.app import global_strings as gs
-from levseq_dash.app import graphs, layout_experiment, layout_landing, parser
 from levseq_dash.app.data_manager import DataManager
 from levseq_dash.app.settings import CONFIG
 
@@ -161,6 +161,7 @@ def on_submit_experiment(
 
 @app.callback(
     Output("id-table-top-variants", "rowData"),
+    Output("id-table-top-variants", "columnDefs"),
     Output("id-experiment-name", "children"),
     Output("id-experiment-sequence", "children"),
     Output("id-experiment-mutagenesis-method", "children"),
@@ -206,8 +207,11 @@ def on_load_experiment_dashboard(n_clicks, experiment_id):
         # except Exception:
         #    raise PreventUpdate
 
+        columnDefs = components.get_top_variant_column_defs(exp.data_df)
+
         return (
             exp.data_df.to_dict("records"),
+            columnDefs,
             exp.experiment_name,
             exp.parent_sequence,
             exp.mutagenesis_method,
@@ -337,9 +341,9 @@ def load_landing_page(temp_text):
 
 @app.callback(
     Output("id-experiment-selected", "data"),
-    Output("id-selected-row-info", "children"),
     Output("id-button-delete-experiment", "disabled"),
     Output("id-button-show-experiment", "disabled"),
+    # Output("id-selected-row-info", "children"),
     Input("id-table-all-experiments", "selectedRows"),
     prevent_initial_call=True,
 )
@@ -357,7 +361,7 @@ def update_ui(selected_rows):
     # Manage button states based on number of selected rows
     delete_btn_disabled = len(selected_rows) == 0 if selected_rows else True
     show_btn_disabled = not (selected_rows and len(selected_rows) == 1)
-    return experiment_id, selected_row_info, delete_btn_disabled, show_btn_disabled
+    return experiment_id, delete_btn_disabled, show_btn_disabled  # ,selected_row_info
 
 
 # Run the app
