@@ -135,6 +135,68 @@ layout = html.Div(  # TODO: dbc.Container doesn't pick up the fluid container fr
                     [
                         dbc.Card(
                             [
+                                dbc.CardHeader(gs.data_header, className=inline_styles.top_card_head),
+                                dbc.CardBody(
+                                    [
+                                        html.Div(  # TODO: dbc.container adds padding to the surrounding area
+                                            [
+                                                # components.get_table(exp.data_df,
+                                                #                  components.get_top_variant_column_defs())
+                                                dag.AgGrid(
+                                                    id="id-table-top-variants",
+                                                    # rowData=data.to_dict("records"),
+                                                    # columnDefs=components.get_top_variant_column_defs(),
+                                                    # TODO: update this correctly
+                                                    defaultColDef={
+                                                        # do NOT set "flex": 1 in default col def as it overrides all
+                                                        # the column widths
+                                                        "sortable": True,
+                                                        "resizable": True,
+                                                        "filter": True,
+                                                        # Set BOTH items below to True for header to wrap text
+                                                        "wrapHeaderText": True,
+                                                        "autoHeaderHeight": True,
+                                                    },
+                                                    # columnSize="sizeToFit",
+                                                    style={"height": "600px", "width": "100%"},
+                                                    dashGridOptions={
+                                                        # "rowDragManaged": True,
+                                                        # "rowDragEntireRow": True
+                                                        "rowSelection": "single",
+                                                    },
+                                                    rowClassRules={
+                                                        # "bg-secondary": "params.data.well == 'A2'",
+                                                        # "text-info fw-bold fs-5": "params.data.well == 'A1'",
+                                                        "fw-bold": "params.data.amino_acid_substitutions == '#PARENT#'",
+                                                        # "text-warning fw-bold fs-5": "['#PARENT#'].includes(
+                                                        # params.data.amino_acid_substitutions)",
+                                                    },
+                                                )
+                                            ],
+                                            className="dbc dbc-ag-grid",
+                                            style=inline_styles.border_table,
+                                        )
+                                    ],
+                                    className="p-1",  # fits to the card border
+                                    # style={"height": "100%", "overflowX": "auto"}  # Allow content to expand
+                                ),
+                            ],
+                            # className="d-flex flex-column",  # Flexbox for vertical stacking
+                            style={
+                                "box-shadow": "1px 2px 7px 0px grey",
+                                "border-radius": "5px",
+                                # "width": "530px", "height": "630px"
+                            },
+                        ),
+                        html.Div(id="selected-row-value"),
+                    ],
+                    width=6,
+                    style=inline_styles.border_column,
+                ),
+                dbc.Col(
+                    [
+                        dbc.Card(
+                            [
                                 dbc.CardHeader(gs.viewer_header, className=inline_styles.top_card_head),
                                 dbc.CardBody(
                                     [
@@ -158,61 +220,6 @@ layout = html.Div(  # TODO: dbc.Container doesn't pick up the fluid container fr
                             className="d-flex flex-column",  # Flexbox for vertical stacking
                             style=inline_styles.card_shadow,
                         ),
-                    ],
-                    width=6,
-                    style=inline_styles.border_column,
-                ),
-                dbc.Col(
-                    [
-                        dbc.Card(
-                            [
-                                dbc.CardHeader(gs.data_header, className=inline_styles.top_card_head),
-                                dbc.CardBody(
-                                    [
-                                        html.Div(  # TODO: dbc.container adds padding to the surrounding area
-                                            [
-                                                # components.get_table(exp.data_df,
-                                                #                  components.get_top_variant_column_defs())
-                                                dag.AgGrid(
-                                                    id="id-table-top-variants",
-                                                    # rowData=data.to_dict("records"),
-                                                    columnDefs=components.get_top_variant_column_defs(),
-                                                    # TODO: update this correctly
-                                                    defaultColDef={
-                                                        # do NOT set "flex": 1 in default col def as it overrides all
-                                                        # the column widths
-                                                        "sortable": True,
-                                                        "resizable": True,
-                                                        "filter": True,
-                                                        # Set BOTH items below to True for header to wrap text
-                                                        "wrapHeaderText": True,
-                                                        "autoHeaderHeight": True,
-                                                    },
-                                                    # columnSize="sizeToFit",
-                                                    style={"height": "600px", "width": "100%"},
-                                                    dashGridOptions={
-                                                        # "rowDragManaged": True,
-                                                        # "rowDragEntireRow": True
-                                                        "rowSelection": "single",
-                                                    },
-                                                )
-                                            ],
-                                            className="dbc dbc-ag-grid",
-                                            style=inline_styles.border_table,
-                                        )
-                                    ],
-                                    className="p-1",  # fits to the card border
-                                    # style={"height": "100%", "overflowX": "auto"}  # Allow content to expand
-                                ),
-                            ],
-                            # className="d-flex flex-column",  # Flexbox for vertical stacking
-                            style={
-                                "box-shadow": "1px 2px 7px 0px grey",
-                                "border-radius": "5px",
-                                # "width": "530px", "height": "630px"
-                            },
-                        ),
-                        html.Div(id="selected-row-value"),
                     ],
                     width=6,
                     style=inline_styles.border_column,
