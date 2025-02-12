@@ -18,28 +18,31 @@ button_upload_csv = "Upload Experiment Data"
 button_upload_pdb = "Upload PDB/CIF"
 
 
-# Experiment Strings
+# Experiment Card Strings
 sequence = "Amino Acid Sequence"
-experiment = "Experiment"
+experiment = "Experiment Name"
 date = "Experiment Date"
+upload_date = "Uploaded On"
 technique = "Mutagenesis Method"
 plates_count = "Plates Count"
+cas_file = "Unique CAS"
 cas_sub = "Substrate CAS"
 cas_prod = "Product CAS"
 viewer_header = "Protein Structure"
-data_header = "Top Variants"
-# DO NOT CHANGE
-dbc_template_name = "flatly"
+top_variants = "Top Variants"
+
 
 # DO NOT CHANGE PAST HERE
+dbc_template_name = "flatly"
 
 c_cas = "cas_number"
 c_plate = "plate"
 c_well = "well"
 c_fitness = "fitness_value"
-mutations = "amino_acid_substitutions"
+c_substitutions = "amino_acid_substitutions"
+c_fitness_value = "fitness_value"
 stat_list = [
-    "fitness_value",  # must remain first
+    c_fitness_value,  # must remain first
     "alignment_count",
     "alignment_probability",
     # "average_mutation_frequency", # removed
