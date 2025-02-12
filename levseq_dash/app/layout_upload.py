@@ -179,7 +179,7 @@ form = dbc.Form(
     ]
 )
 
-upload_form_layout = html.Div(
+layout = html.Div(
     [form],
     style={
         "width": "70%",  # 50% width

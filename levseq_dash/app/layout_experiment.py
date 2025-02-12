@@ -1,6 +1,4 @@
-import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
-import dash_molstar
 from dash import dcc, html
 
 from levseq_dash.app import components, inline_styles
@@ -10,20 +8,18 @@ from levseq_dash.app import global_strings as gs
 layout = html.Div(  # TODO: dbc.Container doesn't pick up the fluid container from parent
     [
         html.Br(),
-        # TODO: remove this temp button
         dbc.Row(
             [
                 dbc.Col(
-                    dbc.Button(
-                        id="id-button-temp-use",
-                        n_clicks=0,
-                        class_name="btn-primary",
-                        size="md",
-                        children="Temp Button Load EXP",
-                        # disabled="True",  # TODO: must be disabled at first
+                    dbc.Card(
+                        [
+                            dbc.CardHeader(gs.sequence, className=inline_styles.top_card_head),
+                            dbc.CardBody(id="id-experiment-sequence", className=inline_styles.top_card_body),
+                        ],
+                        style=inline_styles.card_shadow,
                     ),
-                    width=6,
-                    className="d-grid gap-2 col-12 mx-auto",
+                    # width=10,
+                    style=inline_styles.border_column,
                 ),
             ],
             className="mb-3",
@@ -38,36 +34,7 @@ layout = html.Div(  # TODO: dbc.Container doesn't pick up the fluid container fr
                         ],
                         style=inline_styles.card_shadow,
                     ),
-                    width=2,
-                    style=inline_styles.border_column,
-                ),
-                dbc.Col(
-                    dbc.Card(
-                        [
-                            dbc.CardHeader(gs.sequence, className=inline_styles.top_card_head),
-                            dbc.CardBody(id="id-experiment-sequence", className=inline_styles.top_card_body),
-                        ],
-                        style=inline_styles.card_shadow,
-                    ),
-                    width=10,
-                    style=inline_styles.border_column,
-                ),
-            ],
-            className="g-3 mb-4",
-            style=inline_styles.border_row,
-        ),
-        dbc.Row(
-            [
-                dbc.Col(
-                    dbc.Card(
-                        [
-                            dbc.CardHeader(gs.technique, className=inline_styles.top_card_head),
-                            dbc.CardBody(id="id-experiment-mutagenesis-method", className=inline_styles.top_card_body),
-                        ],
-                        style=inline_styles.card_shadow,
-                        # className="shadow"
-                    ),
-                    width=2,
+                    width=3,
                     style=inline_styles.border_column,
                 ),
                 dbc.Col(
@@ -84,41 +51,31 @@ layout = html.Div(  # TODO: dbc.Container doesn't pick up the fluid container fr
                 dbc.Col(
                     dbc.Card(
                         [
+                            dbc.CardHeader(gs.upload_date, className=inline_styles.top_card_head),
+                            dbc.CardBody(id="id-experiment-upload", className=inline_styles.top_card_body),
+                        ],
+                        style=inline_styles.card_shadow,
+                    ),
+                    width=2,
+                    style=inline_styles.border_column,
+                ),
+                dbc.Col(
+                    dbc.Card(
+                        [
+                            dbc.CardHeader(gs.technique, className=inline_styles.top_card_head),
+                            dbc.CardBody(id="id-experiment-mutagenesis-method", className=inline_styles.top_card_body),
+                        ],
+                        style=inline_styles.card_shadow,
+                        # className="shadow"
+                    ),
+                    width=3,
+                    style=inline_styles.border_column,
+                ),
+                dbc.Col(
+                    dbc.Card(
+                        [
                             dbc.CardHeader(gs.plates_count, className=inline_styles.top_card_head),
                             dbc.CardBody(id="id-experiment-plate-count", className=inline_styles.top_card_body),
-                        ],
-                        style=inline_styles.card_shadow,
-                    ),
-                    width=2,
-                    style=inline_styles.border_column,
-                ),
-                dbc.Col(
-                    dbc.Card(
-                        [
-                            dbc.CardHeader(gs.substrate_cas, className=inline_styles.top_card_head),
-                            dbc.CardBody(id="id-experiment-sub-cas", className=inline_styles.top_card_body),
-                        ],
-                        style=inline_styles.card_shadow,
-                    ),
-                    width=2,
-                    style=inline_styles.border_column,
-                ),
-                dbc.Col(
-                    dbc.Card(
-                        [
-                            dbc.CardHeader(gs.product_cas, className=inline_styles.top_card_head),
-                            dbc.CardBody(id="id-experiment-product-cas", className=inline_styles.top_card_body),
-                        ],
-                        style=inline_styles.card_shadow,
-                    ),
-                    width=2,
-                    style=inline_styles.border_column,
-                ),
-                dbc.Col(
-                    dbc.Card(
-                        [
-                            dbc.CardHeader(gs.assay, className=inline_styles.top_card_head),
-                            dbc.CardBody(id="id-experiment-assay", className=inline_styles.top_card_body),
                         ],
                         style=inline_styles.card_shadow,
                     ),
@@ -132,47 +89,64 @@ layout = html.Div(  # TODO: dbc.Container doesn't pick up the fluid container fr
         dbc.Row(
             [
                 dbc.Col(
+                    dbc.Card(
+                        [
+                            dbc.CardHeader(gs.assay, className=inline_styles.top_card_head),
+                            dbc.CardBody(id="id-experiment-assay", className=inline_styles.top_card_body),
+                        ],
+                        style=inline_styles.card_shadow,
+                    ),
+                    width=3,
+                    style=inline_styles.border_column,
+                ),
+                dbc.Col(
+                    dbc.Card(
+                        [
+                            dbc.CardHeader(gs.cas_file, className=inline_styles.top_card_head),
+                            dbc.CardBody(id="id-experiment-file-cas", className=inline_styles.top_card_body),
+                        ],
+                        style=inline_styles.card_shadow,
+                    ),
+                    width=3,
+                    style=inline_styles.border_column,
+                ),
+                dbc.Col(
+                    dbc.Card(
+                        [
+                            dbc.CardHeader(gs.substrate_cas, className=inline_styles.top_card_head),
+                            dbc.CardBody(id="id-experiment-sub-cas", className=inline_styles.top_card_body),
+                        ],
+                        style=inline_styles.card_shadow,
+                    ),
+                    width=3,
+                    style=inline_styles.border_column,
+                ),
+                dbc.Col(
+                    dbc.Card(
+                        [
+                            dbc.CardHeader(gs.product_cas, className=inline_styles.top_card_head),
+                            dbc.CardBody(id="id-experiment-product-cas", className=inline_styles.top_card_body),
+                        ],
+                        style=inline_styles.card_shadow,
+                    ),
+                    width=3,
+                    style=inline_styles.border_column,
+                ),
+            ],
+            className="g-3 mb-4",
+            style=inline_styles.border_row,
+        ),
+        dbc.Row(
+            [
+                dbc.Col(
                     [
                         dbc.Card(
                             [
-                                dbc.CardHeader(gs.data_header, className=inline_styles.top_card_head),
+                                dbc.CardHeader(gs.top_variants, className=inline_styles.top_card_head),
                                 dbc.CardBody(
                                     [
                                         html.Div(  # TODO: dbc.container adds padding to the surrounding area
-                                            [
-                                                # components.get_table(exp.data_df,
-                                                #                  components.get_top_variant_column_defs())
-                                                dag.AgGrid(
-                                                    id="id-table-top-variants",
-                                                    # rowData=data.to_dict("records"),
-                                                    # columnDefs=components.get_top_variant_column_defs(),
-                                                    # TODO: update this correctly
-                                                    defaultColDef={
-                                                        # do NOT set "flex": 1 in default col def as it overrides all
-                                                        # the column widths
-                                                        "sortable": True,
-                                                        "resizable": True,
-                                                        "filter": True,
-                                                        # Set BOTH items below to True for header to wrap text
-                                                        "wrapHeaderText": True,
-                                                        "autoHeaderHeight": True,
-                                                    },
-                                                    # columnSize="sizeToFit",
-                                                    style={"height": "600px", "width": "100%"},
-                                                    dashGridOptions={
-                                                        # "rowDragManaged": True,
-                                                        # "rowDragEntireRow": True
-                                                        "rowSelection": "single",
-                                                    },
-                                                    rowClassRules={
-                                                        # "bg-secondary": "params.data.well == 'A2'",
-                                                        # "text-info fw-bold fs-5": "params.data.well == 'A1'",
-                                                        "fw-bold": "params.data.amino_acid_substitutions == '#PARENT#'",
-                                                        # "text-warning fw-bold fs-5": "['#PARENT#'].includes(
-                                                        # params.data.amino_acid_substitutions)",
-                                                    },
-                                                )
-                                            ],
+                                            [components.get_table_experiment()],
                                             className="dbc dbc-ag-grid",
                                             style=inline_styles.border_table,
                                         )
@@ -199,18 +173,7 @@ layout = html.Div(  # TODO: dbc.Container doesn't pick up the fluid container fr
                             [
                                 dbc.CardHeader(gs.viewer_header, className=inline_styles.top_card_head),
                                 dbc.CardBody(
-                                    [
-                                        dash_molstar.MolstarViewer(
-                                            id="id-viewer",
-                                            # data=data,
-                                            style={"width": "auto", "height": "600px"},
-                                            layout={
-                                                "layoutShowControls": False,
-                                                "layoutIsExpanded": False,
-                                                # TODO: do we want this option to be true?
-                                            },
-                                        )
-                                    ],
+                                    [components.get_protein_viewer()],
                                     style={
                                         "height": "100%",
                                         "overflowX": "auto",  # Allow content to expand

@@ -1,4 +1,3 @@
-import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
 from dash import html
 from dash_iconify import DashIconify
@@ -57,34 +56,7 @@ layout = html.Div(  # TODO: dbc.Container doesn't pick up the fluid container fr
                                 dbc.CardBody(
                                     [
                                         html.Div(  # TODO: dbc.container adds padding to the surrounding area
-                                            [
-                                                dag.AgGrid(
-                                                    id="id-table-all-experiments",
-                                                    # rowData=data.to_dict("records"),
-                                                    columnDefs=components.get_all_experiments_column_defs(),
-                                                    # TODO: update this correctly
-                                                    defaultColDef={
-                                                        # do NOT set "flex": 1 in default col def as it overrides all
-                                                        # the column widths
-                                                        "sortable": True,
-                                                        "resizable": True,
-                                                        "filter": True,
-                                                        # Set BOTH items below to True for header to wrap text
-                                                        "wrapHeaderText": True,
-                                                        "autoHeaderHeight": True,
-                                                        # "flex": 1,  # TODO: remove this after you put fixed width
-                                                    },
-                                                    columnSize="sizeToFit",
-                                                    # style={"height": "600px", "width": "100%"},
-                                                    # style={"width": "100%"},
-                                                    dashGridOptions={
-                                                        "rowSelection": "multiple",  # Enable multiple selection
-                                                        "suppressRowClickSelection": True,
-                                                        # Use only checkboxes for selection
-                                                        "animateRows": True,
-                                                    },
-                                                )
-                                            ],
+                                            [components.get_table_all_experiments()],
                                             className="dbc dbc-ag-grid",
                                             style=inline_styles.border_table,
                                         ),
