@@ -4,7 +4,6 @@ import dash_molstar
 
 from levseq_dash.app import global_strings as gs
 from levseq_dash.app import vis
-from levseq_dash.app.example_aggrid_barchart import data_bars_group_mean_colorscale
 
 
 def get_label(string):
@@ -30,7 +29,7 @@ def get_top_variant_column_defs(df):
                 "buttons": ["reset", "apply"],
                 "closeOnApply": True,
             },
-            "flex": 3,
+            "flex": 2,
         },
         {
             "field": gs.c_well,
@@ -38,7 +37,7 @@ def get_top_variant_column_defs(df):
                 "buttons": ["reset", "apply"],
                 "closeOnApply": True,
             },
-            "flex": 2,
+            "width": 80,
         },
         {
             "field": gs.c_substitutions,
@@ -185,6 +184,12 @@ def get_table_experiment():
             # Set BOTH items below to True for header to wrap text
             "wrapHeaderText": True,
             "autoHeaderHeight": True,
+            # change the cell padding and font to make it more compact
+            # 'cellStyle': {
+            #     'fontSize': '12px',
+            #     'padding': '5px',
+            #     'verticalAlign': 'middle',
+            # }
         },
         style={"height": "600px", "width": "100%"},
         dashGridOptions={
@@ -192,6 +197,8 @@ def get_table_experiment():
             "rowSelection": "single",
             # https://ag-grid.com/javascript-data-grid/selection-overview/#cell-text-selection
             "enableCellTextSelection": True,
+            "rowHeight": 30,
+            "headerHeight": 50,
         },
         rowClassRules={
             # "bg-secondary": "params.data.well == 'A2'",

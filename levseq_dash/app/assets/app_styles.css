@@ -14,15 +14,18 @@
 /*    background-color: #C8C8C8 !important; !* caltech color *!*/
 /*}*/
 
+/* Make the card header more compact */
+.card-header {
+    padding: 5px 10px;    /* Adjust padding */
+    font-size: 14px;      /* Smaller font size for the header */
+}
 
-/*!* Custom Card Header Background and Text Color *!*/
-/*.custom-card-header {*/
-/*    background-color: #C8C8C8 !important;  !* Green background *!*/
-/*    !*#color: white !important;               !* White text *!*!*/
-/*    !*font-weight: bold;*!*/
-/*    !*font-size: 18px;*!*/
-/*    !*text-align: center;*!*/
-/*}*/
+/* Make the card body more compact */
+.card-body {
+    padding: 8px 10px;    /* Adjust padding */
+    font-size: 14px;      /* Smaller font size for the body */
+}
+
 
 
 .sidebar-link {

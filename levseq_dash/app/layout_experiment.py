@@ -246,7 +246,10 @@ layout = html.Div(  # TODO: dbc.Container doesn't pick up the fluid container fr
                                             style=vis.border_row,
                                         ),
                                     ],
-                                    # className="p-1",  # fits to the card border
+                                    # keep this at p-1 or 2 so the figure doesn't clamp to the sides of the card
+                                    # I have set the margins on that to 0
+                                    className="p-2",
+                                    style=vis.border_card,
                                 ),
                             ],
                             style={

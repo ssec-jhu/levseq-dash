@@ -24,6 +24,7 @@ upload_success = success_style = {
 
 border_row = {"border": "0px solid blue"}
 border_column = {"border": "0px solid red"}
+border_card = {"border": "0px solid cyan"}
 border_table = {"border": "0px solid magenta"}
 card_shadow = {"box-shadow": "1px 2px 7px 0px grey", "border-radius": "5px"}
 
