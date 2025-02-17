@@ -8,3 +8,4 @@ dash-loading-spinners==1.0.3
 gunicorn==23.0.0
 pyyaml==6.0.2
 dash_molstar==1.2.1
+plotly-express==0.4.1

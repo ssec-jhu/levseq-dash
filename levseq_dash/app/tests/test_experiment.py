@@ -178,3 +178,41 @@ def test_exp_meta_data_assay(experiment_ep_pcr_with_user_cas):
 def test_exp_meta_data_length(experiment_ep_pcr_with_user_cas):
     d = experiment_ep_pcr_with_user_cas.exp_meta_data_to_dict()
     assert len(d) == 12
+
+
+def test_exp_core_data_to_dict(experiment_ep_pcr_with_user_cas):
+    d = experiment_ep_pcr_with_user_cas.exp_core_data_to_dict()
+    df = pd.DataFrame.from_dict(d)
+    assert df.shape[0] == 1920
+    assert df.shape[1] == 8
+
+
+@pytest.mark.parametrize(
+    "index, key, value",
+    [
+        (0, "aa_sequence", "#N.A.#"),
+        (0, "alignment_count", 0),
+        (0, "alignment_probability", 0.0),
+        (0, "amino_acid_substitutions", "#N.A.#"),
+        (0, "cas_number", "345905-97-7"),
+        (94, "fitness_value", 1917633.707),
+        (0, "plate", "20240422-ParLQ-ep1-300-1"),
+        (0, "well", "A1"),
+        (
+            36,
+            "aa_sequence",
+            "MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVEDILDLWYGLQGSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTLCKPLDRQWL"
+            "NYMYEIGLRHHRTKKGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAIWSYPYAKTGEWLE",
+        ),
+        (51, "alignment_count", 29),
+        (61, "alignment_probability", 0.0),
+        (69, "amino_acid_substitutions", "#PARENT#"),
+        (99, "cas_number", "395683-37-1"),
+        (99, "fitness_value", 1244116.159),
+        (42, "plate", "20240422-ParLQ-ep1-300-1"),
+        (0, "well", "A1"),
+    ],
+)
+def test_exp_core_data_to_dict_2(experiment_ep_pcr_with_user_cas, index, key, value):
+    d = experiment_ep_pcr_with_user_cas.exp_core_data_to_dict()
+    assert d[index][key] == value

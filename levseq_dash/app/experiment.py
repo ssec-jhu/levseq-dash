@@ -119,7 +119,7 @@ class Experiment:
         #         result[attr] = str(value)  # Convert Path to string
         #     else:
         #         result[attr] = value  # Keep other types as is
-        return self.data_df.to_dict()
+        return self.data_df.to_dict("records")
 
     # @staticmethod
     # def exp_from_dict(dictionary_data):

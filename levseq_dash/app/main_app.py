@@ -43,13 +43,13 @@ data_mgr = DataManager()
 
 app.layout = dbc.Container(
     [
-        layout_bars.navbar,
+        layout_bars.get_navbar(),
         html.Div(id="temp-output", className="mt-4"),  # TODO: temp
         dbc.Row(
             [
                 # Left column with a logo
                 dbc.Col(
-                    layout_bars.sidebar,
+                    layout_bars.get_sidebar(),
                     width=2,
                     style={"border-right": "1px solid #dee2e6"},
                 ),
@@ -76,9 +76,9 @@ app.layout = dbc.Container(
 @app.callback(Output("id-page-content", "children"), Input("url", "pathname"))
 def display_page(pathname):
     if pathname == "/":
-        return layout_landing.layout
+        return layout_landing.get_landing_page()
     elif pathname == "/experiment":
-        return layout_experiment.layout
+        return layout_experiment.get_experiment_page()
     elif pathname == "/upload":
         return layout_upload.layout
     else:
@@ -231,7 +231,7 @@ def on_submit_experiment(
 )
 def on_go_to_experiment(n_clicks, pathname):
     if n_clicks > 0 and ctx.triggered_id == "id-button-show-experiment":
-        return "/experiment", layout_experiment.layout
+        return "/experiment", layout_experiment.get_experiment_page()
     else:
         return pathname, no_update
 

@@ -1,6 +1,4 @@
-import pandas as pd
 import plotly_express as px
-import regex as re
 
 from levseq_dash.app import global_strings as gs
 

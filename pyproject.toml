@@ -19,7 +19,8 @@ dependencies = [
     "dash-loading-spinners",
     "gunicorn",
     "pyyaml",
-    "dash_molstar"
+    "dash_molstar",
+    "plotly-express"
 ]
 
 [project.optional-dependencies]
