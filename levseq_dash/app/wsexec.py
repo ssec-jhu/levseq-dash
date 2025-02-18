@@ -6,7 +6,7 @@ import re
 
 import requests
 
-from levseq_dash.app.settings import CONFIG
+from levseq_dash.app import settings
 
 # import globals as g
 
@@ -19,7 +19,10 @@ type QueryResponse = ResultSet | Scalar
 type Arglist = list[Scalar]
 
 
-lswsurl = f'{CONFIG["db-service"]["host"]}:{CONFIG["db-service"]["port"]}'
+def get_db_url():
+    config = settings.load_config()
+    lswsurl = f'{config["db-service"]["host"]}:{config["db-service"]["port"]}'
+    return lswsurl
 
 
 # define a class that supports json serialization of HTTP request parameters
@@ -47,7 +50,7 @@ def Query(verb: str, params: list[Scalar]) -> QueryResponse:
 
     # HTTP request/response
     pkg = QueryPackage(verb, params)
-    resp = requests.post(lswsurl, json=pkg)
+    resp = requests.post(get_db_url(), json=pkg)
     if not resp.ok:
         msg = f"LevSeq webservice response: {resp.status_code} {resp.reason}"
         if resp.text != "null":
