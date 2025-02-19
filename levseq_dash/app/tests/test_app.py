@@ -1,7 +1,10 @@
+import base64
+
+import pandas as pd
 import pytest
 
 from levseq_dash.app import global_strings as gs
-from levseq_dash.app import utils
+from levseq_dash.app import settings, utils
 
 
 def test_geometry_viewer_type(experiment_ep_pcr_with_user_cas):
@@ -105,3 +108,51 @@ def test_calculate_group_mean(experiment_ep_pcr, cas, plate, mean):
     plate_per_cas_data_per.fillna(0)
     plate_per_cas_data_per = plate_per_cas_data_per.sort_values(by="ratio", ascending=True)
     assert plate_per_cas_data_per["ratio"].dropna().is_monotonic_increasing
+
+
+def test_decode_csv_file_base64_string_to_dataframe():
+    # make a csv content
+    csv_content = "col_A,col_B\nLevseq,2024\nProject,2025"
+    csv_bytes = csv_content.encode("utf-8")  # Convert string to bytes
+    csv_base64 = base64.b64encode(csv_bytes).decode("utf-8")  # Encode to Base64 string
+
+    df = utils.decode_csv_file_base64_string_to_dataframe(csv_base64)
+
+    assert isinstance(df, pd.DataFrame)  # Ensure result is a DataFrame
+    assert df.shape == (2, 2)  # 2 rows, 2 columns
+    assert list(df.columns) == ["col_A", "col_B"]  # Correct columns
+    assert df.iloc[0]["col_A"] == "Levseq"  # Correct data
+    assert df.iloc[1]["col_B"] == 2025  # Correct data
+
+
+def test_decode_csv_file_base64_string_to_dataframe_empty():
+    # empty csv -> empty bytes
+    empty_base64 = base64.b64encode(b"").decode("utf-8")
+
+    df = utils.decode_csv_file_base64_string_to_dataframe(empty_base64)
+
+    assert isinstance(df, pd.DataFrame)
+    assert df.empty  # Ensure the DataFrame is empty
+
+
+def test_decode_csv_file_base64_string_to_dataframe_invalid():
+    # invalid input
+    # https://docs.python.org/3/library/base64.html#base64.b64decode
+    with pytest.raises(base64.binascii.Error):  # Expecting binascii.Error
+        utils.decode_csv_file_base64_string_to_dataframe("SomeInvalidString")
+
+
+def test_decode_csv_file_base64_string_to_dataframe_non_utf8():
+    """Test decoding non-UTF-8 Base64 string (should raise an error)."""
+    non_utf8_bytes = b"\x80\x81\x82"  # Invalid UTF-8 bytes
+    non_utf8_base64 = base64.b64encode(non_utf8_bytes).decode("utf-8")
+
+    with pytest.raises(Exception, match="The content is not a valid UTF-8 string."):
+        utils.decode_csv_file_base64_string_to_dataframe(non_utf8_base64)
+
+
+def test_load_config():
+    c = settings.load_config()
+    # TODO this must be switched on deployment
+    assert c["debug"]["use_db_web_service"] == False
+    assert c["debug"]["load_all_experiments_from_disk"]
