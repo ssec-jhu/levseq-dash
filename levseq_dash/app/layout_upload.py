@@ -178,6 +178,24 @@ def get_form():
                 ],
                 className="mb-3",
             ),
+            dbc.Row(
+                [
+                    dbc.Col(
+                        [
+                            dbc.Alert(
+                                id="id-alert-upload",
+                                is_open=False,
+                                dismissable=True,
+                                # className="fs-5 fw-bold",
+                                class_name="user-alert",
+                            )
+                        ],
+                        width=8,
+                    )
+                ],
+                justify="center",
+                className="text-center mt-5",
+            ),
         ]
     )
 

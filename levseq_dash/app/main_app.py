@@ -25,7 +25,7 @@ app = Dash(
     __name__,
     title=gs.web_title,
     suppress_callback_exceptions=True,
-    external_stylesheets=[dbc.themes.MINTY, dbc_css, dbc.icons.BOOTSTRAP, dbc.icons.FONT_AWESOME],
+    external_stylesheets=[dbc.themes.FLATLY, dbc_css, dbc.icons.BOOTSTRAP, dbc.icons.FONT_AWESOME],
 )
 
 # VERY important line of code for running with gunicorn
@@ -43,7 +43,6 @@ data_mgr = DataManager()
 app.layout = dbc.Container(
     [
         layout_bars.get_navbar(),
-        html.Div(id="temp-output", className="mt-4"),  # TODO: temp
         dbc.Row(
             [
                 # Left column with a logo
@@ -84,6 +83,9 @@ def display_page(pathname):
         return html.Div([html.H2("Page not found!")])
 
 
+# -------------------------------
+#   Lab Landing Page (all experiments)
+# -------------------------------
 @app.callback(
     Output("id-table-all-experiments", "rowData"),
     Output("id-lab-experiment-count", "children"),
@@ -131,7 +133,7 @@ def on_upload_experiment_file(dash_upload_string_contents, filename, last_modifi
         # TODO add the alert
         return "No file uploaded.", no_update
     else:
-        base64_encoded_string = utils.decode_base64_binary_string_to_base64_bytes(dash_upload_string_contents)
+        base64_encoded_string = utils.decode_dash_upload_data_to_base64_encoded_string(dash_upload_string_contents)
 
         df = utils.decode_csv_file_base64_string_to_dataframe(base64_encoded_string)
         rows, cols = df.shape
@@ -158,7 +160,7 @@ def on_upload_structure_file(dash_upload_string_contents, filename, last_modifie
         # TODO add the alert
         return "No file uploaded.", no_update
     else:
-        base64_encoded_string = utils.decode_base64_binary_string_to_base64_bytes(dash_upload_string_contents)
+        base64_encoded_string = utils.decode_dash_upload_data_to_base64_encoded_string(dash_upload_string_contents)
 
         info = (
             f"Uploaded File: {filename}  "
@@ -169,7 +171,8 @@ def on_upload_structure_file(dash_upload_string_contents, filename, last_modifie
 
 
 @app.callback(
-    Output("temp-output", "children"),
+    Output("id-alert-upload", "children"),
+    Output("id-alert-upload", "is_open"),
     Input("id-button-submit", "n_clicks"),
     State("id-input-experiment-name", "value"),
     State("id-input-experiment-date", "date"),
@@ -188,32 +191,32 @@ def on_submit_experiment(
     substrate_cas,
     product_cas,
     assay,
-    epr,
+    mutagenesis_method,
     geometry_content_base64_encoded_string,
-    experiment_base64_encoded_string,
+    experiment_content_base64_encoded_string,
 ):
     if n_clicks > 0 and ctx.triggered_id == "id-button-submit":
         # TODO: verify the CAS numbers somewhere or in another callback
 
-        index = data_mgr.add_experiment_from_ui(
+        experiment_id = data_mgr.add_experiment_from_ui(
             user_id="some_user_name",
             experiment_name=experiment_name,
             experiment_date=experiment_date,
             substrate_cas_number=substrate_cas,
             product_cas_number=product_cas,
             assay=assay,
-            mutagenesis_method=epr,
-            experiment_content_base64_string=experiment_base64_encoded_string,
+            mutagenesis_method=mutagenesis_method,
+            experiment_content_base64_string=experiment_content_base64_encoded_string,
             geometry_content_base64_string=geometry_content_base64_encoded_string,
         )
 
         # you can verify the information here
         # exp = data_mgr.get_experiment(index)
         # TODO: return a success alert here
-        info = f"Experiment {index} added."
-        return info
+        success = f"Experiment {experiment_id} has been added successfully!"
+        return success, True
     else:
-        return no_update
+        raise PreventUpdate
 
 
 # -------------------------------
@@ -224,15 +227,15 @@ def on_submit_experiment(
     # this seems like a duplicate but adding this will actually
     # trigger the callback with the components in the layout
     Output("id-page-content", "children", allow_duplicate=True),
-    Input("id-button-show-experiment", "n_clicks"),
-    State("url", "pathname"),
+    Input("id-button-goto-experiment", "n_clicks"),
+    # State("url", "pathname"),
     prevent_initial_call=True,
 )
-def on_go_to_experiment(n_clicks, pathname):
-    if n_clicks > 0 and ctx.triggered_id == "id-button-show-experiment":
+def redirect_to_experiment_page(n_clicks):
+    if n_clicks != 0 and ctx.triggered_id == "id-button-goto-experiment":
         return "/experiment", layout_experiment.get_experiment_page()
     else:
-        return pathname, no_update
+        raise PreventUpdate
 
 
 @app.callback(
@@ -392,13 +395,16 @@ def focus_select_output(selected_rows):
 @app.callback(
     Output("id-experiment-selected", "data"),
     Output("id-button-delete-experiment", "disabled"),
-    Output("id-button-show-experiment", "disabled"),
+    Output("id-button-goto-experiment", "disabled"),
     # Output("id-selected-row-info", "children"),
     Input("id-table-all-experiments", "selectedRows"),
     prevent_initial_call=True,
 )
 def update_ui(selected_rows):
     # Display selected row info
+    if not selected_rows:
+        raise PreventUpdate
+
     experiment_id = no_update
     if selected_rows and len(selected_rows) == 1:
         selected_row_info = f"Selected Row: {selected_rows[0]}"

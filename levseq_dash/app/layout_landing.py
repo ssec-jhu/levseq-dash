@@ -69,7 +69,7 @@ def get_landing_page():
                                             # but defining it as a class in assets seems to do the trick. #
                                             # class_name="del-button", # size="sm", class_name="gap-2 col-2 btn-dark",
                                             # className="me-2 btn-lg col-3", ), dbc.Button( children=html.Span(["Go to
-                                            # Experiment Dashboard", go_to_next]), id="id-button-show-experiment",
+                                            # Experiment Dashboard", go_to_next]), id="id-button-goto-experiment",
                                             # n_clicks=0, disabled=True, class_name="gap-2 col-2 btn-primary", ), ],
                                             # className="text-center", ),
                                             dbc.Row(
@@ -99,7 +99,7 @@ def get_landing_page():
                                                             children=html.Span(
                                                                 ["Go to Experiment Dashboard", vis.icon_go_to_next]
                                                             ),
-                                                            id="id-button-show-experiment",
+                                                            id="id-button-goto-experiment",
                                                             n_clicks=0,
                                                             disabled=True,
                                                             class_name="btn-primary",

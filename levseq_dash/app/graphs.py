@@ -48,10 +48,11 @@ def creat_heatmap(df, plate_number, property, cas_number):
         aspect="auto",
         # aspect argument to "auto" will instead fill the plotting area with the heatmap, using non-square tiles
     )
-    # annotations_data = annotations_data.applymap(lambda x: x.replace("_", " "))
     annotations_data_stacked = annotations_data.map(format_mutation_annotation)
 
-    hover_template = "Well: %{x}%{y}<br>" "Value: %{z}<br>" "Mut: %{customdata}"
+    # thought the text on the graph itself is stacked and stripped of the underscore
+    # the hover data is the original annotations.
+    hover_template = "Well: %{x}%{y}<br>Value: %{z}<br>Mut: %{customdata}"
 
     # Add annotations as hover data
     fig.update_traces(
@@ -61,19 +62,19 @@ def creat_heatmap(df, plate_number, property, cas_number):
         textfont_size=10,
         # hover data
         hovertemplate=hover_template,
-        customdata=annotations_data,  # Ensure correct shape
+        customdata=annotations_data,
     )
 
     fig.update_yaxes(
         tickmode="array",
         tickvals=list(range(len(heatmap_data.index))),  # Tick positions
-        ticktext=heatmap_data.index,  # Custom tick labels (letters A-H)
+        ticktext=heatmap_data.index,
         ticks="outside",
     )
     fig.update_xaxes(
         tickmode="array",
         tickvals=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],  # list(range(len(heatmap_data.index))),  # Tick positions
-        ticktext=heatmap_data.columns,  # Custom tick labels (numbers 1-12, reversed)
+        ticktext=heatmap_data.columns,
         ticks="outside",  # this adds a tick and distances the values from the axis
     )
 

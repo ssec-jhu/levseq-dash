@@ -17,15 +17,6 @@ path_exp_ssm_cif = package_root / "app" / "tests" / "data" / "flatten_ssm_proces
 
 test_assay_list = (pd.read_csv(path_assay, encoding="utf-8", usecols=["Technique"]))["Technique"].tolist()
 
-experiment_ssm_example = Experiment(
-    data_df=pd.read_csv(path_exp_ssm_data, usecols=gs.experiment_core_data_list),
-    experiment_name="ssm_file",
-    experiment_date="TBD",
-    mutagenesis_method="SSM",
-    geometry_file_path=path_exp_ssm_cif,
-    assay=test_assay_list[1],
-)
-
 
 @pytest.fixture
 def mock_load_config_from_disk(mocker):
@@ -33,9 +24,7 @@ def mock_load_config_from_disk(mocker):
     Fixture to mock a response
     """
     mock = mocker.patch("levseq_dash.app.settings.load_config")
-    mock.return_value = {"debug": {"load_all_experiments_from_disk": True,
-                                   "use_db_web_service": False}
-                         }
+    mock.return_value = {"debug": {"load_all_experiments_from_disk": True, "use_db_web_service": False}}
     return mock
 
 
@@ -45,9 +34,7 @@ def mock_load_config_use_web(mocker):
     Fixture to mock a response
     """
     mock = mocker.patch("levseq_dash.app.settings.load_config")
-    mock.return_value = {"debug": {"load_all_experiments_from_disk": False,
-                                   "use_db_web_service": True}
-                         }
+    mock.return_value = {"debug": {"load_all_experiments_from_disk": False, "use_db_web_service": True}}
     return mock
 
 
@@ -71,7 +58,7 @@ def experiment_empty():
 @pytest.fixture(scope="session")
 def experiment_ep_pcr():
     experiment_ep_example = Experiment(
-        data_df=pd.read_csv(path_exp_ep_data, usecols=gs.experiment_core_data_list),
+        experiment_data_file_path=path_exp_ep_data,
         experiment_name="ep_file",
         experiment_date="TBD",
         mutagenesis_method=MutagenesisMethod.epPCR,
@@ -84,7 +71,7 @@ def experiment_ep_pcr():
 @pytest.fixture(scope="session")
 def experiment_ssm():
     experiment_ssm_example = Experiment(
-        data_df=pd.read_csv(path_exp_ssm_data, usecols=gs.experiment_core_data_list),
+        experiment_data_file_path=path_exp_ssm_data,
         experiment_name="ssm_file",
         experiment_date="TBD",
         mutagenesis_method="SSM",
@@ -97,7 +84,7 @@ def experiment_ssm():
 @pytest.fixture(scope="session")
 def experiment_ep_pcr_with_user_cas():
     return Experiment(
-        data_df=pd.read_csv(path_exp_ep_data, usecols=gs.experiment_core_data_list),
+        experiment_data_file_path=path_exp_ep_data,
         experiment_name="ep_file",
         experiment_date="TBD",
         # these are RANDOM cas numbers for test only

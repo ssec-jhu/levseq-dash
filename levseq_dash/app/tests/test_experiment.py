@@ -177,7 +177,7 @@ def test_exp_meta_data_assay(experiment_ep_pcr_with_user_cas):
 
 def test_exp_meta_data_length(experiment_ep_pcr_with_user_cas):
     d = experiment_ep_pcr_with_user_cas.exp_meta_data_to_dict()
-    assert len(d) == 11
+    assert len(d) == 12
 
 
 def test_exp_core_data_to_dict(experiment_ep_pcr_with_user_cas):

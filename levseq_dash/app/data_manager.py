@@ -78,9 +78,8 @@ class DataManager:
             # cb_csv = Query("load_file", [uid, eid, "test_csv.csv", experiment_content_base64_string])
             # cb_cif = Query("load_file", [uid, eid, "test_cif.cif", geometry_content])
         else:
-            data_df = utils.decode_csv_file_base64_string_to_dataframe(experiment_content_base64_string)
             exp = Experiment(
-                data_df=data_df,
+                experiment_csv_data_base64_string=experiment_content_base64_string,
                 experiment_name=experiment_name,
                 experiment_date=experiment_date,
                 substrate_cas_number=substrate_cas_number,
@@ -90,17 +89,9 @@ class DataManager:
                 geometry_file_path=None,
                 geometry_base64_string=geometry_content_base64_string,
             )
-            n = self._add_experiment(exp)
+            n = self.__add_experiment__(exp)
 
         return n
-
-    def _add_experiment(self, exp: Experiment):
-        if not self.use_db_web_service:
-            n = len(self.experiments_dict.items())
-            self.experiments_dict[n] = exp
-            return n
-        else:
-            raise Exception("Shouldn't be using this function with db!")
 
     # ---------------------------
     #    Delete
@@ -148,20 +139,22 @@ class DataManager:
     # ---------------------------
     #    DATA RETRIEVAL: ACROSS ALL EXPERIMENTS
     # ---------------------------
-    def get_lab_experiments(self):
-        """
-        Returns list of all experiments in the lab
-        -------
-        | experiment_id |
-
-        """
-        experiments = []
-        if self.use_db_web_service:
-            pass
-        else:
-            experiments = self.experiments_dict.keys()
-
-        return experiments
+    # def get_lab_experiments(self):
+    #     """
+    #     Returns list of all experiments in the lab
+    #     -------
+    #     | experiment_id |
+    #
+    #     """
+    #     # TODO:
+    #     #  get_lab_experiments() may be obsolete as I use the one that also has the meta data below
+    #     experiments = []
+    #     if self.use_db_web_service:
+    #         pass
+    #     else:
+    #         experiments = self.experiments_dict.keys()
+    #
+    #     return experiments
 
     def get_lab_experiments_with_meta_data(self):
         """
@@ -172,9 +165,10 @@ class DataManager:
         """
         data_list_of_dict = []
         if self.use_db_web_service:
-            # get all lab experiments
-            # get metadata from each experiment
-            # put data together
+            # TODO:
+            #  get all lab experiments ids + get metadata from each experiment
+            #  OR: this can be bundled into 1 function
+            #  put data together
             pass
         else:
             # get the metadata for all the experiments
@@ -197,7 +191,17 @@ class DataManager:
         -------
         | user_id | user_name| experiment_id | experiment_name | parent_sequence
         """
-        return None
+        data_list_of_dict = []
+        if self.use_db_web_service:
+            # get all lab sequences
+            pass
+        else:
+            # get the metadata for all the experiments
+            for key, exp in self.experiments_dict.items():
+                seq_data = {"experiment_id": key, "parent_sequence": exp.parent_sequence}
+                data_list_of_dict.append(seq_data)
+
+        return data_list_of_dict
 
     # ---------------------------
     #    DATA RETRIEVAL: PER EXPERIMENT
@@ -206,6 +210,12 @@ class DataManager:
         # helper function
         exp = None
         if self.use_db_web_service:
+            # TODO:
+            #  get_experiment_meta_data
+            #  get_experiment_core_data
+            #  get_experiment_parent_sequence
+            #  get_experiment_geometry_file
+            #  return Experiment
             pass
         else:
             exp = self.experiments_dict[experiment_id]
@@ -217,65 +227,47 @@ class DataManager:
         """
         return None
 
-    def get_experiment_meta_data(self, experiment_id: int):
-        """
-        Returns
-        -------
-        |user_id | user_name | experiment_name | upload_time_stamp | experiment_date | substrate_cas_number
-        | product_cas_number | assay | mutagenesis_method
-        """
-        return None
-
-    def get_experiment_dash_info(self, experiment_id: int):
-        """
-        Returns
-        -------
-        | cas_number | plate | well | alignment_count | amino_acid_substitutions | alignment_probability |
-        | average_mutation_frequency | p_value | p_adj_value | x_coordinate | y_coordinate | fitness_value
-        """
-        return None
-
-    def get_experiment_parent_sequence(self, experiment_id: int) -> str:
-        sequence = None
-        if self.use_db_web_service:
-            pass
-        else:
-            sequence = self.experiments_dict[experiment_id].parent_sequence
-
-        return sequence
-
-    def get_experiment_geometry_file(self, experiment_id: int, geometry_form):
-        """ "
-        Returns file
-        """
-        geometry = None
-        if self.use_db_web_service:
-            pass
-        else:
-            if geometry_form == "bytes":
-                geometry = self.experiments_dict[experiment_id].geometry_base64_bytes
-            elif geometry_form == "file":
-                geometry = self.experiments_dict[experiment_id].geometry_file_path
-
-        return geometry
-
-    def get_experiment_fitness_values(self, experiment_id: int):
-        # I may need a separate function for this but if not data is redundant with get_experiment_stats
-        """
-        Returns
-        -------
-        | cas_number | plate | well | amino_acid_substitutions | x_coordinate | y_coordinate | fitness_value
-        """
-        return None
-
-    def get_experiment_stats(self, experiment_id: int):
-        """
-        Returns
-        -------
-        | cas_number | plate | well | alignment_count | alignment_probability |
-        | average_mutation_frequency | p_value | p_adj_value | x_coordinate | y_coordinate | fitness_value
-        """
-        return None
+    # def get_experiment_meta_data(self, experiment_id: int):
+    #     """
+    #     Returns
+    #     -------
+    #     |user_id | user_name | experiment_name | upload_time_stamp | experiment_date | substrate_cas_number
+    #     | product_cas_number | assay | mutagenesis_method
+    #     """
+    #     return None
+    #
+    # def get_experiment_core_data(self, experiment_id: int):
+    #     """
+    #     Returns
+    #     -------
+    #     | cas_number | plate | well | alignment_count | amino_acid_substitutions | alignment_probability |
+    #     | average_mutation_frequency | p_value | p_adj_value | x_coordinate | y_coordinate | fitness_value
+    #     """
+    #     return None
+    #
+    # def get_experiment_parent_sequence(self, experiment_id: int) -> str:
+    #     sequence = None
+    #     if self.use_db_web_service:
+    #         pass
+    #     else:
+    #         sequence = self.experiments_dict[experiment_id].parent_sequence
+    #
+    #     return sequence
+    #
+    # def get_experiment_geometry_file(self, experiment_id: int, geometry_form):
+    #     """ "
+    #     Returns file
+    #     """
+    #     geometry = None
+    #     if self.use_db_web_service:
+    #         pass
+    #     else:
+    #         if geometry_form == "bytes":
+    #             geometry = self.experiments_dict[experiment_id].geometry_base64_bytes
+    #         elif geometry_form == "file":
+    #             geometry = self.experiments_dict[experiment_id].geometry_file_path
+    #
+    #     return geometry
 
     # ---------------------------
     #    DATA RETRIEVAL: MISC
@@ -365,7 +357,6 @@ class DataManager:
             geometry_file_path = experiment_data_geometry_dict[key]["geometry"]
 
             # read the contents of the data
-            data_df = pd.read_csv(exp_file_path, usecols=gs.experiment_core_data_list)
             # assign its method
             filename = os.path.basename(exp_file_path)
             if "ssm" in str(exp_file_path):
@@ -378,7 +369,7 @@ class DataManager:
             assay = test_assay_list[assay_index]
 
             exp = Experiment(
-                data_df=data_df,
+                experiment_data_file_path=exp_file_path,
                 experiment_name=filename,
                 experiment_date="01-01-2025",
                 substrate_cas_number=utils.generate_random_cas_numbers(),
@@ -387,7 +378,15 @@ class DataManager:
                 mutagenesis_method=mutagenesis_method,
                 geometry_file_path=geometry_file_path,
             )
-            self._add_experiment(exp)
+            self.__add_experiment__(exp)
+
+    def __add_experiment__(self, exp: Experiment):
+        if self.use_db_web_service:
+            raise Exception("Shouldn't be using this function with db!")
+
+        n = len(self.experiments_dict.items())
+        self.experiments_dict[n] = exp
+        return n
 
 
 #
