@@ -14,7 +14,9 @@ def format_mutation_annotation(text):
     if len(items) < 4:
         return "<br>".join(items)  # Stack them vertically
     else:
-        return "4Mut*"
+        cnt = len(items)
+        annotation = f"{cnt}Mut*"
+        return annotation
 
 
 def creat_heatmap(df, plate_number, property, cas_number):

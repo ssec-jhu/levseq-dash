@@ -95,7 +95,9 @@ def test_gather_residue_errors(residue, numbers):
 )
 def test_calculate_group_mean(experiment_ep_pcr, cas, plate, mean):
     df = utils.calculate_group_mean_ratios_per_cas_and_plate(experiment_ep_pcr.data_df)
-    col_count = 11
+    # if the main core data that is kept in the user session changes column count we need to update this number
+    col_count = 14
+
     assert df.shape[0] == 1920
     assert df.shape[1] == col_count  # added columns
     plate_per_cas_data_per = df[(df[gs.c_cas] == cas) & (df[gs.c_plate] == plate)]  # Filter the row
@@ -154,5 +156,5 @@ def test_decode_csv_file_base64_string_to_dataframe_non_utf8():
 def test_load_config():
     c = settings.load_config()
     # TODO this must be switched on deployment
-    assert c["debug"]["use_db_web_service"] == False
+    assert not c["debug"]["use_db_web_service"]
     assert c["debug"]["load_all_experiments_from_disk"]

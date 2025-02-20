@@ -139,18 +139,16 @@ def decode_csv_file_base64_string_to_dataframe(base64_encoded_string):
 
 
 def calculate_group_mean_ratios_per_cas_and_plate(df):
-    df = df.loc[:, ["cas_number", "plate", "well", "amino_acid_substitutions", "fitness_value"]]
+    # df = df.loc[:, ["cas_number", "plate", "well", "amino_acid_substitutions", "fitness_value"]]
     group_cols = ["cas_number", "plate"]
     value_col = "fitness_value"
-    parent_value = "#PARENT#"
-    parent_col = "amino_acid_substitutions"
 
     # Compute min and max fitness for each group
     group_stats = df.groupby(group_cols)[value_col].agg(["min", "max"]).reset_index()
 
     # Compute mean ONLY for rows where parent_col == parent_value, per group
     parent_mean = (
-        df[df[parent_col] == parent_value]
+        df[df["amino_acid_substitutions"] == "#PARENT#"]
         .groupby(group_cols)[value_col]
         .mean()
         .reset_index()

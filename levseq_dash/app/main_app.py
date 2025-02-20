@@ -1,6 +1,5 @@
-import json
-
 import dash_bootstrap_components as dbc
+import pandas as pd
 from dash import Dash, Input, Output, State, ctx, dcc, html, no_update
 from dash.exceptions import PreventUpdate
 from dash_bootstrap_templates import load_figure_template
@@ -185,15 +184,15 @@ def on_upload_structure_file(dash_upload_string_contents, filename, last_modifie
     prevent_initial_call=True,
 )
 def on_submit_experiment(
-    n_clicks,
-    experiment_name,
-    experiment_date,
-    substrate_cas,
-    product_cas,
-    assay,
-    mutagenesis_method,
-    geometry_content_base64_encoded_string,
-    experiment_content_base64_encoded_string,
+        n_clicks,
+        experiment_name,
+        experiment_date,
+        substrate_cas,
+        product_cas,
+        assay,
+        mutagenesis_method,
+        geometry_content_base64_encoded_string,
+        experiment_content_base64_encoded_string,
 ):
     if n_clicks > 0 and ctx.triggered_id == "id-button-submit":
         # TODO: verify the CAS numbers somewhere or in another callback
@@ -307,9 +306,7 @@ def on_load_experiment_dashboard(pathname, experiment_id):
         # exp = Experiment.exp_from_dict(exp_dict)
 
         return (
-            # exp.data_df.to_dict("records"),
-            # columnDefs,
-            df_filtered_with_ratio.to_dict("records"),
+            df_filtered_with_ratio.to_dict("records"),  # rowData
             columnDefs_with_ratio,
             pdb_cif,
             exp.experiment_name,
@@ -342,14 +339,13 @@ def on_load_experiment_dashboard(pathname, experiment_id):
     Input("id-list-plates", "value"),
     Input("id-list-cas-numbers", "value"),
     Input("id-list-properties", "value"),
+    State("id-table-top-variants", "rowData"),  # TODO: does this have a performance hit?
     # State("id-store-heatmap-data", "data"),
     prevent_initial_call=True,
 )
-def on_heatmap_selection(experiment_id, selected_plate, selected_cas_number, selected_stat_property):
-    # TODO: transfer of data here
-    exp = data_mgr.get_experiment(experiment_id)
-    df = exp.data_df
-    # df = pd.read_json(heatmap_data_json, orient="records")
+def on_heatmap_selection(experiment_id, selected_plate, selected_cas_number, selected_stat_property, rowData):
+    # TODO: does this have a performance hit? if so we can just put the 3 columns in the user session
+    df = pd.DataFrame(rowData)
 
     show_cas_numbers = selected_stat_property == gs.experiment_heatmap_properties_list[0]
 
