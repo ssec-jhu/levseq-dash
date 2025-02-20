@@ -184,15 +184,15 @@ def on_upload_structure_file(dash_upload_string_contents, filename, last_modifie
     prevent_initial_call=True,
 )
 def on_submit_experiment(
-        n_clicks,
-        experiment_name,
-        experiment_date,
-        substrate_cas,
-        product_cas,
-        assay,
-        mutagenesis_method,
-        geometry_content_base64_encoded_string,
-        experiment_content_base64_encoded_string,
+    n_clicks,
+    experiment_name,
+    experiment_date,
+    substrate_cas,
+    product_cas,
+    assay,
+    mutagenesis_method,
+    geometry_content_base64_encoded_string,
+    experiment_content_base64_encoded_string,
 ):
     if n_clicks > 0 and ctx.triggered_id == "id-button-submit":
         # TODO: verify the CAS numbers somewhere or in another callback
