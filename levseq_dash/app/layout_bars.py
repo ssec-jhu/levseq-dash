@@ -53,10 +53,10 @@ def get_navbar():
 def get_sidebar():
     return html.Div(
         [
-            # html.Img(
-            #     src="https://via.placeholder.com/150",  # Placeholder for the logo
-            #     style={"width": "100%", "margin-bottom": "20px"},
-            # ),
+            html.Img(
+                src="https://via.placeholder.com/150",  # Placeholder for the logo
+                style={"width": "100%", "margin-bottom": "20px"},
+            ),
             html.Hr(),
             html.Br(),
             dbc.Nav(
