@@ -191,7 +191,8 @@ def get_table_experiment():
             #     'verticalAlign': 'middle',
             # }
         },
-        style={"height": "600px", "width": "100%"},
+        style={"height": "650px",
+               "width": "100%"},
         dashGridOptions={
             # row selection for the protein viewer
             "rowSelection": "single",
@@ -243,8 +244,10 @@ def get_protein_viewer():
         # data=data,
         style={"width": "auto", "height": "600px"},
         layout={
-            "layoutShowControls": False,
-            "layoutIsExpanded": False,
-            # TODO: do we want this option to be true?
+            #"layoutShowControls": True,
+            # https://dash-molstar.readthedocs.io/en/latest/load.html#general-options
+            #‘outside’, ‘portrait’, ‘landscape’ and ‘reactive’ (default)
+            "layoutControlsDisplay": 'landscape',
+            "layoutIsExpanded": False, # if true it makes it full screen
         },
     )
