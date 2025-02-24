@@ -191,8 +191,7 @@ def get_table_experiment():
             #     'verticalAlign': 'middle',
             # }
         },
-        style={"height": "650px",
-               "width": "100%"},
+        style={"height": "650px", "width": "100%"},
         dashGridOptions={
             # row selection for the protein viewer
             "rowSelection": "single",
