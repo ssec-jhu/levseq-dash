@@ -6,3 +6,4 @@ db-service:
 
 debug:
   load_all_experiments_from_disk: True  # default must be False
+  use_db_web_service: False

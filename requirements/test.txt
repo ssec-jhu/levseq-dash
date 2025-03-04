@@ -3,3 +3,4 @@ ruff==0.8.4
 pytest==8.3.4
 pytest-cov==6.0.0
 GitPython==3.1.43
+pytest-mock==3.14.0

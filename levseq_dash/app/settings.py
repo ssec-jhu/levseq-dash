@@ -1,10 +1,12 @@
+from pathlib import Path
+
 import yaml
 
-
-def load_config(file_path):
-    with open(file_path, "r") as file:
-        return yaml.safe_load(file)
+package_root = Path(__file__).resolve().parent.parent
+config_path = package_root / "app" / "config" / "config.yaml"
 
 
-# Load
-CONFIG = load_config("config/config.yaml")
+def load_config():
+    with open(config_path, "r") as file:
+        config_file = yaml.safe_load(file)
+        return config_file
