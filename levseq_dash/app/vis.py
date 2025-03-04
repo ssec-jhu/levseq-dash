@@ -84,7 +84,7 @@ def data_bars_colorscale(df, column):
         max_bound_percentage = (i / n_bins) * 100
         color = color_scale[i - 1]  # Pick color from scale
 
-        if max_bound_percentage > 95:
+        if max_bound_percentage > 89:
             text_color = "white"
         else:
             text_color = "black"
@@ -141,7 +141,7 @@ def data_bars_group_mean_colorscale(
 
         # Determine bar width
         bar_width = int(norm_ratio * 100)  # Convert to percentage
-        if bar_width > 95:
+        if bar_width > 89:
             text_color = "white"
         else:
             text_color = "black"

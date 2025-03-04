@@ -58,7 +58,7 @@ def get_top_variant_column_defs(df):
                 "closeOnApply": True,
             },
             "flex": 2,
-            "cellStyle": {"styleConditions": vis.data_bars_colorscale(df, gs.c_fitness_value)},
+            # "cellStyle": {"styleConditions": vis.data_bars_colorscale(df, gs.c_fitness_value)},
         },
         {
             "field": "ratio",
