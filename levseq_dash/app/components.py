@@ -12,7 +12,9 @@ def get_label(string):
 
 
 def get_top_variant_column_defs(df):
-    # mean_values = df[df["amino_acid_substitutions"] == "#PARENT#"].groupby("cas_number")["fitness_value"].mean()
+    """
+    Returns column definitions and setup for dash ag grid table per experiment
+    """
     return [
         {
             "field": gs.c_cas,
@@ -75,6 +77,9 @@ def get_top_variant_column_defs(df):
 
 
 def get_all_experiments_column_defs():
+    """
+    Returns column definitions and setup for dash ag grid table for all experiments
+    """
     return [
         {  # Checkbox column
             "headerCheckboxSelection": True,
@@ -171,6 +176,9 @@ def get_all_experiments_column_defs():
 
 
 def get_table_experiment():
+    """
+    Returns dash ag grid component with settings setup for use to show the experiments data
+    """
     return dag.AgGrid(
         id="id-table-top-variants",
         # columnDef have a colored column which is dynamic and will be returned in a callback
@@ -192,7 +200,7 @@ def get_table_experiment():
             #     'verticalAlign': 'middle',
             # }
         },
-        style={"height": "650px", "width": "100%"},
+        style={"height": "755px", "width": "100%"},
         dashGridOptions={
             # row selection for the protein viewer
             "rowSelection": "single",
@@ -212,6 +220,9 @@ def get_table_experiment():
 
 
 def get_table_all_experiments():
+    """
+    Returns dash ag grid component with settings setup for use to show all experiments
+    """
     return dag.AgGrid(
         id="id-table-all-experiments",
         columnDefs=get_all_experiments_column_defs(),
@@ -239,6 +250,9 @@ def get_table_all_experiments():
 
 
 def get_protein_viewer():
+    """
+    Returns the dash molstar viewer component
+    """
     return dash_molstar.MolstarViewer(
         id="id-viewer",
         # data=data,
@@ -254,6 +268,9 @@ def get_protein_viewer():
 
 
 def get_info_icon_tooltip_bundle(info_icon_id, help_string, tip_placement):
+    """
+    Convenient function to bundle an info icon with a tooltip
+    """
     return html.Div(
         [
             dbc.Label(id=info_icon_id, children=vis.icon_info),
