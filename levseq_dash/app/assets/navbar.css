@@ -1,0 +1,9 @@
+/* Navbar content */
+.custom_navbar {
+    display: flex !important;
+    background: var(--cal-tech-color-1) !important;
+    /*padding: 10px 20px;*/
+    /*height: 90px;*/
+    /*left: 0;*/
+    z-index: 999 !important; /* Ensure it's always above sidebar */
+}

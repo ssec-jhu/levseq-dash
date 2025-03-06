@@ -1,0 +1,66 @@
+/*.sidebar-link {*/
+/*    display: block;*/
+/*    !*padding: 10px 20px;*!*/
+/*    color: white !important;*/
+/*    background-color: var(--bs-gray-500);*/
+/*    !*background-color: var(--bs-primary-bg-subtle);*!*/
+/*    !*border-radius: 8px;*!*/
+/*    !*text-decoration: none;*!*/
+/*    margin: 5px 0; !* puts a space between the buttons*!*/
+/*    text-align: center;*/
+/*    !*transition: background-color 0.3s ease-in-out;*!*/
+/*}*/
+
+/*.sidebar-link.active {*/
+/*    !*background-color: var(--bs-gray-700) !important;*!*/
+/*    background-color: #003B4C !important; !* caltech color *!*/
+/*    color: white !important;*/
+/*    font-weight: bold;*/
+/*    !*border-radius: 8px;*!*/
+/*}*/
+/*.sidebar-link:hover {*/
+/*    !*background-color: var(--bs-gray-700)!important;*!*/
+/*    background-color: #003B4C !important; !* caltech color *!*/
+/*}*/
+
+
+/* Sidebar - Default Collapsed */
+.thin-sidebar {
+    margin-top: 25px;
+    position: fixed;
+    /*display: flex;*/
+    /*top: 0; !* needed to remove this! to make it sticky**/
+    left: 12px; /* added this because I couldn't get the nav to snap tot he side! */
+    width: 50px; /* Start collapsed (only icons visible) */
+    height: 100dvh;
+    background: var(--cal-tech-color-1);
+    /*background: var(--bs-primary);*/
+    color: white;
+    transition: width 0.3s ease-in-out;
+    overflow: hidden;
+    /*box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);*/
+    box-shadow: 1px 2px 7px grey;
+    z-index: 998; /* Ensures sidebar does not block navbar */
+}
+
+/* Expanded Sidebar */
+.thin-sidebar.expanded {
+    width: 180px; /* Show full nav */
+}
+
+/* Hide text when collapsed */
+.thin-sidebar.collapsed .custom-nav-text {
+    display: none;
+}
+
+/* Main Content */
+.content {
+    margin-left: 70px; /* Adjust when collapsed */
+    padding: 20px;
+    transition: margin-left 0.3s ease-in-out;
+}
+
+/* Adjust content margin when sidebar expands */
+.thin-sidebar.expanded ~ .content {
+    margin-left: 200px;
+}
