@@ -29,19 +29,18 @@ def creat_heatmap(df, plate_number, property, cas_number):
     filtered_df = filtered_df.fillna(0)
 
     # set up the well indices for the grid
-    # well numbers on the Y  , letters on the X
-    # filtered_df["X-L"] = filtered_df[gs.c_well].str[0]
-    # filtered_df["Y-N"] = filtered_df[gs.c_well].str[1:].astype(int)
     # well numbers on the X  , letters on the Y
-    filtered_df["Y-L"] = filtered_df[gs.c_well].str[0]
-    filtered_df["X-N"] = filtered_df[gs.c_well].str[1:].astype(int)
+    c_y_letters = "Y-L"
+    c_x_numbers = "X-N"
+    filtered_df[c_y_letters] = filtered_df[gs.c_well].str[0]
+    filtered_df[c_x_numbers] = filtered_df[gs.c_well].str[1:].astype(int)
 
     # extract the required property
-    heatmap_data = filtered_df.pivot(index="Y-L", columns="X-N", values=property)
+    heatmap_data = filtered_df.pivot(index=c_y_letters, columns=c_x_numbers, values=property)
 
     # extract the mutations data for the annotations
     # this has no formatting
-    annotations_data = filtered_df.pivot(index="Y-L", columns="X-N", values=gs.c_substitutions)
+    annotations_data = filtered_df.pivot(index=c_y_letters, columns=c_x_numbers, values=gs.c_substitutions)
 
     fig = px.imshow(
         heatmap_data.values,
@@ -51,6 +50,8 @@ def creat_heatmap(df, plate_number, property, cas_number):
         aspect="auto",
         # aspect argument to "auto" will instead fill the plotting area with the heatmap, using non-square tiles
     )
+
+    # format the annotations stacked and cluster into Mut* if more than some number
     annotations_data_stacked = annotations_data.map(format_mutation_annotation)
 
     # thought the text on the graph itself is stacked and stripped of the underscore
@@ -81,20 +82,8 @@ def creat_heatmap(df, plate_number, property, cas_number):
         ticks="outside",  # this adds a tick and distances the values from the axis
     )
 
-    # removing paddings
-    fig.update_layout(
-        margin=dict(l=0, r=0, b=0),  # Remove all margins
-        # height=600,  # Adjust figure height
-        # xaxis_title="",
-        # yaxis_title="",
-        # template=gs.dbc_template_name,
-        # paper_bgcolor="white",  # Set the figure background to white
-        # plot_bgcolor="white",  # Remove plot background color
-        # axis=dict(showgrid=False, zeroline=False, showticklabels=False),
-        # yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
-    )
-    # shrink the axes if it's on the right
-    # fig.update_coloraxes(colorbar=dict(thickness=10, xpad=0))
+    # removing paddings and margins
+    fig.update_layout(margin=dict(l=0, r=0, b=0))
 
     # put the color axes on the top
     fig.update_coloraxes(
@@ -119,10 +108,11 @@ def creat_rank_plot(df, plate_number, cas_number):
     # Sort by 'fitness value'
     df_sorted = filtered_df.sort_values(by=gs.c_fitness_value, ascending=False).reset_index(drop=True)
 
-    # Create a rank column (1-based index)
-    df_sorted["rank"] = df_sorted.index + 1
+    #  create rank column based on the sort (1-based index)
+    c_rank = "Rank"
+    df_sorted[c_rank] = df_sorted.index + 1
 
-    # color by type
+    # Assign colors by the data type
     # color_scale = px.colors.sample_colorscale(px.colors.diverging.RdBu, 96)
     # RGB colr values are extracted from px.colors.diverging.RdBu,
     # but hard coding them for convenience we don't have to sample everytime
@@ -133,26 +123,29 @@ def creat_rank_plot(df, plate_number, cas_number):
         "#LOW#": "rgba(128,128,128,0.6)",  # gray-ish
         "-": "rgba(0,0,0,1)",  # black
     }
-    mutations_label = "variant"
+    mutations_label = "Variant"
     mutations_color = f"rgba(33, 102, 172, 1.0)"  # blue-ish
-    df_sorted["color_groups"] = df_sorted[gs.c_substitutions].apply(lambda x: x if x in color_map else mutations_label)
 
+    # apply the color mapping to the values and put in new column
+    c_colors = "color_groups"
+    df_sorted[c_colors] = df_sorted[gs.c_substitutions].apply(lambda x: x if x in color_map else mutations_label)
+
+    # assign colors based on the dictionary
+    # unpack the color_map dictionary and merge with the variant key-value pairs
+    custom_discrete_color_map = {**color_map, mutations_label: mutations_color}
     fig = px.scatter(
         df_sorted,
-        x="rank",
+        x=c_rank,
         y=gs.c_fitness_value,
         labels={
-            "rank": "Rank",
             gs.c_fitness_value: "Fitness Value",
             gs.c_substitutions: "Substitutions",
-            "color_groups": "Data",
-            "other_color": "other",
+            c_colors: "Data Type",
         },
-        hover_data={gs.c_well: True, gs.c_substitutions: True, "rank": True},
-        color="color_groups",
-        # setting a bit of ap=alpha on the gray here so the text is legible
-        color_discrete_map={**color_map, mutations_label: mutations_color},
+        hover_data={gs.c_well: True, gs.c_substitutions: True, c_rank: True},
+        color=c_colors,
+        color_discrete_map=custom_discrete_color_map,
     )
-
-    fig.update_layout(margin=dict(l=0, r=0, b=0))  # Remove all margins
+    # Remove all margins
+    fig.update_layout(margin=dict(l=0, r=0, b=0))
     return fig
