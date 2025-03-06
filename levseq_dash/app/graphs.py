@@ -123,16 +123,18 @@ def creat_rank_plot(df, plate_number, cas_number):
         "#LOW#": "rgba(128,128,128,0.6)",  # gray-ish
         "-": "rgba(0,0,0,1)",  # black
     }
-    mutations_label = "Variant"
-    mutations_color = f"rgba(33, 102, 172, 1.0)"  # blue-ish
+    variant_label = "Variant"
+    variant_color = f"rgba(33, 102, 172, 1.0)"  # blue-ish
 
     # apply the color mapping to the values and put in new column
     c_colors = "color_groups"
-    df_sorted[c_colors] = df_sorted[gs.c_substitutions].apply(lambda x: x if x in color_map else mutations_label)
+    df_sorted[c_colors] = df_sorted[gs.c_substitutions].apply(lambda x: x if x in color_map else variant_label)
 
     # assign colors based on the dictionary
     # unpack the color_map dictionary and merge with the variant key-value pairs
-    custom_discrete_color_map = {**color_map, mutations_label: mutations_color}
+    custom_discrete_color_map = {**color_map, variant_label: variant_color}
+
+    # make the plot
     fig = px.scatter(
         df_sorted,
         x=c_rank,
@@ -145,6 +147,9 @@ def creat_rank_plot(df, plate_number, cas_number):
         hover_data={gs.c_well: True, gs.c_substitutions: True, c_rank: True},
         color=c_colors,
         color_discrete_map=custom_discrete_color_map,
+        # the legent shows the data based on the order it sees
+        # I am overriding the ordering of the legend here so Variant shows first, then Parent then...
+        category_orders={c_colors: [variant_label, "#PARENT#", "#LOW#", "#N.A.#", "-"]},
     )
     # Remove all margins
     fig.update_layout(margin=dict(l=0, r=0, b=0))
