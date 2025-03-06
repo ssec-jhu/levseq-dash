@@ -123,14 +123,19 @@ def creat_rank_plot(df, plate_number, cas_number):
     df_sorted["rank"] = df_sorted.index + 1
 
     # color by type
-    color_scale = px.colors.sample_colorscale(px.colors.diverging.RdBu, 20)
+    # color_scale = px.colors.sample_colorscale(px.colors.diverging.RdBu, 96)
+    # RGB colr values are extracted from px.colors.diverging.RdBu,
+    # but hard coding them for convenience we don't have to sample everytime
+    # https://app.py.cafe/app/nataliatsyporkin/plotly-colorscale-selection
     color_map = {
-        "#PARENT#": color_scale[3],
-        "#N.A.#": color_scale[18],
-        "#LOW#": color_scale[18],
-        "-": color_scale[18],
+        "#PARENT#": "rgba(178,24,43,1)",  # red-ish
+        "#N.A.#": "rgba(128,128,128,0.4)",  # gray-ish
+        "#LOW#": "rgba(128,128,128,0.6)",  # gray-ish
+        "-": "rgba(0,0,0,1)",  # black
     }
-    df_sorted["color_groups"] = df_sorted[gs.c_substitutions].apply(lambda x: x if x in color_map else "other")
+    mutations_label = "variant"
+    mutations_color = f"rgba(33, 102, 172, 1.0)"  # blue-ish
+    df_sorted["color_groups"] = df_sorted[gs.c_substitutions].apply(lambda x: x if x in color_map else mutations_label)
 
     fig = px.scatter(
         df_sorted,
@@ -146,7 +151,7 @@ def creat_rank_plot(df, plate_number, cas_number):
         hover_data={gs.c_well: True, gs.c_substitutions: True, "rank": True},
         color="color_groups",
         # setting a bit of ap=alpha on the gray here so the text is legible
-        color_discrete_map={**color_map, "other": f"rgba(128, 128, 128, 0.7)"},
+        color_discrete_map={**color_map, mutations_label: mutations_color},
     )
 
     fig.update_layout(margin=dict(l=0, r=0, b=0))  # Remove all margins
