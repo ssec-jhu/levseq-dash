@@ -28,7 +28,7 @@ cas_file = "Unique CAS"
 cas_sub = "Substrate CAS"
 cas_prod = "Product CAS"
 viewer_header = "Protein Structure"
-well_heatmap = "Well Map"
+well_heatmap = "Plate Map"
 top_variants = "Top Variants"
 retention_function = "Retention Function"
 
