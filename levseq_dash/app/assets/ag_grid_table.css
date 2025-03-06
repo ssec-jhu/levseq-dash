@@ -1,0 +1,17 @@
+/*.ag-header-cell{*/
+/*    background-color: var(--cal-tech-color-3);*/
+/*}*/
+
+.ag-header-cell-filtered {
+    background-color: var(--cal-tech-color-2) !important;
+}
+
+.ag-header-cell-filtered span {
+    /*
+        color in ag-header-cell-filtered does not change the filtered cell text color,
+        this component does
+        https://ag-grid.com/angular-data-grid/global-style-customisation-headers/#style-header-on-filter
+    */
+    color: white !important;
+    font-weight: bold;
+}

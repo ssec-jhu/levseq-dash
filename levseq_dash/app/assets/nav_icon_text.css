@@ -1,0 +1,48 @@
+/* Icons */
+.custom-nav-icon {
+    font-size: 20px;
+    width: 30px;
+    text-align: center;
+
+}
+
+/* Navigation Items */
+.custom-nav-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    /*color: #FF6C0C;*/
+    /*color: var(--bs-secondary);*/
+    color: whitesmoke;
+    transition: all 0.3s ease-in-out;
+
+}
+
+
+.custom-nav-item.active {
+    /*color: white !important;  !* Make text and icons white on hover *!*/
+    color: var(--cal-tech-color-2);
+    font-weight: bold;
+    font-style: italic;
+}
+
+
+.custom-nav-item:hover {
+    /*color: white !important;  !* Make text and icons white on hover *!*/
+    color: var(--cal-tech-color-2);
+}
+
+
+.custom-nav-icon.active {
+    /*color: white !important;  !* Make text and icons white on hover *!*/
+    color: var(--cal-tech-color-2);
+    font-weight: bold;
+}
+
+
+.custom-nav-icon:hover {
+    /*color: white !important;  !* Make text and icons white on hover *!*/
+    color: var(--cal-tech-color-2);
+}
