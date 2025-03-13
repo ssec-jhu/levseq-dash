@@ -1,6 +1,7 @@
 import math
 
 import dash_bootstrap_components as dbc
+import numpy as np
 import pandas as pd
 from dash import Dash, Input, Output, State, ctx, dcc, html, no_update
 from dash.exceptions import PreventUpdate
@@ -319,7 +320,7 @@ def on_load_experiment_dashboard(pathname, experiment_id):
 
         # set up the slider
         # get the max value of the ratio column, round up
-        max_value = math.ceil(df_filtered_with_ratio["ratio"].max())
+        max_value = np.ceil(df_filtered_with_ratio["ratio"].max())
         # generate the slider marks based on the max value
         slider_marks = utils.generate_slider_marks_dict(max_value)
 
