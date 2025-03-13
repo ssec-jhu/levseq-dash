@@ -1,4 +1,7 @@
+import math
+
 import dash_bootstrap_components as dbc
+import numpy as np
 import pandas as pd
 from dash import Dash, Input, Output, State, ctx, dcc, html, no_update
 from dash.exceptions import PreventUpdate
@@ -270,6 +273,11 @@ def redirect_to_experiment_page(n_clicks):
     Output("id-list-cas-numbers-ranking-plot", "value"),
     # Ranking plot figure
     Output("id-experiment-ranking-plot", "figure"),
+    # slider setup
+    Output("id-slider-ratio", "marks"),
+    Output("id-slider-ratio", "max"),
+    Output("id-list-cas-numbers-residue-highlight", "options"),
+    Output("id-list-cas-numbers-residue-highlight", "value"),
     # Output("id-store-heatmap-data", "data"),
     # Inputs
     Input("url", "pathname"),
@@ -309,6 +317,12 @@ def on_load_experiment_dashboard(pathname, experiment_id):
             plate_number=default_plate,
             cas_number=default_cas,
         )
+
+        # set up the slider
+        # get the max value of the ratio column, round up
+        max_value = np.ceil(df_filtered_with_ratio["ratio"].max())
+        # generate the slider marks based on the max value
+        slider_marks = utils.generate_slider_marks_dict(max_value)
 
         # heatmap_df = exp.data_df[[gs.c_cas, gs.c_plate, gs.c_well, gs.c_alignment_count,
         #                          gs.c_alignment_probability, gs.c_fitness_value]]
@@ -352,6 +366,13 @@ def on_load_experiment_dashboard(pathname, experiment_id):
             exp.unique_cas_in_data,  # rank plot: list of cas values
             default_cas,  # rank plot:  default Cas
             fig_experiment_rank_plot,  # Heatmap: figure
+            # -------------------------------
+            # residue highlight slider
+            # --------------------------------
+            slider_marks,
+            max_value,
+            exp.unique_cas_in_data,  # list of cas values
+            default_cas,  # default Cas
         )
     else:
         return no_update
@@ -460,22 +481,39 @@ def update_ui(selected_rows):
 @app.callback(
     Output("id-viewer", "selection", allow_duplicate=True),
     Output("id-viewer", "focus", allow_duplicate=True),
-    # Input("id-switch-residue-view", "checked"), #DMC
-    Input("id-switch-residue-view", "value"),  # DBC
+    Output("id-slider-ratio", "disabled"),
+    Output("id-list-cas-numbers-residue-highlight", "disabled"),
+    Input("id-switch-residue-view", "checked"),  # DMC
+    # Input("id-switch-residue-view", "value"),  # DBC
+    Input("id-slider-ratio", "value"),
+    Input("id-list-cas-numbers-residue-highlight", "value"),
     State("id-table-top-variants", "rowData"),
     prevent_initial_call=True,
 )
-def on_view_all_residue(view, rowData):
+def on_view_all_residue(view, slider_value, cas_value, rowData):
+    # default the values
+    sel = utils.reset_selection()
+    foc = no_update
+    enable_components = (not view) if view else no_update
     if view and rowData:
         df = pd.DataFrame(rowData)
-        residues = sorted(df[gs.c_substitutions].str.extractall(r"(\d+)")[0].unique().tolist())
-        if len(residues) != 0:
-            sel, foc = utils.get_selection_focus(residues, analyse=False)
-    else:
-        sel = utils.reset_selection()
-        foc = no_update
+        # filter by cas value
+        if cas_value:
+            df_cas = df[df[gs.c_cas] == cas_value]
+        else:
+            df_cas = df
 
-    return sel, foc
+        # apply the slider values
+        delta = math.fabs(slider_value[0] - slider_value[1])
+        if delta != 0:
+            df_filtered = df_cas[df_cas["ratio"].between(slider_value[0], slider_value[1])]
+            # extract the residue indices for the viewer
+            residues = sorted(df_filtered[gs.c_substitutions].str.extractall(r"(\d+)")[0].unique().tolist())
+            # set up the protein viewer selection and focus
+            if len(residues) != 0:
+                sel, foc = utils.get_selection_focus(residues, analyse=False)
+
+    return sel, foc, enable_components, enable_components
 
 
 # Run the app

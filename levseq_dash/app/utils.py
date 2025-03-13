@@ -221,3 +221,12 @@ def extract_all_unique_cas_from_lab_data(list_of_all_lab_experiments_with_meta: 
         all_unique_cas = ";".join(sorted(unique_cas_set))
 
     return all_unique_cas
+
+
+def generate_slider_marks_dict(max_value):
+    """
+    This method extracts generates tick marks text for the range slider based on the
+    max value provided by the experiment. The tick marks are to be set in a dictionary.
+    """
+    data_range = range(0, max_value, 1)
+    return {str(round(value, 1)): str(round(value, 1)) for value in data_range}

@@ -1,4 +1,5 @@
 import dash_bootstrap_components as dbc
+import dash_mantine_components as dmc
 from dash import dcc, html
 
 from levseq_dash.app import components, vis
@@ -138,6 +139,7 @@ def get_experiment_page():
                 className="g-3 mb-4",
                 style=vis.border_row,
             ),
+            # top variants and viewer row
             dbc.Row(
                 [
                     dbc.Col(
@@ -179,42 +181,80 @@ def get_experiment_page():
                                         [
                                             dbc.Row(
                                                 [
-                                                    dbc.Col(
+                                                    html.Span(
                                                         [
-                                                            html.Span(
-                                                                [
-                                                                    dbc.Switch(
-                                                                        id="id-switch-residue-view",
-                                                                        value=False,
-                                                                        # className="fs-5",
-                                                                        className="custom-switch",
-                                                                    ),
-                                                                    dbc.Label(" View all residues"),
-                                                                    # dmc.Switch(
-                                                                    #     # thumbIcon=vis.icon_eye,
-                                                                    #     id="id-switch-residue-view",
-                                                                    #     label="View all residues",
-                                                                    #     onLabel="ON",#vis.icon_eye_open,
-                                                                    #     offLabel="OFF",#vis.icon_eye_closed,
-                                                                    #     size="md",
-                                                                    #     className="custom-switch",
-                                                                    #     checked=False,
-                                                                    # )
-                                                                ],
-                                                                style={"display": "flex"},
-                                                            )
+                                                            dmc.Switch(
+                                                                # thumbIcon=vis.icon_home,
+                                                                id="id-switch-residue-view",
+                                                                label=gs.view_all,
+                                                                onLabel="ON",  # vis.icon_eye_open,
+                                                                offLabel="OFF",  # vis.icon_eye_closed,
+                                                                size="md",
+                                                                className="custom-switch",
+                                                                checked=False,
+                                                            ),
+                                                            components.get_info_icon_tooltip_bundle(
+                                                                info_icon_id="id-switch-residue-view-info",
+                                                                help_string="some help string",
+                                                                tip_placement="top",
+                                                            ),
                                                         ],
-                                                        width=2,
-                                                    ),
+                                                        style={"display": "flex", "gap": "5px"},
+                                                    )
                                                 ],
-                                                class_name="mt-3 mb-3",
+                                                class_name="p-2",  # add some padding around the switch
+                                            ),
+                                            dbc.Row(
+                                                [
+                                                    dbc.Card(
+                                                        dbc.Row(
+                                                            [
+                                                                dbc.Col(
+                                                                    [
+                                                                        dbc.Label(gs.select_cas),
+                                                                        dcc.Dropdown(
+                                                                            id="id-list-cas-numbers-residue-highlight",
+                                                                            disabled=True,
+                                                                        ),
+                                                                    ],
+                                                                    width=3,
+                                                                ),
+                                                                dbc.Col(
+                                                                    [
+                                                                        dcc.RangeSlider(
+                                                                            id="id-slider-ratio",
+                                                                            value=[0.5, 1.5],
+                                                                            min=0,
+                                                                            step=0.1,
+                                                                            tooltip={
+                                                                                "always_visible": True,
+                                                                                "placement": "bottom",
+                                                                            },
+                                                                            disabled=True,
+                                                                            # className="dbc"
+                                                                            className="custom-slider",
+                                                                        ),
+                                                                    ],
+                                                                ),
+                                                            ],
+                                                            # removing the dbc.CardBody around this row also removes
+                                                            # the padding. I am manually putting the padding back.
+                                                            class_name="p-2 align-items-center",
+                                                        )
+                                                    )
+                                                ],
+                                                # if you justify the components to center then
+                                                # the text overflows to the next row
+                                                # justify="between",
+                                                class_name="mt-3 mb-3 g-0 d-flex align-items-center",
+                                                style=vis.border_row,
                                             ),
                                             dbc.Row(dbc.Col(components.get_protein_viewer())),
                                         ],
-                                        style={
-                                            "height": "100%",
-                                            "overflowX": "auto",  # Allow content to expand
-                                        },
+                                        # style={
+                                        #     "height": "100%",
+                                        #     "overflowX": "auto",  # Allow content to expand
+                                        # },
                                     ),
                                 ],
                                 className="d-flex flex-column",  # Flexbox for vertical stacking
@@ -227,125 +267,112 @@ def get_experiment_page():
                 ],
                 className="mb-4",  # TODO: change gutter to g-1 here? or not
             ),
+            # heatmap plot and retention plots
             dbc.Row(
                 [
                     dbc.Col(
-                        [
-                            dbc.Card(
-                                [
-                                    dbc.CardHeader(gs.well_heatmap, className=vis.top_card_head),
-                                    dbc.CardBody(
-                                        [
-                                            dbc.Row(
-                                                [
-                                                    dbc.Col(
+                        dbc.Card(
+                            [
+                                dbc.CardHeader(gs.well_heatmap, className=vis.top_card_head),
+                                dbc.CardBody(
+                                    [
+                                        dbc.Row(
+                                            [
+                                                dbc.Col(
+                                                    html.Div(
                                                         [
-                                                            html.Div(
-                                                                [
-                                                                    dbc.Label(gs.select_property),
-                                                                    dcc.Dropdown(id="id-list-properties"),
-                                                                ],
-                                                                className="dbc",
-                                                            )
+                                                            dbc.Label(gs.select_property),
+                                                            dcc.Dropdown(id="id-list-properties"),
                                                         ],
-                                                        style=vis.border_column,
+                                                        className="dbc",
                                                     ),
-                                                    dbc.Col(
+                                                    style=vis.border_column,
+                                                ),
+                                                dbc.Col(
+                                                    html.Div(
                                                         [
-                                                            html.Div(
-                                                                [
-                                                                    dbc.Label(gs.select_plate),
-                                                                    dcc.Dropdown(id="id-list-plates"),
-                                                                ],
-                                                                className="dbc",
-                                                            )
+                                                            dbc.Label(gs.select_plate),
+                                                            dcc.Dropdown(id="id-list-plates"),
                                                         ],
-                                                        style=vis.border_column,
+                                                        className="dbc",
                                                     ),
-                                                    dbc.Col(
+                                                    style=vis.border_column,
+                                                ),
+                                                dbc.Col(
+                                                    html.Div(
                                                         [
-                                                            html.Div(
-                                                                [
-                                                                    dbc.Label(gs.select_cas),
-                                                                    dcc.Dropdown(id="id-list-cas-numbers"),
-                                                                ],
-                                                                className="dbc",
-                                                            )
+                                                            dbc.Label(gs.select_cas),
+                                                            dcc.Dropdown(id="id-list-cas-numbers"),
                                                         ],
-                                                        style=vis.border_column,
+                                                        className="dbc",
                                                     ),
-                                                ],
-                                                className="g-1",
-                                            ),
-                                            dbc.Row(
-                                                [dcc.Graph("id-experiment-heatmap")],
-                                                className="mb-4 g-0",
-                                                style=vis.border_row,
-                                            ),
-                                        ],
-                                        # keep this at p-1 or 2 so the figure doesn't clamp to the sides of the card
-                                        # I have set the margins on that to 0
-                                        className="p-2",
-                                        style=vis.border_card,
-                                    ),
-                                ],
-                                style=vis.card_shadow,
-                            ),
-                        ],
+                                                    style=vis.border_column,
+                                                ),
+                                            ],
+                                            className="g-1",
+                                        ),
+                                        dbc.Row(
+                                            [dcc.Graph("id-experiment-heatmap")],
+                                            className="mb-4 g-0",
+                                            style=vis.border_row,
+                                        ),
+                                    ],
+                                    # keep this at p-1 or 2 so the figure doesn't clamp to the sides of the card
+                                    # I have set the margins on that to 0
+                                    className="p-2",
+                                    style=vis.border_card,
+                                ),
+                            ],
+                            style=vis.card_shadow,
+                        ),
                         width=6,
                         style=vis.border_column,
                     ),
                     dbc.Col(
-                        [
-                            dbc.Card(
-                                [
-                                    dbc.CardHeader(gs.retention_function, className=vis.top_card_head),
-                                    dbc.CardBody(
-                                        [
-                                            dbc.Row(
-                                                [
-                                                    dbc.Col(
+                        dbc.Card(
+                            [
+                                dbc.CardHeader(gs.retention_function, className=vis.top_card_head),
+                                dbc.CardBody(
+                                    [
+                                        dbc.Row(
+                                            [
+                                                dbc.Col(
+                                                    html.Div(
                                                         [
-                                                            html.Div(
-                                                                [
-                                                                    dbc.Label(gs.select_plate),
-                                                                    dcc.Dropdown(id="id-list-plates-ranking-plot"),
-                                                                ],
-                                                                className="dbc",
-                                                            )
+                                                            dbc.Label(gs.select_plate),
+                                                            dcc.Dropdown(id="id-list-plates-ranking-plot"),
                                                         ],
-                                                        style=vis.border_column,
+                                                        className="dbc",
                                                     ),
-                                                    dbc.Col(
+                                                    style=vis.border_column,
+                                                ),
+                                                dbc.Col(
+                                                    html.Div(
                                                         [
-                                                            html.Div(
-                                                                [
-                                                                    dbc.Label(gs.select_cas),
-                                                                    dcc.Dropdown(id="id-list-cas-numbers-ranking-plot"),
-                                                                ],
-                                                                className="dbc",
-                                                            )
+                                                            dbc.Label(gs.select_cas),
+                                                            dcc.Dropdown(id="id-list-cas-numbers-ranking-plot"),
                                                         ],
-                                                        style=vis.border_column,
+                                                        className="dbc",
                                                     ),
-                                                ],
-                                                className="g-1",
-                                            ),
-                                            dbc.Row(
-                                                [dcc.Graph("id-experiment-ranking-plot")],
-                                                className="mb-4 g-0",
-                                                style=vis.border_row,
-                                            ),
-                                        ],
-                                        # keep this at p-1 or 2 so the figure doesn't clamp to the sides of the card
-                                        # I have set the margins on that to 0
-                                        className="p-2",
-                                        style=vis.border_card,
-                                    ),
-                                ],
-                                style=vis.card_shadow,
-                            )
-                        ],
+                                                    style=vis.border_column,
+                                                ),
+                                            ],
+                                            className="g-1",
+                                        ),
+                                        dbc.Row(
+                                            [dcc.Graph("id-experiment-ranking-plot")],
+                                            className="mb-4 g-0",
+                                            style=vis.border_row,
+                                        ),
+                                    ],
+                                    # keep this at p-1 or 2 so the figure doesn't clamp to the sides of the card
+                                    # I have set the margins on that to 0
+                                    className="p-2",
+                                    style=vis.border_card,
+                                ),
+                            ],
+                            style=vis.card_shadow,
+                        ),
                         width=6,
                         style=vis.border_column,
                     ),

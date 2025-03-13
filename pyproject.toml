@@ -20,7 +20,8 @@ dependencies = [
     "gunicorn",
     "pyyaml",
     "dash_molstar",
-    "plotly-express"
+    "plotly-express",
+    "dash_mantine_components"
 ]
 
 [project.optional-dependencies]

@@ -49,6 +49,10 @@ icon_home = DashIconify(icon="fa-solid:home", width=20)
 icon_upload = DashIconify(icon="fa-solid:upload", width=20)
 # icon_eye_open = DashIconify(icon="mdi-light:eye-outline", width=20)  # mdi:eye #fa6-solid:eye
 # icon_eye_closed = DashIconify(icon="mdi-light:eye-off-outline", width=20)  # mdi:eye #fa6-solid:eye
+icon_info = html.I(
+    DashIconify(icon="fa6-solid:circle-info", height=SMALL, width=SMALL),
+    # style={"color": "var(--bs-info)"}
+)
 
 
 # --------------------
