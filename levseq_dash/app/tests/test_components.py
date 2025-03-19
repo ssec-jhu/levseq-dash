@@ -4,6 +4,7 @@ import dash_molstar
 import pytest
 from dash import html
 
+from levseq_dash.app import column_definitions as cd
 from levseq_dash.app import components, graphs, layout_bars, layout_experiment, layout_landing, layout_upload, utils
 from levseq_dash.app import global_strings as gs
 
@@ -16,7 +17,7 @@ def test_get_top_variant_column_defs(experiment_ep_pcr_with_user_cas):
     df_filtered_with_ratio = utils.calculate_group_mean_ratios_per_cas_and_plate(
         experiment_ep_pcr_with_user_cas.data_df
     )
-    d = components.get_top_variant_column_defs(df_filtered_with_ratio)
+    d = cd.get_top_variant_column_defs(df_filtered_with_ratio)
     assert len(d) == 6
 
 
