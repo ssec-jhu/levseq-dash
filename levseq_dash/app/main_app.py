@@ -7,6 +7,7 @@ from dash import Dash, Input, Output, State, ctx, dcc, html, no_update
 from dash.exceptions import PreventUpdate
 from dash_bootstrap_templates import load_figure_template
 
+from levseq_dash.app import column_definitions as cd
 from levseq_dash.app import (
     components,
     graphs,
@@ -294,7 +295,7 @@ def on_load_experiment_dashboard(pathname, experiment_id):
         # in order to color the fitness ratio I have to calculate the mean of the parents per cas per plate.
         # coloring only works if I add the column
         df_filtered_with_ratio = utils.calculate_group_mean_ratios_per_cas_and_plate(exp.data_df)
-        columnDefs_with_ratio = components.get_top_variant_column_defs(df_filtered_with_ratio)
+        columnDefs_with_ratio = cd.get_top_variant_column_defs(df_filtered_with_ratio)
 
         # creat the ranking plot with default values
         # rank plot uses the ratio data to color
