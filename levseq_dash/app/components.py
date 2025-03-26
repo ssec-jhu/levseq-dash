@@ -37,6 +37,10 @@ def get_table_experiment():
             #     'padding': '5px',
             #     'verticalAlign': 'middle',
             # }
+            "filterParams": {
+                "buttons": ["reset", "apply"],
+                "closeOnApply": True,
+            },
         },
         style={"height": "755px", "width": "100%"},
         dashGridOptions={
@@ -74,6 +78,10 @@ def get_table_all_experiments():
             "wrapHeaderText": True,
             "autoHeaderHeight": True,
             # "flex": 1,  # TODO: remove this after you put fixed width
+            "filterParams": {
+                "buttons": ["reset", "apply"],
+                "closeOnApply": True,
+            },
         },
         # style={"height": "600px", "width": "100%"},
         dashGridOptions={
@@ -104,12 +112,56 @@ def get_table_matched_sequences():
             "wrapHeaderText": True,
             "autoHeaderHeight": True,
             # "flex": 1,  # TODO: remove this after you put fixed width
+            "filterParams": {
+                "buttons": ["reset", "apply"],
+                "closeOnApply": True,
+            },
         },
-        style={"height": "1600px", "width": "100%"},
+        style={"height": vis.seq_match_table_height, "width": "100%"},
         dashGridOptions={
             # Enable multiple selection
-            "rowSelection": "multiple",
-            "suppressRowClickSelection": True,
+            "alwaysShowHorizontalScroll": True,  # TODO: does this work on mac?
+            "rowSelection": "single",
+            # https://ag-grid.com/javascript-data-grid/selection-overview/#cell-text-selection
+            "enableCellTextSelection": True,
+            # "rowHeight": 30,
+            # "pagination": True,
+            # # this will set the number of items per page be a function of the height
+            # # if we load too many rows that are not visible, the graphics is not smart enough
+            # # to hide what is not visible, so it takes longer for the page to load
+            # "paginationAutoPageSize": True,
+        },
+        # className="ag-theme-alpine",
+    )
+
+
+def get_table_matched_sequences_exp_hot_cold_data():
+    """
+    Returns dash ag grid component with settings setup for use to show all experiments
+    """
+    return dag.AgGrid(
+        id="id-table-matched-sequences-exp-hot-cold-data",
+        columnDefs=cd.get_matched_sequences_exp_hot_cold_data_column_defs(),
+        defaultColDef={
+            # do NOT set "flex": 1 in default col def as it overrides all
+            # the column widths
+            "sortable": True,
+            "resizable": True,
+            "filter": True,
+            # Set BOTH items below to True for header to wrap text
+            "wrapHeaderText": True,
+            "autoHeaderHeight": True,
+            # "flex": 1,  # TODO: remove this after you put fixed width
+            "filterParams": {
+                "buttons": ["reset", "apply"],
+                "closeOnApply": True,
+            },
+        },
+        style={"height": "800px", "width": "100%"},
+        dashGridOptions={
+            # Enable multiple selection
+            # "rowSelection": "multiple",
+            # "suppressRowClickSelection": True,
             "animateRows": True,
             # https://ag-grid.com/javascript-data-grid/selection-overview/#cell-text-selection
             "enableCellTextSelection": True,

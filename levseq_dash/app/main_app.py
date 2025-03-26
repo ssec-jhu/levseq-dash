@@ -8,18 +8,17 @@ from dash.exceptions import PreventUpdate
 from dash_bootstrap_templates import load_figure_template
 
 from levseq_dash.app import column_definitions as cd
+from levseq_dash.app import global_strings as gs
 from levseq_dash.app import (
-    components,
     graphs,
     layout_bars,
     layout_experiment,
     layout_landing,
+    layout_matching_sequences,
     layout_upload,
     settings,
     utils,
-    vis,
 )
-from levseq_dash.app import global_strings as gs
 from levseq_dash.app.data_manager import DataManager
 
 # Initialize the app
@@ -68,12 +67,14 @@ def display_page(pathname):
         return layout_experiment.get_experiment_page()
     elif pathname == "/upload":
         return layout_upload.layout
+    elif pathname == "/similar-sequences-in-lab":
+        return layout_matching_sequences.get_seq_align_layout()
     else:
         return html.Div([html.H2("Page not found!")])
 
 
 # -------------------------------
-#   Lab Landing Page (all experiments)
+#   Lab Landing Page (all experiments) related
 # -------------------------------
 @app.callback(
     Output("id-table-all-experiments", "rowData"),
@@ -95,8 +96,36 @@ def load_landing_page(temp_text):
     )
 
 
+@app.callback(
+    Output("id-experiment-selected", "data"),
+    Output("id-button-delete-experiment", "disabled"),
+    Output("id-button-goto-experiment", "disabled"),
+    # Output("id-selected-row-info", "children"),
+    Input("id-table-all-experiments", "selectedRows"),
+    prevent_initial_call=True,
+)
+def update_landing_page_buttons(selected_rows):
+    # Display selected row info
+    if not selected_rows:
+        raise PreventUpdate
+
+    experiment_id = no_update
+    if selected_rows and len(selected_rows) == 1:
+        selected_row_info = f"Selected Row: {selected_rows[0]}"
+        experiment_id = selected_rows[0]["experiment_id"]
+    elif selected_rows and len(selected_rows) > 1:
+        selected_row_info = f"Selected {len(selected_rows)} rows."
+    else:
+        selected_row_info = "No row selected."
+
+    # Manage button states based on number of selected rows
+    delete_btn_disabled = len(selected_rows) == 0 if selected_rows else True
+    show_btn_disabled = not (selected_rows and len(selected_rows) == 1)
+    return experiment_id, delete_btn_disabled, show_btn_disabled  # ,selected_row_info
+
+
 # -------------------------------
-#   Uploading Experiment
+#   Uploading Experiment related
 # -------------------------------
 @app.callback(
     Output("id-list-assay", "options"),
@@ -209,7 +238,7 @@ def on_submit_experiment(
 
 
 # -------------------------------
-#   Experiment Dashboard
+#   Experiment Dashboard related
 # -------------------------------
 @app.callback(
     Output("url", "pathname"),
@@ -271,7 +300,7 @@ def redirect_to_experiment_page(n_clicks):
     State("id-experiment-selected", "data"),
     prevent_initial_call=True,
 )
-def on_load_experiment_dashboard(pathname, experiment_id):
+def load_experiment_page(pathname, experiment_id):
     if pathname == "/experiment":
         exp = data_mgr.get_experiment(experiment_id)
 
@@ -436,34 +465,6 @@ def focus_select_output(selected_rows):
             return sel, foc
 
     raise PreventUpdate
-
-
-@app.callback(
-    Output("id-experiment-selected", "data"),
-    Output("id-button-delete-experiment", "disabled"),
-    Output("id-button-goto-experiment", "disabled"),
-    # Output("id-selected-row-info", "children"),
-    Input("id-table-all-experiments", "selectedRows"),
-    prevent_initial_call=True,
-)
-def update_ui(selected_rows):
-    # Display selected row info
-    if not selected_rows:
-        raise PreventUpdate
-
-    experiment_id = no_update
-    if selected_rows and len(selected_rows) == 1:
-        selected_row_info = f"Selected Row: {selected_rows[0]}"
-        experiment_id = selected_rows[0]["experiment_id"]
-    elif selected_rows and len(selected_rows) > 1:
-        selected_row_info = f"Selected {len(selected_rows)} rows."
-    else:
-        selected_row_info = "No row selected."
-
-    # Manage button states based on number of selected rows
-    delete_btn_disabled = len(selected_rows) == 0 if selected_rows else True
-    show_btn_disabled = not (selected_rows and len(selected_rows) == 1)
-    return experiment_id, delete_btn_disabled, show_btn_disabled  # ,selected_row_info
 
 
 @app.callback(

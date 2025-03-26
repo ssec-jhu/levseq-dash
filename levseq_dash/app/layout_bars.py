@@ -83,6 +83,15 @@ def get_sidebar():
                         href="/upload",
                         className="custom-nav-item",
                     ),
+                    dbc.NavLink(
+                        [
+                            html.Span(vis.icon_sequence, className="custom-nav-icon"),
+                            html.Span("Seq", className="custom-nav-text"),
+                        ],
+                        active="exact",
+                        href="/similar-sequences-in-lab",
+                        className="custom-nav-item",
+                    ),
                 ],
             ),
         ],

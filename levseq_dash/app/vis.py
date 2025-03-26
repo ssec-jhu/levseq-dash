@@ -22,6 +22,13 @@ upload_success = success_style = {
     "borderColor": "green",
 }
 
+# Sequence Match table and the protein viewer need to have close height
+seq_match_table_height = "700px"
+seq_match_protein_viewer_height = "700px"
+seq_match_card_height = (
+    "800px"  # this number must be seq_match_table_height + any text written above the table or viewer
+)
+
 border_row = {"border": "0px solid blue"}
 border_column = {"border": "0px solid red"}
 border_card = {"border": "0px solid cyan"}
@@ -30,11 +37,6 @@ card_shadow = {"box-shadow": "1px 2px 7px 0px grey", "border-radius": "5px"}
 
 top_card_head = "card-title fw-bold custom-card-header"
 top_card_body = "text-primary-emphasis"
-
-# Sequence Match table and the protein viewer need to have close height
-seq_match_table_height = "700px"
-seq_match_protein_viewer_height = "600px"
-
 
 # --------------------
 #   Icons
