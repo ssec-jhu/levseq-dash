@@ -101,7 +101,8 @@ icon_sequence = DashIconify(icon="fa-solid:dna", width=MEDIUM)
 #             text_color = "black"
 #         styles.append(
 #             {
-#                 "condition": f"params.value >= {ratio_min}" + (f" && params.value < {ratio_max}" if i < n_bins else ""),
+#                 "condition": f"params.value >= {ratio_min}" +
+#                              (f" && params.value < {ratio_max}" if i < n_bins else ""),
 #                 "style": {
 #                     "background": f"""
 #                         linear-gradient(90deg,
