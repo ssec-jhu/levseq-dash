@@ -31,6 +31,11 @@ card_shadow = {"box-shadow": "1px 2px 7px 0px grey", "border-radius": "5px"}
 top_card_head = "card-title fw-bold custom-card-header"
 top_card_body = "text-primary-emphasis"
 
+# Sequence Match table and the protein viewer need to have close height
+seq_match_table_height = "700px"
+seq_match_protein_viewer_height = "600px"
+
+
 # --------------------
 #   Icons
 # --------------------
@@ -52,6 +57,7 @@ icon_info = html.I(
     DashIconify(icon="fa6-solid:circle-info", height=SMALL, width=SMALL),
     # style={"color": "var(--bs-info)"}
 )
+icon_sequence = DashIconify(icon="fa-solid:dna", width=MEDIUM)
 
 
 # --------------------

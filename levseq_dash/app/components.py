@@ -7,8 +7,10 @@ from levseq_dash.app import column_definitions as cd
 from levseq_dash.app import vis
 
 
-def get_label(string):
-    return dbc.Label(string, width=3, className="fs-6")
+def get_label_fixed_for_form(string):
+    # Create a horizontal form by using the Row component. Be sure to specify width on the Label component,
+    # and wrap your inputs in Col components.
+    return dbc.Label(string, width=2, className="fw-bolder fs-6")
 
 
 def get_table_experiment():

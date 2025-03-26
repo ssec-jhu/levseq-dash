@@ -15,7 +15,7 @@ def get_form():
             html.Br(),
             dbc.Row(
                 [
-                    components.get_label(gs.experiment_name),
+                    components.get_label_fixed_for_form(gs.experiment_name),
                     dbc.Col(
                         dbc.Input(
                             type="text",
@@ -29,7 +29,7 @@ def get_form():
             ),
             dbc.Row(
                 [
-                    components.get_label(gs.experiment_date),
+                    components.get_label_fixed_for_form(gs.experiment_date),
                     dbc.Col(
                         [
                             dcc.DatePickerSingle(
@@ -46,7 +46,7 @@ def get_form():
             ),
             dbc.Row(
                 [
-                    components.get_label(gs.substrate_cas),
+                    components.get_label_fixed_for_form(gs.substrate_cas),
                     dbc.Col(
                         dbc.Input(
                             type="text",
@@ -61,7 +61,7 @@ def get_form():
             ),
             dbc.Row(
                 [
-                    components.get_label(gs.product_cas),
+                    components.get_label_fixed_for_form(gs.product_cas),
                     dbc.Col(
                         dbc.Input(
                             type="text",
@@ -75,7 +75,7 @@ def get_form():
             ),
             dbc.Row(
                 [
-                    components.get_label(gs.assay),
+                    components.get_label_fixed_for_form(gs.assay),
                     dbc.Col(
                         [
                             # html.Div(
@@ -108,7 +108,7 @@ def get_form():
             ),
             dbc.Row(
                 [
-                    components.get_label(gs.tech),
+                    components.get_label_fixed_for_form(gs.tech),
                     dbc.Col(
                         [
                             html.Div(

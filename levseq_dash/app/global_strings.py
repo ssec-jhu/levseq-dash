@@ -50,6 +50,10 @@ select_plate = "Select Plate ID"
 select_cas = "Select CAS number"
 select_property = "Select Property"
 
+button_sequence_matching = "Find Matching Sequences"
+sequence_alignment_blurb = (
+    "Lots of good stuff to write here about the algorithms being used: BLOSOM matrix and blastp algorithm ... !"
+)
 # -----------------------------
 #   DO NOT CHANGE PAST HERE
 # -----------------------------
