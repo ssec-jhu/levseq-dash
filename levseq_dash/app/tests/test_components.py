@@ -10,7 +10,7 @@ from levseq_dash.app import global_strings as gs
 
 
 def test_get_label():
-    assert isinstance(components.get_label("random_string"), dbc.Label)
+    assert isinstance(components.get_label_fixed_for_form("random_string"), dbc.Label)
 
 
 def test_get_top_variant_column_defs(experiment_ep_pcr_with_user_cas):
