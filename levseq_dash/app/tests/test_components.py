@@ -33,12 +33,12 @@ def test_get_top_variant_column_defs(experiment_ep_pcr_with_user_cas):
 
 def test_get_matched_sequences_column_defs():
     d = cd.get_matched_sequences_column_defs()
-    assert len(d) == 18
+    assert len(d) == 19
 
 
 def test_get_matched_sequences_exp_hot_cold_data_column_defs():
     d = cd.get_matched_sequences_exp_hot_cold_data_column_defs()
-    assert len(d) == 7
+    assert len(d) == 8
 
 
 # def test_get_all_experiments_column_defs(experiment_ep_pcr_with_user_cas):

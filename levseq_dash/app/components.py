@@ -116,6 +116,15 @@ def get_table_matched_sequences():
                 "buttons": ["reset", "apply"],
                 "closeOnApply": True,
             },
+            "cellStyle": {
+                "whiteSpace": "normal",
+                "wordBreak": "break-word",
+                "fontSize": "12px",
+                # 'padding': '5px',
+                # 'verticalAlign': 'middle',
+            },
+            "autoHeight": True,  # Adjusts row height to fit wrapped text
+            "tooltipComponent": "agTooltipComponent",
         },
         style={"height": vis.seq_match_table_height, "width": "100%"},
         dashGridOptions={
@@ -124,8 +133,8 @@ def get_table_matched_sequences():
             "rowSelection": "single",
             # https://ag-grid.com/javascript-data-grid/selection-overview/#cell-text-selection
             "enableCellTextSelection": True,
-            # "rowHeight": 30,
-            # "pagination": True,
+            "rowHeight": 30,  # TODO: is this overwritten by the alignnmnet width
+            "pagination": True,
             # # this will set the number of items per page be a function of the height
             # # if we load too many rows that are not visible, the graphics is not smart enough
             # # to hide what is not visible, so it takes longer for the page to load
@@ -166,7 +175,7 @@ def get_table_matched_sequences_exp_hot_cold_data():
             # https://ag-grid.com/javascript-data-grid/selection-overview/#cell-text-selection
             "enableCellTextSelection": True,
             "rowHeight": 30,
-            # "pagination": True,
+            "pagination": True,
             # # this will set the number of items per page be a function of the height
             # # if we load too many rows that are not visible, the graphics is not smart enough
             # # to hide what is not visible, so it takes longer for the page to load

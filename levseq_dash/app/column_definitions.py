@@ -10,38 +10,24 @@ def get_top_variant_column_defs(df):
         {
             "field": gs.c_cas,
             "headerName": "CAS #",
-            "filterParams": {
-                "buttons": ["reset", "apply"],
-                "closeOnApply": True,
-            },
             # flex allows the resizing to be dynamic
             "flex": 2,
         },
         {
             "field": gs.c_plate,
+            # mouse hover over the truncated cell will show the contents of the cell
             "tooltipField": gs.c_plate,
-            "filterParams": {
-                "buttons": ["reset", "apply"],
-                "closeOnApply": True,
-            },
             "flex": 2,
         },
         {
             "field": gs.c_well,
-            "filterParams": {
-                "buttons": ["reset", "apply"],
-                "closeOnApply": True,
-            },
             "width": 80,
         },
         {
             "field": gs.c_substitutions,
+            # mouse hover over the truncated cell will show the contents of the cell
             "tooltipField": gs.c_substitutions,
             "headerName": "Sub",
-            "filterParams": {
-                "buttons": ["reset", "apply"],
-                "closeOnApply": True,
-            },
             "flex": 2,
         },
         {
@@ -49,20 +35,12 @@ def get_top_variant_column_defs(df):
             "headerName": "Fitness",
             "initialSort": "desc",
             "filter": "agNumberColumnFilter",
-            "filterParams": {
-                "buttons": ["reset", "apply"],
-                "closeOnApply": True,
-            },
             "flex": 2,
             # "cellStyle": {"styleConditions": vis.data_bars_colorscale(df, gs.c_fitness_value)},
         },
         {
             "field": "ratio",
             "filter": "agNumberColumnFilter",
-            "filterParams": {
-                "buttons": ["reset", "apply"],
-                "closeOnApply": True,
-            },
             "flex": 2,
             "cellStyle": {"styleConditions": vis.data_bars_group_mean_colorscale(df)},
         },
@@ -144,17 +122,24 @@ def get_matched_sequences_column_defs():
         #     "width": 30,
         # },
         {
-            "field": "id",
+            "field": gs.cc_experiment_id,
             "pinned": "left",  # pinned the column to the left for all results
             "headerName": "ID",
             # "flex": 2,
             "width": 70,
         },
         {
-            "field": "experiment_name",
-            "headerName": "Name",
+            "field": "cas_number",
+            "headerName": "CAS",
+            "pinned": "left",
             # "flex": 3,
-            "width": 150,
+            "width": 120,
+        },
+        {
+            "field": "experiment_name",
+            "headerName": "Exp Name",
+            # "flex": 3,
+            "width": 130,
         },
         {
             "field": "alignment_score",
@@ -185,50 +170,21 @@ def get_matched_sequences_column_defs():
         {
             "field": "substrate_cas_number",
             "headerName": "Sub CAS",
-            "autoHeight": True,  # Adjusts row height to fit wrapped text
-            # TODO: should I remove the cell style and add tooltip? do we need to see the whole
-            #  list or do we just want it to be there
-            "cellStyle": {
-                "whiteSpace": "normal",
-                "wordBreak": "break-word",
-                # "lineHeight": "1.2"
-            },
             "width": 130,
             # "tooltipField": gs.snpt_col_sample_description,
         },
         {
             "field": "product_cas_number",
             "headerName": "Prod CAS",
-            # TODO: should I remove the cell style and add tooltip? do we need to see the whole
-            #  list or do we just want it to be there
-            "autoHeight": True,
-            "cellStyle": {
-                "whiteSpace": "normal",
-                "wordBreak": "break-word",
-                # "lineHeight": "1.2"
-            },
             "width": 130,
         },
         {
             "field": "assay",
-            # TODO: should I remove the cell style and add tooltip? do we need to see the whole
-            #  list or do we just want it to be there
-            "autoHeight": True,  # Adjusts row height to fit wrapped text
-            "cellStyle": {
-                "whiteSpace": "normal",
-                "wordBreak": "break-word",
-                # "lineHeight": "1.2"
-            },
             "width": 130,
         },
         {
             "field": "mutagenesis_method",
             "headerName": "Method",
-            "autoHeight": True,  # Adjusts row height to fit wrapped text
-            "cellStyle": {
-                "whiteSpace": "normal",
-                "wordBreak": "break-word",
-            },
             "headerTooltip": "Mutagenesis Method",
             # this will shorten the length of the string to SSM or epPCR
             # comment this line if you want the original value displayed
@@ -237,60 +193,55 @@ def get_matched_sequences_column_defs():
         },
         {
             "field": "plates_count",
-            "headerName": "#Plates",
+            "headerName": "#plates",
             "filter": "agNumberColumnFilter",
             "width": 100,
         },
         {
             "field": "identities",
-            "filter": "agNumberColumnFilter",
             "headerName": "# matches",
+            "filter": "agNumberColumnFilter",
             "width": 110,
         },
         {
             "field": "gaps",
+            "headerName": "#gaps",
             "filter": "agNumberColumnFilter",
             "width": 90,
         },
         {
             "field": "mismatches",
+            "headerName": "#matches",
             "filter": "agNumberColumnFilter",
             "width": 125,
         },
         {
-            "field": "hot_n_str",
-            "headerName": "Hot Indices",
-            "autoHeight": True,  # Makes the row height adjust to content
-            "cellStyle": {
-                "whiteSpace": "pre-wrap",
-                # "fontFamily": "monospace",
-                # "lineHeight": "1.2"
-            },
+            "field": gs.cc_hot_residue_indices_per_cas,
+            "headerName": "Hot Residue/CAS",
             "width": 200,
         },
         {
-            "field": "cold_n_str",
-            "headerName": "Cold Indices",
-            "autoHeight": True,  # Makes the row height adjust to content
-            "cellStyle": {
-                "whiteSpace": "pre-wrap",
-                # "fontFamily": "monospace",
-                # "lineHeight": "1.2"
-            },
+            "field": gs.cc_cold_residue_indices_per_cas,
+            "headerName": "Cold Residue/CAS",
+            "width": 200,
+        },
+        # {
+        #     "field": gs.c_substitutions,
+        #     "headerName": "AA Sub/CAS",
+        #     "autoHeight": True,  # Makes the row height adjust to content
+        #     # "cellStyle": {
+        #     #     "whiteSpace": "pre-wrap",
+        #     #     # "lineHeight": "1.2"
+        #     # },
+        #     "width": 200,
+        # },
+        {
+            "field": gs.cc_seq_alignment_mismatches,
+            "headerName": "Alignment Mismatches",
             "width": 200,
         },
         {
-            "field": "mutations",
-            "autoHeight": True,  # Makes the row height adjust to content
-            "cellStyle": {
-                "whiteSpace": "pre-wrap",
-                # "fontFamily": "monospace",
-                # "lineHeight": "1.2"
-            },
-            "width": 200,
-        },
-        {
-            "field": "alignnment",
+            "field": gs.cc_seq_alignment,
             "autoHeight": True,  # Makes the row height adjust to content
             "cellRenderer": "tempDebug",
             "cellStyle": {
@@ -302,34 +253,6 @@ def get_matched_sequences_column_defs():
             },
             "width": 1500,
         },
-        # {
-        #     "field": "coordinates",
-        #     "filterParams": {
-        #         "buttons": ["reset", "apply"],
-        #         "closeOnApply": True,
-        #     },
-        #     "width": 150,
-        #     "cellRenderer": "addLineBreaksOnArrayRow",
-        #     "autoHeight": True,
-        # },
-        # {
-        #     "field": "alignment",
-        #     "filterParams": {
-        #         "buttons": ["reset", "apply"],
-        #         "closeOnApply": True,
-        #     },
-        #     # "width": 1100, # for two line mode
-        #     "width": 700,
-        #     "cellRenderer": "addLineBreaksOnNewLines",
-        #     "autoHeight": True,
-        # },
-        # {
-        #     "field": "indices",
-        #     "filterParams": {"buttons": ["reset", "apply"], "closeOnApply": True, },
-        #     "width": 2000,
-        #     'cellRenderer': "addLineBreaksOnArrayRow",
-        #     "autoHeight": True,
-        # },
     ]
 
 
@@ -345,66 +268,45 @@ def get_matched_sequences_exp_hot_cold_data_column_defs():
         #     "width": 30,
         # },
         {
-            "field": "id",
-            "headerName": "ID",
-            "filterParams": {
-                "buttons": ["reset", "apply"],
-                "closeOnApply": True,
-            },
-            "width": 100,
+            "field": "experiment_id",
+            "headerName": "Experiment ID",
+            "width": 150,
         },
         {
             "field": "variant_type",
-            "filterParams": {
-                "buttons": ["reset", "apply"],
-                "closeOnApply": True,
-            },
             "width": 150,
         },
         {
             "field": gs.c_cas,
             "headerName": "CAS #",
-            "filterParams": {
-                "buttons": ["reset", "apply"],
-                "closeOnApply": True,
-            },
             # flex allows the resizing to be dynamic
             "flex": 2,
         },
         {
             "field": gs.c_plate,
-            "filterParams": {
-                "buttons": ["reset", "apply"],
-                "closeOnApply": True,
-            },
             "flex": 2,
         },
         {
             "field": gs.c_well,
-            "filterParams": {
-                "buttons": ["reset", "apply"],
-                "closeOnApply": True,
-            },
             "width": 80,
         },
         {
             "field": gs.c_substitutions,
-            "headerName": "Sub",
-            "filterParams": {
-                "buttons": ["reset", "apply"],
-                "closeOnApply": True,
-            },
+            "headerName": "AA Substitutions",
             "flex": 2,
         },
         {
             "field": gs.c_fitness_value,
             "headerName": "Fitness",
+            # "initialSort": "desc",
+            "filter": "agNumberColumnFilter",
+            "flex": 2,
+            # "cellStyle": {"styleConditions": vis.data_bars_colorscale(df, gs.c_fitness_value)},
+        },
+        {
+            "field": "ratio",
             "initialSort": "desc",
             "filter": "agNumberColumnFilter",
-            "filterParams": {
-                "buttons": ["reset", "apply"],
-                "closeOnApply": True,
-            },
             "flex": 2,
             # "cellStyle": {"styleConditions": vis.data_bars_colorscale(df, gs.c_fitness_value)},
         },

@@ -1,5 +1,5 @@
 import dash_bootstrap_components as dbc
-from dash import html
+from dash import dcc, html
 
 from levseq_dash.app import components, vis
 from levseq_dash.app import global_strings as gs
@@ -113,6 +113,7 @@ def get_seq_align_layout():
                                             # TODO: maybe make this an html.P
                                             html.Br(),
                                             html.H5(id="id-div-matched-sequences-info"),
+                                            dcc.Markdown(id="id-div-matched-sequences-notes"),
                                             html.Br(),
                                             html.Div(
                                                 [components.get_table_matched_sequences()],
@@ -142,8 +143,9 @@ def get_seq_align_layout():
                                     dbc.CardBody(
                                         [
                                             html.Br(),
-                                            html.H5(
-                                                id="id-div-selected-matched-sequence-info", style={"whiteSpace": "pre"}
+                                            dcc.Markdown(
+                                                id="id-div-selected-matched-sequence-info",
+                                                # style={"whiteSpace": "pre"}
                                             ),
                                             html.Br(),
                                             html.Div(id="id-viewer-temp"),

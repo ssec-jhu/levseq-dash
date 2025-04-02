@@ -95,7 +95,7 @@ def get_alignments(query_sequence, threshold, targets: dict):
                     {
                         "experiment_id": target_exp_id,  # this should be an id
                         "sequence": target_exp_sequence,
-                        "alignment": alignment_str,
+                        "sequence_alignment": alignment_str,
                         "alignment_score": alignment.score,
                         # "coordinates": alignment.coordinates,
                         "norm_score": norm_score_ratio,
