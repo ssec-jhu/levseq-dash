@@ -243,7 +243,7 @@ def get_matched_sequences_column_defs():
         {
             "field": gs.cc_seq_alignment,
             "autoHeight": True,  # Makes the row height adjust to content
-            "cellRenderer": "tempDebug",
+            "cellRenderer": "seqAlignmentVis",
             "cellStyle": {
                 "whiteSpace": "pre-wrap",
                 "fontFamily": "monospace",
