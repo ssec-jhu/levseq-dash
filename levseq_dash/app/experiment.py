@@ -162,9 +162,6 @@ class Experiment:
             n: top N that we want to extract
         """
         if n > 0:
-            hot_n = pd.DataFrame()
-            cold_n = pd.DataFrame()
-
             # calculate the experiments group mean and ratio values
             # ratio is determined within a cas+plate combo
             df = utils.calculate_group_mean_ratios_per_cas_and_plate(self.data_df)
@@ -183,6 +180,8 @@ class Experiment:
             # and drop rows where column 'F' has NaN values
             df = df.dropna(subset=[gs.c_fitness_value])
 
+            hot_n = pd.DataFrame()
+            cold_n = pd.DataFrame()
             for cas_number in self.unique_cas_in_data:
                 for plate_number in self.plates:
                     # for this cas number and this plate of the experiment sorted by fitness values...
@@ -194,18 +193,18 @@ class Experiment:
                     df_hot_n = df_per_cas_plate.head(n)
                     df_cold_n = df_per_cas_plate.tail(n)
 
-                    # concatenate to previous results
+                    # ... concatenate to previous results
                     hot_n = pd.concat([hot_n, df_hot_n])
                     cold_n = pd.concat([cold_n, df_cold_n])
 
-            def group_by_cas_and_extract_substitution_indices(df_input, new_column_name):
+            def extract_substitution_indices_per_cas(df, new_column_name):
                 """
                 This is an internal python function used only below. The function extracts the substitution indices
                 of the dataframe input grouped by the CAS numbers for te experiment
                 """
                 df_result = (
                     # group by cas
-                    df_input.groupby(gs.c_cas)[gs.c_substitutions]
+                    df.groupby(gs.c_cas)[gs.c_substitutions]
                     # and extract the unique indices form the substitutions column
                     # ...sort it as well
                     .apply(lambda x: sorted(x.str.extractall(r"(\d+)")[0].unique().tolist(), key=int))
@@ -220,21 +219,14 @@ class Experiment:
                 return df_result
 
             # extract indices per CAS
-            hot_per_cas = group_by_cas_and_extract_substitution_indices(
-                df_input=hot_n, new_column_name=gs.cc_hot_residue_indices_per_cas
-            )
-            cold_per_cas = group_by_cas_and_extract_substitution_indices(
-                df_input=cold_n, new_column_name=gs.cc_cold_residue_indices_per_cas
-            )
+            hot_per_cas = extract_substitution_indices_per_cas(df=hot_n, new_column_name=gs.cc_hot_indices_per_cas)
+            cold_per_cas = extract_substitution_indices_per_cas(df=cold_n, new_column_name=gs.cc_cold_indices_per_cas)
 
             # merge result columns, all rows are exactly the same because the original data was the same
             hot_cold_residue_per_cas = hot_per_cas.merge(cold_per_cas, how="left")
 
             # TODO: Note:These lines may be added/deleted in the future, keep an eye on it
-            sub_per_cas = group_by_cas_and_extract_substitution_indices(
-                df_input=df,  # xtract from the original
-                new_column_name=gs.cc_exp_residue_per_cas,
-            )
+            sub_per_cas = extract_substitution_indices_per_cas(df=df, new_column_name=gs.cc_exp_residue_per_cas)
             hot_cold_residue_per_cas = hot_cold_residue_per_cas.merge(sub_per_cas, how="left")
 
             # add a column to identify results
