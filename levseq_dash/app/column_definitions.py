@@ -216,12 +216,12 @@ def get_matched_sequences_column_defs():
             "width": 125,
         },
         {
-            "field": gs.cc_hot_residue_indices_per_cas,
+            "field": gs.cc_hot_indices_per_cas,
             "headerName": "Hot Residue/CAS",
             "width": 200,
         },
         {
-            "field": gs.cc_cold_residue_indices_per_cas,
+            "field": gs.cc_cold_indices_per_cas,
             "headerName": "Cold Residue/CAS",
             "width": 200,
         },
@@ -273,7 +273,7 @@ def get_matched_sequences_exp_hot_cold_data_column_defs():
             "width": 150,
         },
         {
-            "field": "variant_type",
+            "field": gs.cc_hot_cold_type,
             "width": 150,
         },
         {
