@@ -93,7 +93,7 @@ dagcomponentfuncs.seqAlignmentVis = function(params) {
           // Store row number and index for all rows
           results.push({row: i, index: j, type: 'M'});     //  target
           results.push({row: i + 1, index: j, type: 'M'}); // pipes
-          results.push({row: i + 2, index: j, type: 'M'}); // // hot and cold row
+          //results.push({row: i + 2, index: j, type: 'M'}); // // hot and cold row
           results.push({row: i + 3, index: j, type: 'M'}); // query
         }
       }
@@ -103,21 +103,21 @@ dagcomponentfuncs.seqAlignmentVis = function(params) {
           // Store row number and index for all rows
           results.push({row: i, index: j, type: 'H'});     // target
           results.push({row: i + 1, index: j, type: 'H'}); // pipes row
-          results.push({row: i + 2, index: j, type: 'H'}); // hot and cold row
+          //results.push({row: i + 2, index: j, type: 'H'}); // hot and cold row
           results.push({row: i + 3, index: j});           // query
         }
         if (hot_cold[j] === 'C') {
           // Store row number and index for all three rows
           results.push({row: i, index: j, type: 'C'});     // target
           results.push({row: i + 1, index: j, type: 'C'}); // pipes
-          results.push({row: i + 2, index: j, type: 'C'}); // hot and cold row
+          //results.push({row: i + 2, index: j, type: 'C'}); // hot and cold row
           results.push({row: i + 3, index: j});           //query
         }
         if (hot_cold[j] === 'B') {
           // Store row number and index for all three rows
           results.push({row: i, index: j, type: 'B'});       // target
           results.push({row: i + 1, index: j, type: 'B'}); // pipes
-          results.push({row: i + 2, index: j, type: 'B'}); // hot and cold row
+          //results.push({row: i + 2, index: j, type: 'B'}); // hot and cold row
           results.push({row: i + 3, index: j});           //query
         }
 
@@ -125,8 +125,10 @@ dagcomponentfuncs.seqAlignmentVis = function(params) {
     }
     //console.log(results)
 
-    // remove the H C line, just use it for coloring purposes
-    //lines.splice(2, 1);
+    // This code removes the H C B line
+    // comment below  to see H C B for debugging
+    // and uncomment the H C B results.push above
+    lines.splice(2, 1);
 
     return React.createElement(
         'div',
@@ -159,7 +161,7 @@ dagcomponentfuncs.seqAlignmentVis = function(params) {
             if (isCold) {
               custom_style = {
                 style: {
-                  backgroundColor: '#e0eafd',
+                  backgroundColor: '#d0ddfa',
                   color: 'black',
                 },
               };
