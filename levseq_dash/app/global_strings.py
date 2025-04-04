@@ -64,8 +64,8 @@ seq_align_form_input_sequence_default = (
 seq_align_form_placeholder = "Enter your query sequence here."
 seq_align_form_input = "Query Sequence"
 seq_align_form_threshold = "Threshold"
-seq_align_form_threshold_default = "0.5"
-seq_align_form_hot_cold = "# Hot&Cold to extract"
+seq_align_form_threshold_default = "0.8"
+seq_align_form_hot_cold = "# Hot/Cold to extract"
 seq_align_form_hot_cold_n = "2"
 seq_align_form_button_sequence_matching = "Find Matching Sequences"
 

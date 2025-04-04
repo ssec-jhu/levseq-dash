@@ -108,10 +108,10 @@ def get_seq_align_layout():
                         [
                             dbc.Card(
                                 [
+                                    dbc.CardHeader("Matched Experiments"),
                                     dbc.CardBody(
                                         [
                                             # TODO: maybe make this an html.P
-                                            html.Br(),
                                             html.H5(id="id-div-matched-sequences-info"),
                                             dcc.Markdown(id="id-div-matched-sequences-notes"),
                                             html.Br(),
@@ -140,6 +140,7 @@ def get_seq_align_layout():
                         [
                             dbc.Card(
                                 [
+                                    dbc.CardHeader("Visualize Selected Experiment"),
                                     dbc.CardBody(
                                         [
                                             html.Br(),

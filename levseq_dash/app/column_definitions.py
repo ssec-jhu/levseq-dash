@@ -189,13 +189,13 @@ def get_matched_sequences_column_defs():
             # this will shorten the length of the string to SSM or epPCR
             # comment this line if you want the original value displayed
             "valueFormatter": {"function": "shortenMutagenesisMethod(params.value)"},
-            "width": 120,
+            "width": 100,
         },
         {
             "field": "plates_count",
-            "headerName": "#plates",
+            "headerName": "# plates",
             "filter": "agNumberColumnFilter",
-            "width": 100,
+            "width": 90,
         },
         {
             "field": "identities",
@@ -205,25 +205,25 @@ def get_matched_sequences_column_defs():
         },
         {
             "field": "gaps",
-            "headerName": "#gaps",
+            "headerName": "# gaps",
             "filter": "agNumberColumnFilter",
-            "width": 90,
+            "width": 80,
         },
         {
             "field": "mismatches",
-            "headerName": "#matches",
+            "headerName": "# mismatches",
             "filter": "agNumberColumnFilter",
-            "width": 125,
+            "width": 127,
         },
         {
             "field": gs.cc_hot_indices_per_cas,
             "headerName": "Hot Residue/CAS",
-            "width": 200,
+            "width": 250,
         },
         {
             "field": gs.cc_cold_indices_per_cas,
             "headerName": "Cold Residue/CAS",
-            "width": 200,
+            "width": 250,
         },
         # {
         #     "field": gs.c_substitutions,
