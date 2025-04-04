@@ -1,7 +1,13 @@
+import ast
+
 import pandas as pd
 import plotly_express as px
 from dash import html
 from dash_iconify import DashIconify
+from dash_molstar.utils import molstar_helper
+from dash_molstar.utils.representations import Representation
+
+from levseq_dash.app import global_strings as gs
 
 # --------------------
 #   Inline styles
@@ -23,10 +29,10 @@ upload_success = success_style = {
 }
 
 # Sequence Match table and the protein viewer need to have close height
-seq_match_table_height = "700px"
+seq_match_table_height = "650px"
 seq_match_protein_viewer_height = "700px"
 seq_match_card_height = (
-    "800px"  # this number must be seq_match_table_height + any text written above the table or viewer
+    "850px"  # this number must be seq_match_table_height + any text written above the table or viewer
 )
 
 border_row = {"border": "0px solid blue"}
@@ -178,3 +184,62 @@ def data_bars_group_mean_colorscale(
         )
 
     return styles
+
+
+def get_molstar_rendered_components(hot_residue_indices_list, cold_residue_indices_list, substitution_residue_list):
+    mismatch_index_list = list(map(int, ast.literal_eval(substitution_residue_list)))
+    hs = list(map(int, ast.literal_eval(hot_residue_indices_list)))
+    cs = list(map(int, ast.literal_eval(cold_residue_indices_list)))
+
+    both_hs_and_cs = list(set(hs).intersection(set(cs)))
+    hs_only = [item for item in hs if item not in both_hs_and_cs]
+    cs_only = [item for item in cs if item not in both_hs_and_cs]
+
+    # make the representations
+    rep_cartoon_gray = Representation(type="cartoon", color="uniform")
+    rep_cartoon_gray.set_type_params({"alpha": 0.5})
+
+    rep_hot = Representation(type="cartoon", color="uniform", size="uniform")
+    rep_hot.set_color_params({"value": 0xC41E3A})
+    rep_hot.set_size_params({"value": 1.15})
+
+    rep_cold = Representation(type="cartoon", color="uniform", size="uniform")
+    rep_cold.set_color_params({"value": 0x0047AB})
+    rep_cold.set_size_params({"value": 1.5})
+
+    rep_hot_cold = Representation(type="cartoon", color="uniform", size="uniform")
+    rep_hot_cold.set_color_params({"value": 0xB57EDC})
+    rep_hot_cold.set_size_params({"value": 1.5})
+
+    rep_mutation = Representation(type="ball-and-stick")
+
+    main_chain = molstar_helper.get_targets(chain="A")
+    hot_residue = molstar_helper.get_targets(chain="A", residue=hs_only)
+    # analyse = molstar_helper.get_focus(hot_residue, analyse=True)
+    analyse = molstar_helper.get_focus(main_chain, analyse=False)
+    cold_residue = molstar_helper.get_targets(chain="A", residue=cs_only)
+    both_hot_and_cold_residue = molstar_helper.get_targets(chain="A", residue=both_hs_and_cs)
+    mutation_residue = molstar_helper.get_targets(chain="A", residue=mismatch_index_list)
+
+    component_main_chain = molstar_helper.create_component(
+        label="main", targets=main_chain, representation=rep_cartoon_gray
+    )
+    component_hot_residue = molstar_helper.create_component(
+        label=gs.cc_hot_indices_per_cas, targets=hot_residue, representation=rep_hot
+    )
+    component_cold_residue = molstar_helper.create_component(
+        label=gs.cc_cold_indices_per_cas, targets=cold_residue, representation=rep_cold
+    )
+    component_both_residue = molstar_helper.create_component(
+        label=gs.cc_hot_and_cold_indices_per_cas, targets=both_hot_and_cold_residue, representation=rep_hot_cold
+    )
+    component_mutation_residue = molstar_helper.create_component(
+        label=gs.c_substitutions, targets=mutation_residue, representation=rep_mutation
+    )
+    return [
+        component_main_chain,
+        component_hot_residue,
+        component_cold_residue,
+        component_both_residue,
+        component_mutation_residue,
+    ]
