@@ -3,9 +3,14 @@ import pytest
 
 from levseq_dash.app import utils
 
+num_samples = 12  # change this if more data is added
 
-def test_db_load(dbmanager_read_all_from_file):
-    assert len(dbmanager_read_all_from_file.experiments_dict) == 6
+
+def test_db_load_examples(dbmanager_read_all_from_file):
+    assert len(dbmanager_read_all_from_file.experiments_dict) == num_samples
+
+
+def test_db_load_assay(dbmanager_read_all_from_file):
     assert len(dbmanager_read_all_from_file.assay_list) == 24
 
 
@@ -14,16 +19,16 @@ def test_db_load(dbmanager_read_all_from_file):
     [0, 1, 2, 3, 4, 5],
 )
 def test_db_delete(dbmanager_read_all_from_file, index):
-    assert len(dbmanager_read_all_from_file.experiments_dict) == 6
+    assert len(dbmanager_read_all_from_file.experiments_dict) == num_samples
     assert dbmanager_read_all_from_file.delete_experiment(index)
-    assert len(dbmanager_read_all_from_file.experiments_dict) == 5
+    assert len(dbmanager_read_all_from_file.experiments_dict) == num_samples - 1
 
 
 def test_db_get_lab_experiments_with_meta_data_general(dbmanager_read_all_from_file):
     data_list_of_dict = dbmanager_read_all_from_file.get_lab_experiments_with_meta_data()
-    assert len(data_list_of_dict) == 6
+    assert len(data_list_of_dict) == num_samples
     df = pd.DataFrame.from_records(data_list_of_dict)
-    assert df.shape[0] == 6
+    assert df.shape[0] == num_samples
     assert df.shape[1] == 13
 
 
