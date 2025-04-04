@@ -187,31 +187,41 @@ def data_bars_group_mean_colorscale(
 
 
 def get_molstar_rendered_components(hot_residue_indices_list, cold_residue_indices_list, substitution_residue_list):
-    mismatch_index_list = list(map(int, ast.literal_eval(substitution_residue_list)))
-    hs = list(map(int, ast.literal_eval(hot_residue_indices_list)))
-    cs = list(map(int, ast.literal_eval(cold_residue_indices_list)))
+    """
+    Generate Dash Molstar components for each of the  list of indices
+    """
 
-    both_hs_and_cs = list(set(hs).intersection(set(cs)))
-    hs_only = [item for item in hs if item not in both_hs_and_cs]
-    cs_only = [item for item in cs if item not in both_hs_and_cs]
+    mismatch_residues = list(map(int, ast.literal_eval(substitution_residue_list)))
+    hot_residues = list(map(int, ast.literal_eval(hot_residue_indices_list)))
+    cold_residues = list(map(int, ast.literal_eval(cold_residue_indices_list)))
+
+    # extract the residues that are both in hot and cold groups and isolate the others out
+    both_hs_and_cs = list(set(hot_residues).intersection(set(cold_residues)))
+    hs_only = [item for item in hot_residues if item not in both_hs_and_cs]
+    cs_only = [item for item in cold_residues if item not in both_hs_and_cs]
 
     # make the representations
+    # main chain
     rep_cartoon_gray = Representation(type="cartoon", color="uniform")
     rep_cartoon_gray.set_type_params({"alpha": 0.5})
 
+    # hot spots
     rep_hot = Representation(type="cartoon", color="uniform", size="uniform")
     rep_hot.set_color_params({"value": 0xC41E3A})
     rep_hot.set_size_params({"value": 1.15})
 
+    # cold spots
     rep_cold = Representation(type="cartoon", color="uniform", size="uniform")
     rep_cold.set_color_params({"value": 0x0047AB})
     rep_cold.set_size_params({"value": 1.5})
 
+    # both hot and cold
     rep_hot_cold = Representation(type="cartoon", color="uniform", size="uniform")
     rep_hot_cold.set_color_params({"value": 0xB57EDC})
     rep_hot_cold.set_size_params({"value": 1.5})
 
-    rep_mutation = Representation(type="ball-and-stick")
+    # mismatches
+    rep_mismatches = Representation(type="ball-and-stick")
 
     main_chain = molstar_helper.get_targets(chain="A")
     hot_residue = molstar_helper.get_targets(chain="A", residue=hs_only)
@@ -219,7 +229,7 @@ def get_molstar_rendered_components(hot_residue_indices_list, cold_residue_indic
     analyse = molstar_helper.get_focus(main_chain, analyse=False)
     cold_residue = molstar_helper.get_targets(chain="A", residue=cs_only)
     both_hot_and_cold_residue = molstar_helper.get_targets(chain="A", residue=both_hs_and_cs)
-    mutation_residue = molstar_helper.get_targets(chain="A", residue=mismatch_index_list)
+    mismatch_residue = molstar_helper.get_targets(chain="A", residue=mismatch_residues)
 
     component_main_chain = molstar_helper.create_component(
         label="main", targets=main_chain, representation=rep_cartoon_gray
@@ -233,13 +243,13 @@ def get_molstar_rendered_components(hot_residue_indices_list, cold_residue_indic
     component_both_residue = molstar_helper.create_component(
         label=gs.cc_hot_and_cold_indices_per_cas, targets=both_hot_and_cold_residue, representation=rep_hot_cold
     )
-    component_mutation_residue = molstar_helper.create_component(
-        label=gs.c_substitutions, targets=mutation_residue, representation=rep_mutation
+    component_mismatch_residue = molstar_helper.create_component(
+        label=gs.c_substitutions, targets=mismatch_residue, representation=rep_mismatches
     )
     return [
         component_main_chain,
         component_hot_residue,
         component_cold_residue,
         component_both_residue,
-        component_mutation_residue,
+        component_mismatch_residue,
     ]
