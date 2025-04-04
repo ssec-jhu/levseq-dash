@@ -124,3 +124,11 @@ def selected_row_top_variant_table_aa_errors():
     this is an example selected row from the current setup of the top variants table
     """
     return [{"amino_acid_substitutions": "K99R R118C"}]
+
+
+@pytest.fixture(scope="session")
+def list_of_residues():
+    hot = "[10, 20, 30]"
+    cold = "[30, 40, 50]"
+    mismatch = "[25, 60]"
+    return hot, cold, mismatch
