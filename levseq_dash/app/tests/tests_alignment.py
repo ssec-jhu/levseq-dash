@@ -1,6 +1,7 @@
 import pytest
 
-from levseq_dash.app import utils_seq_alignment, global_strings as gs
+from levseq_dash.app import global_strings as gs
+from levseq_dash.app import utils_seq_alignment
 
 
 def test_basic_functionality(alignment_string):
@@ -61,3 +62,61 @@ def test_edge_cases_3(alignment_string, list_of_residues_edge):
     # the index listed in the hot indices must be marked with H
     s = parsed_alignment[201 + 201 + 1 + cold_indices[0]]
     assert gs.cold == parsed_alignment[201 + 201 + 1 + cold_indices[0]]
+
+
+@pytest.mark.parametrize(
+    "index,property, value",
+    [
+        (0, "norm_score", 1.0),
+        (0, "mismatches", 0),
+        (0, "gaps", 0.0),
+        (0, "plates_count", 4),
+    ],
+)
+def test_gather_seq_alignment_data_per_cas(seq_align_per_cas_data, index, property, value):
+    result = []
+    result = utils_seq_alignment.gather_seq_alignment_data_per_cas(
+        df_hot_cold_residue_per_cas=seq_align_per_cas_data[0],
+        seq_match_data=seq_align_per_cas_data[1],
+        exp_meta_data=seq_align_per_cas_data[2],
+        seq_match_row_data=result,
+    )
+    # verify some of the properties and make sure they were added properly
+    assert len(result) == 1
+    assert result[index][property] == value
+
+
+@pytest.mark.parametrize(
+    "index,property, value",
+    [
+        (0, "alignment_score", 1040.0),
+        (0, "norm_score", 1.0),
+        (0, "mismatches", 0),
+        (0, "gaps", 0.0),
+        (0, "plates_count", 4),
+        (1, "alignment_score", 1040.0),
+        (1, "norm_score", 1.0),
+        (1, "mismatches", 0),
+        (1, "gaps", 0.0),
+        (1, "plates_count", 4),
+    ],
+)
+def test_gather_seq_alignment_data_per_cas_2(seq_align_per_cas_data, index, property, value):
+    # run the data twice and make sure there is two sets for testing purposes
+    result = []
+    result = utils_seq_alignment.gather_seq_alignment_data_per_cas(
+        df_hot_cold_residue_per_cas=seq_align_per_cas_data[0],
+        seq_match_data=seq_align_per_cas_data[1],
+        exp_meta_data=seq_align_per_cas_data[2],
+        seq_match_row_data=result,
+    )
+    result = utils_seq_alignment.gather_seq_alignment_data_per_cas(
+        df_hot_cold_residue_per_cas=seq_align_per_cas_data[0],
+        seq_match_data=seq_align_per_cas_data[1],
+        exp_meta_data=seq_align_per_cas_data[2],
+        seq_match_row_data=result,
+    )
+
+    # verify some of the properties and make sure they were added properly
+    assert len(result) == 2
+    assert result[index][property] == value
