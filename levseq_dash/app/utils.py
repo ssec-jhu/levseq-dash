@@ -2,9 +2,12 @@ import base64
 import io
 import random
 import re
+from datetime import datetime
 
 import pandas as pd
 from dash_molstar.utils import molstar_helper
+
+from levseq_dash.app import components
 
 
 def get_geometry_for_viewer(exp):
@@ -230,3 +233,20 @@ def generate_slider_marks_dict(max_value):
     """
     data_range = range(0, max_value, 1)
     return {str(round(value, 1)): str(round(value, 1)) for value in data_range}
+
+
+def export_data_as_csv(option, file_name):
+    """
+    This method is a helper function to generate download parameters for an aggrid-table
+    The download operation is handled by the grid itself. Client just provides params
+    """
+    if option == components.DownloadType.FILTERED.value:
+        exported_rows = "filteredAndSorted"
+    else:
+        exported_rows = "all"
+
+    # timestamp the file
+    timestamp = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+
+    # https://ag-grid.com/javascript-data-grid/csv-export/#reference-CsvExportParams-exportedRows
+    return True, {"fileName": f"{file_name}_{exported_rows}_{timestamp}.csv", "exportedRows": exported_rows}

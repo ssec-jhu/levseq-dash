@@ -68,7 +68,32 @@ seq_align_form_threshold_default = "0.8"
 seq_align_form_hot_cold = "# Hot/Cold to extract"
 seq_align_form_hot_cold_n = "2"
 seq_align_form_button_sequence_matching = "Find Matching Sequences"
+# if you change below, make sure you also change
+# the string lookup in js function seqAlignmentVis -> search for it in assets
+hot = "H"
+cold = "C"
+hot_cold = "B"  # both hot and cold indicator
+markdown_note_matched_seq = """
+- Number of matched sequences is calculated per experiment match not per cas.
+- Each row represents experiment-cas information.
+- An experiment _may_ have one or more alignments. Each will be represented per cas value
+"""
+# download ing residue information related
+filename_download_residue_info = "matched_seq_aligned_experiment_hot_cold_residues"
+download_results = " Download Results"
+download_filtered = " Filtered"
+download_original = " Unfiltered"
+help_download = 'Download results in CSV format. Default is set to "Unfiltered" mode.'
+help_download_mode_unfiltered = "Results will be downloaded without table filters applied."
+help_download_mode_filtered = "Results will be downloaded WITH table filters applied."
 
+
+header_experiment_id = "Experiment ID"
+header_experiment_name = "Experiment Name"
+header_cas_number = "CAS"
+header_sub_cas = "Sub CAS"
+header_prod_cas = "Prod CAS"
+header_substitutions = "Substitutions"
 
 # -----------------------------
 #   DO NOT CHANGE PAST HERE
@@ -98,7 +123,6 @@ cc_seq_alignment_mismatches = "seq_align_mismatch_indices"
 cc_hot_cold_type = "variant_type"
 cc_hot = "Hot"
 cc_cold = "Cold"
-
 
 # this list is the core data that is read from the CSV files, the rest is not needed
 experiment_core_data_list = [

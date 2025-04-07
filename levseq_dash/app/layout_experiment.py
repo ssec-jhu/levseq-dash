@@ -196,7 +196,7 @@ def get_experiment_page():
                                                             components.get_info_icon_tooltip_bundle(
                                                                 info_icon_id="id-switch-residue-view-info",
                                                                 help_string="some help string",
-                                                                tip_placement="top",
+                                                                location="top",
                                                             ),
                                                         ],
                                                         style={"display": "flex", "gap": "5px"},

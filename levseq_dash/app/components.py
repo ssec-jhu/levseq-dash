@@ -1,9 +1,12 @@
+from enum import Enum
+
 import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
 import dash_molstar
-from dash import html
+from dash import dcc, html
 
 from levseq_dash.app import column_definitions as cd
+from levseq_dash.app import global_strings as gs
 from levseq_dash.app import vis
 
 
@@ -119,7 +122,7 @@ def get_table_matched_sequences():
             "cellStyle": {
                 "whiteSpace": "normal",
                 "wordBreak": "break-word",
-                "fontSize": "12px",
+                # "fontSize": "12px",
                 # 'padding': '5px',
                 # 'verticalAlign': 'middle',
             },
@@ -202,21 +205,69 @@ def get_protein_viewer():
     )
 
 
-def get_info_icon_tooltip_bundle(info_icon_id, help_string, tip_placement):
-    """
-    Convenient function to bundle an info icon with a tooltip
-    """
+def get_info_icon_tooltip_bundle(info_icon_id, help_string, location, allow_html=False):
     return html.Div(
         [
+            # html.Span(vis.icon_info, id=info_icon_id, weight=500, size="md"),
             dbc.Label(id=info_icon_id, children=vis.icon_info),
-            dbc.Tooltip(
-                children=help_string,
-                is_open=False,
-                target=info_icon_id,
-                placement=tip_placement,
-                # some style is overriding the tooltip and making the strings all caps
-                # overriding the text transform here
-                style={"text-transform": "none"},
-            ),
+            get_tooltip(info_icon_id, help_string, location, allow_html),
         ]
     )
+
+
+def get_tooltip(target_id, string, tip_placement, allow_html=False):
+    if allow_html:
+        string = (html.Div(dcc.Markdown(string, dangerously_allow_html=True)),)
+    return dbc.Tooltip(
+        children=string,
+        is_open=False,
+        target=target_id,
+        placement=tip_placement,
+        # some style is overriding the tooltip and making the strings all caps
+        # overriding the text transform here
+        style={"text-transform": "none"},
+    )
+
+
+class DownloadType(Enum):
+    ORIGINAL = 1
+    FILTERED = 2
+
+
+def get_radio_items_download_options(radio_id):
+    # Note: tooltips will only bind with the first radio_id that comes in, the GEQ one that comes after will not bind
+    # the tooltips because the tooltip id is the same as the radio item id not the radio button group as a whole
+    id_1 = f"{radio_id}_1"
+    id_2 = f"{radio_id}_2"
+    return [
+        dbc.RadioItems(
+            options=[
+                {
+                    "label": html.Span(id=id_1, children=[vis.icon_download, gs.download_original]),
+                    "value": DownloadType.ORIGINAL.value,
+                },
+                {
+                    "label": html.Span(id=id_2, children=[vis.icon_download, gs.download_filtered]),
+                    "value": DownloadType.FILTERED.value,
+                },
+            ],
+            value=DownloadType.ORIGINAL.value,
+            id=radio_id,
+            inline=True,
+        ),
+        get_tooltip(id_1, gs.help_download_mode_unfiltered, "top"),
+        get_tooltip(id_2, gs.help_download_mode_filtered, "top"),
+    ]
+
+
+def get_button_download(button_id):
+    return [
+        dbc.Button(
+            children=html.Span([vis.icon_download, gs.download_results]),
+            id=button_id,
+            n_clicks=0,
+            size="md",
+            class_name="d-grid gap-2 col-12 btn-primary",
+        ),
+        get_tooltip(button_id, gs.help_download, "top"),
+    ]

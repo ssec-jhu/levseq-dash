@@ -40,6 +40,9 @@ border_column = {"border": "0px solid red"}
 border_card = {"border": "0px solid cyan"}
 border_table = {"border": "0px solid magenta"}
 card_shadow = {"box-shadow": "1px 2px 7px 0px grey", "border-radius": "5px"}
+section_vis = {"visibility": "hidden", "height": "70px"}
+display_block = {"display": "block"}
+display_none = {"display": "none"}
 
 top_card_head = "card-title fw-bold custom-card-header"
 top_card_body = "text-primary-emphasis"
@@ -66,6 +69,7 @@ icon_info = html.I(
     # style={"color": "var(--bs-info)"}
 )
 icon_sequence = DashIconify(icon="fa-solid:dna", width=MEDIUM)
+icon_download = DashIconify(icon="mdi:tray-download", height=MEDIUM, width=MEDIUM)
 
 
 # --------------------

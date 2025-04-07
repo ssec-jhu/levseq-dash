@@ -132,3 +132,101 @@ def list_of_residues():
     cold = "[30, 40, 50]"
     mismatch = "[25, 60]"
     return hot, cold, mismatch
+
+
+@pytest.fixture(scope="session")
+def list_of_residues_edge():
+    hot = [1, 197]
+    cold = [60]
+    # mismatch = "[25, 60]"
+    return hot, cold
+
+
+@pytest.fixture
+def alignment_string():
+    return """\
+target            0 MTPSDISGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLMG
+                  0 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||.|
+query             0 MTPSDISGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLAG
+
+target           60 GWAASNEHLIYYFSNPDTGAPIKEYLERVRARCVAWVLDTTCRDYNREWLDYQYEVGLRH
+                 60 ||||||||||||.|||||||||||||||||||..||||||||||||||||||||||||||
+query            60 GWAASNEHLIYYGSNPDTGAPIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRH
+
+target          120 HRSKKGVTDGVRTVPNTPLRYLIAEIYPLTATIKPFLAKKGGSPEDIEGMYNAWLKSVVL
+                120 ||||||||||||||||||||||||.|||.|||||||||||||||||||||||||||||||
+query           120 HRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVVL
+
+target          180 QVAIWSHPYTKENDRLE 197
+                180 |||||||||||||||-- 197
+query           180 QVAIWSHPYTKENDR-- 195
+"""
+
+
+@pytest.fixture(scope="session")
+def seq_align_per_cas_data():
+    d = [
+        {
+            "cas_number": "395683-37-1",
+            "hot_residue_indices_per_cas": ["59", "89", "93", "149"],
+            "cold_residue_indices_per_cas": ["89", "119", "120"],
+            "all_exp_residue_indices_per_cas": [
+                "20",
+                "43",
+                "59",
+                "89",
+                "93",
+                "107",
+                "119",
+                "120",
+                "134",
+                "149",
+                "175",
+                "183",
+            ],
+        }
+    ]
+    df = pd.DataFrame(d)
+
+    meta_data = {
+        "experiment_name": "flatten_ssm_processed_xy_cas.csv",
+        "experiment_date": "01-01-2025",
+        "upload_time_stamp": "2025-04-04 19:36:26",
+        "assay": "NMR Spectroscopy",
+        "mutagenesis_method": "Site saturation mutagenesis (SSM)",
+        "substrate_cas_number": "176425-36-7, 444208-86-0",
+        "product_cas_number": "125113-99-5",
+        "unique_cas_in_data": ["395683-37-1"],
+        "plates": ["20241201-SSM-P1", "20241201SSM-P2", "20241201SSM-P3", "20241201SSM-P4"],
+        "plates_count": 4,
+        "parent_sequence": "MTPSDISGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLAGGWAASNEHLIYYGSNPDTG"
+        "APIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRHHRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLA"
+        "KKGGSPEDIEGMYNAWLKSVVLQVAIWSHPYTKENDR",
+        "geometry_file_format": ".cif",
+    }
+    seq_data = {
+        "experiment_id": 1,
+        "sequence": "MTPSDISGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLAGGWAASNEHLIYYGSNPDTGAPIKEYLERVR"
+        "ARIGAWVLDTTCRDYNREWLDYQYEVGLRHHRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVV"
+        "LQVAIWSHPYTKENDR",
+        "sequence_alignment": "target            0 MTPSDISGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLAG\n"
+        "                  0 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+        "query             0 MTPSDISGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLAG\n"
+        "\n"
+        "target           60 GWAASNEHLIYYGSNPDTGAPIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRH\n"
+        "                 60 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+        "query            60 GWAASNEHLIYYGSNPDTGAPIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRH\n\n"
+        "target          120 HRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVVL\n"
+        "                120 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+        "query           120 HRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVVL\n"
+        "\n"
+        "target          180 QVAIWSHPYTKENDR 195\n                180 ||||||||||||||| 195\n"
+        "query           180 QVAIWSHPYTKENDR 195\n",
+        "alignment_score": 1040.0,
+        "norm_score": 1.0,
+        "identities": 195,
+        "mismatches": 0,
+        "gaps": 0,
+    }
+
+    return df, seq_data, meta_data

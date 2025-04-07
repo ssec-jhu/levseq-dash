@@ -1,11 +1,13 @@
 import math
 
 import dash_bootstrap_components as dbc
+import dash_molstar
 import numpy as np
 import pandas as pd
 from dash import Dash, Input, Output, State, ctx, dcc, html, no_update
 from dash.exceptions import PreventUpdate
 from dash_bootstrap_templates import load_figure_template
+from dash_molstar.utils import molstar_helper
 
 from levseq_dash.app import column_definitions as cd
 from levseq_dash.app import global_strings as gs
@@ -18,8 +20,11 @@ from levseq_dash.app import (
     layout_upload,
     settings,
     utils,
+    utils_seq_alignment,
+    vis,
 )
 from levseq_dash.app.data_manager import DataManager
+from levseq_dash.app.sequence_aligner import bio_python_pairwise_aligner
 
 # Initialize the app
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
@@ -237,6 +242,138 @@ def on_submit_experiment(
         raise PreventUpdate
 
 
+# ----------------------------------------
+#   Matching Sequences Dashboard related
+# ----------------------------------------
+@app.callback(
+    Output("id-table-matched-sequences", "rowData"),
+    Output("id-table-matched-sequences-exp-hot-cold-data", "rowData"),
+    Output("id-div-matched-sequences-info", "children"),
+    Output("id-div-seq-alignment-results", "style"),
+    Input("id-button-run-seq-matching", "n_clicks"),
+    State("id-input-query-sequence", "value"),
+    State("id-input-query-sequence-threshold", "value"),
+    State("id-input-num-hot-cold", "value"),
+    prevent_initial_call=True,
+)
+def on_load_matching_sequences(n_clicks, query_sequence, threshold, n_top_hot_cold):
+    if n_clicks != 0 and ctx.triggered_id == "id-button-run-seq-matching":
+        # get all the lab sequences
+        all_lab_sequences = data_mgr.get_lab_sequences()
+
+        # get the alignment and the base score
+        lab_seq_match_data, base_score = bio_python_pairwise_aligner.get_alignments(
+            query_sequence=query_sequence, threshold=float(threshold), targets=all_lab_sequences
+        )
+
+        n_matches = len(lab_seq_match_data)
+
+        seq_match_row_data = list(dict())
+
+        # for each matching experiment pull out it's metadata
+        hot_cold_row_data = pd.DataFrame()
+        for i in range(len(lab_seq_match_data)):
+            # add experiment id
+            exp_id = lab_seq_match_data[i][gs.cc_experiment_id]
+
+            # get the experiment core data for the db
+            exp = data_mgr.get_experiment(exp_id)
+
+            # extract the top N (hot) and bottom N (cold) fitness values of this experiment
+            hot_cold_spots_merged_df, hot_cold_residue_per_cas = exp.exp_hot_cold_spots(int(n_top_hot_cold))
+
+            # add the experiment id to this data
+            hot_cold_spots_merged_df[gs.cc_experiment_id] = exp_id
+
+            # concatenate this info with the rest of the hot and cold spot data
+            hot_cold_row_data = pd.concat([hot_cold_row_data, hot_cold_spots_merged_df], ignore_index=True)
+
+            # expand the data of each row per CAS - request by PI
+            seq_match_row_data = utils_seq_alignment.gather_seq_alignment_data_per_cas(
+                df_hot_cold_residue_per_cas=hot_cold_residue_per_cas,
+                seq_match_data=lab_seq_match_data[i],
+                exp_meta_data=exp.exp_meta_data_to_dict(),
+                seq_match_row_data=seq_match_row_data,
+            )
+
+        info = f"# Matched Sequences: {n_matches}"
+        return seq_match_row_data, hot_cold_row_data.to_dict("records"), info, vis.display_block
+
+    raise PreventUpdate
+
+
+@app.callback(
+    Output("id-div-selected-matched-sequence-info", "children"),
+    Output("id-viewer-selected-seq-matched-protein", "children"),
+    Input("id-table-matched-sequences", "selectedRows"),
+    prevent_initial_call=True,
+)
+def display_selected_matching_sequences_protein_visualization(selected_rows):
+    if selected_rows:
+        # extract the info from the table
+        substitutions = f"{selected_rows[0][gs.cc_seq_alignment_mismatches]}"
+        hot_spots = f"{selected_rows[0][gs.cc_hot_indices_per_cas]}"
+        cold_spots = f"{selected_rows[0][gs.cc_cold_indices_per_cas]}"
+        experiment_id = selected_rows[0][gs.cc_experiment_id]
+
+        # get the experiment info from the db
+        exp = data_mgr.get_experiment(experiment_id)
+        geometry_file = exp.geometry_file_path
+
+        # if there is no geometry for the file ignore it
+        if geometry_file:
+            # gather the rendering components per the indices
+            list_of_rendered_components = vis.get_molstar_rendered_components(
+                hot_residue_indices_list=hot_spots,
+                cold_residue_indices_list=cold_spots,
+                substitution_residue_list=substitutions,
+            )
+
+            # set up the molecular viewer and render it
+            pdb_cif = molstar_helper.parse_molecule(
+                geometry_file,
+                component=list_of_rendered_components,
+                preset={"kind": "empty"},
+                fmt="cif",
+            )
+            viewer = [
+                dash_molstar.MolstarViewer(
+                    data=pdb_cif,
+                    style={"width": "auto", "height": vis.seq_match_protein_viewer_height},
+                    # focus=analyse,
+                )
+            ]
+            notes = f"""
+                     **ExperimentID:** {experiment_id}
+                     **CAS:** {selected_rows[0][gs.c_cas]}
+                    """
+        else:
+            viewer = no_update
+            notes = f"""
+                     **ExperimentID:** {experiment_id}
+                     **CAS:** {selected_rows[0][gs.c_cas]}
+                     **No geometry file was found for the selected experiment:**
+                    """
+
+        return notes, viewer
+    else:
+        raise PreventUpdate
+
+
+@app.callback(
+    Output("id-table-matched-sequences-exp-hot-cold-data", "exportDataAsCsv"),
+    Output("id-table-matched-sequences-exp-hot-cold-data", "csvExportParams"),
+    Input("id-button-download-hot-cold-results", "n_clicks"),
+    State("id-button-download-hot-cold-results-options", "value"),
+    prevent_initial_call=True,
+    # in case the download takes time this will disable the button
+    # so multiple cliks don't happen
+    running=[(Output("id-button-download-hot-cold-results", "disabled"), True, False)],  # requires the latest Dash 2.16
+)
+def export_data_as_csv_jiq(n_clicks, option):
+    return utils.export_data_as_csv(option, gs.filename_download_residue_info)
+
+
 # -------------------------------
 #   Experiment Dashboard related
 # -------------------------------
@@ -436,17 +573,6 @@ def update_rank_plot(selected_plate, selected_cas_number, rowData):
 
     rank_plot = graphs.creat_rank_plot(df, plate_number=selected_plate, cas_number=selected_cas_number)
     return rank_plot
-
-
-@app.callback(
-    Output("selected-row-value", "children"),
-    Input("id-table-top-variants", "selectedRows"),
-    prevent_initial_call=True,
-)
-def display_selected_row(selected_rows):
-    if selected_rows:
-        return f"Selected Column B Value: {selected_rows[0]['amino_acid_substitutions']}"
-    return "No row selected."
 
 
 @app.callback(

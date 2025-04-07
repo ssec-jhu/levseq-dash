@@ -38,7 +38,7 @@ def test_get_matched_sequences_column_defs():
 
 def test_get_matched_sequences_exp_hot_cold_data_column_defs():
     d = cd.get_matched_sequences_exp_hot_cold_data_column_defs()
-    assert len(d) == 8
+    assert len(d) == 9
 
 
 # def test_get_all_experiments_column_defs(experiment_ep_pcr_with_user_cas):
