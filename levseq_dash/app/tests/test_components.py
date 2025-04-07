@@ -8,15 +8,16 @@ from levseq_dash.app import column_definitions as cd
 from levseq_dash.app import (
     components,
     graphs,
+    utils,
+)
+from levseq_dash.app import global_strings as gs
+from levseq_dash.app.layout import (
     layout_bars,
     layout_experiment,
     layout_landing,
     layout_matching_sequences,
     layout_upload,
-    utils,
-    vis,
 )
-from levseq_dash.app import global_strings as gs
 
 
 def test_get_label():
