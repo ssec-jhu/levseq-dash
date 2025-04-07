@@ -226,7 +226,6 @@ def get_seq_align_layout():
                                                     ),
                                                 ],
                                                 className="p-1 mt-3",  # fits to the card border
-                                                # style={"height": "100%", "overflowX": "auto"}  # Allow content to expand
                                             ),
                                         ],
                                         className="d-flex flex-column",  # Flexbox for vertical stacking
