@@ -249,7 +249,7 @@ def on_submit_experiment(
     Output("id-table-matched-sequences", "rowData"),
     Output("id-table-matched-sequences-exp-hot-cold-data", "rowData"),
     Output("id-div-matched-sequences-info", "children"),
-    # Output("id-div-matched-sequences-notes", "children"),
+    Output("id-div-seq-alignment-results", "style"),
     Input("id-button-run-seq-matching", "n_clicks"),
     State("id-input-query-sequence", "value"),
     State("id-input-query-sequence-threshold", "value"),
@@ -297,7 +297,7 @@ def on_load_matching_sequences(n_clicks, query_sequence, threshold, n_top_hot_co
             )
 
         info = f"# Matched Sequences: {n_matches}"
-        return seq_match_row_data, hot_cold_row_data.to_dict("records"), info
+        return seq_match_row_data, hot_cold_row_data.to_dict("records"), info, vis.display_block
 
     raise PreventUpdate
 

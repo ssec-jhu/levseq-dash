@@ -102,135 +102,143 @@ def get_seq_align_layout():
                     ),
                 ],
             ),
-            dbc.Row(
-                [
-                    dbc.Col(
+            # these results will appear/clear
+            html.Div(
+                id="id-div-seq-alignment-results",
+                # TODO: integrate this with clearing results boolean later
+                # style={**vis.section_vis},
+                children=[
+                    dbc.Row(
                         [
-                            dbc.Card(
+                            dbc.Col(
                                 [
-                                    dbc.CardHeader("Matched Experiments"),
-                                    dbc.CardBody(
+                                    dbc.Card(
                                         [
-                                            dbc.Row(
+                                            dbc.CardHeader("Matched Experiments"),
+                                            dbc.CardBody(
                                                 [
-                                                    # this info icon uses markdown in the tooltip so we
-                                                    # must allow html and set the flag to true
-                                                    html.Div(
+                                                    dbc.Row(
                                                         [
-                                                            components.get_info_icon_tooltip_bundle(
-                                                                info_icon_id="id-info-1",
-                                                                help_string=gs.markdown_note_matched_seq,
-                                                                location="top",
-                                                                allow_html=True,
-                                                            ),
-                                                            html.P(
-                                                                id="id-div-matched-sequences-info",
-                                                                className="fw-bolder",
+                                                            # this info icon uses markdown in the tooltip so we
+                                                            # must allow html and set the flag to true
+                                                            html.Div(
+                                                                [
+                                                                    components.get_info_icon_tooltip_bundle(
+                                                                        info_icon_id="id-info-1",
+                                                                        help_string=gs.markdown_note_matched_seq,
+                                                                        location="top",
+                                                                        allow_html=True,
+                                                                    ),
+                                                                    html.P(
+                                                                        id="id-div-matched-sequences-info",
+                                                                        className="fw-bolder",
+                                                                    ),
+                                                                ],
+                                                                style={"display": "flex", "gap": "5px"},
                                                             ),
                                                         ],
-                                                        style={"display": "flex", "gap": "5px"},
+                                                    ),
+                                                    dbc.Row(
+                                                        [components.get_table_matched_sequences()],
+                                                        className="dbc dbc-ag-grid",
                                                     ),
                                                 ],
-                                            ),
-                                            dbc.Row(
-                                                [components.get_table_matched_sequences()],
-                                                className="dbc dbc-ag-grid",
+                                                className="p-1 mt-3",  # fits to the card border
                                             ),
                                         ],
-                                        className="p-1 mt-3",  # fits to the card border
+                                        className="d-flex flex-column",  # Flexbox for vertical stacking
+                                        style={
+                                            "box-shadow": "1px 2px 7px 0px grey",
+                                            "border-radius": "5px",
+                                            "height": vis.seq_match_card_height,
+                                        },
                                     ),
                                 ],
-                                className="d-flex flex-column",  # Flexbox for vertical stacking
-                                style={
-                                    "box-shadow": "1px 2px 7px 0px grey",
-                                    "border-radius": "5px",
-                                    "height": vis.seq_match_card_height,
-                                },
+                                width=8,
+                                style=vis.border_column,
+                                # remove all gutters from the col to snap to the card
+                                # className="g-3"
                             ),
-                        ],
-                        width=8,
-                        style=vis.border_column,
-                        # remove all gutters from the col to snap to the card
-                        # className="g-3"
-                    ),
-                    dbc.Col(
-                        [
-                            dbc.Card(
+                            dbc.Col(
                                 [
-                                    dbc.CardHeader("Visualize Selected Experiment"),
-                                    dbc.CardBody(
+                                    dbc.Card(
                                         [
-                                            dcc.Markdown(
-                                                id="id-div-selected-matched-sequence-info",
-                                                # style={"whiteSpace": "pre"}
-                                            ),
-                                            html.Br(),
-                                            html.Div(id="id-viewer-selected-seq-matched-protein"),
-                                        ],
-                                        className="p-1 mt-3",  # fits to the card border
-                                    ),
-                                ],
-                                className="d-flex flex-column",  # Flexbox for vertical stacking
-                                style={
-                                    "box-shadow": "1px 2px 7px 0px grey",
-                                    "border-radius": "5px",
-                                    "height": vis.seq_match_card_height,
-                                },
-                            ),
-                        ],
-                        style=vis.border_column,
-                    ),
-                ],
-                className="g-2 mt-4 mb-4",
-            ),
-            dbc.Row(
-                [
-                    dbc.Col(
-                        [
-                            dbc.Card(
-                                [
-                                    dbc.CardHeader("Hot and Cold residues"),
-                                    dbc.CardBody(
-                                        [
-                                            dbc.Row(
+                                            dbc.CardHeader("Visualize Selected Experiment"),
+                                            dbc.CardBody(
                                                 [
-                                                    dbc.Col(
-                                                        components.get_button_download(
-                                                            "id-button-download-hot-cold-results"
-                                                        ),
-                                                        width=2,
-                                                        align="center",
-                                                        style=vis.border_column,
+                                                    dcc.Markdown(
+                                                        id="id-div-selected-matched-sequence-info",
+                                                        # style={"whiteSpace": "pre"}
                                                     ),
-                                                    dbc.Col(
-                                                        components.get_radio_items_download_options(
-                                                            "id-button-download-hot-cold-results-options"
-                                                        ),
-                                                        width=3,
-                                                        align="center",
-                                                        style=vis.border_column,
-                                                    ),
+                                                    html.Br(),
+                                                    html.Div(id="id-viewer-selected-seq-matched-protein"),
                                                 ],
-                                                className="mb-2 g-1",
-                                            ),
-                                            dbc.Row(
-                                                [components.get_table_matched_sequences_exp_hot_cold_data()],
-                                                className="dbc dbc-ag-grid",
-                                                # style=vis.border_table,
+                                                className="p-1 mt-3",  # fits to the card border
                                             ),
                                         ],
-                                        className="p-1 mt-3",  # fits to the card border
-                                        # style={"height": "100%", "overflowX": "auto"}  # Allow content to expand
+                                        className="d-flex flex-column",  # Flexbox for vertical stacking
+                                        style={
+                                            "box-shadow": "1px 2px 7px 0px grey",
+                                            "border-radius": "5px",
+                                            "height": vis.seq_match_card_height,
+                                        },
                                     ),
                                 ],
-                                className="d-flex flex-column",  # Flexbox for vertical stacking
-                                style=vis.card_shadow,
+                                style=vis.border_column,
                             ),
                         ],
-                        style=vis.border_column,
+                        className="g-2 mt-4 mb-4",
+                    ),
+                    dbc.Row(
+                        [
+                            dbc.Col(
+                                [
+                                    dbc.Card(
+                                        [
+                                            dbc.CardHeader("Hot and Cold residues"),
+                                            dbc.CardBody(
+                                                [
+                                                    dbc.Row(
+                                                        [
+                                                            dbc.Col(
+                                                                components.get_button_download(
+                                                                    "id-button-download-hot-cold-results"
+                                                                ),
+                                                                width=2,
+                                                                align="center",
+                                                                style=vis.border_column,
+                                                            ),
+                                                            dbc.Col(
+                                                                components.get_radio_items_download_options(
+                                                                    "id-button-download-hot-cold-results-options"
+                                                                ),
+                                                                width=3,
+                                                                align="center",
+                                                                style=vis.border_column,
+                                                            ),
+                                                        ],
+                                                        className="mb-2 g-1",
+                                                    ),
+                                                    dbc.Row(
+                                                        [components.get_table_matched_sequences_exp_hot_cold_data()],
+                                                        className="dbc dbc-ag-grid",
+                                                        # style=vis.border_table,
+                                                    ),
+                                                ],
+                                                className="p-1 mt-3",  # fits to the card border
+                                                # style={"height": "100%", "overflowX": "auto"}  # Allow content to expand
+                                            ),
+                                        ],
+                                        className="d-flex flex-column",  # Flexbox for vertical stacking
+                                        style=vis.card_shadow,
+                                    ),
+                                ],
+                                style=vis.border_column,
+                            ),
+                        ],
+                        className="mt-4 mb-4",
                     ),
                 ],
-                className="mt-4 mb-4",
             ),
         ],
     )
