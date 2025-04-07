@@ -9,7 +9,7 @@ def get_top_variant_column_defs(df):
     return [
         {
             "field": gs.c_cas,
-            "headerName": "CAS #",
+            "headerName": gs.header_cas_number,
             # flex allows the resizing to be dynamic
             "flex": 2,
         },
@@ -27,7 +27,7 @@ def get_top_variant_column_defs(df):
             "field": gs.c_substitutions,
             # mouse hover over the truncated cell will show the contents of the cell
             "tooltipField": gs.c_substitutions,
-            "headerName": "Sub",
+            "headerName": gs.header_substitutions,
             "flex": 2,
         },
         {
@@ -67,7 +67,7 @@ def get_all_experiments_column_defs():
         },
         {
             "field": "experiment_name",
-            "headerName": "Name",
+            "headerName": gs.header_experiment_name,
             "flex": 3,
         },
         {
@@ -84,12 +84,12 @@ def get_all_experiments_column_defs():
         },
         {
             "field": "substrate_cas_number",
-            "headerName": "Sub CAS",
+            "headerName": gs.header_sub_cas,
             "flex": 3,
         },
         {
             "field": "product_cas_number",
-            "headerName": "Prod CAS",
+            "headerName": gs.header_prod_cas,
             "flex": 4,
         },
         {
@@ -124,20 +124,19 @@ def get_matched_sequences_column_defs():
         {
             "field": gs.cc_experiment_id,
             "pinned": "left",  # pinned the column to the left for all results
-            "headerName": "ID",
-            # "flex": 2,
-            "width": 70,
+            "headerName": gs.header_experiment_id,
+            "width": 120,
         },
         {
             "field": "cas_number",
-            "headerName": "CAS",
+            "headerName": gs.header_cas_number,
             "pinned": "left",
             # "flex": 3,
             "width": 120,
         },
         {
             "field": "experiment_name",
-            "headerName": "Exp Name",
+            "headerName": gs.header_experiment_name,
             # "flex": 3,
             "width": 130,
         },
@@ -169,13 +168,13 @@ def get_matched_sequences_column_defs():
         },
         {
             "field": "substrate_cas_number",
-            "headerName": "Sub CAS",
+            "headerName": gs.header_sub_cas,
             "width": 130,
             # "tooltipField": gs.snpt_col_sample_description,
         },
         {
             "field": "product_cas_number",
-            "headerName": "Prod CAS",
+            "headerName": gs.header_prod_cas,
             "width": 130,
         },
         {
@@ -268,17 +267,19 @@ def get_matched_sequences_exp_hot_cold_data_column_defs():
         #     "width": 30,
         # },
         {
-            "field": "experiment_id",
+            "field": gs.cc_experiment_id,
             "headerName": "Experiment ID",
-            "width": 150,
+            "width": 120,
         },
         {
             "field": gs.cc_hot_cold_type,
-            "width": 150,
+            "headerName": "Type",
+            # "width": 150,
+            "flex": 1,
         },
         {
             "field": gs.c_cas,
-            "headerName": "CAS #",
+            "headerName": gs.header_cas_number,
             # flex allows the resizing to be dynamic
             "flex": 2,
         },
@@ -292,7 +293,8 @@ def get_matched_sequences_exp_hot_cold_data_column_defs():
         },
         {
             "field": gs.c_substitutions,
-            "headerName": "AA Substitutions",
+            "headerName": gs.header_substitutions,
+            "tooltipField": gs.c_substitutions,
             "flex": 2,
         },
         {
@@ -308,6 +310,13 @@ def get_matched_sequences_exp_hot_cold_data_column_defs():
             "initialSort": "desc",
             "filter": "agNumberColumnFilter",
             "flex": 2,
+            # "cellStyle": {"styleConditions": vis.data_bars_colorscale(df, gs.c_fitness_value)},
+        },
+        {
+            "field": gs.c_aa_sequence,
+            "headerName": "Parent Amino Acid Sequence",
+            "tooltipField": gs.c_aa_sequence,
+            "flex": 5,
             # "cellStyle": {"styleConditions": vis.data_bars_colorscale(df, gs.c_fitness_value)},
         },
     ]

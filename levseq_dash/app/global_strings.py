@@ -73,6 +73,27 @@ seq_align_form_button_sequence_matching = "Find Matching Sequences"
 hot = "H"
 cold = "C"
 hot_cold = "B"  # both hot and cold indicator
+markdown_note_matched_seq = """
+- Number of matched sequences is calculated per experiment match not per cas.
+- Each row represents experiment-cas information.
+- An experiment _may_ have one or more alignments. Each will be represented per cas value
+"""
+# download ing residue information related
+filename_download_residue_info = "matched_seq_aligned_experiment_hot_cold_residues"
+download_results = " Download Results"
+download_filtered = " Filtered"
+download_original = " Unfiltered"
+help_download = 'Download results in CSV format. Default is set to "Unfiltered" mode.'
+help_download_mode_unfiltered = "Results will be downloaded without table filters applied."
+help_download_mode_filtered = "Results will be downloaded WITH table filters applied."
+
+
+header_experiment_id = "Experiment ID"
+header_experiment_name = "Experiment Name"
+header_cas_number = "CAS"
+header_sub_cas = "Sub CAS"
+header_prod_cas = "Prod CAS"
+header_substitutions = "Substitutions"
 
 # -----------------------------
 #   DO NOT CHANGE PAST HERE
