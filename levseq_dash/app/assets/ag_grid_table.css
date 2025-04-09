@@ -15,3 +15,7 @@
     color: white !important;
     font-weight: bold;
 }
+
+.matched-seq-cas-1{
+    background-color: rgba(0, 59, 76, 0.2) !important;
+}

@@ -374,8 +374,8 @@ def get_an_experiments_matched_sequences_column_defs():
         },
     ]
     column_def += (
-        get_cas({"width": 120, "cellClass": "matched-seq-cas-2"})
-        + get_substitutions({"width": 150, "cellClass": "matched-seq-cas-2"})
+        get_cas({"width": 120})
+        + get_substitutions({"width": 150})
         + get_plate_well({"width": 130})
         + get_fitness_ratio({"width": 130}, {"width": 130})
         + get_experiment_meta_cas({"width": 130}, {"width": 130})
