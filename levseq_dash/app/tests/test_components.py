@@ -49,11 +49,10 @@ def test_get_matched_sequences_exp_hot_cold_data_column_defs():
 #     assert len(d) == 6
 
 
-# Test if `get_table_experiment` returns a valid AgGrid component
-def test_get_table_experiment():
-    table = components.get_table_experiment()
+def test_get_table_experiment_top_variants():
+    table = components.get_table_experiment_top_variants()
     assert isinstance(table, dag.AgGrid)  # Ensure it's an AgGrid component
-    assert table.id == "id-table-top-variants"  # Check ID
+    assert table.id == "id-table-exp-top-variants"  # Check ID
     assert "rowSelection" in table.dashGridOptions  # Ensure row selection exists
     assert table.dashGridOptions["rowSelection"] == "single"  # Should be single selection
 

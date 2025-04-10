@@ -6,7 +6,7 @@ from levseq_dash.app import components, vis
 from levseq_dash.app import global_strings as gs
 
 
-def get_experiment_page():
+def get_experiment_tab_dash():
     # dbc.Container doesn't pick up the fluid container from parent keep as html.Div
     return html.Div(
         [
@@ -151,7 +151,7 @@ def get_experiment_page():
                                         [
                                             # keep as is,  dbc.container adds padding to the surrounding area
                                             html.Div(
-                                                [components.get_table_experiment()],
+                                                [components.get_table_experiment_top_variants()],
                                                 className="dbc dbc-ag-grid",
                                                 # style=vis.border_table,
                                             )
@@ -390,4 +390,227 @@ def get_experiment_page():
             # "border": "1px solid cyan",  # for visual debugging
             # "padding": "10px",  #spacing inside the div
         },
+    )
+
+
+def get_seq_align_form_exp():
+    return dbc.Container(
+        [
+            dbc.Row(
+                [
+                    components.get_label_fixed_for_form(gs.exp_seq_align_form_input, w=3),
+                    # don't remove this dbc.Col, it creates a nice padding
+                    dbc.Col(
+                        [
+                            html.Div(
+                                id="id-input-query-sequence-exp",
+                                style={
+                                    "width": "750px",
+                                    "height": "100px",
+                                    "whiteSpace": "normal",  # ensures wrapping
+                                    "wordWrap": "break-word",  # breaks long words if needed
+                                    "padding": "4px",
+                                },
+                                className="dbc text-muted",
+                            ),
+                        ]
+                    ),
+                ],
+                className="mb-1",
+                style=vis.border_row,
+            ),
+            dbc.Row(
+                [
+                    components.get_label_fixed_for_form(gs.seq_align_form_threshold),
+                    dbc.Col(
+                        [
+                            dbc.Input(
+                                id="id-input-query-sequence-threshold-exp",
+                                value=gs.seq_align_form_threshold_default,
+                                type="text",
+                                debounce=True,
+                            ),
+                        ],
+                        width=2,
+                    ),
+                ],
+                className="mb-1",
+                style=vis.border_row,
+            ),
+            dbc.Row(
+                [
+                    components.get_label_fixed_for_form(gs.seq_align_form_hot_cold),
+                    dbc.Col(
+                        [
+                            dbc.Input(
+                                id="id-input-num-hot-cold-exp",
+                                value=gs.seq_align_form_hot_cold_n,
+                                type="text",
+                                debounce=True,
+                            ),
+                        ],
+                        width=2,
+                    ),
+                ],
+                className="mb-1",
+                style=vis.border_row,
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(
+                        dbc.Button(
+                            id="id-button-run-seq-matching-exp",
+                            n_clicks=0,
+                            className="btn-primary",
+                            size="md",
+                            children=gs.seq_align_form_button_sequence_matching,
+                        ),
+                        # button fills the space
+                        className="d-grid gap-2 mx-auto",
+                    ),
+                ],
+                className="mt-5 mb-5",
+            ),
+        ],
+        className="mt-3",
+        style={
+            "width": "60%",  # % width of the div
+            "margin": "0 auto",
+        },
+    )
+
+
+def get_experiment_tab_related_seq():
+    return html.Div(
+        [
+            dbc.Row(html.P("Some instructions here...")),
+            dbc.Row(get_seq_align_form_exp()),
+            dbc.Row(
+                dbc.Col(
+                    [
+                        dbc.Card(
+                            [
+                                dbc.CardHeader("Related Experiments"),
+                                dbc.CardBody(
+                                    [
+                                        # dbc.Row(
+                                        #     [
+                                        #         # this info icon uses markdown in the tooltip so we
+                                        #         # must allow html and set the flag to true
+                                        #         html.Div(
+                                        #             [
+                                        #                 components.get_info_icon_tooltip_bundle(
+                                        #                     info_icon_id="id-info-1",
+                                        #                     help_string=gs.markdown_note_matched_seq,
+                                        #                     location="top",
+                                        #                     allow_html=True,
+                                        #                 ),
+                                        #                 html.P(
+                                        #                     id="id-div-matched-sequences-info",
+                                        #                     className="fw-bolder",
+                                        #                 ),
+                                        #             ],
+                                        #             style={"display": "flex", "gap": "5px"},
+                                        #         ),
+                                        #     ],
+                                        # ),
+                                        dbc.Row(
+                                            [components.get_table_experiment_matched_sequences()],
+                                            className="dbc dbc-ag-grid",
+                                        ),
+                                    ],
+                                    className="p-1 mt-3",  # fits to the card border
+                                ),
+                            ],
+                            className="d-flex flex-column",  # Flexbox for vertical stacking
+                            style={
+                                "box-shadow": "1px 2px 7px 0px grey",
+                                "border-radius": "5px",
+                                "height": vis.seq_match_card_height,
+                            },
+                        ),
+                    ],
+                    # width=8,
+                    style=vis.border_column,
+                    # remove all gutters from the col to snap to the card
+                    # className="g-3"
+                ),
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(
+                        [
+                            dbc.Card(
+                                [
+                                    dbc.CardHeader("Query Protein"),
+                                    dbc.CardBody(
+                                        [
+                                            html.Div(id="id-viewer-query-protein-exp"),
+                                        ],
+                                        className="p-1 mt-3",
+                                    ),
+                                ],
+                                style={
+                                    "box-shadow": "1px 2px 7px 0px grey",
+                                    "border-radius": "5px",
+                                    "height": vis.seq_match_card_height,
+                                },
+                            )
+                        ],
+                        width=6,
+                    ),
+                    dbc.Col(
+                        [
+                            dbc.Card(
+                                [
+                                    dbc.CardHeader("Selected Protein"),
+                                    dbc.CardBody(
+                                        [
+                                            html.Div(id="id-viewer-selected-seq-matched-protein-exp"),
+                                        ],
+                                        className="p-1 mt-3",
+                                    ),
+                                ],
+                                style={
+                                    "box-shadow": "1px 2px 7px 0px grey",
+                                    "border-radius": "5px",
+                                    "height": vis.seq_match_card_height,
+                                },
+                            )
+                        ],
+                        width=6,
+                    ),
+                ],
+                className="g-2 mt-4 mb-4",
+            ),
+        ],
+        className="mt-4",
+    )
+
+
+def get_experiment_page():
+    """This defines the tab layout."""
+    return html.Div(
+        [
+            dbc.Tabs(
+                [
+                    # Experiment dashboard
+                    dbc.Tab(
+                        get_experiment_tab_dash(),
+                        label="Experiment Dashboard",
+                        activeTabClassName="fw-bold",
+                        tab_id="id-tab-exp-dash",
+                    ),
+                    # Gene Expression Query Tab
+                    dbc.Tab(
+                        get_experiment_tab_related_seq(),
+                        label="Related Sequences",
+                        activeTabClassName="fw-bold",
+                        # tab_id="id-tab-horizontal-bootstrap-geq",
+                    ),
+                ],
+                active_tab="id-tab-exp-dash",
+                className="dbc nav-fill",  # Use Bootstrap's nav-fill class to fill the tab_horizontal_bootstrap space
+            )
+        ]
     )

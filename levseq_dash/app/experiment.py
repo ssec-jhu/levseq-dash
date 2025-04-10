@@ -230,8 +230,8 @@ class Experiment:
             hot_cold_residue_per_cas = hot_cold_residue_per_cas.merge(sub_per_cas, how="left")
 
             # add a column to identify results
-            hot_n[gs.cc_hot_cold_type] = "Hot"
-            cold_n[gs.cc_hot_cold_type] = "Cold"
+            hot_n[gs.cc_hot_cold_type] = gs.cc_hot
+            cold_n[gs.cc_hot_cold_type] = gs.cc_cold
 
             # merge the hot and the cold together
             hot_cold_spots_merged_df = pd.concat([hot_n, cold_n], ignore_index=True)

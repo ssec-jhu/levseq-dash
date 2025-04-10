@@ -397,8 +397,8 @@ def redirect_to_experiment_page(n_clicks):
 
 @app.callback(
     # Variant table
-    Output("id-table-top-variants", "rowData"),
-    Output("id-table-top-variants", "columnDefs"),
+    Output("id-table-exp-top-variants", "rowData"),
+    Output("id-table-exp-top-variants", "columnDefs"),
     # Protein
     Output("id-viewer", "data"),
     # Meta data
@@ -541,7 +541,7 @@ def load_experiment_page(pathname, experiment_id):
     Input("id-list-plates", "value"),
     Input("id-list-cas-numbers", "value"),
     Input("id-list-properties", "value"),
-    State("id-table-top-variants", "rowData"),  # TODO: does this have a performance hit?
+    State("id-table-exp-top-variants", "rowData"),  # TODO: does this have a performance hit?
     # State("id-store-heatmap-data", "data"),
     prevent_initial_call=True,
 )
@@ -565,7 +565,7 @@ def update_heatmap(selected_plate, selected_cas_number, selected_stat_property, 
     Output("id-experiment-ranking-plot", "figure", allow_duplicate=True),
     Input("id-list-plates-ranking-plot", "value"),
     Input("id-list-cas-numbers-ranking-plot", "value"),
-    State("id-table-top-variants", "rowData"),  # TODO: does this have a performance hit?
+    State("id-table-exp-top-variants", "rowData"),  # TODO: does this have a performance hit?
     # State("id-store-heatmap-data", "data"),
     prevent_initial_call=True,
 )
@@ -580,7 +580,7 @@ def update_rank_plot(selected_plate, selected_cas_number, rowData):
 @app.callback(
     Output("id-viewer", "selection"),
     Output("id-viewer", "focus"),
-    Input("id-table-top-variants", "selectedRows"),
+    Input("id-table-exp-top-variants", "selectedRows"),
     prevent_initial_call=True,
 )
 def focus_select_output(selected_rows):
@@ -604,7 +604,7 @@ def focus_select_output(selected_rows):
     # Input("id-switch-residue-view", "value"),  # DBC
     Input("id-slider-ratio", "value"),
     Input("id-list-cas-numbers-residue-highlight", "value"),
-    State("id-table-top-variants", "rowData"),
+    State("id-table-exp-top-variants", "rowData"),
     prevent_initial_call=True,
 )
 def on_view_all_residue(view, slider_value, cas_value, rowData):

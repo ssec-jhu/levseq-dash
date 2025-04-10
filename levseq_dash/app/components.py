@@ -10,18 +10,15 @@ from levseq_dash.app import global_strings as gs
 from levseq_dash.app import vis
 
 
-def get_label_fixed_for_form(string):
-    # Create a horizontal form by using the Row component. Be sure to specify width on the Label component,
-    # and wrap your inputs in Col components.
-    return dbc.Label(string, width=2, className="fw-bolder fs-6")
-
-
-def get_table_experiment():
+# ----------------------------------------
+# Tables: Experiment dashboard related
+# ----------------------------------------
+def get_table_experiment_top_variants():
     """
     Returns dash ag grid component with settings setup for use to show the experiments data
     """
     return dag.AgGrid(
-        id="id-table-top-variants",
+        id="id-table-exp-top-variants",
         # columnDef have a colored column which is dynamic and will be returned in a callback
         # columnDefs=components.get_top_variant_column_defs(),
         columnSize="autoSize",
@@ -64,6 +61,58 @@ def get_table_experiment():
     )
 
 
+def get_table_experiment_matched_sequences():
+    """
+    Returns dash ag grid component with settings setup for use to show all experiments
+    """
+    return dag.AgGrid(
+        id="id-table-experiment-matched-sequences",
+        columnDefs=cd.get_an_experiments_matched_sequences_column_defs(),
+        defaultColDef={
+            # do NOT set "flex": 1 in default col def as it overrides all
+            # the column widths
+            "sortable": True,
+            "resizable": True,
+            "filter": True,
+            # Set BOTH items below to True for header to wrap text
+            "wrapHeaderText": True,
+            "autoHeaderHeight": True,
+            # "flex": 1,  # TODO: remove this after you put fixed width
+            "filterParams": {
+                "buttons": ["reset", "apply"],
+                "closeOnApply": True,
+            },
+            "cellStyle": {
+                "whiteSpace": "normal",
+                "wordBreak": "break-word",
+                # "fontSize": "12px",
+                # 'padding': '5px',
+                # 'verticalAlign': 'middle',
+            },
+            "autoHeight": True,  # Adjusts row height to fit wrapped text
+            "tooltipComponent": "agTooltipComponent",
+        },
+        style={"height": "800px", "width": "100%"},
+        dashGridOptions={
+            # Enable multiple selection
+            "alwaysShowHorizontalScroll": True,  # TODO: does this work on mac?
+            "rowSelection": "single",
+            # https://ag-grid.com/javascript-data-grid/selection-overview/#cell-text-selection
+            "enableCellTextSelection": True,
+            "rowHeight": 30,  # TODO: is this overwritten by the alignnmnet width
+            # "pagination": True,
+            # # this will set the number of items per page be a function of the height
+            # # if we load too many rows that are not visible, the graphics is not smart enough
+            # # to hide what is not visible, so it takes longer for the page to load
+            # "paginationAutoPageSize": True,
+        },
+        # className="ag-theme-alpine",
+    )
+
+
+# ----------------------------------------
+# Tables: Lab page related components
+# ----------------------------------------
 def get_table_all_experiments():
     """
     Returns dash ag grid component with settings setup for use to show all experiments
@@ -98,6 +147,9 @@ def get_table_all_experiments():
     )
 
 
+# --------------------------------
+# Tables: Sequence Alignment related
+# --------------------------------
 def get_table_matched_sequences():
     """
     Returns dash ag grid component with settings setup for use to show all experiments
@@ -187,6 +239,9 @@ def get_table_matched_sequences_exp_hot_cold_data():
     )
 
 
+# --------------------------------
+# Protein Viewer
+# --------------------------------
 def get_protein_viewer():
     """
     Returns the dash molstar viewer component
@@ -203,6 +258,15 @@ def get_protein_viewer():
             "layoutIsExpanded": False,  # if true it makes it full screen
         },
     )
+
+
+# --------------------------------
+# Misc
+# --------------------------------
+def get_label_fixed_for_form(string, w=2):
+    # Create a horizontal form by using the Row component. Be sure to specify width on the Label component,
+    # and wrap your inputs in Col components.
+    return dbc.Label(string, width=w, className="fw-bolder fs-6")
 
 
 def get_info_icon_tooltip_bundle(info_icon_id, help_string, location, allow_html=False):
