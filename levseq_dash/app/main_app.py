@@ -1,4 +1,5 @@
 import math
+import re
 
 import dash_bootstrap_components as dbc
 import dash_molstar
@@ -325,7 +326,7 @@ def display_selected_matching_sequences_protein_visualization(selected_rows):
         # if there is no geometry for the file ignore it
         if geometry_file:
             # gather the rendering components per the indices
-            list_of_rendered_components = vis.get_molstar_rendered_components(
+            list_of_rendered_components = vis.get_molstar_rendered_components_seq_alignment(
                 hot_residue_indices_list=hot_spots,
                 cold_residue_indices_list=cold_spots,
                 substitution_residue_list=substitutions,
@@ -433,6 +434,8 @@ def redirect_to_experiment_page(n_clicks):
     Output("id-slider-ratio", "max"),
     Output("id-list-cas-numbers-residue-highlight", "options"),
     Output("id-list-cas-numbers-residue-highlight", "value"),
+    # related sequences
+    Output("id-input-exp-related-variants-query-sequence", "children"),
     # Output("id-store-heatmap-data", "data"),
     # Inputs
     Input("url", "pathname"),
@@ -529,9 +532,13 @@ def load_experiment_page(pathname, experiment_id):
             max_value,
             exp.unique_cas_in_data,  # list of cas values
             default_cas,  # default Cas
+            # -------------------------------
+            # related sequences
+            # --------------------------------
+            exp.parent_sequence,
         )
     else:
-        return no_update
+        raise PreventUpdate
 
 
 @app.callback(
@@ -631,6 +638,204 @@ def on_view_all_residue(view, slider_value, cas_value, rowData):
                 sel, foc = utils.get_selection_focus(residues, analyse=False)
 
     return sel, foc, enable_components, enable_components
+
+
+@app.callback(
+    Output("id-table-exp-related-variants", "rowData"),
+    Output("id-viewer-exp-related-variants-query-protein", "children"),
+    # Output("id-div-exp-related-variants-section", "style"),
+    # inputs
+    Input("id-button-run-seq-matching-exp", "n_clicks"),
+    State("id-input-exp-related-variants-query-sequence", "children"),
+    State("id-input-exp-related-variants-threshold", "value"),
+    State("id-input-exp-related-variants-hot-cold", "value"),
+    State("id-experiment-selected", "data"),
+    State("id-table-exp-top-variants", "rowData"),  # TODO: hold or remove this?
+    # State("id-input-num-hot-cold", "value"),
+    prevent_initial_call=True,
+    running=[(Output("id-button-run-seq-matching-exp", "disabled"), True, False)],  # requires the latest Dash 2.16
+)
+def on_exp_related_variants(
+    n_clicks, query_sequence, threshold, n_top_hot_cold, experiment_id, experiment_top_variants
+):
+    if n_clicks != 0 and ctx.triggered_id == "id-button-run-seq-matching-exp":
+        # get all the lab sequences
+        all_lab_sequences = data_mgr.get_lab_sequences()
+
+        # get the alignment and the base score
+        lab_seq_match_data, base_score = bio_python_pairwise_aligner.get_alignments(
+            query_sequence=query_sequence, threshold=float(threshold), targets=all_lab_sequences
+        )
+
+        n_matches = len(lab_seq_match_data)
+
+        query_exp = data_mgr.get_experiment(experiment_id)
+        _, query_exp_hot_cold_residue_per_cas = query_exp.exp_hot_cold_spots(int(n_top_hot_cold))
+        query_protein_file = query_exp.geometry_file_path
+
+        exp_results_row_data = list(dict())
+        for i in range(len(lab_seq_match_data)):
+            # get experiment id
+            mathc_exp_id = lab_seq_match_data[i][gs.cc_experiment_id]
+
+            # skip if it's the same experiment we're on
+            if mathc_exp_id == experiment_id:
+                continue
+
+            # does my experiments variant show up in the other experiment
+            # get the experiment core data from the db
+            match_exp = data_mgr.get_experiment(mathc_exp_id)
+            # preprocess the data for residue extraction
+            df_match_exp = match_exp.exp_get_processed_core_data_for_valid_mutation_extractions()
+
+            def contains_number(pattern_str, target_number):
+                numbers = re.findall(r"(?<=\D)(\d+)(?=\D)", f"_{pattern_str}_")
+                return str(target_number) in numbers  # compare as string
+
+            df_exp_results = pd.DataFrame()
+            for cas_index in range(query_exp_hot_cold_residue_per_cas.shape[0]):
+                my_hot_indices = query_exp_hot_cold_residue_per_cas.loc[cas_index, gs.cc_hot_indices_per_cas]
+                my_cold_indices = query_exp_hot_cold_residue_per_cas.loc[cas_index, gs.cc_cold_indices_per_cas]
+                for hot_index in my_hot_indices:
+                    mask = df_match_exp[gs.c_substitutions].apply(lambda x: contains_number(x, hot_index))
+                    result = df_match_exp[mask]
+                    if not result.empty:
+                        result["exp_cas"] = query_exp_hot_cold_residue_per_cas.loc[cas_index, gs.c_cas]
+                        result["exp_index"] = f"Hot, {hot_index}"
+                        df_exp_results = pd.concat([df_exp_results, result], ignore_index=True)
+                for cold_index in my_cold_indices:
+                    mask = df_match_exp[gs.c_substitutions].apply(lambda x: contains_number(x, cold_index))
+                    result = df_match_exp[mask]
+                    if not result.empty:
+                        result["exp_cas"] = query_exp_hot_cold_residue_per_cas.loc[cas_index, gs.c_cas]
+                        result["exp_index"] = f"Cold, {cold_index}"
+                        df_exp_results = pd.concat([df_exp_results, result], ignore_index=True)
+
+            # add the experiment id to the data
+            df_exp_results[gs.cc_experiment_id] = mathc_exp_id
+
+            # gather results and append metadata, ...
+            exp_results_row_data = utils_seq_alignment.gather_seq_alignment_data_for_experiment(
+                df=df_exp_results,
+                seq_match_data=lab_seq_match_data[i],
+                exp_meta_data=match_exp.exp_meta_data_to_dict(),
+                seq_match_row_data=exp_results_row_data,
+            )
+
+        if len(exp_results_row_data) > 0:
+            # TODO: parse molecule already runs in get geometry, need to refactor here
+            # geometry_file = utils.get_geometry_for_viewer(query_exp)
+            geometry_file = query_exp.geometry_file_path
+
+            # if there is no geometry for the file ignore it
+            if geometry_file:
+                # set up the molecular viewer and render it
+                pdb_cif = molstar_helper.parse_molecule(
+                    geometry_file,
+                    # TODO: do we need components for the default?
+                    # component=list_of_rendered_components,
+                    # preset={"kind": "empty"},
+                    fmt="cif",
+                )
+                viewer = [
+                    dash_molstar.MolstarViewer(
+                        data=pdb_cif,
+                        style={"width": "auto", "height": vis.seq_match_protein_viewer_height},
+                        # focus=analyse,
+                    )
+                ]
+                return exp_results_row_data, viewer  # , vis.display_block
+
+    raise PreventUpdate
+
+
+@app.callback(
+    Output("id-viewer-exp-related-variants-selected-match-protein", "children", allow_duplicate=True),
+    Output("id-div-exp-related-variants-selected-match-protein-info", "children"),
+    Output("id-viewer-exp-related-variants-query-protein", "children", allow_duplicate=True),
+    Output("id-div-exp-related-variants-query-protein-info", "children"),
+    Input("id-table-exp-related-variants", "selectedRows"),
+    State("id-experiment-selected", "data"),
+    prevent_initial_call=True,
+)
+def display_selected_matching_sequences_protein_visualization_exp(selected_rows, experiment_id):
+    if selected_rows:
+        # selected experiment from the table
+        selected_experiment_id = selected_rows[0][gs.cc_experiment_id]
+        selected_cas_number = f"{selected_rows[0][gs.c_cas]}"
+        selected_substitutions = f"{selected_rows[0][gs.c_substitutions]}"
+        selected_substitutions_list = re.findall(r"(?<=\D)(\d+)(?=\D)", f"_{selected_substitutions}_")
+
+        # experiment we're on
+        experiment_substitution = int(f"{selected_rows[0]['exp_index']}".split(",")[1].strip())
+        experiment_substitution_list = [experiment_substitution]
+
+        # get the experiment info from the db
+        # TODO: need to add a function to only get the geometry file not the whole experiment
+        selected_experiment = data_mgr.get_experiment(selected_experiment_id)
+        selected_experiment_geometry_file = selected_experiment.geometry_file_path
+
+        experiment = data_mgr.get_experiment(experiment_id)
+        experiment_geometry_file = experiment.geometry_file_path
+
+        # if there is no geometry for the file ignore it
+        if selected_experiment_geometry_file and experiment_geometry_file:
+            # gather the rendering components per the indices
+            list_of_rendered_components_selection = vis.get_molstar_rendered_components_related_variants(
+                selected_substitutions_list
+            )
+            # set up the molecular viewer and render it
+            pdb_cif_selection = molstar_helper.parse_molecule(
+                selected_experiment_geometry_file,
+                component=list_of_rendered_components_selection,
+                preset={"kind": "empty"},
+                fmt="cif",
+            )
+            selected_experiment_viewer = [
+                dash_molstar.MolstarViewer(
+                    data=pdb_cif_selection,
+                    style={"width": "auto", "height": vis.seq_match_protein_viewer_height},
+                    # focus=analyse,
+                )
+            ]
+
+            list_of_rendered_components_query = vis.get_molstar_rendered_components_related_variants(
+                experiment_substitution_list
+            )
+            pdb_cif_query = molstar_helper.parse_molecule(
+                experiment_geometry_file,
+                component=list_of_rendered_components_query,
+                preset={"kind": "empty"},
+                fmt="cif",
+            )
+            query_experiment_viewer = [
+                dash_molstar.MolstarViewer(
+                    data=pdb_cif_query,
+                    style={"width": "auto", "height": vis.seq_match_protein_viewer_height},
+                    # focus=analyse,
+                )
+            ]
+
+            selected_experiment_info = f"""
+                                 **ExperimentID:** {selected_experiment_id}
+                                 **CAS:** {selected_cas_number}
+                                 
+                                 **Substitutions:** {selected_substitutions}
+                                """
+            query_experiment_viewer_info = f"""
+                                 **ExperimentID:** {experiment_id}
+                                 **CAS:** {selected_rows[0][gs.c_cas]}
+                                 
+                                 **Substitutions:** {experiment_substitution_list}
+                                """
+            return (
+                selected_experiment_viewer,
+                selected_experiment_info,
+                query_experiment_viewer,
+                query_experiment_viewer_info,
+            )
+
+    raise PreventUpdate
 
 
 @app.callback(
