@@ -219,7 +219,8 @@ class Experiment:
                         # Generate a new DataFrame or Series with the index reset.
                         # https://pandas.pydata.org/docs/reference/api/pandas.Series.reset_index.html
                         # This is useful when the index needs to be treated as a column,
-                        # or when the index is meaningless and needs to be reset to the default before another operation.
+                        # or when the index is meaningless and needs to be reset to the default
+                        # before another operation.
                         .reset_index()
                         # results will be applied with the same column name so need to rename the final column
                         .rename(columns={gs.c_substitutions: new_column_name})
