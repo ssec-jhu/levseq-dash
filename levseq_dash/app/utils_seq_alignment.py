@@ -4,6 +4,7 @@ from levseq_dash.app import global_strings as gs
 
 
 def parse_alignment_pipes(alignment_str, hot_indices, cold_indices):
+    # TODO: need to add condition where hot and cold indices are not provided, maybe break this up into two functions
     """
     Utility function to parse the alignment string and reformat it for visualization in the dash table
     This function is tailored toward the results of the sequence aligner.
@@ -112,5 +113,32 @@ def gather_seq_alignment_data_per_cas(df_hot_cold_residue_per_cas, seq_match_dat
         per_cas_records.update({gs.cc_seq_alignment_mismatches: mutation_indices})
         per_cas_records.update({gs.cc_seq_alignment: parsed_alignment_string})
         seq_match_row_data.append(per_cas_records)
+
+    return seq_match_row_data
+
+
+def gather_seq_alignment_data_for_experiment(df, seq_match_data, exp_meta_data, seq_match_row_data):
+    """
+    This utility function is used to gather row data for experiment related variants.
+    This function solely designed for the purpose of reusing code for gathering row data
+    """
+
+    # convert the df do a list of records
+    dict_list = df.to_dict(orient="records")
+
+    # gather sequence alignment parsed string
+    parsed_alignment_string, mutation_indices = parse_alignment_pipes(
+        alignment_str=seq_match_data[gs.cc_seq_alignment], hot_indices=[], cold_indices=[]
+    )
+
+    for record in dict_list:
+        # add the sequence alignment stats
+        record.update(seq_match_data)
+        # add the experiment meta data
+        record.update(exp_meta_data)
+        # add the mismatch indices and the
+        record.update({gs.cc_seq_alignment_mismatches: mutation_indices})
+        record.update({gs.cc_seq_alignment: parsed_alignment_string})
+        seq_match_row_data.append(record)
 
     return seq_match_row_data
