@@ -61,12 +61,12 @@ def get_table_experiment_top_variants():
     )
 
 
-def get_table_experiment_matched_sequences():
+def get_table_experiment_related_variants():
     """
     Returns dash ag grid component with settings setup for use to show all experiments
     """
     return dag.AgGrid(
-        id="id-table-experiment-matched-sequences",
+        id="id-table-exp-related-variants",
         columnDefs=cd.get_an_experiments_matched_sequences_column_defs(),
         defaultColDef={
             # do NOT set "flex": 1 in default col def as it overrides all
@@ -92,7 +92,7 @@ def get_table_experiment_matched_sequences():
             "autoHeight": True,  # Adjusts row height to fit wrapped text
             "tooltipComponent": "agTooltipComponent",
         },
-        style={"height": "800px", "width": "100%"},
+        style={"height": vis.seq_match_table_height, "width": "100%"},
         dashGridOptions={
             # Enable multiple selection
             "alwaysShowHorizontalScroll": True,  # TODO: does this work on mac?
