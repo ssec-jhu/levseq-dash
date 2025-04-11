@@ -548,8 +548,7 @@ def get_experiment_tab_related_seq():
                                             dbc.CardHeader("Query Protein"),
                                             dbc.CardBody(
                                                 [
-                                                    dcc.Markdown(
-                                                        id="id-div-exp-related-variants-query-protein-info"),
+                                                    dcc.Markdown(id="id-div-exp-related-variants-query-protein-info"),
                                                     html.Div(id="id-viewer-exp-related-variants-query-protein"),
                                                 ],
                                                 className="p-1 mt-3",
@@ -572,9 +571,11 @@ def get_experiment_tab_related_seq():
                                             dbc.CardBody(
                                                 [
                                                     dcc.Markdown(
-                                                        id="id-div-exp-related-variants-selected-match-protein-info"),
+                                                        id="id-div-exp-related-variants-selected-match-protein-info"
+                                                    ),
                                                     html.Div(
-                                                        id="id-viewer-exp-related-variants-selected-match-protein"),
+                                                        id="id-viewer-exp-related-variants-selected-match-protein"
+                                                    ),
                                                 ],
                                                 className="p-1 mt-3",
                                             ),
@@ -590,9 +591,9 @@ def get_experiment_tab_related_seq():
                             ),
                         ],
                         className="g-2 mt-4 mb-4",
-                    )
-                ]  # html.Div
-            )
+                    ),
+                ],  # html.Div
+            ),
         ],
         className="mt-4",
     )
