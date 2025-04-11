@@ -190,7 +190,9 @@ def data_bars_group_mean_colorscale(
     return styles
 
 
-def get_molstar_rendered_components(hot_residue_indices_list, cold_residue_indices_list, substitution_residue_list):
+def get_molstar_rendered_components_seq_alignment(
+    hot_residue_indices_list, cold_residue_indices_list, substitution_residue_list
+):
     """
     Generate Dash Molstar components for each of the  list of indices
     """
@@ -257,3 +259,36 @@ def get_molstar_rendered_components(hot_residue_indices_list, cold_residue_indic
         component_both_residue,
         component_mismatch_residue,
     ]
+
+
+def get_molstar_rendered_components_related_variants(substitution_residue_list):
+    """ """
+
+    sub_residues_list = list(map(int, substitution_residue_list))
+
+    # make the representations
+    # main chain
+    rep_by_seq_id = Representation(type="cartoon", color="sequence-id")
+    rep_by_seq_id.set_type_params({"alpha": 0.5})
+
+    rep_uniform_red = Representation(type="cartoon", color="uniform", size="uniform")
+    rep_uniform_red.set_color_params({"value": 0xC41E3A})
+    rep_uniform_red.set_size_params({"value": 1.15})
+
+    rep_ball_stick = Representation(type="ball-and-stick")
+
+    main_chain = molstar_helper.get_targets(chain="A")
+    analyse = molstar_helper.get_focus(main_chain, analyse=False)
+    sub_residue = molstar_helper.get_targets(chain="A", residue=sub_residues_list)
+
+    component_main_chain = molstar_helper.create_component(
+        label="main", targets=main_chain, representation=rep_by_seq_id
+    )
+
+    component_sub_residue = molstar_helper.create_component(
+        label=gs.c_substitutions, targets=sub_residue, representation=rep_uniform_red
+    )
+    component_sub_residue_2 = molstar_helper.create_component(
+        label=f"{gs.c_substitutions}_2", targets=sub_residue, representation=rep_ball_stick
+    )
+    return [component_main_chain, component_sub_residue, component_sub_residue_2]
