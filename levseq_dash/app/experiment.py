@@ -162,7 +162,7 @@ class Experiment:
                 [gs.c_cas, gs.c_plate, gs.c_well, gs.c_substitutions, gs.c_aa_sequence, gs.c_fitness_value, gs.cc_ratio]
             ]
 
-            # remove anything from the mutations column with # or - and drop rows where column 'F' has NaN values
+            # remove anything from the mutations column with # or - and drop rows where column has NaN values
             # Notes: square brackets [] mean "match either # or -"
             # na=True ensures missing values are also considered invalid
             # ~ (bitwise NOT) negates the condition
@@ -215,7 +215,11 @@ class Experiment:
                         df_in.groupby(gs.c_cas)[gs.c_substitutions]
                         # and extract the unique indices form the substitutions column
                         # ...sort it as well
-                        .apply(lambda x: sorted(x.str.extractall(r"(\d+)")[0].unique().tolist(), key=int))
+                        .apply(
+                            lambda x: sorted(
+                                x.str.extractall(utils.substitution_indices_pattern)[0].unique().tolist(), key=int
+                            )
+                        )
                         # Generate a new DataFrame or Series with the index reset.
                         # https://pandas.pydata.org/docs/reference/api/pandas.Series.reset_index.html
                         # This is useful when the index needs to be treated as a column,
