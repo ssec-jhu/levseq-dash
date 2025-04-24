@@ -230,3 +230,29 @@ def seq_align_per_cas_data():
     }
 
     return df, seq_data, meta_data
+
+
+@pytest.fixture(scope="session")
+def seq_align_data():
+    return {
+        "experiment_id": 1,
+        "sequence": "MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVEDILDLWYGLQGSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTL"
+        "CKPLDRQWLNYMYEIGLRHHRTKKGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAIWSYPYAKTGEWLE",
+        "sequence_alignment": "target            0 MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVEDILDLWYGLQ\n          "
+        "        0 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+        "query             0 MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVEDILDLWYGLQ\n"
+        "\n"
+        "target           60 GSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTLCKPLDRQWLNYMYEIGLRHHRTK\n"
+        "                 60 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+        "query            60 GSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTLCKPLDRQWLNYMYEIGLRHHRTK\n\n"
+        "target          120 KGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAI\n"
+        "                120 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+        "query           120 KGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAI\n\n"
+        "target          180 WSYPYAKTGEWLE 193\n                180 ||||||||||||| 193\n"
+        "query           180 WSYPYAKTGEWLE 193\n",
+        "alignment_score": 1053.0,
+        "norm_score": 1.0,
+        "identities": 193,
+        "mismatches": 0,
+        "gaps": 0,
+    }

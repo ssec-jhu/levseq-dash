@@ -120,3 +120,49 @@ def test_gather_seq_alignment_data_per_cas_2(seq_align_per_cas_data, index, prop
     # verify some of the properties and make sure they were added properly
     assert len(result) == 2
     assert result[index][property] == value
+
+
+@pytest.mark.parametrize(
+    "residue_list,count",
+    [
+        (["59"], 10),
+        (["59", "70"], 20),
+        ([], 0),
+        (["33"], 4),
+        (["123"], 14),
+        (["33", "123"], 18),
+        (["170"], 4),
+        (["42", "90", "173", "123"], 58),
+    ],
+)
+def test_search_for_variants_in_experiment_data(residue_list, count, experiment_ep_pcr):
+    df = experiment_ep_pcr.data_df
+    result_df = utils_seq_alignment.lookup_residues_in_experiment_data(df, residue_list)
+    assert result_df.shape[0] == count
+
+
+@pytest.mark.parametrize(
+    "residue_list,count",
+    [
+        (["59"], 10),
+        (["59", "70"], 20),
+        ([], 0),
+        (["33"], 4),
+        (["123"], 14),
+        (["33", "123"], 18),
+        (["170"], 4),
+        (["42", "90", "173", "123"], 58),
+    ],
+)
+def test_search_and_gather_variant_info_for_matching_experiment(residue_list, count, experiment_ep_pcr, seq_align_data):
+    exp_results_row_data = list(dict())
+    exp_results_row_data = utils_seq_alignment.search_and_gather_variant_info_for_matching_experiment(
+        experiment_ep_pcr,
+        1,  # this can be anything for this test
+        residue_list,
+        seq_align_data,
+        exp_results_row_data,
+    )
+    assert len(exp_results_row_data) == count
+    if count != 0:
+        assert len(exp_results_row_data[0]) == 28

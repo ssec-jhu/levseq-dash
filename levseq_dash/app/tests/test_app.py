@@ -174,6 +174,17 @@ def test_decode_csv_file_base64_string_to_dataframe_non_utf8():
         utils.decode_csv_file_base64_string_to_dataframe(non_utf8_base64)
 
 
+def test_decode_dash_upload_data_to_base64_encoded_string_empty():
+    """Test a simple csv file with header names and numbers for each column"""
+
+    upload_str = "data:text/csv;base64,QSxCLEMsRCxFLEYKMSwyLDMsNCw1LDYKNyw4LDksMTAsMTEsMTIK"
+    result = utils.decode_dash_upload_data_to_base64_encoded_string(upload_str)
+    df = utils.decode_csv_file_base64_string_to_dataframe(result)
+    assert not df.empty
+    assert df.shape[0] == 2
+    assert df.shape[1] == 6
+
+
 def test_load_config():
     c = settings.load_config()
     # TODO this must be switched on deployment

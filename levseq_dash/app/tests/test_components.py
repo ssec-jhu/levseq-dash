@@ -240,6 +240,38 @@ def test_creat_heatmap_figure_data(experiment_ep_pcr, cas, plate, mutation, i, j
         assert annotations[i][j] == "4Mut*"
 
 
+@pytest.mark.parametrize(
+    "cas, plate",
+    [
+        ("345905-97-7", "20240422-ParLQ-ep1-300-1"),
+        ("345905-97-7", "20240422-ParLQ-ep1-300-2"),
+        ("345905-97-7", "20240422-ParLQ-ep1-500-1"),
+        ("345905-97-7", "20240422-ParLQ-ep1-500-2"),
+        ("345905-97-7", "20240502-ParLQ-ep2-300-1"),
+        ("345905-97-7", "20240502-ParLQ-ep2-300-2"),
+        ("345905-97-7", "20240502-ParLQ-ep2-300-3"),
+        ("345905-97-7", "20240502-ParLQ-ep2-500-1"),
+        ("345905-97-7", "20240502-ParLQ-ep2-500-2"),
+        ("345905-97-7", "20240502-ParLQ-ep2-500-3"),
+        ("395683-37-1", "20240422-ParLQ-ep1-300-1"),
+        ("395683-37-1", "20240422-ParLQ-ep1-300-2"),
+        ("395683-37-1", "20240422-ParLQ-ep1-500-1"),
+        ("395683-37-1", "20240422-ParLQ-ep1-500-2"),
+        ("395683-37-1", "20240502-ParLQ-ep2-300-1"),
+        ("395683-37-1", "20240502-ParLQ-ep2-300-2"),
+        ("395683-37-1", "20240502-ParLQ-ep2-300-3"),
+        ("395683-37-1", "20240502-ParLQ-ep2-500-1"),
+        ("395683-37-1", "20240502-ParLQ-ep2-500-3"),
+    ],
+)
+def test_create_rank_plot_figure_data(experiment_ep_pcr, cas, plate):
+    fig = graphs.creat_rank_plot(df=experiment_ep_pcr.data_df, plate_number=plate, cas_number=cas)
+    count = 0
+    for index in range(0, len(fig["data"])):
+        count += len(fig["data"][index]["customdata"])
+    assert count == 96
+
+
 def test_get_seq_align_form():
     assert isinstance(layout_matching_sequences.get_seq_align_form(), html.Div)
 
