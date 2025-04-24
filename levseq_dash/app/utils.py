@@ -18,16 +18,36 @@ def get_geometry_for_viewer(exp):
     return pdb_cif
 
 
-def gather_residues_from_selection(selected_rows):
-    mutations = f"{selected_rows[0]['amino_acid_substitutions']}"
-    mutations_split = mutations.split("_") if "_" in mutations else [mutations]
-    residues = list()
-    for mutation in mutations_split:
-        match = re.search(r"[A-Za-z](\d+)[A-Za-z]", mutation)
-        if match:
-            number = match.group(1)  # Extract the captured number
-            residues.append(number)
-    return residues
+# def gather_residues_from_selection(selected_rows):
+#     mutations = f"{selected_rows[0]['amino_acid_substitutions']}"
+#     mutations_split = mutations.split("_") if "_" in mutations else [mutations]
+#     residues = list()
+#     for mutation in mutations_split:
+#         match = re.search(r"[A-Za-z](\d+)[A-Za-z]", mutation)
+#         if match:
+#             number = match.group(1)  # Extract the captured number
+#             residues.append(number)
+#     return residues
+
+
+substitution_indices_pattern = r"(\d+)"
+
+
+def extract_all_indices(input_str):
+    # re.findall(<pattern>, string)
+    # The .findall() method iterates over a string to find a subset of characters that match a specified pattern.
+    # It will return a list of every pattern match that occurs in a given string.
+    result = re.findall(substitution_indices_pattern, input_str)
+    return result
+
+
+def is_target_index_in_string(input_str, target_index):
+    # re.findall(<pattern>, string)
+    # The .findall() method iterates over a string to find a subset of characters that match a specified pattern.
+    # It will return a list of every pattern match that occurs in a given string.
+    # numbers = re.findall(r"(?<=\D)(\d+)(?=\D)", f"_{input_str}_")
+    result = extract_all_indices(input_str)
+    return str(target_index) in result
 
 
 def get_selection_focus(residues, analyse=True):

@@ -6,16 +6,47 @@ import pytest
 from levseq_dash.app import global_strings as gs
 from levseq_dash.app.experiment import Experiment, MutagenesisMethod
 
-package_root = Path(__file__).resolve().parent.parent.parent
+# package_root = Path(__file__).resolve().parent.parent.parent
 
-path_assay = package_root / "app" / "tests" / "data" / "assay_measure_list.csv"
-path_exp_ep_data = package_root / "app" / "tests" / "data" / "flatten_ep_processed_xy_cas.csv"
-path_exp_ep_cif = package_root / "app" / "tests" / "data" / "flatten_ep_processed_xy_cas_row8.cif"
+# path_assay = package_root / "app" / "tests" / "data" / "assay_measure_list.csv"
+# path_exp_ep_data = package_root / "app" / "tests" / "data" / "flatten_ep_processed_xy_cas.csv"
+# path_exp_ep_cif = package_root / "app" / "tests" / "data" / "flatten_ep_processed_xy_cas_row8.cif"
 
-path_exp_ssm_data = package_root / "app" / "tests" / "data" / "flatten_ssm_processed_xy_cas.csv"
-path_exp_ssm_cif = package_root / "app" / "tests" / "data" / "flatten_ssm_processed_xy_cas_row3.cif"
+# path_exp_ssm_data = package_root / "app" / "tests" / "data" / "flatten_ssm_processed_xy_cas.csv"
+# path_exp_ssm_cif = package_root / "app" / "tests" / "data" / "flatten_ssm_processed_xy_cas_row3.cif"
 
-test_assay_list = (pd.read_csv(path_assay, encoding="utf-8", usecols=["Technique"]))["Technique"].tolist()
+
+# test_assay_list = (pd.read_csv(path_assay, encoding="utf-8", usecols=["Technique"]))["Technique"].tolist()
+
+
+@pytest.fixture(scope="session")
+def package_root():
+    return Path(__file__).resolve().parent.parent.parent
+
+
+@pytest.fixture(scope="session")
+def path_exp_ep_data(package_root):
+    return package_root / "app" / "tests" / "data" / "flatten_ep_processed_xy_cas.csv"
+
+
+@pytest.fixture(scope="session")
+def path_exp_ep_cif(package_root):
+    return package_root / "app" / "tests" / "data" / "flatten_ep_processed_xy_cas_row8.cif"
+
+
+@pytest.fixture(scope="session")
+def path_exp_ssm_data(package_root):
+    return package_root / "app" / "tests" / "data" / "flatten_ssm_processed_xy_cas.csv"
+
+
+@pytest.fixture(scope="session")
+def path_exp_ssm_cif(package_root):
+    return package_root / "app" / "tests" / "data" / "flatten_ssm_processed_xy_cas_row3.cif"
+
+
+@pytest.fixture(scope="session")
+def path_cif_bytes_string_file_sample(package_root):
+    return package_root / "app" / "tests" / "data" / "cif_bytes_string_sample.txt"
 
 
 @pytest.fixture
@@ -46,7 +77,9 @@ def dbmanager_read_all_from_file(mock_load_config_from_disk):
 
 
 @pytest.fixture(scope="session")
-def assay_list():
+def assay_list(package_root):
+    path_assay = package_root / "app" / "tests" / "data" / "assay_measure_list.csv"
+    test_assay_list = (pd.read_csv(path_assay, encoding="utf-8", usecols=["Technique"]))["Technique"].tolist()
     return test_assay_list
 
 
@@ -56,33 +89,33 @@ def experiment_empty():
 
 
 @pytest.fixture(scope="session")
-def experiment_ep_pcr():
+def experiment_ep_pcr(assay_list, path_exp_ep_data, path_exp_ep_cif):
     experiment_ep_example = Experiment(
         experiment_data_file_path=path_exp_ep_data,
         experiment_name="ep_file",
         experiment_date="TBD",
         mutagenesis_method=MutagenesisMethod.epPCR,
         geometry_file_path=path_exp_ep_cif,
-        assay=test_assay_list[2],
+        assay=assay_list[2],
     )
     return experiment_ep_example
 
 
 @pytest.fixture(scope="session")
-def experiment_ssm():
+def experiment_ssm(assay_list, path_exp_ssm_data, path_exp_ssm_cif):
     experiment_ssm_example = Experiment(
         experiment_data_file_path=path_exp_ssm_data,
         experiment_name="ssm_file",
         experiment_date="TBD",
         mutagenesis_method="SSM",
         geometry_file_path=path_exp_ssm_cif,
-        assay=test_assay_list[1],
+        assay=assay_list[1],
     )
     return experiment_ssm_example
 
 
 @pytest.fixture(scope="session")
-def experiment_ep_pcr_with_user_cas():
+def experiment_ep_pcr_with_user_cas(assay_list, path_exp_ep_data, path_exp_ep_cif):
     return Experiment(
         experiment_data_file_path=path_exp_ep_data,
         experiment_name="ep_file",
@@ -92,7 +125,7 @@ def experiment_ep_pcr_with_user_cas():
         product_cas_number=["597635-11-3", "605026-90-8", "650843-51-7"],
         mutagenesis_method=MutagenesisMethod.epPCR,
         geometry_file_path=path_exp_ep_cif,
-        assay=test_assay_list[3],
+        assay=assay_list[3],
     )
 
 
@@ -230,3 +263,29 @@ def seq_align_per_cas_data():
     }
 
     return df, seq_data, meta_data
+
+
+@pytest.fixture(scope="session")
+def seq_align_data():
+    return {
+        "experiment_id": 1,
+        "sequence": "MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVEDILDLWYGLQGSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTL"
+        "CKPLDRQWLNYMYEIGLRHHRTKKGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAIWSYPYAKTGEWLE",
+        "sequence_alignment": "target            0 MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVEDILDLWYGLQ\n"
+        "                  0 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+        "query             0 MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVEDILDLWYGLQ\n"
+        "\n"
+        "target           60 GSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTLCKPLDRQWLNYMYEIGLRHHRTK\n"
+        "                 60 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+        "query            60 GSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTLCKPLDRQWLNYMYEIGLRHHRTK\n\n"
+        "target          120 KGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAI\n"
+        "                120 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+        "query           120 KGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAI\n\n"
+        "target          180 WSYPYAKTGEWLE 193\n                180 ||||||||||||| 193\n"
+        "query           180 WSYPYAKTGEWLE 193\n",
+        "alignment_score": 1053.0,
+        "norm_score": 1.0,
+        "identities": 193,
+        "mismatches": 0,
+        "gaps": 0,
+    }

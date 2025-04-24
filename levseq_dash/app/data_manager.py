@@ -3,9 +3,10 @@ import random
 from collections import defaultdict
 from pathlib import Path
 
+import pandas as pd
+
 from levseq_dash.app import settings, utils
 from levseq_dash.app.experiment import Experiment, MutagenesisMethod
-from levseq_dash.app.tests.conftest import test_assay_list
 
 # from levseq_dash.app.wsexec import Query
 
@@ -23,7 +24,12 @@ class DataManager:
             # connect_to_db( host, port, username, password)
         else:
             self.experiments_dict = defaultdict(Experiment)
-            self.assay_list = test_assay_list
+
+            # this is test data so assign random assay and cas numbers
+            package_root = Path(__file__).resolve().parent.parent
+            path_assay = package_root / "app" / "tests" / "data" / "assay_measure_list.csv"
+            assays = pd.read_csv(path_assay, encoding="utf-8", usecols=["Technique"])
+            self.assay_list = assays["Technique"].tolist()
 
             # use this flag for debugging multiple files.
             # This will load all csv files in test/data
@@ -330,9 +336,8 @@ class DataManager:
             else:
                 mutagenesis_method = MutagenesisMethod.epPCR
 
-            # this is test data so assign random assay and cas numbers
-            assay_index = random.randrange(len(test_assay_list))
-            assay = test_assay_list[assay_index]
+            assay_index = random.randrange(len(self.assay_list))
+            assay = self.assay_list[assay_index]
 
             exp = Experiment(
                 experiment_data_file_path=exp_file_path,

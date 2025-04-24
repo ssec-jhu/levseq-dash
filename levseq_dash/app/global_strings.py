@@ -1,8 +1,11 @@
-# app strings
+# -----------------------------
+# General App Strings
+# -----------------------------
 web_title = "Levseq Dashboard"
 nav_lab = "Lab Dashboard"
 nav_upload = "Upload New Experiment"
 nav_seq = "Explore Similar Sequences"
+
 # -----------------------------
 # Upload page strings
 # -----------------------------
@@ -28,8 +31,9 @@ lab_exp = "All experiments in the lab"
 go_to = "Go to Experiment Dashboard"
 lab_total = "Total Experiments"
 lab_cas = "Used CAS"
+
 # -----------------------------
-# Experiment Card Strings
+# Experiment Page Strings
 # -----------------------------
 sequence = "Amino Acid Sequence"
 experiment = "Experiment Name"
@@ -45,13 +49,29 @@ well_heatmap = "Plate Map"
 top_variants = "Top Variants"
 retention_function = "Retention Function"
 
+tab_1 = "Experiment Dashboard"
+tab_2 = "Related Variants"
 view_all = "View all residues"
 select_plate = "Select Plate ID"
 select_cas = "Select CAS number"
 select_property = "Select Property"
 
+
 # -----------------------------
-# Sequence Alignment page Strings
+# Sequence Alignment - Related Variants specific
+# -----------------------------
+
+exp_seq_align_blurb = "Some instructions here..."
+exp_seq_align_form_input = "Experiment Parent Sequence"
+exp_seq_align_residue = "Residue for Lookup"
+exp_seq_align_residue_help = (
+    "Specify one or more residue indices from the experiment for lookup in the matching sequences."
+)
+exp_seq_align_query_info_1 = "Selected ExperimentID"
+exp_seq_align_query_info_2 = "Query ExperimentID"
+
+# -----------------------------
+# Sequence Alignment Strings
 # -----------------------------
 seq_align_blurb = (
     "Lots of good stuff to write here about the algorithms being used: BLOSOM matrix and blastp algorithm ... !"
@@ -63,17 +83,18 @@ seq_align_form_input_sequence_default = (
 )
 seq_align_form_placeholder = "Enter your query sequence here."
 seq_align_form_input = "Query Sequence"
-exp_seq_align_form_input = "Experiment Parent Sequence"
 seq_align_form_threshold = "Threshold"
 seq_align_form_threshold_default = "0.8"
 seq_align_form_hot_cold = "# Hot/Cold to extract"
 seq_align_form_hot_cold_n = "2"
 seq_align_form_button_sequence_matching = "Find Matching Sequences"
+
 # if you change below, make sure you also change
 # the string lookup in js function seqAlignmentVis -> search for it in assets
 hot = "H"
 cold = "C"
 hot_cold = "B"  # both hot and cold indicator
+# this will be treated as markdown
 markdown_note_matched_seq = """
 - Number of matched sequences is calculated per experiment match not per cas.
 - Each row represents experiment-cas information.

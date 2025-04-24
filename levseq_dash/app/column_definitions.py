@@ -359,20 +359,20 @@ def get_an_experiments_matched_sequences_column_defs():
         + get_experiment_name({"width": 130})
         + get_alignment_scores()
     )
-    column_def += [
-        {
-            "field": "exp_cas",
-            "headerName": "My CAS",
-            "cellClass": "matched-seq-cas-1",
-            "width": 120,
-        },
-        {
-            "field": "exp_index",
-            "headerName": "My Sub Index",
-            "cellClass": "matched-seq-cas-1",
-            "width": 120,
-        },
-    ]
+    # column_def += [
+    #     {
+    #         "field": "exp_cas",
+    #         "headerName": "My CAS",
+    #         "cellClass": "matched-seq-cas-1",
+    #         "width": 120,
+    #     },
+    #     {
+    #         "field": "exp_index",
+    #         "headerName": "My Sub Index",
+    #         "cellClass": "matched-seq-cas-1",
+    #         "width": 120,
+    #     },
+    # ]
     column_def += (
         get_cas({"width": 120})
         + get_substitutions({"width": 150})

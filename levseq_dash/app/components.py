@@ -270,7 +270,7 @@ def get_label_fixed_for_form(string, w=2):
 
 
 def get_info_icon_tooltip_bundle(info_icon_id, help_string, location, allow_html=False):
-    return html.Div(
+    return html.Span(
         [
             # html.Span(vis.icon_info, id=info_icon_id, weight=500, size="md"),
             dbc.Label(id=info_icon_id, children=vis.icon_info),

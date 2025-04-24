@@ -1,6 +1,6 @@
 import pytest
 
-from levseq_dash.app.sequence_aligner.bio_python_pairwise_aligner import get_alignments
+from levseq_dash.app.sequence_aligner.bio_python_pairwise_aligner import get_alignments, setup_aligner_blastp
 
 
 @pytest.mark.parametrize(
@@ -35,6 +35,17 @@ def test_get_alignments_empty_query():
         get_alignments("", 0, {"target": "AATT"})
 
 
+def test_get_alignments_empty_query_2():
+    with pytest.raises(Exception):
+        get_alignments(None, 0, {"target": "AATT"})
+
+
+def test_get_alignments_zero_base(mock_base_score):
+    # mocking base_score to 0 here
+    with pytest.raises(Exception):
+        get_alignments("AACTT", 0, {"target": "AATT"})
+
+
 def test_get_alignments_empty_targets():
     with pytest.raises(Exception):
         get_alignments("AACTT", 0, {})
@@ -43,3 +54,13 @@ def test_get_alignments_empty_targets():
 def test_get_alignments_empty_everything():
     with pytest.raises(Exception):
         get_alignments("", 0, {})
+
+
+def test_incorrect_aligner_setup(mock_pairwise_aligner):
+    with pytest.raises(Exception):
+        setup_aligner_blastp()
+
+
+def test_incorrect_mock_substitution_matrix(mock_substitution_matrix):
+    with pytest.raises(Exception):
+        setup_aligner_blastp()

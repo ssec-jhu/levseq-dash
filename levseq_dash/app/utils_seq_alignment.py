@@ -1,6 +1,9 @@
 import re
 
+import pandas as pd
+
 from levseq_dash.app import global_strings as gs
+from levseq_dash.app import utils
 
 
 def parse_alignment_pipes(alignment_str, hot_indices, cold_indices):
@@ -117,14 +120,39 @@ def gather_seq_alignment_data_per_cas(df_hot_cold_residue_per_cas, seq_match_dat
     return seq_match_row_data
 
 
-def gather_seq_alignment_data_for_experiment(df, seq_match_data, exp_meta_data, seq_match_row_data):
+def lookup_residues_in_experiment_data(df_experiment_data, lookup_residues_list: list):
     """
-    This utility function is used to gather row data for experiment related variants.
-    This function solely designed for the purpose of reusing code for gathering row data
+    This utility function is used to search for and extract rows of data that have the
+    list of residue indices listed in their mutations.
     """
+    df_exp_results = pd.DataFrame()
+    # iterate over the residue list and find matches
+    for index in lookup_residues_list:
+        # extract all rows in the dataframe which have this index in their residue
+        mask = df_experiment_data[gs.c_substitutions].apply(lambda x: utils.is_target_index_in_string(x, index))
+        df_gathered_rows = df_experiment_data[mask]
+        if not df_gathered_rows.empty:
+            # concatenate the results with previous findings
+            df_exp_results = pd.concat([df_exp_results, df_gathered_rows], ignore_index=True)
+
+    return df_exp_results
+
+
+def search_and_gather_variant_info_for_matching_experiment(
+    experiment, experiment_id, lookup_residues_list, seq_match_data, exp_results_row_data
+):
+    # # preprocess the data for residue extraction
+    df_match_exp = experiment.exp_get_processed_core_data_for_valid_mutation_extractions()
+
+    df_exp_results = lookup_residues_in_experiment_data(
+        df_experiment_data=df_match_exp, lookup_residues_list=lookup_residues_list
+    )
+
+    # add the experiment id to the data columns
+    df_exp_results[gs.cc_experiment_id] = experiment_id
 
     # convert the df do a list of records
-    dict_list = df.to_dict(orient="records")
+    dict_list = df_exp_results.to_dict(orient="records")
 
     # gather sequence alignment parsed string
     parsed_alignment_string, mutation_indices = parse_alignment_pipes(
@@ -135,10 +163,11 @@ def gather_seq_alignment_data_for_experiment(df, seq_match_data, exp_meta_data, 
         # add the sequence alignment stats
         record.update(seq_match_data)
         # add the experiment meta data
-        record.update(exp_meta_data)
+        record.update(experiment.exp_meta_data_to_dict())
         # add the mismatch indices and the
         record.update({gs.cc_seq_alignment_mismatches: mutation_indices})
         record.update({gs.cc_seq_alignment: parsed_alignment_string})
-        seq_match_row_data.append(record)
+        exp_results_row_data.append(record)
 
-    return seq_match_row_data
+    # return the updated records
+    return exp_results_row_data

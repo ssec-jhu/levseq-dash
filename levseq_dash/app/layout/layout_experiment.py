@@ -431,25 +431,55 @@ def get_seq_align_form_exp():
                                 debounce=True,
                             ),
                         ],
-                        width=2,
+                        width=3,
                     ),
                 ],
                 className="mb-1",
                 style=vis.border_row,
             ),
+            # dbc.Row(
+            #     [
+            #         components.get_label_fixed_for_form(gs.seq_align_form_hot_cold),
+            #         dbc.Col(
+            #             [
+            #                 dbc.Input(
+            #                     id="id-input-exp-related-variants-hot-cold",
+            #                     value=gs.seq_align_form_hot_cold_n,
+            #                     type="text",
+            #                     debounce=True,
+            #                 ),
+            #             ],
+            #             width=3,
+            #         ),
+            #     ],
+            #     className="mb-1",
+            #     style=vis.border_row,
+            # ),
             dbc.Row(
                 [
-                    components.get_label_fixed_for_form(gs.seq_align_form_hot_cold),
+                    components.get_label_fixed_for_form(gs.exp_seq_align_residue),
                     dbc.Col(
                         [
                             dbc.Input(
-                                id="id-input-exp-related-variants-hot-cold",
-                                value=gs.seq_align_form_hot_cold_n,
+                                id="id-input-exp-related-variants-residue",
                                 type="text",
                                 debounce=True,
+                            )
+                        ],
+                        width=3,
+                        align="center",
+                    ),
+                    dbc.Col(
+                        [
+                            components.get_info_icon_tooltip_bundle(
+                                info_icon_id="id-exp-seq-align-info",
+                                help_string=gs.exp_seq_align_residue_help,
+                                location="top",
                             ),
                         ],
-                        width=2,
+                        width=1,
+                        align="center",
+                        className="p-0",
                     ),
                 ],
                 className="mb-1",
@@ -483,7 +513,7 @@ def get_seq_align_form_exp():
 def get_experiment_tab_related_seq():
     return html.Div(
         [
-            dbc.Row(html.P("Some instructions here...")),
+            dbc.Row(html.P(gs.exp_seq_align_blurb)),
             dbc.Row(get_seq_align_form_exp()),
             html.Div(
                 id="id-div-exp-related-variants-section",
@@ -496,27 +526,6 @@ def get_experiment_tab_related_seq():
                                         dbc.CardHeader("Related Experiments"),
                                         dbc.CardBody(
                                             [
-                                                # dbc.Row(
-                                                #     [
-                                                #         # this info icon uses markdown in the tooltip so we
-                                                #         # must allow html and set the flag to true
-                                                #         html.Div(
-                                                #             [
-                                                #                 components.get_info_icon_tooltip_bundle(
-                                                #                     info_icon_id="id-info-1",
-                                                #                     help_string=gs.markdown_note_matched_seq,
-                                                #                     location="top",
-                                                #                     allow_html=True,
-                                                #                 ),
-                                                #                 html.P(
-                                                #                     id="id-div-matched-sequences-info",
-                                                #                     className="fw-bolder",
-                                                #                 ),
-                                                #             ],
-                                                #             style={"display": "flex", "gap": "5px"},
-                                                #         ),
-                                                #     ],
-                                                # ),
                                                 dbc.Row(
                                                     [components.get_table_experiment_related_variants()],
                                                     className="dbc dbc-ag-grid",
@@ -545,36 +554,33 @@ def get_experiment_tab_related_seq():
                                 [
                                     dbc.Card(
                                         [
-                                            dbc.CardHeader("Query Protein"),
+                                            dbc.CardHeader("Query Protein vs. Selected Related Variant Protein"),
                                             dbc.CardBody(
                                                 [
-                                                    dcc.Markdown(id="id-div-exp-related-variants-query-protein-info"),
-                                                    html.Div(id="id-viewer-exp-related-variants-query-protein"),
-                                                ],
-                                                className="p-1 mt-3",
-                                            ),
-                                        ],
-                                        style={
-                                            "box-shadow": "1px 2px 7px 0px grey",
-                                            "border-radius": "5px",
-                                            "height": vis.seq_match_card_height,
-                                        },
-                                    )
-                                ],
-                                width=6,
-                            ),
-                            dbc.Col(
-                                [
-                                    dbc.Card(
-                                        [
-                                            dbc.CardHeader("Selected Protein"),
-                                            dbc.CardBody(
-                                                [
-                                                    dcc.Markdown(
-                                                        id="id-div-exp-related-variants-selected-match-protein-info"
-                                                    ),
-                                                    html.Div(
-                                                        id="id-viewer-exp-related-variants-selected-match-protein"
+                                                    dbc.Row(
+                                                        [
+                                                            dbc.Col(
+                                                                [
+                                                                    dcc.Markdown(
+                                                                        id="id-div-exp-related-variants-query-protein-info"
+                                                                    ),
+                                                                    html.Div(
+                                                                        id="id-viewer-exp-related-variants-query-protein"
+                                                                    ),
+                                                                ],
+                                                                width=6,
+                                                            ),
+                                                            dbc.Col(
+                                                                [
+                                                                    dcc.Markdown(
+                                                                        id="id-div-exp-related-variants-selected-match-protein-info"
+                                                                    ),
+                                                                    html.Div(
+                                                                        id="id-viewer-exp-related-variants-selected-match-protein"
+                                                                    ),
+                                                                ]
+                                                            ),
+                                                        ]
                                                     ),
                                                 ],
                                                 className="p-1 mt-3",
@@ -587,8 +593,34 @@ def get_experiment_tab_related_seq():
                                         },
                                     )
                                 ],
-                                width=6,
+                                # width=6,
                             ),
+                            # dbc.Col(
+                            #     [
+                            #         dbc.Card(
+                            #             [
+                            #                 dbc.CardHeader("Selected Protein"),
+                            #                 dbc.CardBody(
+                            #                     [
+                            #                         dcc.Markdown(
+                            #                             id="id-div-exp-related-variants-selected-match-protein-info"
+                            #                         ),
+                            #                         html.Div(
+                            #                             id="id-viewer-exp-related-variants-selected-match-protein"
+                            #                         ),
+                            #                     ],
+                            #                     className="p-1 mt-3",
+                            #                 ),
+                            #             ],
+                            #             style={
+                            #                 "box-shadow": "1px 2px 7px 0px grey",
+                            #                 "border-radius": "5px",
+                            #                 "height": vis.seq_match_card_height,
+                            #             },
+                            #         )
+                            #     ],
+                            #     width=6,
+                            # ),
                         ],
                         className="g-2 mt-4 mb-4",
                     ),
@@ -608,14 +640,14 @@ def get_experiment_page():
                     # Experiment dashboard
                     dbc.Tab(
                         get_experiment_tab_dash(),
-                        label="Experiment Dashboard",
+                        label=gs.tab_1,
                         activeTabClassName="fw-bold",
                         tab_id="id-tab-exp-dash",
                     ),
                     # Gene Expression Query Tab
                     dbc.Tab(
                         get_experiment_tab_related_seq(),
-                        label="Related Sequences",
+                        label=gs.tab_2,
                         activeTabClassName="fw-bold",
                         # tab_id="id-tab-horizontal-bootstrap-geq",
                     ),

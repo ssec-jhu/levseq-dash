@@ -46,6 +46,21 @@ def test_experiment_empty_geometry_base64_string(experiment_empty):
     assert experiment_empty.geometry_base64_string == ""
 
 
+def test_experiment_empty_exceptions_1(experiment_empty):
+    with pytest.raises(Exception):
+        experiment_empty.exp_get_processed_core_data_for_valid_mutation_extractions()
+
+
+def test_experiment_empty_exceptions_2(experiment_empty):
+    with pytest.raises(Exception):
+        experiment_empty.exp_core_data_to_dict()
+
+
+def test_experiment_empty_exceptions_3(experiment_empty):
+    with pytest.raises(Exception):
+        experiment_empty.exp_hot_cold_spots(3)
+
+
 @pytest.mark.parametrize(
     "index, cas_number",
     [(0, "345905-97-7"), (1, "395683-37-1")],
@@ -71,6 +86,64 @@ def test_experiment_ep_pcr_plated(experiment_ep_pcr, index, plate):
 def test_experiment_ep_pcr_data_shape(experiment_ep_pcr):
     assert experiment_ep_pcr.data_df.shape[0] == 1920
     assert experiment_ep_pcr.data_df.shape[1] == 8
+
+
+def test_experiment_with_geometry_in_bytes(path_exp_ep_data, path_cif_bytes_string_file_sample, assay_list):
+    """
+    if the user loads bytes, all rest is none
+    """
+
+    # load as bytes
+    from levseq_dash.app.experiment import Experiment, MutagenesisMethod
+
+    # read the file as bytes
+    with open(path_cif_bytes_string_file_sample, "rb") as f:
+        byte_content = f.read()
+
+    if byte_content:
+        experiment_with_bytes_geometry = Experiment(
+            experiment_data_file_path=path_exp_ep_data,
+            experiment_name="ep_file",
+            experiment_date="TBD",
+            mutagenesis_method=MutagenesisMethod.epPCR,
+            # bytes here
+            geometry_base64_bytes=byte_content,
+            assay=assay_list[2],
+        )
+        assert experiment_with_bytes_geometry.geometry_file_path is None
+        assert experiment_with_bytes_geometry.geometry_base64_string is ""
+        assert isinstance(experiment_with_bytes_geometry.geometry_base64_bytes, bytes)
+        assert len(experiment_with_bytes_geometry.geometry_base64_bytes) == 201696
+
+
+def test_experiment_with_geometry_in_bytes_string(path_exp_ep_data, path_cif_bytes_string_file_sample, assay_list):
+    """
+    if the user loads bytes-string, we create the bytes internally
+    everything else should be none
+    """
+    # load as bytes
+    from levseq_dash.app.experiment import Experiment, MutagenesisMethod
+
+    # read the file as string
+    with open(path_cif_bytes_string_file_sample, "r") as f:
+        byte_string_content = f.read()
+
+    if byte_string_content:
+        experiment_with_bytes_geometry = Experiment(
+            experiment_data_file_path=path_exp_ep_data,
+            experiment_name="ep_file",
+            experiment_date="TBD",
+            mutagenesis_method=MutagenesisMethod.epPCR,
+            # bytes string here
+            geometry_base64_string=byte_string_content,
+            assay=assay_list[2],
+        )
+        assert experiment_with_bytes_geometry.geometry_file_path is None
+        # test there is string contents
+        assert len(experiment_with_bytes_geometry.geometry_base64_string) != 0
+        # test it has also been converted to bytes
+        assert isinstance(experiment_with_bytes_geometry.geometry_base64_bytes, bytes)
+        assert len(experiment_with_bytes_geometry.geometry_base64_bytes) == 151270
 
 
 def test_experiment_ep_pcr_assay(experiment_ep_pcr, assay_list):

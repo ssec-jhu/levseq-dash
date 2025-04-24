@@ -58,7 +58,7 @@ def get_alignments(query_sequence, threshold, targets: dict):
 
     results = []
 
-    if query_sequence is None:
+    if query_sequence is None or len(query_sequence) == 0:
         raise Exception("Empty query sequence was provided!")
 
     if len(targets) == 0:
