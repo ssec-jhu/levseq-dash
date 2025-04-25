@@ -147,15 +147,15 @@ def selected_row_top_variant_table():
     """
     return [
         {
-            "cas_number": "345905-97-7",
-            "plate": "20240422-ParLQ-ep1-300-1",
-            "well": "G10",
-            "amino_acid_substitutions": "K99R_R118C",
-            "fitness_value": 2506309.878,
+            gs.c_cas: "345905-97-7",
+            gs.c_plate: "20240422-ParLQ-ep1-300-1",
+            gs.c_well: "G10",
+            gs.c_substitutions: "K99R_R118C",
+            gs.c_fitness_value: 2506309.878,
             "min": 80628.5812,
             "max": 3176372.303,
             "mean": 1823393.4415588235,
-            "ratio": 1.3745304885254768,
+            gs.cc_ratio: 1.3745304885254768,
             "min_group": 0.044218970718173926,
             "max_group": 1.7420114773937716,
         }
@@ -211,7 +211,7 @@ query           180 QVAIWSHPYTKENDR-- 195
 def seq_align_per_cas_data():
     d = [
         {
-            "cas_number": "395683-37-1",
+            gs.c_cas: "395683-37-1",
             "hot_residue_indices_per_cas": ["59", "89", "93", "149"],
             "cold_residue_indices_per_cas": ["89", "119", "120"],
             "all_exp_residue_indices_per_cas": [
