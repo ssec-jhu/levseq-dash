@@ -269,9 +269,9 @@ def test_exp_core_data_to_dict(experiment_ep_pcr_with_user_cas):
         (0, "alignment_count", 0),
         (0, "alignment_probability", 0.0),
         (0, "amino_acid_substitutions", "#N.A.#"),
-        (0, "cas_number", "345905-97-7"),
+        (0, gs.c_cas, "345905-97-7"),
         (94, "fitness_value", 1917633.707),
-        (0, "plate", "20240422-ParLQ-ep1-300-1"),
+        (0, gs.c_plate, "20240422-ParLQ-ep1-300-1"),
         (0, "well", "A1"),
         (
             36,
@@ -282,9 +282,9 @@ def test_exp_core_data_to_dict(experiment_ep_pcr_with_user_cas):
         (51, "alignment_count", 29),
         (61, "alignment_probability", 0.0),
         (69, "amino_acid_substitutions", "#PARENT#"),
-        (99, "cas_number", "395683-37-1"),
+        (99, gs.c_cas, "395683-37-1"),
         (99, "fitness_value", 1244116.159),
-        (42, "plate", "20240422-ParLQ-ep1-300-1"),
+        (42, gs.c_plate, "20240422-ParLQ-ep1-300-1"),
         (0, "well", "A1"),
     ],
 )

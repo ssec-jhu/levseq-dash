@@ -185,13 +185,6 @@ def test_decode_dash_upload_data_to_base64_encoded_string_empty():
     assert df.shape[1] == 6
 
 
-def test_load_config():
-    c = settings.load_config()
-    # TODO this must be switched on deployment
-    assert not c["debug"]["use_db_web_service"]
-    assert c["debug"]["load_all_experiments_from_disk"]
-
-
 @pytest.mark.parametrize(
     "residue_list, target",
     [

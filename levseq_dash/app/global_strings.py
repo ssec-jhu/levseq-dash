@@ -120,6 +120,11 @@ header_fitness = "Fitness"
 header_mutagenesis = "Mutagenesis Method"
 
 # -----------------------------
+#   Error messages
+# -----------------------------
+error_app_mode = "Incorrect app mode in config file. Use 'disk' or 'db'"
+error_wrong_mode = "This function should only be used in the 'disk' app-mode. Change the settings in the config file.'"
+# -----------------------------
 #   DO NOT CHANGE PAST HERE
 # -----------------------------
 dbc_template_name = "flatly"

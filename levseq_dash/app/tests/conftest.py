@@ -8,12 +8,12 @@ from levseq_dash.app.experiment import Experiment, MutagenesisMethod
 
 # package_root = Path(__file__).resolve().parent.parent.parent
 
-# path_assay = package_root / "app" / "tests" / "data" / "assay_measure_list.csv"
-# path_exp_ep_data = package_root / "app" / "tests" / "data" / "flatten_ep_processed_xy_cas.csv"
-# path_exp_ep_cif = package_root / "app" / "tests" / "data" / "flatten_ep_processed_xy_cas_row8.cif"
+# path_assay = package_root / "app" / "tests" / "test_data" / "assay_measure_list.csv"
+# path_exp_ep_data = package_root / "app" / "tests" / "test_data" / "flatten_ep_processed_xy_cas.csv"
+# path_exp_ep_cif = package_root / "app" / "tests" / "test_data" / "flatten_ep_processed_xy_cas_row8.cif"
 
-# path_exp_ssm_data = package_root / "app" / "tests" / "data" / "flatten_ssm_processed_xy_cas.csv"
-# path_exp_ssm_cif = package_root / "app" / "tests" / "data" / "flatten_ssm_processed_xy_cas_row3.cif"
+# path_exp_ssm_data = package_root / "app" / "tests" / "test_data" / "flatten_ssm_processed_xy_cas.csv"
+# path_exp_ssm_cif = package_root / "app" / "tests" / "test_data" / "flatten_ssm_processed_xy_cas_row3.cif"
 
 
 # test_assay_list = (pd.read_csv(path_assay, encoding="utf-8", usecols=["Technique"]))["Technique"].tolist()
@@ -25,37 +25,48 @@ def package_root():
 
 
 @pytest.fixture(scope="session")
-def path_exp_ep_data(package_root):
-    return package_root / "app" / "tests" / "data" / "flatten_ep_processed_xy_cas.csv"
+def test_data_path(package_root):
+    return package_root / "app" / "tests" / "test_data"
 
 
 @pytest.fixture(scope="session")
-def path_exp_ep_cif(package_root):
-    return package_root / "app" / "tests" / "data" / "flatten_ep_processed_xy_cas_row8.cif"
+def path_exp_ep_data(test_data_path):
+    return test_data_path / "data" / "flatten_ep_processed_xy_cas.csv"
 
 
 @pytest.fixture(scope="session")
-def path_exp_ssm_data(package_root):
-    return package_root / "app" / "tests" / "data" / "flatten_ssm_processed_xy_cas.csv"
+def path_exp_ep_cif(test_data_path):
+    return test_data_path / "data" / "flatten_ep_processed_xy_cas_row8.cif"
 
 
 @pytest.fixture(scope="session")
-def path_exp_ssm_cif(package_root):
-    return package_root / "app" / "tests" / "data" / "flatten_ssm_processed_xy_cas_row3.cif"
+def path_exp_ssm_data(test_data_path):
+    return test_data_path / "data" / "flatten_ssm_processed_xy_cas.csv"
 
 
 @pytest.fixture(scope="session")
-def path_cif_bytes_string_file_sample(package_root):
-    return package_root / "app" / "tests" / "data" / "cif_bytes_string_sample.txt"
+def path_exp_ssm_cif(test_data_path):
+    return test_data_path / "data" / "flatten_ssm_processed_xy_cas_row3.cif"
+
+
+@pytest.fixture(scope="session")
+def path_cif_bytes_string_file_sample(test_data_path):
+    return test_data_path / "data" / "cif_bytes_string_sample.txt"
 
 
 @pytest.fixture
-def mock_load_config_from_disk(mocker):
+def mock_load_config_from_disk(mocker, test_data_path):
     """
     Fixture to mock a response
     """
+    # data_path = test_data_path / "data"
     mock = mocker.patch("levseq_dash.app.settings.load_config")
-    mock.return_value = {"debug": {"load_all_experiments_from_disk": True, "use_db_web_service": False}}
+    mock.return_value = {
+        "app-mode": "disk",
+        "load-from-disk": {
+            "data_path": str(test_data_path),
+        },
+    }
     return mock
 
 
@@ -65,7 +76,7 @@ def mock_load_config_use_web(mocker):
     Fixture to mock a response
     """
     mock = mocker.patch("levseq_dash.app.settings.load_config")
-    mock.return_value = {"debug": {"load_all_experiments_from_disk": False, "use_db_web_service": True}}
+    mock.return_value = {"app-mode": "db"}
     return mock
 
 
@@ -77,8 +88,8 @@ def dbmanager_read_all_from_file(mock_load_config_from_disk):
 
 
 @pytest.fixture(scope="session")
-def assay_list(package_root):
-    path_assay = package_root / "app" / "tests" / "data" / "assay_measure_list.csv"
+def assay_list(test_data_path):
+    path_assay = test_data_path / "assay" / "assay_measure_list.csv"
     test_assay_list = (pd.read_csv(path_assay, encoding="utf-8", usecols=["Technique"]))["Technique"].tolist()
     return test_assay_list
 
@@ -136,15 +147,15 @@ def selected_row_top_variant_table():
     """
     return [
         {
-            "cas_number": "345905-97-7",
-            "plate": "20240422-ParLQ-ep1-300-1",
-            "well": "G10",
-            "amino_acid_substitutions": "K99R_R118C",
-            "fitness_value": 2506309.878,
+            gs.c_cas: "345905-97-7",
+            gs.c_plate: "20240422-ParLQ-ep1-300-1",
+            gs.c_well: "G10",
+            gs.c_substitutions: "K99R_R118C",
+            gs.c_fitness_value: 2506309.878,
             "min": 80628.5812,
             "max": 3176372.303,
             "mean": 1823393.4415588235,
-            "ratio": 1.3745304885254768,
+            gs.cc_ratio: 1.3745304885254768,
             "min_group": 0.044218970718173926,
             "max_group": 1.7420114773937716,
         }
@@ -200,7 +211,7 @@ query           180 QVAIWSHPYTKENDR-- 195
 def seq_align_per_cas_data():
     d = [
         {
-            "cas_number": "395683-37-1",
+            gs.c_cas: "395683-37-1",
             "hot_residue_indices_per_cas": ["59", "89", "93", "149"],
             "cold_residue_indices_per_cas": ["89", "119", "120"],
             "all_exp_residue_indices_per_cas": [

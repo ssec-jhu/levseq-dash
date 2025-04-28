@@ -8,6 +8,7 @@ import pandas as pd
 from dash_molstar.utils import molstar_helper
 
 from levseq_dash.app import components
+from levseq_dash.app import global_strings as gs
 
 
 def get_geometry_for_viewer(exp):
@@ -181,8 +182,8 @@ def decode_csv_file_base64_string_to_dataframe(base64_encoded_string):
 
 
 def calculate_group_mean_ratios_per_cas_and_plate(df):
-    # df = df.loc[:, ["cas_number", "plate", "well", "amino_acid_substitutions", "fitness_value"]]
-    group_cols = ["cas_number", "plate"]
+    # df = df.loc[:, ["cas_number", gs.c_plate, "well", "amino_acid_substitutions", "fitness_value"]]
+    group_cols = [gs.c_cas, gs.c_plate]
     value_col = "fitness_value"
 
     # Compute min and max fitness for each group
