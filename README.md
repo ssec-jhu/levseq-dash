@@ -11,7 +11,13 @@
 
 # About
 
-TBD
+Levseq dash is a user-friendly web application that provides a rich and interactive visualization dashboard  
+to a comprehensive sequence-function database tailored to directed evolution experiments designed for individual labs at this phase.
+The app allows users to explore parent protein structures in 3D, view ligand docking interactions, and analyze 
+variants to determine which mutations lead to enhanced activity. These features streamline the decision-making process, 
+offering a significant improvement over traditional spreadsheet-based approaches.
+
+See more about the experiment file structure here [TBD]
 
 ![app_snapshot_1](docs/_static/app_1.png)
 ![app_snapshot_2](docs/_static/app_2.png)
@@ -28,7 +34,7 @@ TBD
 ## Quick start using your own dataset [with Docker]:
 Use this mode if you want to provide a path to a folder located on your host machine.
 Docker will require the path to mount. 
-* TBD: describe file structure
+* [TBD]: describe file structure
 * Build & Run the docker image: 
   * ``docker build . -t levseq-dash-with-my-data --no-cache``
   * ``docker run -p 8060:8050 -e DATA_PATH=/path/to/my/data -v /path/to/my/data:/path/to/my/data levseq-dash-with-my-data``
