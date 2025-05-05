@@ -11,8 +11,7 @@
 
 # About
 
-Levseq dash is a user-friendly web application that provides a rich and interactive visualization dashboard  
-to a comprehensive sequence-function database tailored to directed evolution experiments designed for individual labs at this phase.
+Levseq dash is a user-friendly web application that provides a rich and interactive visualization dashboard to a comprehensive sequence-function database tailored to directed evolution experiments designed for individual labs at this phase.
 The app allows users to explore parent protein structures in 3D, view ligand docking interactions, and analyze 
 variants to determine which mutations lead to enhanced activity. These features streamline the decision-making process, 
 offering a significant improvement over traditional spreadsheet-based approaches.
