@@ -86,8 +86,8 @@ class DataManager:
         user_id,
         experiment_name,
         experiment_date,
-        substrate_cas_number: list[str],
-        product_cas_number: list[str],
+        substrate: list[str],
+        product: list[str],
         assay,
         mutagenesis_method: MutagenesisMethod,  # epPCR or SSM
         experiment_content_base64_string,
@@ -113,8 +113,8 @@ class DataManager:
             #         4,
             #         assay_index,
             #         1,  # ,mutagenesis_method,
-            #         "395683-37-1",  # substrate_cas_number,  # cas_substrate,
-            #         "345905-97-7",  # product_cas_number,  # cas_product,
+            #         "395683-37-1",  # substrate,  # cas_substrate,
+            #         "345905-97-7",  # product,  # cas_product,
             #     ],
             # )  # type:ignore
             #
@@ -125,8 +125,8 @@ class DataManager:
                 experiment_csv_data_base64_string=experiment_content_base64_string,
                 experiment_name=experiment_name,
                 experiment_date=experiment_date,
-                substrate_cas_number=substrate_cas_number,
-                product_cas_number=product_cas_number,
+                substrate=substrate,
+                product=product,
                 assay=assay,
                 mutagenesis_method=mutagenesis_method,
                 geometry_file_path=None,
@@ -206,7 +206,7 @@ class DataManager:
         Returns
         -------
         | user_id | user_name| experiment_id | experiment_name | upload_time_stamp | experiment_date |
-        substrate_cas_number | product_cas_number | assay | mutagenesis_method
+        substrate | product | assay | mutagenesis_method
         """
         data_list_of_dict = []
         if self.use_db_web_service == AppMode.db.value:
@@ -390,8 +390,8 @@ class DataManager:
                 experiment_data_file_path=exp_file_path,
                 experiment_name=filename,
                 experiment_date="01-01-2025",
-                substrate_cas_number=utils.generate_random_cas_numbers(),
-                product_cas_number=utils.generate_random_cas_numbers(),
+                substrate=utils.generate_random_smiles(),
+                product=utils.generate_random_smiles(),
                 assay=assay,
                 mutagenesis_method=mutagenesis_method,
                 geometry_file_path=geometry_file_path,

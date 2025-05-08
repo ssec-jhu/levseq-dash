@@ -23,8 +23,8 @@ class Experiment:
         experiment_name=None,
         experiment_date=None,
         upload_time_stamp=None,
-        substrate_cas_number=None,
-        product_cas_number=None,
+        substrate=None,
+        product=None,
         assay=None,
         mutagenesis_method=None,
         geometry_file_path=None,
@@ -55,18 +55,18 @@ class Experiment:
         self.assay = assay if assay else ""
         self.mutagenesis_method = mutagenesis_method if mutagenesis_method else ""
 
-        # TODO: substrate and product cas should be whatever the user provided. don't fill it with unique, that
+        # TODO: substrate and product should be whatever the user provided. don't fill it with unique, that
         # can be separate
         # keep the list as a comma delimited string
-        if substrate_cas_number is None:
-            self.substrate_cas_number = []  # ", ".join(self.unique_cas_in_data)
+        if substrate is None:
+            self.substrate = []  # ", ".join(self.unique_smiles_in_data)
         else:
-            self.substrate_cas_number = ", ".join(substrate_cas_number)
+            self.substrate = ", ".join(substrate)
 
-        if product_cas_number is None:
-            self.product_cas_number = []
+        if product is None:
+            self.product = []
         else:
-            self.product_cas_number = ", ".join(product_cas_number)
+            self.product = ", ".join(product)
 
         # ------------------
         # process geometry data
@@ -91,7 +91,7 @@ class Experiment:
         # --------------------
         # internal calculations
         # --------------------
-        self.unique_cas_in_data = list(self.data_df[gs.c_cas].unique()) if not self.data_df.empty else []
+        self.unique_smiles_in_data = list(self.data_df[gs.c_smiles].unique()) if not self.data_df.empty else []
         self.plates = list(self.data_df[gs.c_plate].unique()) if not self.data_df.empty else []
         self.plates_count = len(self.plates)
         self.parent_sequence = (
@@ -152,15 +152,23 @@ class Experiment:
         This function cleans and preprocesses the core data for use in mostly the sequence alignments and
         ration calculations. It filters and cleans all data so the extracted values are valid experiment
         results for the sake of the sequence alignment and ratio calculations. The results are extracted per
-        CAS of the experiment. Each values, norm ratio with respect to parent sequence is also appended
+        smiles of the experiment. Each values, norm ratio with respect to parent sequence is also appended
         to the data.
         """
         if not self.data_df.empty:
-            df = utils.calculate_group_mean_ratios_per_cas_and_plate(self.data_df)
+            df = utils.calculate_group_mean_ratios_per_smiles_and_plate(self.data_df)
 
             # truncate the columns, we only need the columns below
             df = df[
-                [gs.c_cas, gs.c_plate, gs.c_well, gs.c_substitutions, gs.c_aa_sequence, gs.c_fitness_value, gs.cc_ratio]
+                [
+                    gs.c_smiles,
+                    gs.c_plate,
+                    gs.c_well,
+                    gs.c_substitutions,
+                    gs.c_aa_sequence,
+                    gs.c_fitness_value,
+                    gs.cc_ratio,
+                ]
             ]
 
             # remove anything from the mutations column with # or - and drop rows where column has NaN values
@@ -180,7 +188,7 @@ class Experiment:
         """
         This function extracts the top/bottom N residues for the experiment.
         It filters and cleans all data so the extracted values are valid experiment results
-        The results are extracted per CAS of the experiment.
+        The results are extracted per smiles of the experiment.
         Each values, norm ratio with respect to parent sequence is also appended to the data.
         Args:
             n: top N that we want to extract
@@ -191,29 +199,29 @@ class Experiment:
 
                 hot_n = pd.DataFrame()
                 cold_n = pd.DataFrame()
-                for cas_number in self.unique_cas_in_data:
+                for smiles in self.unique_smiles_in_data:
                     for plate_number in self.plates:
-                        # for this cas number and this plate of the experiment sorted by fitness values...
-                        df_per_cas_plate = df[
-                            (df[gs.c_cas] == cas_number) & (df[gs.c_plate] == plate_number)
+                        # for this smiles number and this plate of the experiment sorted by fitness values...
+                        df_per_smiles_plate = df[
+                            (df[gs.c_smiles] == smiles) & (df[gs.c_plate] == plate_number)
                         ].sort_values(by=gs.c_fitness_value, ascending=False)
 
                         # ... extract top/bottom N
-                        df_hot_n = df_per_cas_plate.head(n)
-                        df_cold_n = df_per_cas_plate.tail(n)
+                        df_hot_n = df_per_smiles_plate.head(n)
+                        df_cold_n = df_per_smiles_plate.tail(n)
 
                         # ... concatenate to previous results
                         hot_n = pd.concat([hot_n, df_hot_n])
                         cold_n = pd.concat([cold_n, df_cold_n])
 
-                def extract_substitution_indices_per_cas(df_in, new_column_name):
+                def extract_substitution_indices_per_smiles(df_in, new_column_name):
                     """
                     This is an internal python function used only below. The function extracts the substitution indices
-                    of the dataframe input grouped by the CAS numbers for te experiment
+                    of the dataframe input grouped by the smiles for te experiment
                     """
                     df_result = (
-                        # group by cas
-                        df_in.groupby(gs.c_cas)[gs.c_substitutions]
+                        # group by smiles
+                        df_in.groupby(gs.c_smiles)[gs.c_substitutions]
                         # and extract the unique indices form the substitutions column
                         # ...sort it as well
                         .apply(
@@ -232,20 +240,22 @@ class Experiment:
                     )
                     return df_result
 
-                # extract indices per CAS
-                hot_per_cas = extract_substitution_indices_per_cas(
-                    df_in=hot_n, new_column_name=gs.cc_hot_indices_per_cas
+                # extract indices per smiles
+                hot_per_smiles = extract_substitution_indices_per_smiles(
+                    df_in=hot_n, new_column_name=gs.cc_hot_indices_per_smiles
                 )
-                cold_per_cas = extract_substitution_indices_per_cas(
-                    df_in=cold_n, new_column_name=gs.cc_cold_indices_per_cas
+                cold_per_smiles = extract_substitution_indices_per_smiles(
+                    df_in=cold_n, new_column_name=gs.cc_cold_indices_per_smiles
                 )
 
                 # merge result columns, all rows are exactly the same because the original data was the same
-                hot_cold_residue_per_cas = hot_per_cas.merge(cold_per_cas, how="left")
+                hot_cold_residue_per_smiles = hot_per_smiles.merge(cold_per_smiles, how="left")
 
                 # TODO: Note:These lines may be added/deleted in the future, keep an eye on it
-                sub_per_cas = extract_substitution_indices_per_cas(df_in=df, new_column_name=gs.cc_exp_residue_per_cas)
-                hot_cold_residue_per_cas = hot_cold_residue_per_cas.merge(sub_per_cas, how="left")
+                sub_per_smiles = extract_substitution_indices_per_smiles(
+                    df_in=df, new_column_name=gs.cc_exp_residue_per_smiles
+                )
+                hot_cold_residue_per_smiles = hot_cold_residue_per_smiles.merge(sub_per_smiles, how="left")
 
                 # add a column to identify results
                 hot_n[gs.cc_hot_cold_type] = gs.cc_hot
@@ -254,7 +264,7 @@ class Experiment:
                 # merge the hot and the cold together
                 hot_cold_spots_merged_df = pd.concat([hot_n, cold_n], ignore_index=True)
 
-                return hot_cold_spots_merged_df, hot_cold_residue_per_cas
+                return hot_cold_spots_merged_df, hot_cold_residue_per_smiles
             else:
                 raise Exception("A number greater than 0 must be provided.")
         else:
