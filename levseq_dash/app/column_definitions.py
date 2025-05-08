@@ -84,11 +84,11 @@ def get_experiment_meta_smiles(record_1, record_2):
     c = [
         {
             "field": gs.cc_substrate,
-            #"headerName": gs.header_substrate,
+            # "headerName": gs.header_substrate,
         },
         {
             "field": gs.cc_product,
-            #"headerName": gs.header_product,
+            # "headerName": gs.header_product,
         },
     ]
 
