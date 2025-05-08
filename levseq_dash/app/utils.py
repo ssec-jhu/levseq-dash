@@ -251,6 +251,11 @@ def generate_random_smiles():
         "CC(C)CO",  # butanol isomer
         "OC(=O)CCl",  # chloroacetic acid
         "CC(C)(C)O",  # tert-butanol
+        "Na.[Cl-]",  # sodium chloride (ionic pair)
+        "CCO.CC(=O)O",  # ethanol + acetic acid
+        "N#N.CC(C)O",  # nitrogen + isopropanol
+        "O=C=O.CN(C)C",  # CO2 + dimethylamine
+
         "C1=CC=C(C=C1)C=O",
         "CC(C)CC1=CC=C(C=C1)C(C)C(=O)O",
     ]
