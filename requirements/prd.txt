@@ -11,3 +11,4 @@ dash_molstar==1.2.1
 plotly-express==0.4.1
 dash_mantine_components==0.13.0a3
 biopython==1.85
+rdkit==2024.9.6

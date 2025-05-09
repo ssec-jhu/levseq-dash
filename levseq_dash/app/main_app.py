@@ -21,7 +21,7 @@ from levseq_dash.app.layout import (
     layout_upload,
 )
 from levseq_dash.app.sequence_aligner import bio_python_pairwise_aligner
-from levseq_dash.app.utils import u_protein_viewer, u_seq_alignment, utils
+from levseq_dash.app.utils import u_protein_viewer, u_reaction, u_seq_alignment, utils
 
 # Initialize the app
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
@@ -391,12 +391,18 @@ def redirect_to_experiment_page(n_clicks):
 
 
 @app.callback(
-    # Variant table
+    # -------------------------------
+    # Top variant table
+    # -------------------------------
     Output("id-table-exp-top-variants", "rowData"),
     Output("id-table-exp-top-variants", "columnDefs"),
-    # Protein
+    # -------------------------------
+    # Protein viewer
+    # -------------------------------
     Output("id-viewer", "data"),
+    # -------------------------------
     # Meta data
+    # -------------------------------
     Output("id-experiment-name", "children"),
     Output("id-experiment-sequence", "children"),
     Output("id-experiment-mutagenesis-method", "children"),
@@ -407,31 +413,43 @@ def redirect_to_experiment_page(n_clicks):
     Output("id-experiment-substrate", "children"),
     Output("id-experiment-product", "children"),
     Output("id-experiment-assay", "children"),
-    # Heat map dropdowns options and defaults
+    # -------------------------------
+    # heatmap dropdowns and figure
+    # -------------------------------
     Output("id-list-plates", "options"),
     Output("id-list-plates", "value"),
     Output("id-list-smiles", "options"),
     Output("id-list-smiles", "value"),
     Output("id-list-properties", "options"),
     Output("id-list-properties", "value"),
-    # Heat map figure
     Output("id-experiment-heatmap", "figure"),
-    # Ranking plot dropdowns options and defaults
+    # -------------------------------
+    # rank plot dropdowns and figure
+    # --------------------------------
     Output("id-list-plates-ranking-plot", "options"),
     Output("id-list-plates-ranking-plot", "value"),
     Output("id-list-smiles-ranking-plot", "options"),
     Output("id-list-smiles-ranking-plot", "value"),
-    # Ranking plot figure
     Output("id-experiment-ranking-plot", "figure"),
-    # slider setup
+    # -------------------------------
+    # residue highlight slider
+    # --------------------------------
     Output("id-slider-ratio", "marks"),
     Output("id-slider-ratio", "max"),
     Output("id-list-smiles-residue-highlight", "options"),
     Output("id-list-smiles-residue-highlight", "value"),
+    # -------------------------------
     # related sequences
+    # --------------------------------
     Output("id-input-exp-related-variants-query-sequence", "children"),
+    # -------------------------------
+    # reaction
+    # --------------------------------
+    Output("id-experiment-reaction-image", "src"),
     # Output("id-store-heatmap-data", "data"),
+    # --------------------------------
     # Inputs
+    # --------------------------------
     Input("url", "pathname"),
     State("id-experiment-selected", "data"),
     prevent_initial_call=True,
@@ -487,19 +505,31 @@ def load_experiment_page(pathname, experiment_id):
 
         # exp_dict = json.loads(exp_json)
         # exp = Experiment.exp_from_dict(exp_dict)
+        # substrate = "CC(C)(C)C(=O)ON.CCC#Cc1ccccc1.O=S(=O)(O)C(F)(F)F"
+        substrate = exp.substrate[0]
+        product = exp.product[0]  # "CN(c1ccccc1)[C@H]1CCOC1=O"
+        svg_src_image = u_reaction.create_reaction_image(substrate, product)
 
         return (
+            # -------------------------------
+            # Top variant table
+            # -------------------------------
             df_filtered_with_ratio.to_dict("records"),  # rowData
             columnDefs_with_ratio,
+            # -------------------------------
+            # Protein viewer
+            # -------------------------------
             pdb_cif,
+            # -------------------------------
+            # Meta data
+            # -------------------------------
             exp.experiment_name,
             exp.parent_sequence,
             exp.mutagenesis_method,
             exp.experiment_date,
             exp.upload_time_stamp,
             exp.plates_count,
-            # exp.unique_smiles_in_data, # return a comma delimited string
-            unique_smiles_in_data,  # return a comma delimited string
+            unique_smiles_in_data,
             exp.substrate,
             exp.product,
             exp.assay,
@@ -532,6 +562,10 @@ def load_experiment_page(pathname, experiment_id):
             # related sequences
             # --------------------------------
             exp.parent_sequence,
+            # -------------------------------
+            # reaction
+            # --------------------------------
+            svg_src_image,
         )
     else:
         raise PreventUpdate

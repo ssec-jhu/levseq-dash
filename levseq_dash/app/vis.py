@@ -41,6 +41,7 @@ display_none = {"display": "none"}
 top_card_head = "card-title fw-bold custom-card-header"
 top_card_body = "text-primary-emphasis"
 
+experiment_info = {"fontWeight": "bold", "marginRight": "15px"}
 # --------------------
 #   Icons
 # --------------------

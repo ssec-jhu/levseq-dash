@@ -32,112 +32,132 @@ def get_experiment_tab_dash():
                     dbc.Col(
                         dbc.Card(
                             [
-                                dbc.CardHeader(gs.experiment, className=vis.top_card_head),
-                                dbc.CardBody(id="id-experiment-name", className=vis.top_card_body),
+                                dbc.CardHeader("Experiment Info", className=vis.top_card_head),
+                                dbc.CardBody(
+                                    [
+                                        html.Div(
+                                            [
+                                                html.Div(
+                                                    [
+                                                        html.Span(gs.experiment, style=vis.experiment_info),
+                                                        html.Span(id="id-experiment-name"),
+                                                    ]
+                                                ),
+                                                html.Div(
+                                                    [
+                                                        html.Span(gs.date, style=vis.experiment_info),
+                                                        html.Span(id="id-experiment-date"),
+                                                    ]
+                                                ),
+                                                html.Div(
+                                                    [
+                                                        html.Span(gs.upload_date, style=vis.experiment_info),
+                                                        html.Span(id="id-experiment-upload"),
+                                                    ]
+                                                ),
+                                                html.Div(
+                                                    [
+                                                        html.Span(gs.technique, style=vis.experiment_info),
+                                                        html.Span(id="id-experiment-mutagenesis-method"),
+                                                    ]
+                                                ),
+                                                html.Div(
+                                                    [
+                                                        html.Span(gs.assay, style=vis.experiment_info),
+                                                        html.Span(id="id-experiment-assay"),
+                                                    ]
+                                                ),
+                                                html.Div(
+                                                    [
+                                                        html.Span(gs.technique, style=vis.experiment_info),
+                                                        html.Span(id="id-experiment-mutagenesis-method"),
+                                                    ]
+                                                ),
+                                                html.Div(
+                                                    [
+                                                        html.Span(gs.plates_count, style=vis.experiment_info),
+                                                        html.Span(id="id-experiment-plate-count"),
+                                                    ]
+                                                ),
+                                                html.Div(
+                                                    [
+                                                        html.Span(gs.smiles_file, style=vis.experiment_info),
+                                                        html.Span(id="id-experiment-file-smiles"),
+                                                    ]
+                                                ),
+                                            ]
+                                        )
+                                    ],
+                                    className=vis.top_card_body,
+                                ),
                             ],
                             style=vis.card_shadow,
                         ),
-                        width=3,
+                        width=5,
                         style=vis.border_column,
                     ),
                     dbc.Col(
                         dbc.Card(
                             [
-                                dbc.CardHeader(gs.date, className=vis.top_card_head),
-                                dbc.CardBody(id="id-experiment-date", className=vis.top_card_body),
+                                dbc.CardHeader(gs.reaction, className=vis.top_card_head),
+                                dbc.CardBody(
+                                    [
+                                        dbc.Row(
+                                            html.Div(
+                                                html.Img(
+                                                    id="id-experiment-reaction-image",
+                                                    style={"maxWidth": "100%", "height": "auto"},
+                                                ),
+                                                style={
+                                                    "display": "flex",
+                                                    "justifyContent": "center",
+                                                    "alignItems": "center",
+                                                },
+                                            ),
+                                        ),
+                                        dbc.Row(
+                                            [
+                                                html.Span(
+                                                    [
+                                                        html.Span(
+                                                            [
+                                                                html.Span(
+                                                                    gs.substrate_smiles_input, style=vis.experiment_info
+                                                                ),
+                                                                html.Span(
+                                                                    id="id-experiment-substrate",
+                                                                    style={"marginRight": "15px"},
+                                                                ),
+                                                            ]
+                                                        ),
+                                                        html.Span(
+                                                            [
+                                                                html.Span(
+                                                                    gs.product_smiles_input, style=vis.experiment_info
+                                                                ),
+                                                                html.Span(id="id-experiment-product"),
+                                                            ]
+                                                        ),
+                                                    ],
+                                                    style={
+                                                        "display": "flex",
+                                                        "justifyContent": "center",
+                                                        "alignItems": "center",
+                                                        "width": "100%",
+                                                    },
+                                                )
+                                            ],
+                                        ),
+                                    ],
+                                    className=vis.top_card_body,
+                                ),
                             ],
                             style=vis.card_shadow,
                         ),
-                        width=2,
-                        style=vis.border_column,
-                    ),
-                    dbc.Col(
-                        dbc.Card(
-                            [
-                                dbc.CardHeader(gs.upload_date, className=vis.top_card_head),
-                                dbc.CardBody(id="id-experiment-upload", className=vis.top_card_body),
-                            ],
-                            style=vis.card_shadow,
-                        ),
-                        width=2,
-                        style=vis.border_column,
-                    ),
-                    dbc.Col(
-                        dbc.Card(
-                            [
-                                dbc.CardHeader(gs.technique, className=vis.top_card_head),
-                                dbc.CardBody(id="id-experiment-mutagenesis-method", className=vis.top_card_body),
-                            ],
-                            style=vis.card_shadow,
-                            # className="shadow"
-                        ),
-                        width=3,
-                        style=vis.border_column,
-                    ),
-                    dbc.Col(
-                        dbc.Card(
-                            [
-                                dbc.CardHeader(gs.plates_count, className=vis.top_card_head),
-                                dbc.CardBody(id="id-experiment-plate-count", className=vis.top_card_body),
-                            ],
-                            style=vis.card_shadow,
-                        ),
-                        width=2,
                         style=vis.border_column,
                     ),
                 ],
-                className="g-3 mb-4",
-                style=vis.border_row,
-            ),
-            dbc.Row(
-                [
-                    dbc.Col(
-                        dbc.Card(
-                            [
-                                dbc.CardHeader(gs.assay, className=vis.top_card_head),
-                                dbc.CardBody(id="id-experiment-assay", className=vis.top_card_body),
-                            ],
-                            style=vis.card_shadow,
-                        ),
-                        width=3,
-                        style=vis.border_column,
-                    ),
-                    dbc.Col(
-                        dbc.Card(
-                            [
-                                dbc.CardHeader(gs.smiles_file, className=vis.top_card_head),
-                                dbc.CardBody(id="id-experiment-file-smiles", className=vis.top_card_body),
-                            ],
-                            style=vis.card_shadow,
-                        ),
-                        width=3,
-                        style=vis.border_column,
-                    ),
-                    dbc.Col(
-                        dbc.Card(
-                            [
-                                dbc.CardHeader(gs.substrate_smiles_input, className=vis.top_card_head),
-                                dbc.CardBody(id="id-experiment-substrate", className=vis.top_card_body),
-                            ],
-                            style=vis.card_shadow,
-                        ),
-                        width=3,
-                        style=vis.border_column,
-                    ),
-                    dbc.Col(
-                        dbc.Card(
-                            [
-                                dbc.CardHeader(gs.product_smiles_input, className=vis.top_card_head),
-                                dbc.CardBody(id="id-experiment-product", className=vis.top_card_body),
-                            ],
-                            style=vis.card_shadow,
-                        ),
-                        width=3,
-                        style=vis.border_column,
-                    ),
-                ],
-                className="g-3 mb-4",
-                style=vis.border_row,
+                className="mb-3",
             ),
             # top variants and viewer row
             dbc.Row(
@@ -581,7 +601,7 @@ def get_experiment_tab_related_seq():
                                                                 ]
                                                             ),
                                                         ]
-                                                    ),
+                                                    )
                                                 ],
                                                 className="p-1 mt-3",
                                             ),
