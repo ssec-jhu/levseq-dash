@@ -5,19 +5,10 @@ import re
 from datetime import datetime
 
 import pandas as pd
-from dash_molstar.utils import molstar_helper
 
 from levseq_dash.app import components
 from levseq_dash.app import global_strings as gs
-
-
-def get_geometry_for_viewer(exp):
-    if exp.geometry_file_path:
-        pdb_cif = molstar_helper.parse_molecule(exp.geometry_file_path, fmt="cif")
-    else:
-        pdb_cif = molstar_helper.parse_molecule(exp.geometry_base64_bytes, fmt="cif")
-    return pdb_cif
-
+from levseq_dash.app.utils.u_protein_viewer import substitution_indices_pattern
 
 # def gather_residues_from_selection(selected_rows):
 #     mutations = f"{selected_rows[0]['amino_acid_substitutions']}"
@@ -29,9 +20,6 @@ def get_geometry_for_viewer(exp):
 #             number = match.group(1)  # Extract the captured number
 #             residues.append(number)
 #     return residues
-
-
-substitution_indices_pattern = r"(\d+)"
 
 
 def extract_all_indices(input_str):
@@ -49,45 +37,6 @@ def is_target_index_in_string(input_str, target_index):
     # numbers = re.findall(r"(?<=\D)(\d+)(?=\D)", f"_{input_str}_")
     result = extract_all_indices(input_str)
     return str(target_index) in result
-
-
-def get_selection_focus(residues, analyse=True):
-    """ "
-    https://dash-molstar.readthedocs.io/en/latest/
-    """
-    target = molstar_helper.get_targets(
-        chain="A",
-        residue=residues,
-        auth=True,
-        # if it's a CIF file to select the authentic chain names and residue
-        # numbers
-    )
-    sel = molstar_helper.get_selection(
-        target,
-        # select by default, it will put a green highlight on the atoms
-        # default select mode (true) or hover mode (false)
-        # select=False,
-        add=False,
-    )  # TODO: do we want to add to the list?
-
-    # Focus the camera on the specified targets.
-    # If analyse is set to True, non-covalent interactions within 5 angstroms will be analysed.
-    # https://dash-molstar.readthedocs.io/en/latest/callbacks.html#parameter-focus
-    foc = molstar_helper.get_focus(target, analyse=analyse)
-
-    return sel, foc
-
-
-def reset_selection():
-    target = {"chain_name": None, "auth": False, "residue_numbers": []}
-    sel = molstar_helper.get_selection(
-        target,
-        # select by default, it will put a green highlight on the atoms
-        # default select mode (true) or hover mode (false)
-        select=True,
-        add=False,
-    )
-    return sel
 
 
 # def get_file_size(file_bytes):

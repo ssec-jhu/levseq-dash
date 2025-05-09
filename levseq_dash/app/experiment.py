@@ -7,7 +7,7 @@ from pathlib import Path
 import pandas as pd
 
 from levseq_dash.app import global_strings as gs
-from levseq_dash.app import utils
+from levseq_dash.app.utils import u_protein_viewer, utils
 
 
 class MutagenesisMethod(StrEnum):
@@ -227,7 +227,8 @@ class Experiment:
                         # ...sort it as well
                         .apply(
                             lambda x: sorted(
-                                x.str.extractall(utils.substitution_indices_pattern)[0].unique().tolist(), key=int
+                                x.str.extractall(u_protein_viewer.substitution_indices_pattern)[0].unique().tolist(),
+                                key=int,
                             )
                         )
                         # Generate a new DataFrame or Series with the index reset.

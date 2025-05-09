@@ -3,7 +3,7 @@ import re
 import pandas as pd
 
 from levseq_dash.app import global_strings as gs
-from levseq_dash.app import utils
+from levseq_dash.app.utils import utils
 
 
 def parse_alignment_pipes(alignment_str, hot_indices, cold_indices):

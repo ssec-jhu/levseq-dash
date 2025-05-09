@@ -3,48 +3,9 @@ import base64
 import pandas as pd
 import pytest
 
-from levseq_dash.app import components, settings, utils
+from levseq_dash.app import components
 from levseq_dash.app import global_strings as gs
-
-
-def test_geometry_viewer_type(experiment_ep_pcr_with_user_smiles):
-    pdb = utils.get_geometry_for_viewer(experiment_ep_pcr_with_user_smiles)
-    assert pdb["type"] == "mol"
-
-
-def test_geometry_viewer_format(experiment_ep_pcr_with_user_smiles):
-    pdb = utils.get_geometry_for_viewer(experiment_ep_pcr_with_user_smiles)
-    assert pdb["format"] == "mmcif"
-
-
-def test_geometry_viewer_length(experiment_ep_pcr_with_user_smiles):
-    pdb = utils.get_geometry_for_viewer(experiment_ep_pcr_with_user_smiles)
-    assert len(pdb) == 4
-
-
-def test_extract_all_indices(selected_row_top_variant_table):
-    residues = utils.extract_all_indices(selected_row_top_variant_table[0][gs.c_substitutions])
-    assert len(residues) == 2
-
-
-@pytest.mark.parametrize(
-    "residue, extracted_list, length",
-    [
-        ("A53K_T34R", ["53", "34"], 2),
-        ("K43*_A59R", ["43", "59"], 2),
-        ("T106C_G118T_T203C_C322T_T552G", ["106", "118", "203", "322", "552"], 5),
-        ("#PARENT#", [], 0),
-        ("#anything#", [], 0),
-        ("N.A", [], 0),
-        ("K99R_R118C", ["99", "118"], 2),
-        ("K99", ["99"], 1),
-        ("99R*", ["99"], 1),
-    ],
-)
-def test_test_extract_all_indices_2(residue, extracted_list, length):
-    indices = utils.extract_all_indices(residue)
-    assert len(indices) == length
-    assert indices == extracted_list
+from levseq_dash.app.utils import utils
 
 
 @pytest.mark.parametrize(
@@ -68,25 +29,6 @@ def test_test_extract_all_indices_2(residue, extracted_list, length):
 )
 def test_is_target_index_in_string(input_str, target_index, expected):
     assert utils.is_target_index_in_string(input_str, target_index) == expected
-
-
-@pytest.mark.parametrize(
-    "residue, numbers",
-    [
-        ("K99R_R118C", [99, 118]),
-        ("A59L", [59]),
-        ("C81T_T86A_A108G", [81, 86, 108]),
-    ],
-)
-def test_gather_residue_errors(residue, numbers):
-    """
-    tests the molstar selection and focus functions
-    """
-    residues = utils.extract_all_indices(residue)
-    sel, foc = utils.get_selection_focus(residues)
-    assert sel["mode"] == "select"
-    assert sel["targets"][0]["residue_numbers"] == numbers
-    assert foc["analyse"]
 
 
 @pytest.mark.parametrize(
@@ -183,26 +125,6 @@ def test_decode_dash_upload_data_to_base64_encoded_string_empty():
     assert not df.empty
     assert df.shape[0] == 2
     assert df.shape[1] == 6
-
-
-@pytest.mark.parametrize(
-    "residue_list, target",
-    [
-        (["53", "34"], [53, 34]),
-        (["43", "59"], [43, 59]),
-        (["106", "118", "203", "322", "552"], [106, 118, 203, 322, 552]),
-        ([], []),
-    ],
-)
-def test_get_selection_focus(residue_list, target):
-    sel, foc = utils.get_selection_focus(residue_list, analyse=False)
-    assert sel["targets"][0]["residue_numbers"] == target
-    assert foc["targets"][0]["residue_numbers"] == target
-
-
-def test_reset_selection():
-    sel = utils.reset_selection()
-    assert sel["targets"][0]["residue_numbers"] == []
 
 
 @pytest.mark.parametrize(

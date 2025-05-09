@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 
 from levseq_dash.app import global_strings as gs
-from levseq_dash.app import utils
+from levseq_dash.app.utils import utils
 
 num_samples = 12  # change this if more data is added
 
