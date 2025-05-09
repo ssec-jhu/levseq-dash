@@ -615,7 +615,7 @@ def focus_select_output(selected_rows):
     State("id-table-exp-top-variants", "rowData"),
     prevent_initial_call=True,
 )
-def on_view_all_residue(view, slider_value, cas_value, rowData):
+def on_view_all_residue(view, slider_value, selected_smiles, rowData):
     # default the values
     sel = utils.reset_selection()
     foc = no_update
@@ -623,8 +623,8 @@ def on_view_all_residue(view, slider_value, cas_value, rowData):
     if view and rowData:
         df = pd.DataFrame(rowData)
         # filter by smiles value
-        if cas_value:
-            df_smiles = df[df[gs.c_smiles] == cas_value]
+        if selected_smiles:
+            df_smiles = df[df[gs.c_smiles] == selected_smiles]
         else:
             df_smiles = df
 

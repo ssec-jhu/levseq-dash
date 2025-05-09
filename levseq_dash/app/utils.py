@@ -212,21 +212,21 @@ def calculate_group_mean_ratios_per_smiles_and_plate(df):
     return df
 
 
-def generate_random_cas_numbers():
-    """
-    This method is only to be used for debugging and reading from disk and prototyping.
-    """
-    num_cas = random.randint(1, 3)  # Randomly choose between 1 and 3 smiles
-    cas_list = []
-
-    for _ in range(num_cas):
-        part1 = random.randint(10000, 999999)  # 5-6 digits
-        part2 = random.randint(10, 99)  # 2 digits
-        part3 = random.randint(0, 9)  # 1-digit check number
-        smiles = f"{part1}-{part2}-{part3}"
-        cas_list.append(smiles)
-
-    return cas_list
+# def generate_random_cas_numbers():
+#     """
+#     This method is only to be used for debugging and reading from disk and prototyping.
+#     """
+#     num_cas = random.randint(1, 3)  # Randomly choose between 1 and 3 smiles
+#     cas_list = []
+#
+#     for _ in range(num_cas):
+#         part1 = random.randint(10000, 999999)  # 5-6 digits
+#         part2 = random.randint(10, 99)  # 2 digits
+#         part3 = random.randint(0, 9)  # 1-digit check number
+#         smiles = f"{part1}-{part2}-{part3}"
+#         cas_list.append(smiles)
+#
+#     return cas_list
 
 
 def generate_random_smiles():
