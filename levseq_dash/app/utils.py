@@ -181,9 +181,9 @@ def decode_csv_file_base64_string_to_dataframe(base64_encoded_string):
     return df
 
 
-def calculate_group_mean_ratios_per_cas_and_plate(df):
-    # df = df.loc[:, ["cas_number", gs.c_plate, "well", "amino_acid_substitutions", "fitness_value"]]
-    group_cols = [gs.c_cas, gs.c_plate]
+def calculate_group_mean_ratios_per_smiles_and_plate(df):
+    # df = df.loc[:, ["smiles", gs.c_plate, "well", "amino_acid_substitutions", "fitness_value"]]
+    group_cols = [gs.c_smiles, gs.c_plate]
     value_col = "fitness_value"
 
     # Compute min and max fitness for each group
@@ -212,39 +212,72 @@ def calculate_group_mean_ratios_per_cas_and_plate(df):
     return df
 
 
-def generate_random_cas_numbers():
+# def generate_random_cas_numbers():
+#     """
+#     This method is only to be used for debugging and reading from disk and prototyping.
+#     """
+#     num_cas = random.randint(1, 3)  # Randomly choose between 1 and 3 smiles
+#     cas_list = []
+#
+#     for _ in range(num_cas):
+#         part1 = random.randint(10000, 999999)  # 5-6 digits
+#         part2 = random.randint(10, 99)  # 2 digits
+#         part3 = random.randint(0, 9)  # 1-digit check number
+#         smiles = f"{part1}-{part2}-{part3}"
+#         cas_list.append(smiles)
+#
+#     return cas_list
+
+
+def generate_random_smiles():
+    VALID_SMILES = [
+        "CCO",  # ethanol
+        "CC(=O)O",  # acetic acid
+        "C1=CC=CC=C1",  # benzene
+        "CCN(CC)CC",  # triethylamine
+        "CC(C)O",  # isopropanol
+        "C(CN)O",  # serinol
+        "CCOC(=O)C",  # ethyl acetate
+        "C1CCCCC1",  # cyclohexane
+        "N[C@@H](CC1=CC=CC=C1)C(=O)O",  # phenylalanine
+        "O=C(NC)C",  # acetamide
+        "C#N",  # hydrogen cyanide
+        "C1=CC=C(C=C1)O",  # phenol
+        "CC1=CC=CC=C1",  # toluene
+        "CN1CCCC1C",  # N-methylpiperidine
+        "NC(=O)C",  # acetamide
+        "CC(C)CC",  # isopentane
+        "C=CCBr",  # allyl bromide
+        "CC(C)CO",  # butanol isomer
+        "OC(=O)CCl",  # chloroacetic acid
+        "CC(C)(C)O",  # tert-butanol
+        "Na.[Cl-]",  # sodium chloride (ionic pair)
+        "CCO.CC(=O)O",  # ethanol + acetic acid
+        "N#N.CC(C)O",  # nitrogen + isopropanol
+        "O=C=O.CN(C)C",  # CO2 + dimethylamine
+        "C1=CC=C(C=C1)C=O",
+        "CC(C)CC1=CC=C(C=C1)C(C)C(=O)O",
+    ]
+
+    return [random.choice(VALID_SMILES)]
+
+
+def extract_all_unique_smiles_from_lab_data(list_of_all_lab_experiments_with_meta: list[{}]):
     """
-    This method is only to be used for debugging and reading from disk and prototyping.
-    """
-    num_cas = random.randint(1, 3)  # Randomly choose between 1 and 3 CAS numbers
-    cas_list = []
-
-    for _ in range(num_cas):
-        part1 = random.randint(10000, 999999)  # 5-6 digits
-        part2 = random.randint(10, 99)  # 2 digits
-        part3 = random.randint(0, 9)  # 1-digit check number
-        cas_number = f"{part1}-{part2}-{part3}"
-        cas_list.append(cas_number)
-
-    return cas_list
-
-
-def extract_all_unique_cas_from_lab_data(list_of_all_lab_experiments_with_meta: list[{}]):
-    """
-    This method extracts all the unique substrate cas  used in the lab data.
+    This method extracts all the unique substrate smiles  used in the lab data.
     The data is already pulled from the disk/db along with other metadata
     The input is a list of dictionaries, data type used by AgGrid
     """
-    # TODO: which unique cas do we want to show here? unique files? substrate only?
-    all_unique_cas = ""
+    # TODO: which unique smiles do we want to show here? unique files? substrate only?
+    all_unique_smiles = ""
     if len(list_of_all_lab_experiments_with_meta) != 0:
-        unique_cas_set = set()
+        unique_smiles_set = set()
         for exp in list_of_all_lab_experiments_with_meta:
-            cas_list = exp["substrate_cas_number"].split(",")
-            unique_cas_set.update(cas_list)
-        all_unique_cas = ";".join(sorted(unique_cas_set))
+            unique_smiles_set.update(exp[gs.cc_substrate])
+            unique_smiles_set.update(exp[gs.cc_product])
+        all_unique_smiles = ";  ".join(sorted(unique_smiles_set))
 
-    return all_unique_cas
+    return all_unique_smiles
 
 
 def generate_slider_marks_dict(max_value):

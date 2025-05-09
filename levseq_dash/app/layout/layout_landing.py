@@ -25,8 +25,8 @@ def get_landing_page():
                     dbc.Col(
                         dbc.Card(
                             [
-                                dbc.CardHeader(gs.lab_cas, className=vis.top_card_head),
-                                dbc.CardBody(id="id-lab-experiment-all-cas", className=vis.top_card_body),
+                                dbc.CardHeader(gs.lab_smiles, className=vis.top_card_head),
+                                dbc.CardBody(id="id-lab-experiment-all-smiles", className=vis.top_card_body),
                             ],
                             style=vis.card_shadow,
                         ),

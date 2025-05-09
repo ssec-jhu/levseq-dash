@@ -105,8 +105,8 @@ def get_experiment_tab_dash():
                     dbc.Col(
                         dbc.Card(
                             [
-                                dbc.CardHeader(gs.cas_file, className=vis.top_card_head),
-                                dbc.CardBody(id="id-experiment-file-cas", className=vis.top_card_body),
+                                dbc.CardHeader(gs.smiles_file, className=vis.top_card_head),
+                                dbc.CardBody(id="id-experiment-file-smiles", className=vis.top_card_body),
                             ],
                             style=vis.card_shadow,
                         ),
@@ -116,8 +116,8 @@ def get_experiment_tab_dash():
                     dbc.Col(
                         dbc.Card(
                             [
-                                dbc.CardHeader(gs.substrate_cas, className=vis.top_card_head),
-                                dbc.CardBody(id="id-experiment-sub-cas", className=vis.top_card_body),
+                                dbc.CardHeader(gs.substrate_smiles_input, className=vis.top_card_head),
+                                dbc.CardBody(id="id-experiment-substrate", className=vis.top_card_body),
                             ],
                             style=vis.card_shadow,
                         ),
@@ -127,8 +127,8 @@ def get_experiment_tab_dash():
                     dbc.Col(
                         dbc.Card(
                             [
-                                dbc.CardHeader(gs.product_cas, className=vis.top_card_head),
-                                dbc.CardBody(id="id-experiment-product-cas", className=vis.top_card_body),
+                                dbc.CardHeader(gs.product_smiles_input, className=vis.top_card_head),
+                                dbc.CardBody(id="id-experiment-product", className=vis.top_card_body),
                             ],
                             style=vis.card_shadow,
                         ),
@@ -211,9 +211,9 @@ def get_experiment_tab_dash():
                                                             [
                                                                 dbc.Col(
                                                                     [
-                                                                        dbc.Label(gs.select_cas),
+                                                                        dbc.Label(gs.select_smiles),
                                                                         dcc.Dropdown(
-                                                                            id="id-list-cas-numbers-residue-highlight",
+                                                                            id="id-list-smiles-residue-highlight",
                                                                             disabled=True,
                                                                         ),
                                                                     ],
@@ -301,8 +301,8 @@ def get_experiment_tab_dash():
                                                 dbc.Col(
                                                     html.Div(
                                                         [
-                                                            dbc.Label(gs.select_cas),
-                                                            dcc.Dropdown(id="id-list-cas-numbers"),
+                                                            dbc.Label(gs.select_smiles),
+                                                            dcc.Dropdown(id="id-list-smiles"),
                                                         ],
                                                         className="dbc",
                                                     ),
@@ -349,8 +349,8 @@ def get_experiment_tab_dash():
                                                 dbc.Col(
                                                     html.Div(
                                                         [
-                                                            dbc.Label(gs.select_cas),
-                                                            dcc.Dropdown(id="id-list-cas-numbers-ranking-plot"),
+                                                            dbc.Label(gs.select_smiles),
+                                                            dcc.Dropdown(id="id-list-smiles-ranking-plot"),
                                                         ],
                                                         className="dbc",
                                                     ),

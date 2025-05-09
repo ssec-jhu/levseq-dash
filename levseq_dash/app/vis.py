@@ -241,13 +241,13 @@ def get_molstar_rendered_components_seq_alignment(
         label="main", targets=main_chain, representation=rep_cartoon_gray
     )
     component_hot_residue = molstar_helper.create_component(
-        label=gs.cc_hot_indices_per_cas, targets=hot_residue, representation=rep_hot
+        label=gs.cc_hot_indices_per_smiles, targets=hot_residue, representation=rep_hot
     )
     component_cold_residue = molstar_helper.create_component(
-        label=gs.cc_cold_indices_per_cas, targets=cold_residue, representation=rep_cold
+        label=gs.cc_cold_indices_per_smiles, targets=cold_residue, representation=rep_cold
     )
     component_both_residue = molstar_helper.create_component(
-        label=gs.cc_hot_and_cold_indices_per_cas, targets=both_hot_and_cold_residue, representation=rep_hot_cold
+        label=gs.cc_hot_and_cold_indices_per_smiles, targets=both_hot_and_cold_residue, representation=rep_hot_cold
     )
     component_mismatch_residue = molstar_helper.create_component(
         label=gs.c_substitutions, targets=mismatch_residue, representation=rep_mismatches

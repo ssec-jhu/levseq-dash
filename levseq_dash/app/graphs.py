@@ -20,12 +20,12 @@ def format_mutation_annotation(text):
         return annotation
 
 
-def creat_heatmap(df, plate_number, property, cas_number):
+def creat_heatmap(df, plate_number, property, smiles):
     # Need to create a .copy() of the original df. Pandas did not like appending the columns
     # to the original later in the code here, and it raised many warnings.
     # https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
 
-    filtered_df = df[(df[gs.c_cas] == cas_number) & (df[gs.c_plate] == plate_number)].copy()
+    filtered_df = df[(df[gs.c_smiles] == smiles) & (df[gs.c_plate] == plate_number)].copy()
     filtered_df = filtered_df.fillna(0)
 
     # set up the well indices for the grid
@@ -97,13 +97,13 @@ def creat_heatmap(df, plate_number, property, cas_number):
     return fig
 
 
-def creat_rank_plot(df, plate_number, cas_number):
+def creat_rank_plot(df, plate_number, smiles):
     # Need to create a .copy() of the original df. Pandas did not like appending the columns
     # to the original later in the code here, and it raised many warnings.
     # https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
 
-    # filter by cas and plate
-    filtered_df = df[(df[gs.c_cas] == cas_number) & (df[gs.c_plate] == plate_number)].copy()
+    # filter by smiles and plate
+    filtered_df = df[(df[gs.c_smiles] == smiles) & (df[gs.c_plate] == plate_number)].copy()
 
     # Sort by 'fitness value'
     df_sorted = filtered_df.sort_values(by=gs.c_fitness_value, ascending=False).reset_index(drop=True)

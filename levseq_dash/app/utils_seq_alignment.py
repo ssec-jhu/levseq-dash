@@ -79,13 +79,15 @@ def parse_alignment_pipes(alignment_str, hot_indices, cold_indices):
     return parsed_alignment, seq_alignment_mismatches
 
 
-def gather_seq_alignment_data_per_cas(df_hot_cold_residue_per_cas, seq_match_data, exp_meta_data, seq_match_row_data):
+def gather_seq_alignment_data_per_smiles(
+    df_hot_cold_residue_per_smiles, seq_match_data, exp_meta_data, seq_match_row_data
+):
     """
-    This utility function is used to gather row data per cas for sequence alignment data on the matched sequences
+    This utility function is used to gather row data per smiles for sequence alignment data on the matched sequences
     This function solely designed for the purpose of reusing code for gathering row data
 
     Args:
-        df_hot_cold_residue_per_cas:  df where the list of hot and cold residue indices are listed peer cas
+        df_hot_cold_residue_per_smiles:  df where the list of hot and cold residue indices are listed peer smiles
         seq_match_data: the sequence alignment data retrieved from the aligner
         exp_meta_data: the metadata associated with the experiment
         seq_match_row_data: the aggrid row data that is gathering the results over all the matched sequences
@@ -95,27 +97,27 @@ def gather_seq_alignment_data_per_cas(df_hot_cold_residue_per_cas, seq_match_dat
         the aggrid row data that is gathering the results over all the matched sequences
     """
     # convert he df do a list of records
-    dict_list = df_hot_cold_residue_per_cas.to_dict(orient="records")
+    dict_list = df_hot_cold_residue_per_smiles.to_dict(orient="records")
 
-    # for each cas in the list, create a row with the hot and cold residue list
-    # associated with that CAS
-    for cas_index in range(len(dict_list)):
-        hot_residues = dict_list[cas_index][gs.cc_hot_indices_per_cas]
-        cold_residues = dict_list[cas_index][gs.cc_cold_indices_per_cas]
-        sub_residues = dict_list[cas_index][gs.cc_exp_residue_per_cas]  # TODO: do we need this
+    # for each smiles in the list, create a row with the hot and cold residue list
+    # associated with that smiles
+    for smiles_index in range(len(dict_list)):
+        hot_residues = dict_list[smiles_index][gs.cc_hot_indices_per_smiles]
+        cold_residues = dict_list[smiles_index][gs.cc_cold_indices_per_smiles]
+        sub_residues = dict_list[smiles_index][gs.cc_exp_residue_per_smiles]  # TODO: do we need this
 
         parsed_alignment_string, mutation_indices = parse_alignment_pipes(
             alignment_str=seq_match_data[gs.cc_seq_alignment], hot_indices=hot_residues, cold_indices=cold_residues
         )
-        per_cas_records = {}
-        per_cas_records.update(seq_match_data)
-        per_cas_records.update(dict_list[cas_index])
-        per_cas_records.update(exp_meta_data)
-        per_cas_records.update({gs.c_substitutions: sub_residues})
+        per_smiles_records = {}
+        per_smiles_records.update(seq_match_data)
+        per_smiles_records.update(dict_list[smiles_index])
+        per_smiles_records.update(exp_meta_data)
+        per_smiles_records.update({gs.c_substitutions: sub_residues})
         # mutation_indices_str = ", ".join(map(str, mutation_indices))
-        per_cas_records.update({gs.cc_seq_alignment_mismatches: mutation_indices})
-        per_cas_records.update({gs.cc_seq_alignment: parsed_alignment_string})
-        seq_match_row_data.append(per_cas_records)
+        per_smiles_records.update({gs.cc_seq_alignment_mismatches: mutation_indices})
+        per_smiles_records.update({gs.cc_seq_alignment: parsed_alignment_string})
+        seq_match_row_data.append(per_smiles_records)
 
     return seq_match_row_data
 

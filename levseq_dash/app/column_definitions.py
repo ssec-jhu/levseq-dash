@@ -80,15 +80,15 @@ def get_experiment_meta(record_1, record_2, record_3, record_4, record_5):
     return c
 
 
-def get_experiment_meta_cas(record_1, record_2):
+def get_experiment_meta_smiles(record_1, record_2):
     c = [
         {
-            "field": gs.cc_substrate_cas,
-            "headerName": gs.header_sub_cas,
+            "field": gs.cc_substrate,
+            # "headerName": gs.header_substrate,
         },
         {
-            "field": gs.cc_prod_cas,
-            "headerName": gs.header_prod_cas,
+            "field": gs.cc_product,
+            # "headerName": gs.header_product,
         },
     ]
 
@@ -100,11 +100,11 @@ def get_experiment_meta_cas(record_1, record_2):
     return c
 
 
-def get_cas(record):
+def get_smiles(record):
     c = [
         {
-            "field": gs.c_cas,
-            "headerName": gs.header_cas_number,
+            "field": gs.c_smiles,
+            "headerName": gs.header_smiles,
             # flex allows the resizing to be dynamic
             # "flex": 2,
         }
@@ -246,7 +246,7 @@ def get_top_variant_column_defs(df):
     Returns column definitions and setup for dash ag grid table per experiment
     """
     column_def = (
-        get_cas({"flex": 2})
+        get_smiles({"flex": 2})
         + get_plate_well({"flex": 2})
         + get_substitutions({"flex": 3})
         + get_fitness_ratio(
@@ -267,7 +267,7 @@ def get_all_experiments_column_defs():
         get_checkbox()
         + get_experiment_id({"flex": 3})
         + get_experiment_name({"flex": 3})
-        + get_experiment_meta_cas({"flex": 4}, {"flex": 4})
+        + get_experiment_meta_smiles({"flex": 4}, {"flex": 4})
         + get_experiment_meta(
             {"flex": 3},
             {"flex": 3},
@@ -286,10 +286,10 @@ def get_matched_sequences_column_defs():
     """
     column_def = (
         get_experiment_id({"width": 120, "pinned": "left"})
-        + get_cas({"width": 120, "pinned": "left"})
+        + get_smiles({"width": 120, "pinned": "left"})
         + get_experiment_name({"width": 130})
         + get_alignment_scores()
-        + get_experiment_meta_cas({"width": 130}, {"width": 130})
+        + get_experiment_meta_smiles({"width": 130}, {"width": 130})
         + get_experiment_meta(
             {"width": 120},
             {"width": 120},
@@ -304,13 +304,13 @@ def get_matched_sequences_column_defs():
     )
     column_def += [
         {
-            "field": gs.cc_hot_indices_per_cas,
-            "headerName": "Hot Residue/CAS",
+            "field": gs.cc_hot_indices_per_smiles,
+            "headerName": "Hot Residue/smiles",
             "width": 250,
         },
         {
-            "field": gs.cc_cold_indices_per_cas,
-            "headerName": "Cold Residue/CAS",
+            "field": gs.cc_cold_indices_per_smiles,
+            "headerName": "Cold Residue/smiles",
             "width": 250,
         },
     ]
@@ -333,7 +333,7 @@ def get_matched_sequences_exp_hot_cold_data_column_defs():
         },
     ]
     column_def += (
-        get_cas({"flex": 2})
+        get_smiles({"flex": 2})
         + get_plate_well({"flex": 2})
         + get_substitutions({"flex": 3})
         + get_fitness_ratio({"flex": 2}, {"flex": 2})
@@ -359,26 +359,12 @@ def get_an_experiments_matched_sequences_column_defs():
         + get_experiment_name({"width": 130})
         + get_alignment_scores()
     )
-    # column_def += [
-    #     {
-    #         "field": "exp_cas",
-    #         "headerName": "My CAS",
-    #         "cellClass": "matched-seq-cas-1",
-    #         "width": 120,
-    #     },
-    #     {
-    #         "field": "exp_index",
-    #         "headerName": "My Sub Index",
-    #         "cellClass": "matched-seq-cas-1",
-    #         "width": 120,
-    #     },
-    # ]
     column_def += (
-        get_cas({"width": 120})
+        get_smiles({"width": 120})
         + get_substitutions({"width": 150})
         + get_plate_well({"width": 130})
         + get_fitness_ratio({"width": 130}, {"width": 130})
-        + get_experiment_meta_cas({"width": 130}, {"width": 130})
+        + get_experiment_meta_smiles({"width": 130}, {"width": 130})
         + get_experiment_meta(
             {"width": 120},
             {"width": 120},

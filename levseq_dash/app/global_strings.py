@@ -11,8 +11,9 @@ nav_seq = "Explore Similar Sequences"
 # -----------------------------
 experiment_name = "Experiment Name"
 experiment_date = "Experiment Date"
-substrate_cas = "Substrate CAS Number"
-product_cas = "Product CAS Number"
+substrate_smiles_input = "Substrate SMILES"
+product_smiles_input = "Product SMILES"
+smiles_input_placeholder = "Enter a valid SMILES string"
 assay = "Assay"
 tech = "Mutagenesis Method"
 
@@ -30,7 +31,7 @@ button_upload_pdb = "Upload PDB/CIF"
 lab_exp = "All experiments in the lab"
 go_to = "Go to Experiment Dashboard"
 lab_total = "Total Experiments"
-lab_cas = "Used CAS"
+lab_smiles = "Used smiles"
 
 # -----------------------------
 # Experiment Page Strings
@@ -41,9 +42,7 @@ date = "Experiment Date"
 upload_date = "Uploaded On"
 technique = "Mutagenesis Method"
 plates_count = "Plates Count"
-cas_file = "Unique CAS"
-cas_sub = "Substrate CAS"
-cas_prod = "Product CAS"
+smiles_file = "Unique smiles"
 viewer_header = "Protein Structure"
 well_heatmap = "Plate Map"
 top_variants = "Top Variants"
@@ -53,9 +52,8 @@ tab_1 = "Experiment Dashboard"
 tab_2 = "Related Variants"
 view_all = "View all residues"
 select_plate = "Select Plate ID"
-select_cas = "Select CAS number"
+select_smiles = "Select Compound(SMILES)"
 select_property = "Select Property"
-
 
 # -----------------------------
 # Sequence Alignment - Related Variants specific
@@ -96,11 +94,13 @@ cold = "C"
 hot_cold = "B"  # both hot and cold indicator
 # this will be treated as markdown
 markdown_note_matched_seq = """
-- Number of matched sequences is calculated per experiment match not per cas.
-- Each row represents experiment-cas information.
-- An experiment _may_ have one or more alignments. Each will be represented per cas value
+- Number of matched sequences is calculated per experiment match not per smiles string.
+- Each row represents experiment-compound information.
+- An experiment _may_ have one or more alignments. Each will be represented per compound(SMILES)
 """
+# -----------------------------
 # download ing residue information related
+# -----------------------------
 filename_download_residue_info = "matched_seq_aligned_experiment_hot_cold_residues"
 download_results = " Download Results"
 download_filtered = " Filtered"
@@ -109,12 +109,11 @@ help_download = 'Download results in CSV format. Default is set to "Unfiltered" 
 help_download_mode_unfiltered = "Results will be downloaded without table filters applied."
 help_download_mode_filtered = "Results will be downloaded WITH table filters applied."
 
-
 header_experiment_id = "Experiment ID"
 header_experiment_name = "Experiment Name"
-header_cas_number = "CAS"
-header_sub_cas = "Sub CAS"
-header_prod_cas = "Prod CAS"
+header_smiles = "SMILES"
+# header_substrate = "Substrate"
+# header_product = "Product"
 header_substitutions = "Substitutions"
 header_fitness = "Fitness"
 header_mutagenesis = "Mutagenesis Method"
@@ -124,42 +123,51 @@ header_mutagenesis = "Mutagenesis Method"
 # -----------------------------
 error_app_mode = "Incorrect app mode in config file. Use 'disk' or 'db'"
 error_wrong_mode = "This function should only be used in the 'disk' app-mode. Change the settings in the config file.'"
+
+
+# -----------------------------
 # -----------------------------
 #   DO NOT CHANGE PAST HERE
 # -----------------------------
+# -----------------------------
+
 dbc_template_name = "flatly"
 
-# These strings follow the column headers in the csv file.
-c_cas = "cas_number"
-c_plate = "plate"
-c_well = "well"
-c_alignment_count = "alignment_count"
-# c_fitness = "fitness_value"
-c_substitutions = "amino_acid_substitutions"
-c_alignment_probability = "alignment_probability"
-c_aa_sequence = "aa_sequence"
-c_fitness_value = "fitness_value"
-
+# -----------------------------
 # These strings are used in various tables and dictionaries across the app > CC_*
+# -----------------------------
 cc_experiment_id = "experiment_id"
-cc_substrate_cas = "substrate_cas_number"
-cc_prod_cas = "product_cas_number"
+cc_substrate = "substrate"
+cc_product = "product"
 cc_mutagenesis = "mutagenesis_method"
-
 cc_ratio = "ratio"
 cc_seq_alignment = "sequence_alignment"
-cc_hot_indices_per_cas = "hot_residue_indices_per_cas"
-cc_cold_indices_per_cas = "cold_residue_indices_per_cas"
-cc_hot_and_cold_indices_per_cas = "hot_and_cold_residue_indices_per_cas"
-cc_exp_residue_per_cas = "all_exp_residue_indices_per_cas"
+cc_hot_indices_per_smiles = "hot_residue_indices_per_smiles"
+cc_cold_indices_per_smiles = "cold_residue_indices_per_smiles"
+cc_hot_and_cold_indices_per_smiles = "hot_and_cold_residue_indices_per_smiles"
+cc_exp_residue_per_smiles = "all_exp_residue_indices_per_smiles"
 cc_seq_alignment_mismatches = "seq_align_mismatch_indices"
 cc_hot_cold_type = "variant_type"
 cc_hot = "Hot"
 cc_cold = "Cold"
 
+# -----------------------------
+# These strings follow the column headers in the csv file.
+# -----------------------------
+c_smiles = "smiles_string"
+c_plate = "plate"
+c_well = "well"
+c_alignment_count = "alignment_count"
+c_substitutions = "amino_acid_substitutions"
+c_alignment_probability = "alignment_probability"
+c_aa_sequence = "aa_sequence"
+c_fitness_value = "fitness_value"
+
+# -----------------------------
 # this list is the core data that is read from the CSV files, the rest is not needed
+# -----------------------------
 experiment_core_data_list = [
-    c_cas,
+    c_smiles,
     c_plate,
     c_well,
     c_alignment_count,

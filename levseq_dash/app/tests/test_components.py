@@ -24,9 +24,9 @@ def test_get_label():
     assert isinstance(components.get_label_fixed_for_form("random_string"), dbc.Label)
 
 
-def test_get_top_variant_column_defs(experiment_ep_pcr_with_user_cas):
-    df_filtered_with_ratio = utils.calculate_group_mean_ratios_per_cas_and_plate(
-        experiment_ep_pcr_with_user_cas.data_df
+def test_get_top_variant_column_defs(experiment_ep_pcr_with_user_smiles):
+    df_filtered_with_ratio = utils.calculate_group_mean_ratios_per_smiles_and_plate(
+        experiment_ep_pcr_with_user_smiles.data_df
     )
     d = cd.get_top_variant_column_defs(df_filtered_with_ratio)
     assert len(d) == 6
@@ -42,7 +42,7 @@ def test_get_matched_sequences_exp_hot_cold_data_column_defs():
     assert len(d) == 9
 
 
-# def test_get_all_experiments_column_defs(experiment_ep_pcr_with_user_cas):
+# def test_get_all_experiments_column_defs(experiment_ep_pcr_with_user_smiles):
 #     #TODO
 #     df = data_mgr.get_lab_experiments_with_meta_data()
 #     d = components.get_all_experiments_column_defs(df)
@@ -109,73 +109,73 @@ def test_format_mutation_annotation(input_text, expected_output):
 
 
 @pytest.mark.parametrize(
-    "cas, plate, property",
+    "smiles, plate, property",
     [
-        ("345905-97-7", "20240422-ParLQ-ep1-300-1", gs.c_fitness_value),
-        ("345905-97-7", "20240422-ParLQ-ep1-300-2", gs.c_fitness_value),
-        ("345905-97-7", "20240422-ParLQ-ep1-500-1", gs.c_fitness_value),
-        ("345905-97-7", "20240422-ParLQ-ep1-500-2", gs.c_fitness_value),
-        ("345905-97-7", "20240502-ParLQ-ep2-300-1", gs.c_fitness_value),
-        ("345905-97-7", "20240502-ParLQ-ep2-300-2", gs.c_fitness_value),
-        ("345905-97-7", "20240502-ParLQ-ep2-300-3", gs.c_fitness_value),
-        ("345905-97-7", "20240502-ParLQ-ep2-500-1", gs.c_fitness_value),
-        ("345905-97-7", "20240502-ParLQ-ep2-500-2", gs.c_fitness_value),
-        ("345905-97-7", "20240502-ParLQ-ep2-500-3", gs.c_fitness_value),
-        ("395683-37-1", "20240422-ParLQ-ep1-300-1", gs.c_fitness_value),
-        ("395683-37-1", "20240422-ParLQ-ep1-300-2", gs.c_fitness_value),
-        ("395683-37-1", "20240422-ParLQ-ep1-500-1", gs.c_fitness_value),
-        ("395683-37-1", "20240422-ParLQ-ep1-500-2", gs.c_fitness_value),
-        ("395683-37-1", "20240502-ParLQ-ep2-300-1", gs.c_fitness_value),
-        ("395683-37-1", "20240502-ParLQ-ep2-300-2", gs.c_fitness_value),
-        ("395683-37-1", "20240502-ParLQ-ep2-300-3", gs.c_fitness_value),
-        ("395683-37-1", "20240502-ParLQ-ep2-500-1", gs.c_fitness_value),
-        ("395683-37-1", "20240502-ParLQ-ep2-500-2", gs.c_fitness_value),
-        ("395683-37-1", "20240502-ParLQ-ep2-500-3", gs.c_fitness_value),
-        ("345905-97-7", "20240422-ParLQ-ep1-300-1", gs.c_alignment_probability),
-        ("345905-97-7", "20240422-ParLQ-ep1-300-2", gs.c_alignment_probability),
-        ("345905-97-7", "20240422-ParLQ-ep1-500-1", gs.c_alignment_probability),
-        ("345905-97-7", "20240422-ParLQ-ep1-500-2", gs.c_alignment_probability),
-        ("345905-97-7", "20240502-ParLQ-ep2-300-1", gs.c_alignment_probability),
-        ("345905-97-7", "20240502-ParLQ-ep2-300-2", gs.c_alignment_probability),
-        ("345905-97-7", "20240502-ParLQ-ep2-300-3", gs.c_alignment_probability),
-        ("345905-97-7", "20240502-ParLQ-ep2-500-1", gs.c_alignment_probability),
-        ("345905-97-7", "20240502-ParLQ-ep2-500-2", gs.c_alignment_probability),
-        ("345905-97-7", "20240502-ParLQ-ep2-500-3", gs.c_alignment_probability),
-        ("395683-37-1", "20240422-ParLQ-ep1-300-1", gs.c_alignment_probability),
-        ("395683-37-1", "20240422-ParLQ-ep1-300-2", gs.c_alignment_probability),
-        ("395683-37-1", "20240422-ParLQ-ep1-500-1", gs.c_alignment_probability),
-        ("395683-37-1", "20240422-ParLQ-ep1-500-2", gs.c_alignment_probability),
-        ("395683-37-1", "20240502-ParLQ-ep2-300-1", gs.c_alignment_probability),
-        ("395683-37-1", "20240502-ParLQ-ep2-300-2", gs.c_alignment_probability),
-        ("395683-37-1", "20240502-ParLQ-ep2-300-3", gs.c_alignment_probability),
-        ("395683-37-1", "20240502-ParLQ-ep2-500-1", gs.c_alignment_probability),
-        ("395683-37-1", "20240502-ParLQ-ep2-500-2", gs.c_alignment_probability),
-        ("395683-37-1", "20240502-ParLQ-ep2-500-3", gs.c_alignment_probability),
-        ("345905-97-7", "20240422-ParLQ-ep1-300-1", gs.c_alignment_count),
-        ("345905-97-7", "20240422-ParLQ-ep1-300-2", gs.c_alignment_count),
-        ("345905-97-7", "20240422-ParLQ-ep1-500-1", gs.c_alignment_count),
-        ("345905-97-7", "20240422-ParLQ-ep1-500-2", gs.c_alignment_count),
-        ("345905-97-7", "20240502-ParLQ-ep2-300-1", gs.c_alignment_count),
-        ("345905-97-7", "20240502-ParLQ-ep2-300-2", gs.c_alignment_count),
-        ("345905-97-7", "20240502-ParLQ-ep2-300-3", gs.c_alignment_count),
-        ("345905-97-7", "20240502-ParLQ-ep2-500-1", gs.c_alignment_count),
-        ("345905-97-7", "20240502-ParLQ-ep2-500-2", gs.c_alignment_count),
-        ("345905-97-7", "20240502-ParLQ-ep2-500-3", gs.c_alignment_count),
-        ("395683-37-1", "20240422-ParLQ-ep1-300-1", gs.c_alignment_count),
-        ("395683-37-1", "20240422-ParLQ-ep1-300-2", gs.c_alignment_count),
-        ("395683-37-1", "20240422-ParLQ-ep1-500-1", gs.c_alignment_count),
-        ("395683-37-1", "20240422-ParLQ-ep1-500-2", gs.c_alignment_count),
-        ("395683-37-1", "20240502-ParLQ-ep2-300-1", gs.c_alignment_count),
-        ("395683-37-1", "20240502-ParLQ-ep2-300-2", gs.c_alignment_count),
-        ("395683-37-1", "20240502-ParLQ-ep2-300-3", gs.c_alignment_count),
-        ("395683-37-1", "20240502-ParLQ-ep2-500-1", gs.c_alignment_count),
-        ("395683-37-1", "20240502-ParLQ-ep2-500-2", gs.c_alignment_count),
-        ("395683-37-1", "20240502-ParLQ-ep2-500-3", gs.c_alignment_count),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240422-ParLQ-ep1-300-1", gs.c_fitness_value),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240422-ParLQ-ep1-300-2", gs.c_fitness_value),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240422-ParLQ-ep1-500-1", gs.c_fitness_value),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240422-ParLQ-ep1-500-2", gs.c_fitness_value),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240502-ParLQ-ep2-300-1", gs.c_fitness_value),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240502-ParLQ-ep2-300-2", gs.c_fitness_value),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240502-ParLQ-ep2-300-3", gs.c_fitness_value),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240502-ParLQ-ep2-500-1", gs.c_fitness_value),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240502-ParLQ-ep2-500-2", gs.c_fitness_value),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240502-ParLQ-ep2-500-3", gs.c_fitness_value),
+        ("C1=CC=C(C=C1)C=O", "20240422-ParLQ-ep1-300-1", gs.c_fitness_value),
+        ("C1=CC=C(C=C1)C=O", "20240422-ParLQ-ep1-300-2", gs.c_fitness_value),
+        ("C1=CC=C(C=C1)C=O", "20240422-ParLQ-ep1-500-1", gs.c_fitness_value),
+        ("C1=CC=C(C=C1)C=O", "20240422-ParLQ-ep1-500-2", gs.c_fitness_value),
+        ("C1=CC=C(C=C1)C=O", "20240502-ParLQ-ep2-300-1", gs.c_fitness_value),
+        ("C1=CC=C(C=C1)C=O", "20240502-ParLQ-ep2-300-2", gs.c_fitness_value),
+        ("C1=CC=C(C=C1)C=O", "20240502-ParLQ-ep2-300-3", gs.c_fitness_value),
+        ("C1=CC=C(C=C1)C=O", "20240502-ParLQ-ep2-500-1", gs.c_fitness_value),
+        ("C1=CC=C(C=C1)C=O", "20240502-ParLQ-ep2-500-2", gs.c_fitness_value),
+        ("C1=CC=C(C=C1)C=O", "20240502-ParLQ-ep2-500-3", gs.c_fitness_value),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240422-ParLQ-ep1-300-1", gs.c_alignment_probability),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240422-ParLQ-ep1-300-2", gs.c_alignment_probability),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240422-ParLQ-ep1-500-1", gs.c_alignment_probability),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240422-ParLQ-ep1-500-2", gs.c_alignment_probability),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240502-ParLQ-ep2-300-1", gs.c_alignment_probability),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240502-ParLQ-ep2-300-2", gs.c_alignment_probability),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240502-ParLQ-ep2-300-3", gs.c_alignment_probability),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240502-ParLQ-ep2-500-1", gs.c_alignment_probability),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240502-ParLQ-ep2-500-2", gs.c_alignment_probability),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240502-ParLQ-ep2-500-3", gs.c_alignment_probability),
+        ("C1=CC=C(C=C1)C=O", "20240422-ParLQ-ep1-300-1", gs.c_alignment_probability),
+        ("C1=CC=C(C=C1)C=O", "20240422-ParLQ-ep1-300-2", gs.c_alignment_probability),
+        ("C1=CC=C(C=C1)C=O", "20240422-ParLQ-ep1-500-1", gs.c_alignment_probability),
+        ("C1=CC=C(C=C1)C=O", "20240422-ParLQ-ep1-500-2", gs.c_alignment_probability),
+        ("C1=CC=C(C=C1)C=O", "20240502-ParLQ-ep2-300-1", gs.c_alignment_probability),
+        ("C1=CC=C(C=C1)C=O", "20240502-ParLQ-ep2-300-2", gs.c_alignment_probability),
+        ("C1=CC=C(C=C1)C=O", "20240502-ParLQ-ep2-300-3", gs.c_alignment_probability),
+        ("C1=CC=C(C=C1)C=O", "20240502-ParLQ-ep2-500-1", gs.c_alignment_probability),
+        ("C1=CC=C(C=C1)C=O", "20240502-ParLQ-ep2-500-2", gs.c_alignment_probability),
+        ("C1=CC=C(C=C1)C=O", "20240502-ParLQ-ep2-500-3", gs.c_alignment_probability),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240422-ParLQ-ep1-300-1", gs.c_alignment_count),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240422-ParLQ-ep1-300-2", gs.c_alignment_count),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240422-ParLQ-ep1-500-1", gs.c_alignment_count),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240422-ParLQ-ep1-500-2", gs.c_alignment_count),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240502-ParLQ-ep2-300-1", gs.c_alignment_count),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240502-ParLQ-ep2-300-2", gs.c_alignment_count),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240502-ParLQ-ep2-300-3", gs.c_alignment_count),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240502-ParLQ-ep2-500-1", gs.c_alignment_count),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240502-ParLQ-ep2-500-2", gs.c_alignment_count),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240502-ParLQ-ep2-500-3", gs.c_alignment_count),
+        ("C1=CC=C(C=C1)C=O", "20240422-ParLQ-ep1-300-1", gs.c_alignment_count),
+        ("C1=CC=C(C=C1)C=O", "20240422-ParLQ-ep1-300-2", gs.c_alignment_count),
+        ("C1=CC=C(C=C1)C=O", "20240422-ParLQ-ep1-500-1", gs.c_alignment_count),
+        ("C1=CC=C(C=C1)C=O", "20240422-ParLQ-ep1-500-2", gs.c_alignment_count),
+        ("C1=CC=C(C=C1)C=O", "20240502-ParLQ-ep2-300-1", gs.c_alignment_count),
+        ("C1=CC=C(C=C1)C=O", "20240502-ParLQ-ep2-300-2", gs.c_alignment_count),
+        ("C1=CC=C(C=C1)C=O", "20240502-ParLQ-ep2-300-3", gs.c_alignment_count),
+        ("C1=CC=C(C=C1)C=O", "20240502-ParLQ-ep2-500-1", gs.c_alignment_count),
+        ("C1=CC=C(C=C1)C=O", "20240502-ParLQ-ep2-500-2", gs.c_alignment_count),
+        ("C1=CC=C(C=C1)C=O", "20240502-ParLQ-ep2-500-3", gs.c_alignment_count),
     ],
 )
-def test_creat_heatmap_figure_general(experiment_ep_pcr, cas, plate, property):
+def test_creat_heatmap_figure_general(experiment_ep_pcr, smiles, plate, property):
     df = experiment_ep_pcr.data_df
-    fig = graphs.creat_heatmap(df, plate_number=plate, property=property, cas_number=cas)
+    fig = graphs.creat_heatmap(df, plate_number=plate, property=property, smiles=smiles)
 
     # must have annotations
     annotations = fig["data"][0]["text"]
@@ -198,33 +198,33 @@ def test_creat_heatmap_figure_general(experiment_ep_pcr, cas, plate, property):
 
 
 @pytest.mark.parametrize(
-    "cas, plate, mutation,i,j",
+    "smiles, plate, mutation,i,j",
     [
-        ("345905-97-7", "20240422-ParLQ-ep1-300-1", "A14G", 4, 3),
-        ("345905-97-7", "20240422-ParLQ-ep1-300-2", "Y185N", 2, 5),
-        ("345905-97-7", "20240422-ParLQ-ep1-500-1", "L59Q", 4, 10),
-        ("345905-97-7", "20240422-ParLQ-ep1-500-2", "K87E", 2, 0),
-        ("345905-97-7", "20240502-ParLQ-ep2-300-1", "G189S", 0, 4),
-        ("345905-97-7", "20240502-ParLQ-ep2-300-2", "K39E", 1, 4),
-        ("345905-97-7", "20240502-ParLQ-ep2-300-3", "L173S", -1, -1),
-        ("345905-97-7", "20240502-ParLQ-ep2-500-1", "V127A", 3, 3),
-        ("345905-97-7", "20240502-ParLQ-ep2-500-2", "K120R", 4, 5),
-        ("345905-97-7", "20240502-ParLQ-ep2-500-3", "F89L", 3, 5),
-        ("395683-37-1", "20240422-ParLQ-ep1-300-1", "V28E", 4, 3),
-        ("395683-37-1", "20240422-ParLQ-ep1-300-2", "F70L", 2, 5),
-        ("395683-37-1", "20240422-ParLQ-ep1-500-1", "I67N", 4, 0),
-        ("395683-37-1", "20240422-ParLQ-ep1-500-2", "K155E", 2, 0),
-        ("395683-37-1", "20240502-ParLQ-ep2-300-1", "L97S", 0, 4),
-        ("395683-37-1", "20240502-ParLQ-ep2-300-2", "E164D", 2, 7),
-        ("395683-37-1", "20240502-ParLQ-ep2-300-3", "D128N", -1, -1),
-        ("395683-37-1", "20240502-ParLQ-ep2-500-1", "L82P", 3, 3),
-        # ("395683-37-1", "20240502-ParLQ-ep2-500-2", "L59P", 3, 1),
-        ("395683-37-1", "20240502-ParLQ-ep2-500-3", "L82Q", 3, 5),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240422-ParLQ-ep1-300-1", "A14G", 4, 3),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240422-ParLQ-ep1-300-2", "Y185N", 2, 5),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240422-ParLQ-ep1-500-1", "L59Q", 4, 10),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240422-ParLQ-ep1-500-2", "K87E", 2, 0),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240502-ParLQ-ep2-300-1", "G189S", 0, 4),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240502-ParLQ-ep2-300-2", "K39E", 1, 4),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240502-ParLQ-ep2-300-3", "L173S", -1, -1),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240502-ParLQ-ep2-500-1", "V127A", 3, 3),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240502-ParLQ-ep2-500-2", "K120R", 4, 5),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240502-ParLQ-ep2-500-3", "F89L", 3, 5),
+        ("C1=CC=C(C=C1)C=O", "20240422-ParLQ-ep1-300-1", "V28E", 4, 3),
+        ("C1=CC=C(C=C1)C=O", "20240422-ParLQ-ep1-300-2", "F70L", 2, 5),
+        ("C1=CC=C(C=C1)C=O", "20240422-ParLQ-ep1-500-1", "I67N", 4, 0),
+        ("C1=CC=C(C=C1)C=O", "20240422-ParLQ-ep1-500-2", "K155E", 2, 0),
+        ("C1=CC=C(C=C1)C=O", "20240502-ParLQ-ep2-300-1", "L97S", 0, 4),
+        ("C1=CC=C(C=C1)C=O", "20240502-ParLQ-ep2-300-2", "E164D", 2, 7),
+        ("C1=CC=C(C=C1)C=O", "20240502-ParLQ-ep2-300-3", "D128N", -1, -1),
+        ("C1=CC=C(C=C1)C=O", "20240502-ParLQ-ep2-500-1", "L82P", 3, 3),
+        # ("C1=CC=C(C=C1)C=O", "20240502-ParLQ-ep2-500-2", "L59P", 3, 1),
+        ("C1=CC=C(C=C1)C=O", "20240502-ParLQ-ep2-500-3", "L82Q", 3, 5),
     ],
 )
-def test_creat_heatmap_figure_data(experiment_ep_pcr, cas, plate, mutation, i, j):
+def test_creat_heatmap_figure_data(experiment_ep_pcr, smiles, plate, mutation, i, j):
     df = experiment_ep_pcr.data_df
-    fig = graphs.creat_heatmap(df, plate_number=plate, property=gs.c_fitness_value, cas_number=cas)
+    fig = graphs.creat_heatmap(df, plate_number=plate, property=gs.c_fitness_value, smiles=smiles)
 
     # mutations should appear in custom data
     assert mutation in fig["data"][0]["customdata"]
@@ -241,31 +241,31 @@ def test_creat_heatmap_figure_data(experiment_ep_pcr, cas, plate, mutation, i, j
 
 
 @pytest.mark.parametrize(
-    "cas, plate",
+    "smiles, plate",
     [
-        ("345905-97-7", "20240422-ParLQ-ep1-300-1"),
-        ("345905-97-7", "20240422-ParLQ-ep1-300-2"),
-        ("345905-97-7", "20240422-ParLQ-ep1-500-1"),
-        ("345905-97-7", "20240422-ParLQ-ep1-500-2"),
-        ("345905-97-7", "20240502-ParLQ-ep2-300-1"),
-        ("345905-97-7", "20240502-ParLQ-ep2-300-2"),
-        ("345905-97-7", "20240502-ParLQ-ep2-300-3"),
-        ("345905-97-7", "20240502-ParLQ-ep2-500-1"),
-        ("345905-97-7", "20240502-ParLQ-ep2-500-2"),
-        ("345905-97-7", "20240502-ParLQ-ep2-500-3"),
-        ("395683-37-1", "20240422-ParLQ-ep1-300-1"),
-        ("395683-37-1", "20240422-ParLQ-ep1-300-2"),
-        ("395683-37-1", "20240422-ParLQ-ep1-500-1"),
-        ("395683-37-1", "20240422-ParLQ-ep1-500-2"),
-        ("395683-37-1", "20240502-ParLQ-ep2-300-1"),
-        ("395683-37-1", "20240502-ParLQ-ep2-300-2"),
-        ("395683-37-1", "20240502-ParLQ-ep2-300-3"),
-        ("395683-37-1", "20240502-ParLQ-ep2-500-1"),
-        ("395683-37-1", "20240502-ParLQ-ep2-500-3"),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240422-ParLQ-ep1-300-1"),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240422-ParLQ-ep1-300-2"),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240422-ParLQ-ep1-500-1"),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240422-ParLQ-ep1-500-2"),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240502-ParLQ-ep2-300-1"),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240502-ParLQ-ep2-300-2"),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240502-ParLQ-ep2-300-3"),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240502-ParLQ-ep2-500-1"),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240502-ParLQ-ep2-500-2"),
+        ("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O", "20240502-ParLQ-ep2-500-3"),
+        ("C1=CC=C(C=C1)C=O", "20240422-ParLQ-ep1-300-1"),
+        ("C1=CC=C(C=C1)C=O", "20240422-ParLQ-ep1-300-2"),
+        ("C1=CC=C(C=C1)C=O", "20240422-ParLQ-ep1-500-1"),
+        ("C1=CC=C(C=C1)C=O", "20240422-ParLQ-ep1-500-2"),
+        ("C1=CC=C(C=C1)C=O", "20240502-ParLQ-ep2-300-1"),
+        ("C1=CC=C(C=C1)C=O", "20240502-ParLQ-ep2-300-2"),
+        ("C1=CC=C(C=C1)C=O", "20240502-ParLQ-ep2-300-3"),
+        ("C1=CC=C(C=C1)C=O", "20240502-ParLQ-ep2-500-1"),
+        ("C1=CC=C(C=C1)C=O", "20240502-ParLQ-ep2-500-3"),
     ],
 )
-def test_create_rank_plot_figure_data(experiment_ep_pcr, cas, plate):
-    fig = graphs.creat_rank_plot(df=experiment_ep_pcr.data_df, plate_number=plate, cas_number=cas)
+def test_create_rank_plot_figure_data(experiment_ep_pcr, smiles, plate):
+    fig = graphs.creat_rank_plot(df=experiment_ep_pcr.data_df, plate_number=plate, smiles=smiles)
     count = 0
     for index in range(0, len(fig["data"])):
         count += len(fig["data"][index]["customdata"])

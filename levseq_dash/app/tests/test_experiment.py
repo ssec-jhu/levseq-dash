@@ -10,12 +10,12 @@ def test_experiment_empty_upload_timestamp(experiment_empty):
     assert experiment_empty.upload_time_stamp != ""
 
 
-def test_experiment_empty_substrate_cas(experiment_empty):
-    assert len(experiment_empty.substrate_cas_number) == 0
+def test_experiment_empty_substrate_smiles(experiment_empty):
+    assert len(experiment_empty.substrate) == 0
 
 
-def test_experiment_empty_product_cas(experiment_empty):
-    assert len(experiment_empty.product_cas_number) == 0
+def test_experiment_empty_product_smiles(experiment_empty):
+    assert len(experiment_empty.product) == 0
 
 
 def test_experiment_empty_mutagenesis_method(experiment_empty):
@@ -62,11 +62,11 @@ def test_experiment_empty_exceptions_3(experiment_empty):
 
 
 @pytest.mark.parametrize(
-    "index, cas_number",
-    [(0, "345905-97-7"), (1, "395683-37-1")],
+    "index, smiles",
+    [(0, "CC(C)CC1=CC=C(C=C1)C(C)C(=O)O"), (1, "C1=CC=C(C=C1)C=O")],
 )
-def test_experiment_ep_pcr_cas(experiment_ep_pcr, index, cas_number):
-    assert experiment_ep_pcr.unique_cas_in_data[index] == cas_number
+def test_experiment_ep_pcr_smiles(experiment_ep_pcr, index, smiles):
+    assert experiment_ep_pcr.unique_smiles_in_data[index] == smiles
 
 
 @pytest.mark.parametrize(
@@ -150,8 +150,8 @@ def test_experiment_ep_pcr_assay(experiment_ep_pcr, assay_list):
     assert experiment_ep_pcr.assay == assay_list[2]
 
 
-def test_experiment_ep_pcr_unique_cas(experiment_ep_pcr):
-    assert len(experiment_ep_pcr.unique_cas_in_data) == 2
+def test_experiment_ep_pcr_unique_smiles(experiment_ep_pcr):
+    assert len(experiment_ep_pcr.unique_smiles_in_data) == 2
 
 
 def test_experiment_ep_pcr_name(experiment_ep_pcr):
@@ -166,12 +166,12 @@ def test_experiment_ep_pcr_upload_timestamp(experiment_ep_pcr):
     assert experiment_ep_pcr.upload_time_stamp != ""
 
 
-def test_experiment_ep_pcr_substrate_cas(experiment_ep_pcr):
-    assert len(experiment_ep_pcr.substrate_cas_number) == 0
+def test_experiment_ep_pcr_substrate_smiles(experiment_ep_pcr):
+    assert len(experiment_ep_pcr.substrate) == 0
 
 
-def test_experiment_ep_pcr_product_cas(experiment_ep_pcr):
-    assert len(experiment_ep_pcr.product_cas_number) == 0
+def test_experiment_ep_pcr_product_smiles(experiment_ep_pcr):
+    assert len(experiment_ep_pcr.product) == 0
 
 
 def test_experiment_ep_pcr_mutagenesis_method(experiment_ep_pcr):
@@ -205,58 +205,58 @@ def test_experiment_ep_pcr_geometry_base64_string(experiment_ep_pcr):
     assert experiment_ep_pcr.geometry_base64_string == ""
 
 
-def test_experiment_ep_pcr_substrate(experiment_ep_pcr_with_user_cas):
-    assert experiment_ep_pcr_with_user_cas.substrate_cas_number == "918704-25-2, 98053-92-1"
+def test_experiment_ep_pcr_substrate(experiment_ep_pcr_with_user_smiles):
+    assert experiment_ep_pcr_with_user_smiles.substrate == "CC(C)(C)C(=O)O[NH3+].CCC#CCCOCC.O=S(=O)([O-])C(F)(F)F"
 
 
-def test_experiment_ep_pcr_product(experiment_ep_pcr_with_user_cas):
-    assert experiment_ep_pcr_with_user_cas.product_cas_number == "597635-11-3, 605026-90-8, 650843-51-7"
+def test_experiment_ep_pcr_product(experiment_ep_pcr_with_user_smiles):
+    assert experiment_ep_pcr_with_user_smiles.product == "C1=CC=C2C(=C1)C=CC=C2"
 
 
-def test_exp_to_dict_data_shape(experiment_ep_pcr_with_user_cas):
-    d = experiment_ep_pcr_with_user_cas.exp_to_dict()
+def test_exp_to_dict_data_shape(experiment_ep_pcr_with_user_smiles):
+    d = experiment_ep_pcr_with_user_smiles.exp_to_dict()
     df = pd.DataFrame(d["data_df"])
     assert df.shape[0] == 1920
     assert df.shape[1] == 8
 
 
-def test_exp_to_dict_plates_count(experiment_ep_pcr_with_user_cas):
-    d = experiment_ep_pcr_with_user_cas.exp_to_dict()
+def test_exp_to_dict_plates_count(experiment_ep_pcr_with_user_smiles):
+    d = experiment_ep_pcr_with_user_smiles.exp_to_dict()
     assert d["plates_count"] == 10
 
 
-def test_exp_to_dict_substrate_cas(experiment_ep_pcr_with_user_cas):
-    d = experiment_ep_pcr_with_user_cas.exp_to_dict()
-    assert d["substrate_cas_number"] == "918704-25-2, 98053-92-1"
+def test_exp_to_dict_substrate_smiles(experiment_ep_pcr_with_user_smiles):
+    d = experiment_ep_pcr_with_user_smiles.exp_to_dict()
+    assert d[gs.cc_substrate] == "CC(C)(C)C(=O)O[NH3+].CCC#CCCOCC.O=S(=O)([O-])C(F)(F)F"
 
 
-def test_exp_to_dict_assay(experiment_ep_pcr_with_user_cas):
-    d = experiment_ep_pcr_with_user_cas.exp_to_dict()
+def test_exp_to_dict_assay(experiment_ep_pcr_with_user_smiles):
+    d = experiment_ep_pcr_with_user_smiles.exp_to_dict()
     assert d["assay"] == "UV-Vis Spectroscopy"
 
 
-def test_exp_meta_data_plates_count(experiment_ep_pcr_with_user_cas):
-    d = experiment_ep_pcr_with_user_cas.exp_meta_data_to_dict()
+def test_exp_meta_data_plates_count(experiment_ep_pcr_with_user_smiles):
+    d = experiment_ep_pcr_with_user_smiles.exp_meta_data_to_dict()
     assert d["plates_count"] == 10
 
 
-def test_exp_meta_data_substrate_cas(experiment_ep_pcr_with_user_cas):
-    d = experiment_ep_pcr_with_user_cas.exp_meta_data_to_dict()
-    assert d["substrate_cas_number"] == "918704-25-2, 98053-92-1"
+def test_exp_meta_data_substrate_smiles(experiment_ep_pcr_with_user_smiles):
+    d = experiment_ep_pcr_with_user_smiles.exp_meta_data_to_dict()
+    assert d[gs.cc_substrate] == "CC(C)(C)C(=O)O[NH3+].CCC#CCCOCC.O=S(=O)([O-])C(F)(F)F"
 
 
-def test_exp_meta_data_assay(experiment_ep_pcr_with_user_cas):
-    d = experiment_ep_pcr_with_user_cas.exp_meta_data_to_dict()
+def test_exp_meta_data_assay(experiment_ep_pcr_with_user_smiles):
+    d = experiment_ep_pcr_with_user_smiles.exp_meta_data_to_dict()
     assert d["assay"] == "UV-Vis Spectroscopy"
 
 
-def test_exp_meta_data_length(experiment_ep_pcr_with_user_cas):
-    d = experiment_ep_pcr_with_user_cas.exp_meta_data_to_dict()
+def test_exp_meta_data_length(experiment_ep_pcr_with_user_smiles):
+    d = experiment_ep_pcr_with_user_smiles.exp_meta_data_to_dict()
     assert len(d) == 12
 
 
-def test_exp_core_data_to_dict(experiment_ep_pcr_with_user_cas):
-    d = experiment_ep_pcr_with_user_cas.exp_core_data_to_dict()
+def test_exp_core_data_to_dict(experiment_ep_pcr_with_user_smiles):
+    d = experiment_ep_pcr_with_user_smiles.exp_core_data_to_dict()
     df = pd.DataFrame.from_dict(d)
     assert df.shape[0] == 1920
     assert df.shape[1] == 8
@@ -269,7 +269,7 @@ def test_exp_core_data_to_dict(experiment_ep_pcr_with_user_cas):
         (0, "alignment_count", 0),
         (0, "alignment_probability", 0.0),
         (0, "amino_acid_substitutions", "#N.A.#"),
-        (0, gs.c_cas, "345905-97-7"),
+        (0, gs.c_smiles, "CC(C)CC1=CC=C(C=C1)C(C)C(=O)O"),
         (94, "fitness_value", 1917633.707),
         (0, gs.c_plate, "20240422-ParLQ-ep1-300-1"),
         (0, "well", "A1"),
@@ -282,26 +282,26 @@ def test_exp_core_data_to_dict(experiment_ep_pcr_with_user_cas):
         (51, "alignment_count", 29),
         (61, "alignment_probability", 0.0),
         (69, "amino_acid_substitutions", "#PARENT#"),
-        (99, gs.c_cas, "395683-37-1"),
+        (99, gs.c_smiles, "C1=CC=C(C=C1)C=O"),
         (99, "fitness_value", 1244116.159),
         (42, gs.c_plate, "20240422-ParLQ-ep1-300-1"),
         (0, "well", "A1"),
     ],
 )
-def test_exp_core_data_to_dict_2(experiment_ep_pcr_with_user_cas, index, key, value):
-    d = experiment_ep_pcr_with_user_cas.exp_core_data_to_dict()
+def test_exp_core_data_to_dict_2(experiment_ep_pcr_with_user_smiles, index, key, value):
+    d = experiment_ep_pcr_with_user_smiles.exp_core_data_to_dict()
     assert d[index][key] == value
 
 
 def test_exp_hot_cold_spots_structure(experiment_ep_pcr):
     """Tests if the function returns dataframes with expected structure."""
-    hot_cold_spots_df, hot_cold_residue_per_cas = experiment_ep_pcr.exp_hot_cold_spots(2)
+    hot_cold_spots_df, hot_cold_residue_per_smiles = experiment_ep_pcr.exp_hot_cold_spots(2)
     assert isinstance(hot_cold_spots_df, pd.DataFrame)
-    assert isinstance(hot_cold_residue_per_cas, pd.DataFrame)
+    assert isinstance(hot_cold_residue_per_smiles, pd.DataFrame)
 
     # Check expected columns in hot_cold_spots_df
     expected_cols = {
-        gs.c_cas,
+        gs.c_smiles,
         gs.c_plate,
         gs.c_well,
         gs.c_substitutions,
@@ -319,8 +319,8 @@ def test_exp_hot_cold_spots_structure(experiment_ep_pcr):
 )
 def test_exp_hot_cold_spots_count(experiment_ep_pcr, n):
     """Tests if the function returned value count is consistent with n"""
-    hot_cold_spots_df, hot_cold_residue_per_cas = experiment_ep_pcr.exp_hot_cold_spots(n)
-    count = len(experiment_ep_pcr.unique_cas_in_data) * experiment_ep_pcr.plates_count * 2 * n
+    hot_cold_spots_df, hot_cold_residue_per_smiles = experiment_ep_pcr.exp_hot_cold_spots(n)
+    count = len(experiment_ep_pcr.unique_smiles_in_data) * experiment_ep_pcr.plates_count * 2 * n
     assert count == hot_cold_spots_df.shape[0]
 
 
@@ -351,7 +351,7 @@ def test_exp_hot_cold_spots_n_values(experiment_ep_pcr, n):
     """Tests if the function correctly extracts top/bottom N residues."""
     hot_cold_spots_df, _ = experiment_ep_pcr.exp_hot_cold_spots(n)
 
-    # Ensure we get exactly N hot and cold variants per CAS + Plate combo
+    # Ensure we get exactly N hot and cold variants per smiles + Plate combo
     hot_count = hot_cold_spots_df[hot_cold_spots_df[gs.cc_hot_cold_type] == gs.cc_hot].shape[0]
     cold_count = hot_cold_spots_df[hot_cold_spots_df[gs.cc_hot_cold_type] == gs.cc_cold].shape[0]
 
@@ -363,8 +363,8 @@ def test_exp_hot_cold_spots_n_values(experiment_ep_pcr, n):
     [1, 2, 3, 4, 5, 6],
 )
 def test_exp_hot_cold_spots_grouping(experiment_ep_pcr, n):
-    """Tests if the function correctly groups by CAS and extracts substitution indices."""
-    _, hot_cold_residue_per_cas = experiment_ep_pcr.exp_hot_cold_spots(n)
+    """Tests if the function correctly groups by smiles and extracts substitution indices."""
+    _, hot_cold_residue_per_smiles = experiment_ep_pcr.exp_hot_cold_spots(n)
 
-    # Ensure extracted CAS count is consistent
-    assert len(hot_cold_residue_per_cas[gs.c_cas].unique()) == len(experiment_ep_pcr.unique_cas_in_data)
+    # Ensure extracted smiles count is consistent
+    assert len(hot_cold_residue_per_smiles[gs.c_smiles].unique()) == len(experiment_ep_pcr.unique_smiles_in_data)

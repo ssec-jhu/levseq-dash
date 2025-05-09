@@ -73,12 +73,12 @@ def test_edge_cases_3(alignment_string, list_of_residues_edge):
         (0, "plates_count", 4),
     ],
 )
-def test_gather_seq_alignment_data_per_cas(seq_align_per_cas_data, index, property, value):
+def test_gather_seq_alignment_data_per_smiles(seq_align_per_smiles_data, index, property, value):
     result = []
-    result = utils_seq_alignment.gather_seq_alignment_data_per_cas(
-        df_hot_cold_residue_per_cas=seq_align_per_cas_data[0],
-        seq_match_data=seq_align_per_cas_data[1],
-        exp_meta_data=seq_align_per_cas_data[2],
+    result = utils_seq_alignment.gather_seq_alignment_data_per_smiles(
+        df_hot_cold_residue_per_smiles=seq_align_per_smiles_data[0],
+        seq_match_data=seq_align_per_smiles_data[1],
+        exp_meta_data=seq_align_per_smiles_data[2],
         seq_match_row_data=result,
     )
     # verify some of the properties and make sure they were added properly
@@ -101,19 +101,19 @@ def test_gather_seq_alignment_data_per_cas(seq_align_per_cas_data, index, proper
         (1, "plates_count", 4),
     ],
 )
-def test_gather_seq_alignment_data_per_cas_2(seq_align_per_cas_data, index, property, value):
+def test_gather_seq_alignment_data_per_smiles_2(seq_align_per_smiles_data, index, property, value):
     # run the data twice and make sure there is two sets for testing purposes
     result = []
-    result = utils_seq_alignment.gather_seq_alignment_data_per_cas(
-        df_hot_cold_residue_per_cas=seq_align_per_cas_data[0],
-        seq_match_data=seq_align_per_cas_data[1],
-        exp_meta_data=seq_align_per_cas_data[2],
+    result = utils_seq_alignment.gather_seq_alignment_data_per_smiles(
+        df_hot_cold_residue_per_smiles=seq_align_per_smiles_data[0],
+        seq_match_data=seq_align_per_smiles_data[1],
+        exp_meta_data=seq_align_per_smiles_data[2],
         seq_match_row_data=result,
     )
-    result = utils_seq_alignment.gather_seq_alignment_data_per_cas(
-        df_hot_cold_residue_per_cas=seq_align_per_cas_data[0],
-        seq_match_data=seq_align_per_cas_data[1],
-        exp_meta_data=seq_align_per_cas_data[2],
+    result = utils_seq_alignment.gather_seq_alignment_data_per_smiles(
+        df_hot_cold_residue_per_smiles=seq_align_per_smiles_data[0],
+        seq_match_data=seq_align_per_smiles_data[1],
+        exp_meta_data=seq_align_per_smiles_data[2],
         seq_match_row_data=result,
     )
 

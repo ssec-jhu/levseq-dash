@@ -87,20 +87,20 @@ def display_page(pathname):
 @app.callback(
     Output("id-table-all-experiments", "rowData"),
     Output("id-lab-experiment-count", "children"),
-    Output("id-lab-experiment-all-cas", "children"),
+    Output("id-lab-experiment-all-smiles", "children"),
     Input("id-table-all-experiments", "columnDefs"),
     # prevent_initial_call=True,
 )
 def load_landing_page(temp_text):
     list_of_all_lab_experiments_with_meta = data_mgr.get_lab_experiments_with_meta_data()
 
-    # extract all the uniques substrate cas in the projects
-    all_cas = utils.extract_all_unique_cas_from_lab_data(list_of_all_lab_experiments_with_meta)
+    # extract all the uniques substrate in the projects
+    all_smiles = utils.extract_all_unique_smiles_from_lab_data(list_of_all_lab_experiments_with_meta)
     number_of_experiments = len(list_of_all_lab_experiments_with_meta)
     return (
         list_of_all_lab_experiments_with_meta,
         number_of_experiments,  # number of experiments
-        all_cas,  # for lab dashboard stats
+        all_smiles,  # for lab dashboard stats
     )
 
 
@@ -202,8 +202,8 @@ def on_upload_structure_file(dash_upload_string_contents, filename, last_modifie
     Input("id-button-submit", "n_clicks"),
     State("id-input-experiment-name", "value"),
     State("id-input-experiment-date", "date"),
-    State("id-input-substrate-cas", "value"),
-    State("id-input-product-cas", "value"),
+    State("id-input-substrate", "value"),
+    State("id-input-product", "value"),
     State("id-list-assay", "value"),
     State("id-radio-epr", "value"),
     State("id-exp-upload-structure", "data"),
@@ -214,22 +214,22 @@ def on_submit_experiment(
     n_clicks,
     experiment_name,
     experiment_date,
-    substrate_cas,
-    product_cas,
+    substrate,
+    product,
     assay,
     mutagenesis_method,
     geometry_content_base64_encoded_string,
     experiment_content_base64_encoded_string,
 ):
     if n_clicks > 0 and ctx.triggered_id == "id-button-submit":
-        # TODO: verify the CAS numbers somewhere or in another callback
+        # TODO: verify the smiles numbers somewhere or in another callback
 
         experiment_id = data_mgr.add_experiment_from_ui(
             user_id="some_user_name",
             experiment_name=experiment_name,
             experiment_date=experiment_date,
-            substrate_cas_number=substrate_cas,
-            product_cas_number=product_cas,
+            substrate=substrate,
+            product=product,
             assay=assay,
             mutagenesis_method=mutagenesis_method,
             experiment_content_base64_string=experiment_content_base64_encoded_string,
@@ -283,7 +283,7 @@ def on_load_matching_sequences(n_clicks, query_sequence, threshold, n_top_hot_co
             exp = data_mgr.get_experiment(exp_id)
 
             # extract the top N (hot) and bottom N (cold) fitness values of this experiment
-            hot_cold_spots_merged_df, hot_cold_residue_per_cas = exp.exp_hot_cold_spots(int(n_top_hot_cold))
+            hot_cold_spots_merged_df, hot_cold_residue_per_smiles = exp.exp_hot_cold_spots(int(n_top_hot_cold))
 
             # add the experiment id to this data
             hot_cold_spots_merged_df[gs.cc_experiment_id] = exp_id
@@ -291,9 +291,9 @@ def on_load_matching_sequences(n_clicks, query_sequence, threshold, n_top_hot_co
             # concatenate this info with the rest of the hot and cold spot data
             hot_cold_row_data = pd.concat([hot_cold_row_data, hot_cold_spots_merged_df], ignore_index=True)
 
-            # expand the data of each row per CAS - request by PI
-            seq_match_row_data = utils_seq_alignment.gather_seq_alignment_data_per_cas(
-                df_hot_cold_residue_per_cas=hot_cold_residue_per_cas,
+            # expand the data of each row per smiles - request by PI
+            seq_match_row_data = utils_seq_alignment.gather_seq_alignment_data_per_smiles(
+                df_hot_cold_residue_per_smiles=hot_cold_residue_per_smiles,
                 seq_match_data=lab_seq_match_data[i],
                 exp_meta_data=exp.exp_meta_data_to_dict(),
                 seq_match_row_data=seq_match_row_data,
@@ -315,8 +315,8 @@ def display_selected_matching_sequences_protein_visualization(selected_rows):
     if selected_rows:
         # extract the info from the table
         substitutions = f"{selected_rows[0][gs.cc_seq_alignment_mismatches]}"
-        hot_spots = f"{selected_rows[0][gs.cc_hot_indices_per_cas]}"
-        cold_spots = f"{selected_rows[0][gs.cc_cold_indices_per_cas]}"
+        hot_spots = f"{selected_rows[0][gs.cc_hot_indices_per_smiles]}"
+        cold_spots = f"{selected_rows[0][gs.cc_cold_indices_per_smiles]}"
         experiment_id = selected_rows[0][gs.cc_experiment_id]
 
         # get the experiment info from the db
@@ -348,13 +348,13 @@ def display_selected_matching_sequences_protein_visualization(selected_rows):
             ]
             notes = f"""
                      **ExperimentID:** {experiment_id}
-                     **CAS:** {selected_rows[0][gs.c_cas]}
+                     **SMILES:** {selected_rows[0][gs.c_smiles]}
                     """
         else:
             viewer = no_update
             notes = f"""
                      **ExperimentID:** {experiment_id}
-                     **CAS:** {selected_rows[0][gs.c_cas]}
+                     **SMILES:** {selected_rows[0][gs.c_smiles]}
                      **No geometry file was found for the selected experiment:**
                     """
 
@@ -409,15 +409,15 @@ def redirect_to_experiment_page(n_clicks):
     Output("id-experiment-date", "children"),
     Output("id-experiment-upload", "children"),
     Output("id-experiment-plate-count", "children"),
-    Output("id-experiment-file-cas", "children"),
-    Output("id-experiment-sub-cas", "children"),
-    Output("id-experiment-product-cas", "children"),
+    Output("id-experiment-file-smiles", "children"),
+    Output("id-experiment-substrate", "children"),
+    Output("id-experiment-product", "children"),
     Output("id-experiment-assay", "children"),
     # Heat map dropdowns options and defaults
     Output("id-list-plates", "options"),
     Output("id-list-plates", "value"),
-    Output("id-list-cas-numbers", "options"),
-    Output("id-list-cas-numbers", "value"),
+    Output("id-list-smiles", "options"),
+    Output("id-list-smiles", "value"),
     Output("id-list-properties", "options"),
     Output("id-list-properties", "value"),
     # Heat map figure
@@ -425,15 +425,15 @@ def redirect_to_experiment_page(n_clicks):
     # Ranking plot dropdowns options and defaults
     Output("id-list-plates-ranking-plot", "options"),
     Output("id-list-plates-ranking-plot", "value"),
-    Output("id-list-cas-numbers-ranking-plot", "options"),
-    Output("id-list-cas-numbers-ranking-plot", "value"),
+    Output("id-list-smiles-ranking-plot", "options"),
+    Output("id-list-smiles-ranking-plot", "value"),
     # Ranking plot figure
     Output("id-experiment-ranking-plot", "figure"),
     # slider setup
     Output("id-slider-ratio", "marks"),
     Output("id-slider-ratio", "max"),
-    Output("id-list-cas-numbers-residue-highlight", "options"),
-    Output("id-list-cas-numbers-residue-highlight", "value"),
+    Output("id-list-smiles-residue-highlight", "options"),
+    Output("id-list-smiles-residue-highlight", "value"),
     # related sequences
     Output("id-input-exp-related-variants-query-sequence", "children"),
     # Output("id-store-heatmap-data", "data"),
@@ -452,20 +452,21 @@ def load_experiment_page(pathname, experiment_id):
 
         # load the dropdown for the plots with default values
         default_plate = exp.plates[0]
-        default_cas = exp.unique_cas_in_data[0]
+        default_smiles = exp.unique_smiles_in_data[0]
         default_experiment_heatmap_properties_list = gs.experiment_heatmap_properties_list[0]
+        unique_smiles_in_data = "; ".join(exp.unique_smiles_in_data)
 
         # create the heatmap with default values
         fig_experiment_heatmap = graphs.creat_heatmap(
             df=exp.data_df,
             plate_number=default_plate,
             property=default_experiment_heatmap_properties_list,
-            cas_number=default_cas,
+            smiles=default_smiles,
         )
 
-        # in order to color the fitness ratio I have to calculate the mean of the parents per cas per plate.
+        # in order to color the fitness ratio I have to calculate the mean of the parents per smiles per plate.
         # coloring only works if I add the column
-        df_filtered_with_ratio = utils.calculate_group_mean_ratios_per_cas_and_plate(exp.data_df)
+        df_filtered_with_ratio = utils.calculate_group_mean_ratios_per_smiles_and_plate(exp.data_df)
         columnDefs_with_ratio = cd.get_top_variant_column_defs(df_filtered_with_ratio)
 
         # creat the ranking plot with default values
@@ -473,7 +474,7 @@ def load_experiment_page(pathname, experiment_id):
         fig_experiment_rank_plot = graphs.creat_rank_plot(
             df=df_filtered_with_ratio,
             plate_number=default_plate,
-            cas_number=default_cas,
+            smiles=default_smiles,
         )
 
         # set up the slider
@@ -483,7 +484,7 @@ def load_experiment_page(pathname, experiment_id):
         # make sure the value is an int
         slider_marks = utils.generate_slider_marks_dict(int(max_value))
 
-        # heatmap_df = exp.data_df[[gs.c_cas, gs.c_plate, gs.c_well, gs.c_alignment_count,
+        # heatmap_df = exp.data_df[[gs.c_smiles, gs.c_plate, gs.c_well, gs.c_alignment_count,
         #                          gs.c_alignment_probability, gs.c_fitness_value]]
         # heatmap_json = heatmap_df.to_json(date_format='iso', orient='records')
         # Convert to JSON
@@ -503,17 +504,18 @@ def load_experiment_page(pathname, experiment_id):
             exp.experiment_date,
             exp.upload_time_stamp,
             exp.plates_count,
-            exp.unique_cas_in_data,
-            exp.substrate_cas_number,
-            exp.product_cas_number,
+            # exp.unique_smiles_in_data, # return a comma delimited string
+            unique_smiles_in_data,  # return a comma delimited string
+            exp.substrate,
+            exp.product,
             exp.assay,
             # -------------------------------
             # heatmap dropdowns and figure
             # -------------------------------
             exp.plates,  # Heatmap:  list of plates
             default_plate,  # Heatmap:  default plate
-            exp.unique_cas_in_data,  # Heatmap: list of cas values
-            default_cas,  # Heatmap:  default Cas
+            exp.unique_smiles_in_data,  # Heatmap: list of smiles values
+            default_smiles,  # Heatmap:  default smiles
             gs.experiment_heatmap_properties_list,  # Heatmap: property list
             gs.experiment_heatmap_properties_list[0],  # Heatmap: property default
             fig_experiment_heatmap,  # Heatmap: figure
@@ -522,16 +524,16 @@ def load_experiment_page(pathname, experiment_id):
             # --------------------------------
             exp.plates,  # rank plot:  list of plates
             default_plate,  # rank plot:  default plate
-            exp.unique_cas_in_data,  # rank plot: list of cas values
-            default_cas,  # rank plot:  default Cas
+            exp.unique_smiles_in_data,  # rank plot: list of smiles values
+            default_smiles,  # rank plot:  default smiles
             fig_experiment_rank_plot,  # Heatmap: figure
             # -------------------------------
             # residue highlight slider
             # --------------------------------
             slider_marks,
             max_value,
-            exp.unique_cas_in_data,  # list of cas values
-            default_cas,  # default Cas
+            exp.unique_smiles_in_data,  # list of smiles values
+            default_smiles,  # default smiles
             # -------------------------------
             # related sequences
             # --------------------------------
@@ -543,44 +545,44 @@ def load_experiment_page(pathname, experiment_id):
 
 @app.callback(
     Output("id-experiment-heatmap", "figure", allow_duplicate=True),
-    Output("id-list-cas-numbers", "disabled"),
-    Output("id-list-cas-numbers", "className"),
+    Output("id-list-smiles", "disabled"),
+    Output("id-list-smiles", "className"),
     Input("id-list-plates", "value"),
-    Input("id-list-cas-numbers", "value"),
+    Input("id-list-smiles", "value"),
     Input("id-list-properties", "value"),
     State("id-table-exp-top-variants", "rowData"),  # TODO: does this have a performance hit?
     # State("id-store-heatmap-data", "data"),
     prevent_initial_call=True,
 )
-def update_heatmap(selected_plate, selected_cas_number, selected_stat_property, rowData):
+def update_heatmap(selected_plate, selected_smiles, selected_stat_property, rowData):
     # TODO: does this have a performance hit? if so we can just put the 3 columns in the user session
     df = pd.DataFrame(rowData)
 
-    show_cas_numbers = selected_stat_property == gs.experiment_heatmap_properties_list[0]
+    show_smiles = selected_stat_property == gs.experiment_heatmap_properties_list[0]
 
     stat_heatmap = graphs.creat_heatmap(
-        df, plate_number=selected_plate, property=selected_stat_property, cas_number=selected_cas_number
+        df, plate_number=selected_plate, property=selected_stat_property, smiles=selected_smiles
     )
-    if not show_cas_numbers:
+    if not show_smiles:
         class_name = "opacity-50 text-secondary dbc"
     else:
         class_name = "dbc"
-    return stat_heatmap, not show_cas_numbers, class_name
+    return stat_heatmap, not show_smiles, class_name
 
 
 @app.callback(
     Output("id-experiment-ranking-plot", "figure", allow_duplicate=True),
     Input("id-list-plates-ranking-plot", "value"),
-    Input("id-list-cas-numbers-ranking-plot", "value"),
+    Input("id-list-smiles-ranking-plot", "value"),
     State("id-table-exp-top-variants", "rowData"),  # TODO: does this have a performance hit?
     # State("id-store-heatmap-data", "data"),
     prevent_initial_call=True,
 )
-def update_rank_plot(selected_plate, selected_cas_number, rowData):
+def update_rank_plot(selected_plate, selected_smiles, rowData):
     # TODO: does this have a performance hit? if so we can just put the 3 columns in the user session
     df = pd.DataFrame(rowData)
 
-    rank_plot = graphs.creat_rank_plot(df, plate_number=selected_plate, cas_number=selected_cas_number)
+    rank_plot = graphs.creat_rank_plot(df, plate_number=selected_plate, smiles=selected_smiles)
     return rank_plot
 
 
@@ -605,31 +607,31 @@ def focus_select_output(selected_rows):
     Output("id-viewer", "selection", allow_duplicate=True),
     Output("id-viewer", "focus", allow_duplicate=True),
     Output("id-slider-ratio", "disabled"),
-    Output("id-list-cas-numbers-residue-highlight", "disabled"),
+    Output("id-list-smiles-residue-highlight", "disabled"),
     Input("id-switch-residue-view", "checked"),  # DMC
     # Input("id-switch-residue-view", "value"),  # DBC
     Input("id-slider-ratio", "value"),
-    Input("id-list-cas-numbers-residue-highlight", "value"),
+    Input("id-list-smiles-residue-highlight", "value"),
     State("id-table-exp-top-variants", "rowData"),
     prevent_initial_call=True,
 )
-def on_view_all_residue(view, slider_value, cas_value, rowData):
+def on_view_all_residue(view, slider_value, selected_smiles, rowData):
     # default the values
     sel = utils.reset_selection()
     foc = no_update
     enable_components = (not view) if view else no_update
     if view and rowData:
         df = pd.DataFrame(rowData)
-        # filter by cas value
-        if cas_value:
-            df_cas = df[df[gs.c_cas] == cas_value]
+        # filter by smiles value
+        if selected_smiles:
+            df_smiles = df[df[gs.c_smiles] == selected_smiles]
         else:
-            df_cas = df
+            df_smiles = df
 
         # apply the slider values
         delta = math.fabs(slider_value[0] - slider_value[1])
         if delta != 0:
-            df_filtered = df_cas[df_cas[gs.cc_ratio].between(slider_value[0], slider_value[1])]
+            df_filtered = df_smiles[df_smiles[gs.cc_ratio].between(slider_value[0], slider_value[1])]
             # extract the residue indices for the viewer
             # residues = sorted(df_filtered[gs.c_substitutions].str.extractall(r"(\d+)")[0].unique().tolist())
             residues = (
@@ -688,7 +690,7 @@ def on_exp_related_variants(
 
         # gather the information for this query experiment
         # query_exp = data_mgr.get_experiment(experiment_id)
-        # _, query_exp_hot_cold_residue_per_cas = query_exp.exp_hot_cold_spots(int(n_top_hot_cold))
+        # _, query_exp_hot_cold_residue_per_smiles = query_exp.exp_hot_cold_spots(int(n_top_hot_cold))
         # query_protein_file = query_exp.geometry_file_path
         lookup_residues_list = lookup_residues.split(",")
 
@@ -754,7 +756,7 @@ def display_selected_matching_sequences_protein_visualization_exp(selected_rows,
     if selected_rows:
         # selected experiment from the table
         selected_experiment_id = selected_rows[0][gs.cc_experiment_id]
-        selected_cas_number = f"{selected_rows[0][gs.c_cas]}"
+        selected_smiles = f"{selected_rows[0][gs.c_smiles]}"
         selected_substitutions = f"{selected_rows[0][gs.c_substitutions]}"
         selected_substitutions_list = utils.extract_all_indices(selected_substitutions)
 
@@ -811,7 +813,7 @@ def display_selected_matching_sequences_protein_visualization_exp(selected_rows,
             selected_experiment_info = f"""
                                  **{gs.exp_seq_align_query_info_1}:** {selected_experiment_id}
                                  &nbsp;&nbsp;&nbsp;&nbsp; **{gs.header_substitutions}** {selected_substitutions}
-                                 &nbsp;&nbsp;&nbsp;&nbsp; **{gs.header_cas_number}:** {selected_cas_number}
+                                 &nbsp;&nbsp;&nbsp;&nbsp; **{gs.header_smiles}:** {selected_smiles}
                                 """
             query_experiment_viewer_info = f"""
                                  **{gs.exp_seq_align_query_info_2}:** {experiment_id}

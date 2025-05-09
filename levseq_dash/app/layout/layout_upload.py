@@ -46,13 +46,12 @@ def get_form():
             ),
             dbc.Row(
                 [
-                    components.get_label_fixed_for_form(gs.substrate_cas),
+                    components.get_label_fixed_for_form(gs.substrate_smiles_input),
                     dbc.Col(
                         dbc.Input(
                             type="text",
-                            id="id-input-substrate-cas",
-                            # TODO: place holder should be an example CAS number format
-                            placeholder="Enter Substrate CAS Number",
+                            id="id-input-substrate",
+                            placeholder=gs.smiles_input_placeholder,
                             debounce=True,
                         ),
                     ),
@@ -61,12 +60,12 @@ def get_form():
             ),
             dbc.Row(
                 [
-                    components.get_label_fixed_for_form(gs.product_cas),
+                    components.get_label_fixed_for_form(gs.product_smiles_input),
                     dbc.Col(
                         dbc.Input(
                             type="text",
-                            id="id-input-product-cas",
-                            placeholder="Enter Product CAS Number",
+                            id="id-input-product",
+                            placeholder=gs.smiles_input_placeholder,
                             debounce=True,
                         ),
                     ),
