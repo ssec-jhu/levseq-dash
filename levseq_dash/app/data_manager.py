@@ -7,8 +7,9 @@ from pathlib import Path
 import pandas as pd
 
 from levseq_dash.app import global_strings as gs
-from levseq_dash.app import settings, utils
+from levseq_dash.app import settings
 from levseq_dash.app.experiment import Experiment, MutagenesisMethod
+from levseq_dash.app.utils import utils
 
 # from levseq_dash.app.wsexec import Query
 

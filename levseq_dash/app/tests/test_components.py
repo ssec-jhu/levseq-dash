@@ -5,11 +5,7 @@ import pytest
 from dash import html
 
 from levseq_dash.app import column_definitions as cd
-from levseq_dash.app import (
-    components,
-    graphs,
-    utils,
-)
+from levseq_dash.app import components, graphs
 from levseq_dash.app import global_strings as gs
 from levseq_dash.app.layout import (
     layout_bars,
@@ -18,6 +14,7 @@ from levseq_dash.app.layout import (
     layout_matching_sequences,
     layout_upload,
 )
+from levseq_dash.app.utils import utils
 
 
 def test_get_label():

@@ -1,5 +1,4 @@
 import math
-import re
 
 import dash_bootstrap_components as dbc
 import dash_molstar
@@ -12,13 +11,7 @@ from dash_molstar.utils import molstar_helper
 
 from levseq_dash.app import column_definitions as cd
 from levseq_dash.app import global_strings as gs
-from levseq_dash.app import (
-    graphs,
-    settings,
-    utils,
-    utils_seq_alignment,
-    vis,
-)
+from levseq_dash.app import graphs, settings, vis
 from levseq_dash.app.data_manager import DataManager
 from levseq_dash.app.layout import (
     layout_bars,
@@ -28,6 +21,7 @@ from levseq_dash.app.layout import (
     layout_upload,
 )
 from levseq_dash.app.sequence_aligner import bio_python_pairwise_aligner
+from levseq_dash.app.utils import u_protein_viewer, u_seq_alignment, utils
 
 # Initialize the app
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
@@ -292,7 +286,7 @@ def on_load_matching_sequences(n_clicks, query_sequence, threshold, n_top_hot_co
             hot_cold_row_data = pd.concat([hot_cold_row_data, hot_cold_spots_merged_df], ignore_index=True)
 
             # expand the data of each row per smiles - request by PI
-            seq_match_row_data = utils_seq_alignment.gather_seq_alignment_data_per_smiles(
+            seq_match_row_data = u_seq_alignment.gather_seq_alignment_data_per_smiles(
                 df_hot_cold_residue_per_smiles=hot_cold_residue_per_smiles,
                 seq_match_data=lab_seq_match_data[i],
                 exp_meta_data=exp.exp_meta_data_to_dict(),
@@ -326,7 +320,7 @@ def display_selected_matching_sequences_protein_visualization(selected_rows):
         # if there is no geometry for the file ignore it
         if geometry_file:
             # gather the rendering components per the indices
-            list_of_rendered_components = vis.get_molstar_rendered_components_seq_alignment(
+            list_of_rendered_components = u_protein_viewer.get_molstar_rendered_components_seq_alignment(
                 hot_residue_indices_list=hot_spots,
                 cold_residue_indices_list=cold_spots,
                 substitution_residue_list=substitutions,
@@ -448,7 +442,7 @@ def load_experiment_page(pathname, experiment_id):
 
         # viewer data
         # TODO : this needs to be moved out of here so it can pickup the file format
-        pdb_cif = utils.get_geometry_for_viewer(exp)
+        pdb_cif = u_protein_viewer.get_geometry_for_viewer(exp)
 
         # load the dropdown for the plots with default values
         default_plate = exp.plates[0]
@@ -597,7 +591,7 @@ def focus_select_output(selected_rows):
         # residues = utils.gather_residues_from_selection(selected_rows)
         residues = utils.extract_all_indices(f"{selected_rows[0][gs.c_substitutions]}")
         if len(residues) != 0:
-            sel, foc = utils.get_selection_focus(residues)
+            sel, foc = u_protein_viewer.get_selection_focus(residues)
             return sel, foc
 
     raise PreventUpdate
@@ -617,7 +611,7 @@ def focus_select_output(selected_rows):
 )
 def on_view_all_residue(view, slider_value, selected_smiles, rowData):
     # default the values
-    sel = utils.reset_selection()
+    sel = u_protein_viewer.reset_selection()
     foc = no_update
     enable_components = (not view) if view else no_update
     if view and rowData:
@@ -645,7 +639,7 @@ def on_view_all_residue(view, slider_value, selected_smiles, rowData):
 
             # set up the protein viewer selection and focus
             if len(residues) != 0:
-                sel, foc = utils.get_selection_focus(residues, analyse=False)
+                sel, foc = u_protein_viewer.get_selection_focus(residues, analyse=False)
 
     return sel, foc, enable_components, enable_components
 
@@ -707,7 +701,7 @@ def on_exp_related_variants(
             # does my experiments variant show up in the other experiment
             # get the experiment core data from the db
             match_exp = data_mgr.get_experiment(mathc_exp_id)
-            exp_results_row_data = utils_seq_alignment.search_and_gather_variant_info_for_matching_experiment(
+            exp_results_row_data = u_seq_alignment.search_and_gather_variant_info_for_matching_experiment(
                 experiment=match_exp,
                 experiment_id=mathc_exp_id,
                 lookup_residues_list=lookup_residues_list,
@@ -779,7 +773,9 @@ def display_selected_matching_sequences_protein_visualization_exp(selected_rows,
             # --------------------
             pdb_cif_selection = molstar_helper.parse_molecule(
                 selected_experiment_geometry_file,
-                component=vis.get_molstar_rendered_components_related_variants(selected_substitutions_list),
+                component=u_protein_viewer.get_molstar_rendered_components_related_variants(
+                    selected_substitutions_list
+                ),
                 preset={"kind": "empty"},
                 fmt="cif",
             )
@@ -797,7 +793,9 @@ def display_selected_matching_sequences_protein_visualization_exp(selected_rows,
             # --------------------
             pdb_cif_query = molstar_helper.parse_molecule(
                 experiment_geometry_file,
-                component=vis.get_molstar_rendered_components_related_variants(selected_substitutions_list),
+                component=u_protein_viewer.get_molstar_rendered_components_related_variants(
+                    selected_substitutions_list
+                ),
                 preset={"kind": "empty"},
                 fmt="cif",
             )
