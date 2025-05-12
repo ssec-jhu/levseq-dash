@@ -71,6 +71,8 @@ def create_mols_grid(all_smiles_strings: str):
         return None, None
 
     # make an svg image for better resolution
+    # MolsToGridImage is a bit more limited in terms of the layout and the padding that it has
+    # but it is better than loads of code trying to draw on the draw pad
     svg_img = Draw.MolsToGridImage(mols, molsPerRow=8, subImgSize=(200, 200), legends=captions, useSVG=True)
     svg_src = convert_svg_img_to_src(svg_img)
 
