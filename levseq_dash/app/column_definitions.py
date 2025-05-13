@@ -218,7 +218,7 @@ def get_alignment_stats():
         {
             "field": gs.cc_seq_alignment_mismatches,
             "headerName": "Mismatched Residue",
-            "width": 200,
+            "width": 300,
         },
     ]
 
@@ -285,11 +285,14 @@ def get_matched_sequences_column_defs():
     Returns column definitions for the matched sequences
     """
     column_def = (
-        get_experiment_id({"width": 120, "pinned": "left"})
-        + get_smiles({"width": 120, "pinned": "left"})
+        # if you want to pin any of the columns, here's how you do it
+        # get_experiment_id({"width": 120, "pinned": "left"})
+        # + get_smiles({"width": 150, "pinned": "left"})
+        get_experiment_id({"width": 120})
+        + get_smiles({"width": 200})
         + get_experiment_name({"width": 130})
         + get_alignment_scores()
-        + get_experiment_meta_smiles({"width": 130}, {"width": 130})
+        + get_experiment_meta_smiles({"width": 200}, {"width": 200})
         + get_experiment_meta(
             {"width": 120},
             {"width": 120},
@@ -355,16 +358,18 @@ def get_an_experiments_matched_sequences_column_defs():
     Returns column definitions for the matched sequences
     """
     column_def = (
-        get_experiment_id({"width": 160, "pinned": "left", "initialSort": "desc"})
+        # It doesn't;t make sense to sort by experiment ID
+        # get_experiment_id({"width": 120, "pinned": "left", "initialSort": "desc"})
+        get_experiment_id({"width": 120, "pinned": "left"})
         + get_experiment_name({"width": 130})
         + get_alignment_scores()
     )
     column_def += (
-        get_smiles({"width": 120})
-        + get_substitutions({"width": 150})
+        get_smiles({"width": 150})
+        + get_substitutions({"width": 200})
         + get_plate_well({"width": 130})
         + get_fitness_ratio({"width": 130}, {"width": 130})
-        + get_experiment_meta_smiles({"width": 130}, {"width": 130})
+        + get_experiment_meta_smiles({"width": 150}, {"width": 150})
         + get_experiment_meta(
             {"width": 120},
             {"width": 120},
