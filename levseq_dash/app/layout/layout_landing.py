@@ -83,36 +83,6 @@ def get_landing_page():
                                     "alignItems": "center",
                                 },
                             ),
-                            # dbc.Row(
-                            #     [
-                            #         dbc.Col([
-                            #             dbc.Card(
-                            #                 [
-                            #                     dbc.CardHeader("All Product", className=vis.top_card_head),
-                            #                     dbc.CardBody([
-                            #                         html.Div(
-                            #                             html.Img(
-                            #                                 id="id-lab-product",
-                            #                                 style={"maxWidth": "auto", "height": "auto"},
-                            #                             ),
-                            #                             style={
-                            #                                 "display": "flex",
-                            #                                 "justifyContent": "center",
-                            #                                 "alignItems": "center",
-                            #                             },
-                            #                         )
-                            #                     ],
-                            #                         className=vis.top_card_body
-                            #                     ),
-                            #                 ],
-                            #                 style=vis.card_shadow,
-                            #             ),
-                            #         ],
-                            #             style=vis.border_column
-                            #         )
-                            #     ],
-                            #     style=vis.border_row,
-                            # )
                         ],
                         title="Visualization of Products Across all Experiments ",
                         style=vis.card_shadow,
@@ -122,34 +92,6 @@ def get_landing_page():
                 flush=True,
                 className="g-0 mt-4 mb-4 fw-bold custom-accordion",
             ),
-            # dbc.Row(
-            #     [
-            #         dbc.Col(
-            #             dbc.Card(
-            #                 [
-            #                     dbc.CardHeader(gs.lab_total, className=vis.top_card_head),
-            #                     dbc.CardBody(id="id-lab-experiment-count", className=vis.top_card_body),
-            #                 ],
-            #                 style=vis.card_shadow,
-            #             ),
-            #             width=2,
-            #             style=vis.border_column,
-            #         ),
-            #         dbc.Col(
-            #             dbc.Card(
-            #                 [
-            #                     dbc.CardHeader(gs.lab_smiles, className=vis.top_card_head),
-            #                     dbc.CardBody(id="id-lab-experiment-all-smiles", className=vis.top_card_body),
-            #                 ],
-            #                 style=vis.card_shadow,
-            #             ),
-            #             # width=5,
-            #             style=vis.border_column,
-            #         ),
-            #     ],
-            #     className="g-2 mb-4",
-            #     style=vis.border_row,
-            # ),
             dbc.Row(
                 [
                     dbc.Col(

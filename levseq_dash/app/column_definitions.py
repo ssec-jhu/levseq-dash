@@ -358,7 +358,7 @@ def get_an_experiments_matched_sequences_column_defs():
     Returns column definitions for the matched sequences
     """
     column_def = (
-        # It doesn't;t make sense to sort by experiment ID
+        # It doesn't make sense to sort by experiment ID but keeping commented for PI if of interest
         # get_experiment_id({"width": 120, "pinned": "left", "initialSort": "desc"})
         get_experiment_id({"width": 120, "pinned": "left"})
         + get_experiment_name({"width": 130})

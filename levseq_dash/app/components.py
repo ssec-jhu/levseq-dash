@@ -341,6 +341,9 @@ def get_button_download(button_id):
 
 
 def generate_label_with_info(label, id_info):
+    """
+    Produces a bold label with a string. This is used in multimple places throughout the layout.
+    """
     return html.Div(
         [
             html.Span(label, style=vis.experiment_info),
@@ -355,28 +358,18 @@ def generate_label_with_info(label, id_info):
             # below combo won't allow for word break
             # "display": "flex",
             # "alignItems": "center",
-            # "display": "flex",
             # "flexWrap": "wrap",
             "justifyContent": "center",
         },
     )
 
 
-# def create_layout_reaction_image(id_img):
-#     return html.Div(
-#         html.Img(
-#             id=id_img,
-#             style={"maxWidth": "100%", "height": "auto"},
-#         ),
-#         style={
-#             "display": "flex",
-#             "justifyContent": "center",
-#             "alignItems": "center",
-#         },
-#     )
-
-
 def create_layout_reaction(id_image, id_substrate_smiles, id_product_smiles):
+    """
+    Produces a specific layout for the reaction image if substrate -> product
+    with the substrate and the product smiles strings under the image
+    This combo is used in multiple places, so I am putting it in one function
+    """
     return dbc.Container(
         [
             html.Img(id=id_image, style={"maxWidth": "100%", "height": "auto"}),
@@ -399,60 +392,10 @@ def create_layout_reaction(id_image, id_substrate_smiles, id_product_smiles):
                 },
             ),
         ],
-        # className="border",
         style={
             "display": "flex",
             "flexDirection": "column",
             "alignItems": "center",
-            # "margin": "1rem",  # space *outside* the border
-            # "border": "1px solid var(--cal-tech-color-3)",  # Subtle border
-            "width": "100%",  # ensures it doesn’t overflow
-            # "boxSizing": "inherit"  # includes padding in width
+            "width": "100%",  # ensures it does not overflow
         },
     )
-
-    # return html.Div([
-    #     html.Img(id=id_image, style={"maxWidth": "100%", "height": "auto"}),
-    #     html.Span(
-    #         [
-    #             html.Span(
-    #                 [
-    #                     html.Span(
-    #                         "Substrate SMILES:",  # gs.substrate_smiles_input,
-    #                         style=vis.experiment_info
-    #                     ),
-    #                     html.Span(
-    #                         # id="id-exp-related-variants-selected-substrate",
-    #                         id=id_substrate_smiles,
-    #                         style={
-    #                             "marginRight": "15px"},
-    #                     ),
-    #                 ]
-    #             ),
-    #             html.Span(
-    #                 [
-    #                     html.Span(
-    #                         "Product SMILES:",  # gs.product_smiles_input,
-    #                         style=vis.experiment_info
-    #                     ),
-    #                     html.Span(
-    #                         # id="id-exp-related-variants-selected-product"
-    #                         id=id_product_smiles
-    #                     ),
-    #                 ]
-    #             ),
-    #         ],
-    #         style={
-    #             "display": "flex",
-    #             "justifyContent": "center",
-    #             "alignItems": "center",
-    #             "width": "100%",
-    #         },
-    #     )
-    # ],
-    #     style={
-    #         "display": "flex",
-    #         "justifyContent": "center",
-    #         "alignItems": "center",
-    #     },
-    # )

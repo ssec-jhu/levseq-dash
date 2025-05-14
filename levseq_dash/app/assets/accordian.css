@@ -1,0 +1,23 @@
+.custom-accordion .accordion-button{
+    /*padding: 5px 10px;    !* Adjust padding *!*/
+    font-size: 14px; !important;
+    font-weight: 700 !important; /*fw-bold doesn't apply */
+    /*border-bottom-width: 1px;*/
+    /*border-bottom-style: solid;*/
+    /*border-bottom-color: rgba(0, 0, 0, 0.176);*/
+    background-color: rgba(33, 37, 41, 0.03);!important;
+    /*background-color: var(--bs-gray-500);;*/
+    /*margin-bottom: 0;*/
+    /*color: var(--bs-card-cap-color);*/
+    /*border-bottom: var(--bs-card-border-width) solid var(--bs-card-border-color);*/
+    border-radius: 5px; !important;
+    border: 1px solid var(--cal-tech-color-3); !important;
+
+    /*box-sizing: content-box;*/
+}
+.custom-accordion .accordion-body {
+    /*background-color: #f9f9f9;*/
+    /*color: var(--cal-tech-color-4);*/
+    padding: 0rem 0rem;
+    /*border-top: 1px solid var(--cal-tech-color-3);*/
+}
