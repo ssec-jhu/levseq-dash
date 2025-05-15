@@ -211,27 +211,27 @@ def generate_random_smiles():
     return [random.choice(VALID_SMILES)]
 
 
-def extract_all_unique_smiles_from_lab_data(list_of_all_lab_experiments_with_meta: list[{}]):
-    """
-    This method extracts all the unique substrate smiles  used in the lab data.
-    The data is already pulled from the disk/db along with other metadata
-    The input is a list of dictionaries, data type used by AgGrid
-    """
-    # TODO: which unique smiles do we want to show here? unique files? substrate only?
-    all_unique_smiles = ""
-    if len(list_of_all_lab_experiments_with_meta) != 0:
-        unique_smiles_set = set()
-        for exp in list_of_all_lab_experiments_with_meta:
-            unique_smiles_set.update(exp[gs.cc_substrate])
-            unique_smiles_set.update(exp[gs.cc_product])
-        all_unique_smiles = ";  ".join(sorted(unique_smiles_set))
-
-    return all_unique_smiles
+# def extract_all_unique_smiles_from_lab_data(list_of_all_lab_experiments_with_meta: list[{}]):
+#     """
+#     This method extracts all the unique substrate smiles  used in the lab data.
+#     The data is already pulled from the disk/db along with other metadata
+#     The input is a list of dictionaries, data type used by AgGrid
+#     """
+#     # TODO: which unique smiles do we want to show here? unique files? substrate only?
+#     all_unique_smiles = ""
+#     if len(list_of_all_lab_experiments_with_meta) != 0:
+#         unique_smiles_set = set()
+#         for exp in list_of_all_lab_experiments_with_meta:
+#             unique_smiles_set.update(exp[gs.cc_substrate])
+#             unique_smiles_set.update(exp[gs.cc_product])
+#         all_unique_smiles = ";  ".join(sorted(unique_smiles_set))
+#
+#     return all_unique_smiles
 
 
 def extract_all_substrate_product_smiles_from_lab_data(list_of_all_lab_experiments_with_meta: list[{}]):
     """
-    This method extracts all the unique substrate and priduct smiles  used in the lab data.
+    This method extracts all the unique substrate and product smiles  used in the lab data.
     The input is a list of dictionaries, data type used by AgGrid
     """
     all_product_smiles = ""
