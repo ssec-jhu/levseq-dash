@@ -1,0 +1,14 @@
+.custom-accordion .accordion-button{
+    font-size: 14px; !important;
+    font-weight: 700 !important; /*fw-bold doesn't apply in inline styles */
+    background-color: rgba(33, 37, 41, 0.03);!important;
+    /*border-bottom: var(--bs-card-border-width) solid var(--bs-card-border-color);*/
+    border-radius: 5px; !important;
+    border: 1px solid var(--cal-tech-color-3); !important;
+
+    /*box-sizing: content-box;*/
+}
+.custom-accordion .accordion-body {
+   /* remove all padding so the image can fit at max */
+    padding: 0rem 0rem;
+}

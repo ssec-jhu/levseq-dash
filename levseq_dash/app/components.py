@@ -50,6 +50,7 @@ def get_table_experiment_top_variants():
             "enableCellTextSelection": True,
             "rowHeight": 30,
             "headerHeight": 50,
+            "pagination": True,
         },
         rowClassRules={
             # "bg-secondary": "params.data.well == 'A2'",
@@ -92,19 +93,20 @@ def get_table_experiment_related_variants():
             "autoHeight": True,  # Adjusts row height to fit wrapped text
             "tooltipComponent": "agTooltipComponent",
         },
-        style={"height": vis.seq_match_table_height, "width": "100%"},
+        style={"height": vis.related_variants_table_height, "width": "100%"},
         dashGridOptions={
             # Enable multiple selection
             "alwaysShowHorizontalScroll": True,  # TODO: does this work on mac?
             "rowSelection": "single",
             # https://ag-grid.com/javascript-data-grid/selection-overview/#cell-text-selection
             "enableCellTextSelection": True,
-            "rowHeight": 30,  # TODO: is this overwritten by the alignnmnet width
+            "rowHeight": 30,  # TODO: is this overwritten by the alignment width
             # "pagination": True,
             # # this will set the number of items per page be a function of the height
             # # if we load too many rows that are not visible, the graphics is not smart enough
             # # to hide what is not visible, so it takes longer for the page to load
             # "paginationAutoPageSize": True,
+            "pagination": True,
         },
         # className="ag-theme-alpine",
     )
@@ -143,6 +145,7 @@ def get_table_all_experiments():
             "animateRows": True,
             # https://ag-grid.com/javascript-data-grid/selection-overview/#cell-text-selection
             "enableCellTextSelection": True,
+            "pagination": True,
         },
     )
 
@@ -335,3 +338,64 @@ def get_button_download(button_id):
         ),
         get_tooltip(button_id, gs.help_download, "top"),
     ]
+
+
+def generate_label_with_info(label, id_info):
+    """
+    Produces a bold label with a string. This is used in multimple places throughout the layout.
+    """
+    return html.Div(
+        [
+            html.Span(label, style=vis.experiment_info),
+            html.Span(
+                id=id_info,
+                style={"maxWidth": "100%"},
+            ),
+        ],
+        style={
+            "whiteSpace": "normal",  # text wrap onto the next line.
+            "wordWrap": "break-word",  # ensures long strings (like one very long word or URL) break properly.
+            # below combo won't allow for word break
+            # "display": "flex",
+            # "alignItems": "center",
+            # "flexWrap": "wrap",
+            "justifyContent": "center",
+        },
+    )
+
+
+def create_layout_reaction(id_image, id_substrate_smiles, id_product_smiles):
+    """
+    Produces a specific layout for the reaction image if substrate -> product
+    with the substrate and the product smiles strings under the image
+    This combo is used in multiple places, so I am putting it in one function
+    """
+    return dbc.Container(
+        [
+            html.Img(id=id_image, style={"maxWidth": "100%", "height": "auto"}),
+            html.Div(
+                [
+                    html.Div(
+                        [html.Span("Substrate SMILES:", style=vis.experiment_info), html.Span(id=id_substrate_smiles)],
+                        style={"marginRight": "15px"},
+                    ),
+                    html.Div(
+                        [html.Span("Product SMILES:", style=vis.experiment_info), html.Span(id=id_product_smiles)]
+                    ),
+                ],
+                style={
+                    "display": "flex",
+                    "flexDirection": "row",
+                    "justifyContent": "center",
+                    "alignItems": "center",
+                    "width": "100%",
+                },
+            ),
+        ],
+        style={
+            "display": "flex",
+            "flexDirection": "column",
+            "alignItems": "center",
+            "width": "100%",  # ensures it does not overflow
+        },
+    )

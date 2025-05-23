@@ -9,33 +9,88 @@ from levseq_dash.app import global_strings as gs
 def get_landing_page():
     return html.Div(  # TODO: dbc.Container doesn't pick up the fluid container from parent
         [
-            dbc.Row(
+            # dbc.Row(
+            #     [
+            #         dbc.Col(
+            #             [
+            #                 dbc.Card(
+            #                     [
+            #                         dbc.CardHeader("All Substrate", className=vis.top_card_head),
+            #                         dbc.CardBody(
+            #                             [
+            #                                 html.Div(
+            #                                     html.Img(
+            #                                         id="id-lab-substrate",
+            #                                         style={"maxWidth": "auto", "height": "auto"},
+            #                                     ),
+            #                                     style={
+            #                                         "display": "flex",
+            #                                         "justifyContent": "center",
+            #                                         "alignItems": "center",
+            #                                     },
+            #                                 )
+            #                             ],
+            #                             className=vis.top_card_body
+            #                         ),
+            #                     ],
+            #                     style=vis.card_shadow,
+            #                 ),
+            #             ],
+            #             style=vis.border_column
+            #         )
+            #     ],
+            #     style=vis.border_row
+            # ),
+            # all the product molecules from mols to grid
+            dbc.Accordion(
                 [
-                    dbc.Col(
-                        dbc.Card(
-                            [
-                                dbc.CardHeader(gs.lab_total, className=vis.top_card_head),
-                                dbc.CardBody(id="id-lab-experiment-count", className=vis.top_card_body),
-                            ],
-                            style=vis.card_shadow,
-                        ),
-                        width=2,
-                        style=vis.border_column,
-                    ),
-                    dbc.Col(
-                        dbc.Card(
-                            [
-                                dbc.CardHeader(gs.lab_smiles, className=vis.top_card_head),
-                                dbc.CardBody(id="id-lab-experiment-all-smiles", className=vis.top_card_body),
-                            ],
-                            style=vis.card_shadow,
-                        ),
-                        # width=5,
-                        style=vis.border_column,
-                    ),
+                    dbc.AccordionItem(
+                        [
+                            html.Div(
+                                html.Img(
+                                    id="id-lab-substrate",
+                                    # TODO: does maxwidth auto make a difference
+                                    style={"maxWidth": "100%", "height": "100%"},
+                                ),
+                                style={
+                                    "display": "flex",
+                                    "justifyContent": "center",
+                                    "alignItems": "center",
+                                },
+                            ),
+                        ],
+                        title="Visualization of Substrates Across All Experiments",
+                        style=vis.card_shadow,
+                    )
                 ],
-                className="g-2 mb-4",
-                style=vis.border_row,
+                start_collapsed=True,
+                flush=True,
+                className="g-0 mt-4 mb-4 fw-bold custom-accordion",
+            ),
+            # all the product molecules from mols to grid
+            dbc.Accordion(
+                [
+                    dbc.AccordionItem(
+                        [
+                            html.Div(
+                                html.Img(
+                                    id="id-lab-product",
+                                    style={"maxWidth": "auto", "height": "auto"},
+                                ),
+                                style={
+                                    "display": "flex",
+                                    "justifyContent": "center",
+                                    "alignItems": "center",
+                                },
+                            ),
+                        ],
+                        title="Visualization of Products Across all Experiments ",
+                        style=vis.card_shadow,
+                    )
+                ],
+                start_collapsed=True,
+                flush=True,
+                className="g-0 mt-4 mb-4 fw-bold custom-accordion",
             ),
             dbc.Row(
                 [

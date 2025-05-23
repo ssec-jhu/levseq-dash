@@ -114,7 +114,7 @@ def get_seq_align_layout():
                                 [
                                     dbc.Card(
                                         [
-                                            dbc.CardHeader("Matched Experiments"),
+                                            dbc.CardHeader("Matched Experiments", className=vis.top_card_head),
                                             dbc.CardBody(
                                                 [
                                                     dbc.Row(
@@ -163,17 +163,24 @@ def get_seq_align_layout():
                                 [
                                     dbc.Card(
                                         [
-                                            dbc.CardHeader("Visualize Selected Experiment"),
+                                            dbc.CardHeader(
+                                                "Visualize Selected Experiment", className=vis.top_card_head
+                                            ),
                                             dbc.CardBody(
                                                 [
-                                                    dcc.Markdown(
-                                                        id="id-div-selected-matched-sequence-info",
-                                                        # style={"whiteSpace": "pre"}
+                                                    dbc.Row(
+                                                        [
+                                                            components.create_layout_reaction(
+                                                                "id-selected-seq-matched-reaction-image",
+                                                                "id-selected-seq-matched-substrate",
+                                                                "id-selected-seq-matched-product",
+                                                            )
+                                                        ],
+                                                        className="mb-3",
                                                     ),
-                                                    html.Br(),
-                                                    html.Div(id="id-viewer-selected-seq-matched-protein"),
+                                                    dbc.Row([html.Div(id="id-viewer-selected-seq-matched-protein")]),
                                                 ],
-                                                className="p-1 mt-3",  # fits to the card border
+                                                className="p-1 mb-3",  # fits to the card border
                                             ),
                                         ],
                                         className="d-flex flex-column",  # Flexbox for vertical stacking
@@ -195,7 +202,7 @@ def get_seq_align_layout():
                                 [
                                     dbc.Card(
                                         [
-                                            dbc.CardHeader("Hot and Cold residues"),
+                                            dbc.CardHeader("Hot and Cold residues", className=vis.top_card_head),
                                             dbc.CardBody(
                                                 [
                                                     dbc.Row(

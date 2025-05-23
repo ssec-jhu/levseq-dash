@@ -36,17 +36,20 @@ lab_smiles = "Used smiles"
 # -----------------------------
 # Experiment Page Strings
 # -----------------------------
-sequence = "Amino Acid Sequence"
+# experiment info strings
 experiment = "Experiment Name"
 date = "Experiment Date"
 upload_date = "Uploaded On"
 technique = "Mutagenesis Method"
 plates_count = "Plates Count"
-smiles_file = "Unique smiles"
+smiles_file = "SMILES in experiment file"
+# car headers
+sequence = "Amino Acid Sequence"
 viewer_header = "Protein Structure"
 well_heatmap = "Plate Map"
 top_variants = "Top Variants"
 retention_function = "Retention Function"
+reaction = "Reaction"
 
 tab_1 = "Experiment Dashboard"
 tab_2 = "Related Variants"

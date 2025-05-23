@@ -45,7 +45,7 @@
 
 /* Expanded Sidebar */
 .thin-sidebar.expanded {
-    width: 180px; /* Show full nav */
+    width: 150px; /* Show full nav */
 }
 
 /* Hide text when collapsed */
@@ -55,12 +55,13 @@
 
 /* Main Content */
 .content {
-    margin-left: 70px; /* Adjust when collapsed */
+    /* this is the margin to the left of the page content and the sidebar */
+    margin-left: 50px; /* Adjust when collapsed */
     padding: 20px;
     transition: margin-left 0.3s ease-in-out;
 }
 
 /* Adjust content margin when sidebar expands */
 .thin-sidebar.expanded ~ .content {
-    margin-left: 200px;
+    margin-left: 130px; /* this should be close to .content margin-left + .thin-sidebar.expanded */
 }

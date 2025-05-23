@@ -200,33 +200,52 @@ def generate_random_smiles():
         "CC(C)CO",  # butanol isomer
         "OC(=O)CCl",  # chloroacetic acid
         "CC(C)(C)O",  # tert-butanol
-        "Na.[Cl-]",  # sodium chloride (ionic pair)
         "CCO.CC(=O)O",  # ethanol + acetic acid
         "N#N.CC(C)O",  # nitrogen + isopropanol
         "O=C=O.CN(C)C",  # CO2 + dimethylamine
         "C1=CC=C(C=C1)C=O",
         "CC(C)CC1=CC=C(C=C1)C(C)C(=O)O",
+        "CC(C)(C)C(=O)ON.CCC#Cc1ccsc1.O=S(=O)(O)C(F)(F)F",
     ]
 
     return [random.choice(VALID_SMILES)]
 
 
-def extract_all_unique_smiles_from_lab_data(list_of_all_lab_experiments_with_meta: list[{}]):
+# def extract_all_unique_smiles_from_lab_data(list_of_all_lab_experiments_with_meta: list[{}]):
+#     """
+#     This method extracts all the unique substrate smiles  used in the lab data.
+#     The data is already pulled from the disk/db along with other metadata
+#     The input is a list of dictionaries, data type used by AgGrid
+#     """
+#     # TODO: which unique smiles do we want to show here? unique files? substrate only?
+#     all_unique_smiles = ""
+#     if len(list_of_all_lab_experiments_with_meta) != 0:
+#         unique_smiles_set = set()
+#         for exp in list_of_all_lab_experiments_with_meta:
+#             unique_smiles_set.update(exp[gs.cc_substrate])
+#             unique_smiles_set.update(exp[gs.cc_product])
+#         all_unique_smiles = ";  ".join(sorted(unique_smiles_set))
+#
+#     return all_unique_smiles
+
+
+def extract_all_substrate_product_smiles_from_lab_data(list_of_all_lab_experiments_with_meta: list[{}]):
     """
-    This method extracts all the unique substrate smiles  used in the lab data.
-    The data is already pulled from the disk/db along with other metadata
+    This method extracts all the unique substrate and product smiles  used in the lab data.
     The input is a list of dictionaries, data type used by AgGrid
     """
-    # TODO: which unique smiles do we want to show here? unique files? substrate only?
-    all_unique_smiles = ""
+    all_product_smiles = ""
+    all_substrate_smiles = ""
     if len(list_of_all_lab_experiments_with_meta) != 0:
-        unique_smiles_set = set()
+        substrate_smiles_set = set()
+        product_smiles_set = set()
         for exp in list_of_all_lab_experiments_with_meta:
-            unique_smiles_set.update(exp[gs.cc_substrate])
-            unique_smiles_set.update(exp[gs.cc_product])
-        all_unique_smiles = ";  ".join(sorted(unique_smiles_set))
+            substrate_smiles_set.update(exp[gs.cc_substrate])
+            product_smiles_set.update(exp[gs.cc_product])
+        all_product_smiles = ";  ".join(sorted(product_smiles_set))
+        all_substrate_smiles = ";  ".join(sorted(substrate_smiles_set))
 
-    return all_unique_smiles
+    return all_substrate_smiles, all_product_smiles
 
 
 def generate_slider_marks_dict(max_value):
