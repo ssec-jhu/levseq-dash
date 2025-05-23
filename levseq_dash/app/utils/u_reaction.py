@@ -21,7 +21,7 @@ def is_valid_smiles(smiles):
 
     if smiles_is_empty_or_only_space(smiles):
         # Chem.MolFromSmiles accepts this as a mol! so putting in a check here
-        raise Exception("SMILES string provided is empty.")
+        raise ValueError("SMILES string provided is empty.")
 
     # MolFromSmiles will sanitize and canonicalize the molecule , defaults to True.
     # example here: https://www.rdkit.org/docs/GettingStartedInPython.html
@@ -51,7 +51,7 @@ def convert_svg_img_to_src(svg_img):
 
     """
     if svg_img is None:
-        raise Exception("No svg image was provided to convert.")
+        raise ValueError("No svg image was provided to convert.")
 
     svg_base64 = base64.b64encode(svg_img.encode("utf-8")).decode("utf-8")
     svg_src = f"data:image/svg+xml;base64,{svg_base64}"
@@ -111,11 +111,10 @@ def create_mols_grid(all_smiles_strings: str):
             # this already makes the molecule internally
             # and probably there is double code here, but I want to keep the sematics of this separate because
             # there may be more validation added to the function then just using Chem.MolFromSmiles(smiles)
-            if is_valid_smiles(smi):
-                mol = Chem.MolFromSmiles(smi)
-                if mol is not None:
-                    mols.append(mol)
-                    captions.append(smi)
+            mol = Chem.MolFromSmiles(smi)
+            if mol is not None:
+                mols.append(mol)
+                captions.append(smi)
 
         if mols:
             # make a svg image for better resolution
