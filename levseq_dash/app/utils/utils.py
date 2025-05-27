@@ -240,8 +240,8 @@ def extract_all_substrate_product_smiles_from_lab_data(list_of_all_lab_experimen
         substrate_smiles_set = set()
         product_smiles_set = set()
         for exp in list_of_all_lab_experiments_with_meta:
-            substrate_smiles_set.update(exp[gs.cc_substrate])
-            product_smiles_set.update(exp[gs.cc_product])
+            substrate_smiles_set.add(exp[gs.cc_substrate])
+            product_smiles_set.add(exp[gs.cc_product])
         all_product_smiles = ";  ".join(sorted(product_smiles_set))
         all_substrate_smiles = ";  ".join(sorted(substrate_smiles_set))
 

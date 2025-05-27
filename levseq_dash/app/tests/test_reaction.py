@@ -22,7 +22,7 @@ expected_svg_prefix = "data:image/svg+xml;base64,"
     ],
 )
 def test_valid_smiles(valid_smiles):
-    assert u_reaction.is_valid_smiles(valid_smiles) is True
+    assert u_reaction.is_valid_smiles(valid_smiles) is not None
 
 
 @pytest.mark.parametrize(
@@ -37,7 +37,7 @@ def test_valid_smiles(valid_smiles):
     ],
 )
 def test_invalid_smiles(invalid_smiles):
-    assert u_reaction.is_valid_smiles(invalid_smiles) is False
+    assert u_reaction.is_valid_smiles(invalid_smiles) is None
 
 
 def test_empty_string_1():

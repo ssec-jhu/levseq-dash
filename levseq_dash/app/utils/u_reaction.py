@@ -15,7 +15,8 @@ def is_valid_smiles(smiles):
         smiles: the smiles string we would like to validate
 
     Returns:
-        MolFromSmiles will sanitize and validat the string. It will return None upon failure
+        MolFromSmiles will sanitize and validat the string. It will return None upon failure.
+        It will return the mol if smiles is valid
 
     """
 
@@ -31,12 +32,11 @@ def is_valid_smiles(smiles):
     # >>> 'c1ccncc1'
     # Chem.MolToSmiles(Chem.MolFromSmiles('n1ccccc1'))
     # >>> 'c1ccncc1'
-    mol = Chem.MolFromSmiles(smiles)
-
-    if mol is None:
-        return False
-    else:
-        return True
+    try:
+        mol = Chem.MolFromSmiles(smiles)
+        return mol
+    except Exception as e:
+        raise Exception(f"Chem.MolFromSmiles exception:{str(e)} for smiles: {smiles}")
 
 
 def convert_svg_img_to_src(svg_img):
@@ -69,7 +69,7 @@ def create_reaction_image(substrate_smiles: str, product_smiles: str):
 
     """
     # verify the smiles string
-    if not is_valid_smiles(substrate_smiles) or not is_valid_smiles(product_smiles):
+    if is_valid_smiles(substrate_smiles) is None or is_valid_smiles(product_smiles) is None:
         raise ValueError("Smiles String is not valid for creating an image.")
 
     rxn_smarts = f"{substrate_smiles}>>{product_smiles}"
@@ -109,9 +109,9 @@ def create_mols_grid(all_smiles_strings: str):
         for smi in smiles_list:
             # if the smiles string is in the system then it's in canonical for but just in case
             # this already makes the molecule internally
-            # and probably there is double code here, but I want to keep the sematics of this separate because
+            # and probably there is double code here, but I want to keep the semantics of this separate because
             # there may be more validation added to the function then just using Chem.MolFromSmiles(smiles)
-            mol = Chem.MolFromSmiles(smi)
+            mol = is_valid_smiles(smi)
             if mol is not None:
                 mols.append(mol)
                 captions.append(smi)

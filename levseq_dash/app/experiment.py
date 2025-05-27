@@ -296,7 +296,8 @@ def run_sanity_checks_on_experiment_file(df: pd.DataFrame):
         raise ValueError(f"Experiment file does not contain any '#PARENT#' entry in the {gs.c_substitutions} column.")
 
     # check all the smiles strings are valid in the file
-    invalid_smiles_rows = df[~df[gs.c_smiles].apply(u_reaction.is_valid_smiles)]
+    invalid_smiles_rows = df[df[gs.c_smiles].apply(u_reaction.is_valid_smiles).isnull()]
+
     if not invalid_smiles_rows.empty:
         invalid_indices = invalid_smiles_rows.index.tolist()
         raise ValueError(f"Experiment file has invalid SMILES found at rows: {invalid_indices}")
