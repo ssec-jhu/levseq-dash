@@ -373,9 +373,8 @@ def display_selected_matching_sequences_protein_visualization(selected_rows):
         cold_spots = f"{selected_rows[0][gs.cc_cold_indices_per_smiles]}"
         experiment_id = selected_rows[0][gs.cc_experiment_id]
         experiment_smiles = selected_rows[0][gs.c_smiles]
-        # TODO: this should not be a list, where is it getting a list??
-        substrate = selected_rows[0][gs.cc_substrate][0]
-        product = selected_rows[0][gs.cc_product][0]
+        substrate = selected_rows[0][gs.cc_substrate]
+        product = selected_rows[0][gs.cc_product]
 
         # get the experiment info from the db
         exp = data_mgr.get_experiment(experiment_id)
@@ -528,7 +527,7 @@ def load_experiment_page(pathname, experiment_id):
         default_plate = exp.plates[0]
         default_smiles = exp.unique_smiles_in_data[0]
         default_experiment_heatmap_properties_list = gs.experiment_heatmap_properties_list[0]
-        unique_smiles_in_data = "; ".join(exp.unique_smiles_in_data)
+        unique_smiles_in_data = ".".join(exp.unique_smiles_in_data)
 
         # create the heatmap with default values
         fig_experiment_heatmap = graphs.creat_heatmap(
@@ -567,9 +566,8 @@ def load_experiment_page(pathname, experiment_id):
 
         # exp_dict = json.loads(exp_json)
         # exp = Experiment.exp_from_dict(exp_dict)
-        # TODO: fix this list issue
-        substrate = exp.substrate[0]
-        product = exp.product[0]
+        substrate = exp.substrate
+        product = exp.product
         svg_src_image = u_reaction.create_reaction_image(substrate, product)
 
         return (
@@ -828,8 +826,8 @@ def display_selected_matching_sequences_protein_visualization_exp(selected_rows,
         selected_experiment_id = selected_rows[0][gs.cc_experiment_id]
         selected_substitutions = f"{selected_rows[0][gs.c_substitutions]}"
         selected_substitutions_list = utils.extract_all_indices(selected_substitutions)
-        selected_substrate = f"{selected_rows[0][gs.cc_substrate][0]}"  # TODO: fix the list issue here
-        selected_product = f"{selected_rows[0][gs.cc_product][0]}"
+        selected_substrate = f"{selected_rows[0][gs.cc_substrate]}"
+        selected_product = f"{selected_rows[0][gs.cc_product]}"
 
         # get the experiment info from the db
         # TODO: need to add a function to only get the geometry file not the whole experiment
@@ -837,6 +835,8 @@ def display_selected_matching_sequences_protein_visualization_exp(selected_rows,
         selected_experiment_geometry_file = selected_experiment.geometry_file_path
 
         experiment = data_mgr.get_experiment(experiment_id)
+        experiment_substrate = experiment.substrate
+        experiment_product = experiment.product
         experiment_geometry_file = experiment.geometry_file_path
 
         # if there is no geometry for the file ignore it
@@ -883,8 +883,6 @@ def display_selected_matching_sequences_protein_visualization_exp(selected_rows,
 
             # create the reaction image
             selected_svg_src = u_reaction.create_reaction_image(selected_substrate, selected_product)
-            experiment_substrate = experiment.substrate[0]  # TODO: fix the list here
-            experiment_product = experiment.product[0]
             experiment_svg_src = u_reaction.create_reaction_image(experiment_substrate, experiment_product)
             return (
                 selected_substitutions,
