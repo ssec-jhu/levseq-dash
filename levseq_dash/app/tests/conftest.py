@@ -18,23 +18,33 @@ def test_data_path(package_root):
 
 
 @pytest.fixture(scope="session")
-def path_exp_ep_data(test_data_path):
-    return test_data_path / "data" / "flatten_ep_processed_xy_cas.csv"
+def path_data_experiments(test_data_path):
+    return test_data_path / "data" / "experiments"
 
 
 @pytest.fixture(scope="session")
-def path_exp_ep_cif(test_data_path):
-    return test_data_path / "data" / "flatten_ep_processed_xy_cas_row8.cif"
+def path_data_structures(test_data_path):
+    return test_data_path / "data" / "structures"
 
 
 @pytest.fixture(scope="session")
-def path_exp_ssm_data(test_data_path):
-    return test_data_path / "data" / "flatten_ssm_processed_xy_cas.csv"
+def path_exp_ep_data(path_data_experiments):
+    return path_data_experiments / "flatten_ep_processed_xy_cas.csv"
 
 
 @pytest.fixture(scope="session")
-def path_exp_ssm_cif(test_data_path):
-    return test_data_path / "data" / "flatten_ssm_processed_xy_cas_row3.cif"
+def path_exp_ep_cif(path_data_structures):
+    return path_data_structures / "flatten_ep_processed_xy_cas_row8.cif"
+
+
+@pytest.fixture(scope="session")
+def path_exp_ssm_data(path_data_experiments):
+    return path_data_experiments / "flatten_ssm_processed_xy_cas.csv"
+
+
+@pytest.fixture(scope="session")
+def path_exp_ssm_cif(path_data_structures):
+    return path_data_structures / "flatten_ssm_processed_xy_cas_row3.cif"
 
 
 @pytest.fixture(scope="session")
@@ -45,14 +55,15 @@ def path_cif_bytes_string_file_sample(test_data_path):
 @pytest.fixture
 def mock_load_config_from_disk(mocker, test_data_path):
     """
-    Fixture to mock a response
+    Fixture to mock a response for load config from disk
     """
     # data_path = test_data_path / "data"
     mock = mocker.patch("levseq_dash.app.settings.load_config")
+    data_path = test_data_path / "data"
     mock.return_value = {
         "app-mode": "disk",
         "load-from-disk": {
-            "data_path": str(test_data_path),
+            "data_path": data_path
         },
     }
     return mock
@@ -232,28 +243,28 @@ def seq_align_per_smiles_data():
         "plates": ["20241201-SSM-P1", "20241201SSM-P2", "20241201SSM-P3", "20241201SSM-P4"],
         "plates_count": 4,
         "parent_sequence": "MTPSDISGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLAGGWAASNEHLIYYGSNPDTG"
-        "APIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRHHRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLA"
-        "KKGGSPEDIEGMYNAWLKSVVLQVAIWSHPYTKENDR",
+                           "APIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRHHRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLA"
+                           "KKGGSPEDIEGMYNAWLKSVVLQVAIWSHPYTKENDR",
         "geometry_file_format": ".cif",
     }
     seq_data = {
         gs.cc_experiment_id: 1,
         "sequence": "MTPSDISGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLAGGWAASNEHLIYYGSNPDTGAPIKEYLERVR"
-        "ARIGAWVLDTTCRDYNREWLDYQYEVGLRHHRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVV"
-        "LQVAIWSHPYTKENDR",
+                    "ARIGAWVLDTTCRDYNREWLDYQYEVGLRHHRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVV"
+                    "LQVAIWSHPYTKENDR",
         "sequence_alignment": "target            0 MTPSDISGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLAG\n"
-        "                  0 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
-        "query             0 MTPSDISGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLAG\n"
-        "\n"
-        "target           60 GWAASNEHLIYYGSNPDTGAPIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRH\n"
-        "                 60 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
-        "query            60 GWAASNEHLIYYGSNPDTGAPIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRH\n\n"
-        "target          120 HRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVVL\n"
-        "                120 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
-        "query           120 HRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVVL\n"
-        "\n"
-        "target          180 QVAIWSHPYTKENDR 195\n                180 ||||||||||||||| 195\n"
-        "query           180 QVAIWSHPYTKENDR 195\n",
+                              "                  0 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+                              "query             0 MTPSDISGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLAG\n"
+                              "\n"
+                              "target           60 GWAASNEHLIYYGSNPDTGAPIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRH\n"
+                              "                 60 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+                              "query            60 GWAASNEHLIYYGSNPDTGAPIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRH\n\n"
+                              "target          120 HRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVVL\n"
+                              "                120 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+                              "query           120 HRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVVL\n"
+                              "\n"
+                              "target          180 QVAIWSHPYTKENDR 195\n                180 ||||||||||||||| 195\n"
+                              "query           180 QVAIWSHPYTKENDR 195\n",
         "alignment_score": 1040.0,
         "norm_score": 1.0,
         "identities": 195,
@@ -269,19 +280,19 @@ def seq_align_data():
     return {
         gs.cc_experiment_id: 1,
         "sequence": "MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVEDILDLWYGLQGSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTL"
-        "CKPLDRQWLNYMYEIGLRHHRTKKGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAIWSYPYAKTGEWLE",
+                    "CKPLDRQWLNYMYEIGLRHHRTKKGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAIWSYPYAKTGEWLE",
         "sequence_alignment": "target            0 MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVEDILDLWYGLQ\n"
-        "                  0 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
-        "query             0 MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVEDILDLWYGLQ\n"
-        "\n"
-        "target           60 GSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTLCKPLDRQWLNYMYEIGLRHHRTK\n"
-        "                 60 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
-        "query            60 GSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTLCKPLDRQWLNYMYEIGLRHHRTK\n\n"
-        "target          120 KGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAI\n"
-        "                120 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
-        "query           120 KGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAI\n\n"
-        "target          180 WSYPYAKTGEWLE 193\n                180 ||||||||||||| 193\n"
-        "query           180 WSYPYAKTGEWLE 193\n",
+                              "                  0 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+                              "query             0 MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVEDILDLWYGLQ\n"
+                              "\n"
+                              "target           60 GSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTLCKPLDRQWLNYMYEIGLRHHRTK\n"
+                              "                 60 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+                              "query            60 GSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTLCKPLDRQWLNYMYEIGLRHHRTK\n\n"
+                              "target          120 KGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAI\n"
+                              "                120 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+                              "query           120 KGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAI\n\n"
+                              "target          180 WSYPYAKTGEWLE 193\n                180 ||||||||||||| 193\n"
+                              "query           180 WSYPYAKTGEWLE 193\n",
         "alignment_score": 1053.0,
         "norm_score": 1.0,
         "identities": 193,
