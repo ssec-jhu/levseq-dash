@@ -2,6 +2,7 @@ import pandas as pd
 import pytest
 
 from levseq_dash.app import global_strings as gs
+from levseq_dash.app import settings
 from levseq_dash.app.utils import utils
 
 num_samples = 12  # change this if more data is added
@@ -9,6 +10,39 @@ num_samples = 12  # change this if more data is added
 
 def test_db_load_examples(dbmanager_read_all_from_file):
     assert len(dbmanager_read_all_from_file.experiments_dict) == num_samples
+
+
+@pytest.mark.parametrize(
+    "index",
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+)
+def test_get_experiment(dbmanager_read_all_from_file, index):
+    """
+    test getting experiments by their ids
+    """
+    exp = dbmanager_read_all_from_file.get_experiment(index)
+    assert exp.plates_count > 0
+    assert not exp.data_df.empty
+
+
+def test_get_experiment_out_of_bounds(dbmanager_read_all_from_file):
+    """
+    look up for a non-existent experiment will return none
+    """
+    exp = dbmanager_read_all_from_file.get_experiment(num_samples)
+    assert exp is None
+
+
+def test_delete_experiment(dbmanager_read_all_from_file):
+    """
+    delete multiple experiments, and make sure the count has gone down accordingly
+    """
+    assert len(dbmanager_read_all_from_file.experiments_dict) == num_samples
+    assert dbmanager_read_all_from_file.delete_experiment(2)
+    assert dbmanager_read_all_from_file.delete_experiment(4)
+    assert dbmanager_read_all_from_file.delete_experiment(6)
+    assert dbmanager_read_all_from_file.delete_experiment(8)
+    assert len(dbmanager_read_all_from_file.experiments_dict) == num_samples - 4
 
 
 def test_db_load_assay(dbmanager_read_all_from_file):
@@ -99,3 +133,42 @@ def test_use_web_exceptions_2(mock_load_config_use_web):
     dm = DataManager()
     with pytest.raises(Exception):
         dm._load_test_experiment_data()
+
+
+def test_load_config():
+    """
+    Config file that is distributed must have the app mode set
+    """
+    cfg = settings.load_config()
+    assert len(cfg) > 0
+    assert cfg.get("app-mode") == "disk" or cfg.get("app-mode") == "db"
+
+
+def test_load_config_invalid(mock_load_config_invalid):
+    from levseq_dash.app.data_manager import DataManager
+
+    with pytest.raises(Exception):
+        DataManager()
+
+
+def test_load_config_app_mode_error(mock_load_config_app_mode_error):
+    from levseq_dash.app.data_manager import DataManager
+
+    with pytest.raises(Exception):
+        DataManager()
+
+
+def test_load_config_env(mock_load_using_existing_env_data_path):
+    """
+    This mock will follow through all the way to _load_test_experiment_data
+    but will throw an exception because it can't find the experiment files in
+    _load_test_experiment_data
+    """
+    from levseq_dash.app.data_manager import DataManager
+
+    with pytest.raises(Exception):
+        DataManager()
+
+
+def test_get_assays(dbmanager_read_all_from_file):
+    assert len(dbmanager_read_all_from_file.get_assays()) == 24

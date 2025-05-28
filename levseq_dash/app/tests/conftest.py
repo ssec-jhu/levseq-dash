@@ -78,6 +78,44 @@ def mock_load_config_use_web(mocker):
 
 
 @pytest.fixture
+def mock_load_config_invalid(mocker):
+    """
+    Fixture to mock a config file in disk mode with an invalid path
+    """
+    mock = mocker.patch("levseq_dash.app.settings.load_config")
+    mock.return_value = {
+        "app-mode": "disk",
+        "load-from-disk": {"data_path": "non/existent/path"},
+    }
+    return mock
+
+
+@pytest.fixture
+def mock_load_config_app_mode_error(mocker):
+    """
+    Fixture to mock a config file in an invalid app-mode
+    """
+    mock = mocker.patch("levseq_dash.app.settings.load_config")
+    mock.return_value = {
+        "app-mode": "invalid_string",
+        # path is not important here
+        "load-from-disk": {"data_path": "non/existent/path"},
+    }
+    return mock
+
+
+@pytest.fixture
+def mock_load_using_existing_env_data_path(mock_load_config_from_disk, monkeypatch, tmp_path):
+    """
+    Fixture to mock a DATA_PATH env with a temp_path
+    """
+    # using monkeypatch for env variables
+    test_path = Path(tmp_path)
+    test_path.mkdir(parents=True, exist_ok=True)  # Ensure the path exists
+    monkeypatch.setenv("DATA_PATH", str(test_path))
+
+
+@pytest.fixture
 def dbmanager_read_all_from_file(mock_load_config_from_disk):
     from levseq_dash.app.data_manager import DataManager
 

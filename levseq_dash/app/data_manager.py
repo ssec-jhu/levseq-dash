@@ -264,7 +264,9 @@ class DataManager:
             #  return Experiment
             pass
         elif self.use_db_web_service == AppMode.disk.value:
-            exp = self.experiments_dict[experiment_id]
+            # use get so for a non-existent experiment id it
+            # won't throw an exception
+            exp = self.experiments_dict.get(experiment_id)
         else:
             raise Exception(gs.error_app_mode)
         return exp

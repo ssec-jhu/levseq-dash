@@ -116,7 +116,7 @@ def update_landing_page_buttons(selected_rows):
     # Display selected row info
     if not selected_rows:
         raise PreventUpdate
-
+    # TODO: clean up unnecessary code here in another PR
     experiment_id = no_update
     if selected_rows and len(selected_rows) == 1:
         selected_row_info = f"Selected Row: {selected_rows[0]}"

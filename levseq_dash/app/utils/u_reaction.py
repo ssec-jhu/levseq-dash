@@ -4,11 +4,6 @@ from rdkit import Chem
 from rdkit.Chem import Draw, rdChemReactions
 
 
-def smiles_is_empty_or_only_space(smiles_string):
-    is_empty_or_only_spaces = not smiles_string or smiles_string.replace(" ", "") == ""
-    return is_empty_or_only_spaces
-
-
 def is_valid_smiles(smiles):
     """
     Args:
@@ -19,10 +14,13 @@ def is_valid_smiles(smiles):
         It will return the mol if smiles is valid
 
     """
+    if isinstance(smiles, str):
+        # remove spaces if any
+        smiles = smiles.replace(" ", "")
 
-    if smiles_is_empty_or_only_space(smiles):
+    if smiles == "":
         # Chem.MolFromSmiles accepts this as a mol! so putting in a check here
-        raise ValueError("SMILES string provided is empty.")
+        return None
 
     # MolFromSmiles will sanitize and canonicalize the molecule , defaults to True.
     # example here: https://www.rdkit.org/docs/GettingStartedInPython.html
@@ -36,6 +34,8 @@ def is_valid_smiles(smiles):
         mol = Chem.MolFromSmiles(smiles)
         return mol
     except Exception as e:
+        # this function will rarely throw an exception.
+        # One case is when the smiles string is None.
         raise Exception(f"Chem.MolFromSmiles exception:{str(e)} for smiles: {smiles}")
 
 
