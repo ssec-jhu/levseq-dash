@@ -12,4 +12,4 @@ plotly-express==0.4.1
 dash_mantine_components==0.13.0a3
 biopython==1.85
 rdkit==2025.3.2
-pillow==11.1.0
+pillow==11.2.1
