@@ -2,6 +2,7 @@ import pandas as pd
 import pytest
 
 from levseq_dash.app import global_strings as gs
+from levseq_dash.app import settings
 from levseq_dash.app.utils import utils
 
 num_samples = 12  # change this if more data is added
@@ -9,6 +10,39 @@ num_samples = 12  # change this if more data is added
 
 def test_db_load_examples(dbmanager_read_all_from_file):
     assert len(dbmanager_read_all_from_file.experiments_dict) == num_samples
+
+
+@pytest.mark.parametrize(
+    "index",
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+)
+def test_get_experiment(dbmanager_read_all_from_file, index):
+    """
+    test getting experiments by their ids
+    """
+    exp = dbmanager_read_all_from_file.get_experiment(index)
+    assert exp.plates_count > 0
+    assert not exp.data_df.empty
+
+
+def test_get_experiment_out_of_bounds(dbmanager_read_all_from_file):
+    """
+    look up for a non-existent experiment will return none
+    """
+    exp = dbmanager_read_all_from_file.get_experiment(num_samples)
+    assert exp is None
+
+
+def test_delete_experiment(dbmanager_read_all_from_file):
+    """
+    delete multiple experiments, and make sure the count has gone down accordingly
+    """
+    assert len(dbmanager_read_all_from_file.experiments_dict) == num_samples
+    assert dbmanager_read_all_from_file.delete_experiment(2)
+    assert dbmanager_read_all_from_file.delete_experiment(4)
+    assert dbmanager_read_all_from_file.delete_experiment(6)
+    assert dbmanager_read_all_from_file.delete_experiment(8)
+    assert len(dbmanager_read_all_from_file.experiments_dict) == num_samples - 4
 
 
 def test_db_load_assay(dbmanager_read_all_from_file):
@@ -36,12 +70,12 @@ def test_db_get_lab_experiments_with_meta_data_general(dbmanager_read_all_from_f
 @pytest.mark.parametrize(
     "index,name,n_plates, n_unique",
     [
-        (0, "flatten_ep_processed_xy_cas.csv", 10, 2),
-        (1, "flatten_ssm_processed_xy_cas.csv", 4, 1),
-        (2, "mod_test_1_ssm.csv", 7, 1),
-        (3, "mod_test_2_ssm.csv", 1, 1),
-        (4, "mod_test_3_ssm.csv", 6, 1),
-        (5, "mod_test_4_v2_ep.csv", 6, 1),
+        (0, "flatten EP", 10, 2),
+        (1, "flatten ssm", 4, 1),
+        (2, "mod test 1 ssm", 7, 1),
+        (3, "mod test 2 ssm", 1, 1),
+        (4, "mod test 3 ssm", 6, 1),
+        (5, "mod test 4 v2 ep (SSM)", 6, 1),
     ],
 )
 def test_db_get_lab_experiments_with_meta_data_data(dbmanager_read_all_from_file, index, name, n_plates, n_unique):
@@ -56,40 +90,20 @@ def test_db_get_lab_experiments_with_meta_data_data(dbmanager_read_all_from_file
     "index",
     [0, 1, 2, 3, 4, 5],
 )
-def test_extract_all_substrate_product_smiles_from_lab_data_1(dbmanager_read_all_from_file, index):
+def test_extract_all_substrate_product_smiles_from_lab_data(dbmanager_read_all_from_file, index):
     """
     This test is similar to below but will test the substrates
     """
     list_of_all_lab_experiments_with_meta = dbmanager_read_all_from_file.get_lab_experiments_with_meta_data()
 
-    all_substrate_smiles, _ = utils.extract_all_substrate_product_smiles_from_lab_data(
-        list_of_all_lab_experiments_with_meta
-    )
-
-    assert len(all_substrate_smiles) != 0
+    all_smiles = utils.extract_all_substrate_product_smiles_from_lab_data(list_of_all_lab_experiments_with_meta)
+    assert len(all_smiles) != 0
     # get the substrate from the test data and make sure they are found in the unique list
     substrates = list_of_all_lab_experiments_with_meta[index][gs.cc_substrate]
-    assert (all_substrate_smiles.find(c) != -1 for c in substrates)
+    assert (all_smiles.find(c) != -1 for c in substrates)
 
-
-@pytest.mark.parametrize(
-    "index",
-    [0, 1, 2, 3, 4, 5],
-)
-def test_extract_all_substrate_product_smiles_from_lab_data_2(dbmanager_read_all_from_file, index):
-    """
-    This test is similar to the previous but will test the products
-    """
-    list_of_all_lab_experiments_with_meta = dbmanager_read_all_from_file.get_lab_experiments_with_meta_data()
-
-    _, all_product_smiles = utils.extract_all_substrate_product_smiles_from_lab_data(
-        list_of_all_lab_experiments_with_meta
-    )
-
-    assert len(all_product_smiles) != 0
-    # get the product from the test data and make sure they are found in the unique list
-    products = list_of_all_lab_experiments_with_meta[index][gs.cc_substrate]
-    assert (all_product_smiles.find(c) != -1 for c in products)
+    products = list_of_all_lab_experiments_with_meta[index][gs.cc_product]
+    assert (all_smiles.find(c) != -1 for c in products)
 
 
 def test_get_lab_sequences(dbmanager_read_all_from_file):
@@ -100,13 +114,13 @@ def test_get_lab_sequences(dbmanager_read_all_from_file):
 def test_use_web_exceptions(mock_load_config_use_web, experiment_ep_pcr):
     """
     I need to control the order of the mock before the DataManager so I am putting the code
-    here instead of using the ficture
+    here instead of using the fixture
     """
     from levseq_dash.app.data_manager import DataManager
 
     dm = DataManager()
     with pytest.raises(Exception):
-        dm.__add_experiment__(experiment_ep_pcr)
+        dm._add_experiment(experiment_ep_pcr)
 
 
 def test_use_web_exceptions_2(mock_load_config_use_web):
@@ -118,16 +132,43 @@ def test_use_web_exceptions_2(mock_load_config_use_web):
 
     dm = DataManager()
     with pytest.raises(Exception):
-        dm.__load_test_experiment_data__()
+        dm._load_test_experiment_data()
 
 
-def test_use_web_exceptions_3(mock_load_config_use_web):
+def test_load_config():
     """
-    I need to control the order of the mock before the DataManager so I am putting the code
-    here instead of using the ficture
+    Config file that is distributed must have the app mode set
+    """
+    cfg = settings.load_config()
+    assert len(cfg) > 0
+    assert cfg.get("app-mode") == "disk" or cfg.get("app-mode") == "db"
+
+
+def test_load_config_invalid(mock_load_config_invalid):
+    from levseq_dash.app.data_manager import DataManager
+
+    with pytest.raises(Exception):
+        DataManager()
+
+
+def test_load_config_app_mode_error(mock_load_config_app_mode_error):
+    from levseq_dash.app.data_manager import DataManager
+
+    with pytest.raises(Exception):
+        DataManager()
+
+
+def test_load_config_env(mock_load_using_existing_env_data_path):
+    """
+    This mock will follow through all the way to _load_test_experiment_data
+    but will throw an exception because it can't find the experiment files in
+    _load_test_experiment_data
     """
     from levseq_dash.app.data_manager import DataManager
 
-    dm = DataManager()
     with pytest.raises(Exception):
-        dm.__gather_all_test_experiments__()
+        DataManager()
+
+
+def test_get_assays(dbmanager_read_all_from_file):
+    assert len(dbmanager_read_all_from_file.get_assays()) == 24

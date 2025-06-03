@@ -1,5 +1,4 @@
 import os
-import random
 from collections import defaultdict
 from enum import Enum
 from pathlib import Path
@@ -9,7 +8,6 @@ import pandas as pd
 from levseq_dash.app import global_strings as gs
 from levseq_dash.app import settings
 from levseq_dash.app.experiment import Experiment, MutagenesisMethod
-from levseq_dash.app.utils import utils
 
 # from levseq_dash.app.wsexec import Query
 
@@ -31,50 +29,41 @@ class DataManager:
             # BUT for now we can hardcode it here
             # connect_to_db( host, port, username, password)
         elif self.use_db_web_service == AppMode.disk.value:
+            print(f"------------------------------------------")
+            # create a default empty dictionary of experiments
             self.experiments_dict = defaultdict(Experiment)
 
-            # TODO: remove the printf later when dev is done
+            # look for DATA_PATH in case data is mounted from elsewhere
             env_data_path = os.getenv("DATA_PATH")
-            print(f"------------------------------------------")
-            print(f"[DOCKER] os.getenv: {env_data_path}")
+            print(f"[LOG] os.getenv: {env_data_path}")
 
             if env_data_path is None:
-                package_root = Path(__file__).resolve().parent.parent
-                # config_file_path = Path(config["load-from-disk"]["data_path"]).resolve()
-                # data_path = (package_root / config_file_path).resolve()
-                # print(f"[DOCKER] Using config file for data path: {data_path}")
-                # TODO: fix this so it reads form the config file
-                data_path = package_root / "app" / "tests" / "test_data"
-                print(f"[DOCKER] Using hardcoded file for data path: {data_path}")
+                # if no path is provided, read from the path in config file
+                # this assumes the data  in the container somewhere
+                raw_path = config["load-from-disk"]["data_path"]
+                data_path = (settings.package_root / raw_path).resolve()  # .resolve will make a clean absolute path
+                print(f"[LOG] Using config file data_path: {data_path}")
             else:
                 data_path = Path(env_data_path).resolve()
-                print(f"[DOCKER] Using docker env for data path: {data_path}")
+                print(f"[LOG] Using env DATA_PATH for data path: {data_path}")
 
             if not data_path.exists():
-                raise FileNotFoundError(f"Data path does not exist: {data_path}")
+                print(f"[LOG] Data path not found: {data_path}")
+                raise FileNotFoundError()
 
-            # make sure these paths exist:
-            assay_directory = data_path / "assay"
-            data_directory = data_path / "data"
-            assay_directory.mkdir(parents=True, exist_ok=True)
-            data_directory.mkdir(parents=True, exist_ok=True)
-
-            path_assay = assay_directory / "assay_measure_list.csv"
-
-            if not path_assay.exists():
-                raise FileNotFoundError(f"Assay file does not exist at: {path_assay}")
-
-            assays = pd.read_csv(path_assay, encoding="utf-8", usecols=["Technique"])
-            self.assay_list = assays["Technique"].tolist()
-
-            print(f"[DOCKER] Read assay file at: {path_assay} with size {len(self.assay_list)}")
-            print(f"------------------------------------------")
+            # read the assay file and set up the assay list
+            if settings.assay_file_path.exists():
+                assays = pd.read_csv(settings.assay_file_path, encoding="utf-8", usecols=["Technique"])
+                self.assay_list = assays["Technique"].tolist()
+                print(f"[LOG] Read assay file at: {settings.assay_file_path} with size {len(self.assay_list)}")
 
             # use this flag for debugging multiple files.
             # This will load all csv files in test/data
             # function below will load test data files and their geometry from the
             # data folder and fill self.experiments_dict
-            self.__load_test_experiment_data__(data_directory=data_path)
+            self._load_test_experiment_data(data_directory=data_path)
+            print(f"------------------------------------------")
+
         else:
             raise Exception(gs.error_app_mode)
 
@@ -87,8 +76,8 @@ class DataManager:
         user_id,
         experiment_name,
         experiment_date,
-        substrate: list[str],
-        product: list[str],
+        substrate,
+        product,
         assay,
         mutagenesis_method: MutagenesisMethod,  # epPCR or SSM
         experiment_content_base64_string,
@@ -133,7 +122,7 @@ class DataManager:
                 geometry_file_path=None,
                 geometry_base64_string=geometry_content_base64_string,
             )
-            n = self.__add_experiment__(exp)
+            n = self._add_experiment(exp)
         else:
             raise Exception(gs.error_app_mode)
         return n
@@ -261,7 +250,7 @@ class DataManager:
     # ---------------------------
     #    DATA RETRIEVAL: PER EXPERIMENT
     # ---------------------------
-    def get_experiment(self, experiment_id: int) -> Experiment:
+    def get_experiment(self, experiment_id: int) -> Experiment | None:
         # helper function
         exp = None
         if self.use_db_web_service == AppMode.db.value:
@@ -273,7 +262,9 @@ class DataManager:
             #  return Experiment
             pass
         elif self.use_db_web_service == AppMode.disk.value:
-            exp = self.experiments_dict[experiment_id]
+            # use get so for a non-existent experiment id it
+            # won't throw an exception
+            exp = self.experiments_dict.get(experiment_id)
         else:
             raise Exception(gs.error_app_mode)
         return exp
@@ -319,93 +310,109 @@ class DataManager:
             raise Exception(gs.error_app_mode)
         return assay_list
 
-    # ------------------------------------
-    #    Private functions used internally
-    #    for reading from disk not the webs service
-    # ------------------------------------
-    def __gather_all_test_experiments__(self, data_directory):
+    def _load_test_experiment_data(self, data_directory: Path):
         """
         This method is only used for loading from disk for test purposes.
         It is not to be used outside of this context.
+        It assumes the file structure in data_directory is set up as below:
+        Project Directory Structure and Metadata Mapping
+
+        /data/                        data_directory path
+        ├── meta_data.csv             Metadata file describing experiments and structures
+        ├── experiments/              Folder containing experiment result tables
+        │   ├── experiment_0.csv      Data for experiment_0
+        │   └── experiment_1.csv      Data for experiment_1
+        │   └── ...
+        └── structures/               Folder containing molecular geometry files (CIF format)
+            ├── geometry_0.cif        3D structure associated with experiment_0
+            └── geometry_1.cif        3D structure associated with experiment_1
+            └── ...
+
+        ----------------------------
+        meta_data.csv Description
+        ----------------------------
+
+        This file provides a mapping between experiment metadata, result files, and structural data.
+
+        Columns:
+        ┌──────────────────────┬──────────────────────────────────────────────────────────────┐
+        │ Column Name          │ Description                                                  │
+        ├──────────────────────┼──────────────────────────────────────────────────────────────┤
+        │ experiment_id        │ matches a file in /data/experiments/, e.g.,                  │
+        │                      │ "experiment_0" → experiments/experiment_0.csv                │
+        │ experiment_name      │ name of the experiment                                       │
+        │ experiment_date      │ date the experiment was performed                            │
+        │ substrate_smiles     │ SMILES string of the substrate                               │
+        │ product_smiles       │ SMILES string of the product                                 │
+        │ assay_technique      │ technique used (e.g., fluorescence, OD600)                   │
+        │ cif_filename         │ matches a file in /data/structures/, e.g.,                   │
+        │                      │ "geometry_0.cif" → structures/geometry_0.cif                 │
+        └──────────────────────┴──────────────────────────────────────────────────────────────┘
+
+        Example Row:
+        experiment_id: experiment_0
+        experiment_name: Substrate Optimization A
+        experiment_date: 2025-05-20
+        substrate_smiles: CC(=O)OC1=CC=CC=C1C(=O)O
+        product_smiles: C1=CC=CC=C1COOH
+        assay_technique: fluorescence
+        cif_filename: geometry_0.cif
         """
         if self.use_db_web_service == AppMode.db.value:
             raise Exception(gs.error_wrong_mode)
 
-        experiments = {}
-        # folder_path = Path(__file__).parent / "tests/data/"
-        folder_path = data_directory / "data"
-        # Check if the folder exists
-        if folder_path.exists() and folder_path.is_dir():
-            # Get all files in the directory
-            files_in_directory = [file for file in folder_path.iterdir() if file.is_file()]
-            for file_path in files_in_directory:
-                if file_path.suffix.lower() == ".csv":
-                    file_prefix = os.path.splitext(file_path)[0]
-                    # Search for a CIF file with the same prefix and additional characters
-                    cif_candidates = [file for file in files_in_directory if file.match(f"{file_prefix}*.cif")]
-                    geometry = None
-                    if cif_candidates:
-                        geometry = cif_candidates[0]
-                    else:
-                        # search for a pdb file
-                        pdb_candidates = [file for file in files_in_directory if file.match(f"{file_prefix}*.pdb")]
-                        if pdb_candidates:
-                            geometry = pdb_candidates[0]
+        experiment_dir = data_directory / "experiments"
+        structures_dir = data_directory / "structures"
+        meta_data_file = data_directory / "meta_data.csv"
 
-                    if geometry:
-                        n = len(experiments)
-                        experiments[n] = {"csv": file_path, "geometry": geometry}
-                        # experiments.update({"csv": file_path,
-                        #                     "geometry": geometry})
+        # validate required directories
+        for directory in [data_directory, experiment_dir, structures_dir]:
+            if not directory.is_dir():
+                raise FileNotFoundError(f"Required directory does not exist: {directory}")
 
-        else:
-            raise Exception  # (f"Directory does not exist: {folder_path}")
+        print(f"[LOG] Found all data at: {data_directory}")
 
-        return experiments
+        # read the file and iterate through metadata rows
+        metadata_df = pd.read_csv(meta_data_file)
+        for idx, row in metadata_df.iterrows():
+            experiment_id = row["experiment_id"]
+            experiment_name = row["experiment_name"]
+            experiment_date = row["experiment_date"]
+            experiment_substrate = row["substrate_smiles"]
+            experiment_product = row["product_smiles"]
+            assay = row["assay_technique"]
+            exp_file_path = experiment_dir / f"{experiment_id}.csv"
+            geometry_file_path = structures_dir / f"{row['cif_filename']}"
 
-    def __load_test_experiment_data__(self, data_directory):
-        """
-        This method is only used for loading from disk for test purposes.
-        It is not to be used outside of this context.
-        """
-        if self.use_db_web_service == AppMode.db.value:
-            raise Exception(gs.error_wrong_mode)
-
-        experiment_data_geometry_dict = self.__gather_all_test_experiments__(data_directory)
-        for key in experiment_data_geometry_dict.keys():
-            exp_file_path = experiment_data_geometry_dict[key]["csv"]
-            geometry_file_path = experiment_data_geometry_dict[key]["geometry"]
-
-            # read the contents of the data
-            # assign its method
-            filename = os.path.basename(exp_file_path)
-            if "ssm" in str(exp_file_path):
+            # .get(..., '') defaults to an empty string ('') if the column is missing
+            # but if it's empty it will return Nan
+            mutagenesis_raw = str(row.get("mutagenesis_method", ""))
+            if mutagenesis_raw.lower() == "ssm":
                 mutagenesis_method = MutagenesisMethod.SSM
             else:
                 mutagenesis_method = MutagenesisMethod.epPCR
 
-            assay_index = random.randrange(len(self.assay_list))
-            assay = self.assay_list[assay_index]
+            # Create the Experiment object
             try:
                 exp = Experiment(
                     experiment_data_file_path=exp_file_path,
-                    experiment_name=filename,
-                    experiment_date="01-01-2025",
-                    substrate=utils.generate_random_smiles(),
-                    product=utils.generate_random_smiles(),
+                    experiment_name=experiment_name,
+                    experiment_date=experiment_date,
+                    substrate=experiment_substrate,
+                    product=experiment_product,
                     assay=assay,
                     mutagenesis_method=mutagenesis_method,
                     geometry_file_path=geometry_file_path,
                 )
-                self.__add_experiment__(exp)
-            except Exception as e:
-                # if something was not right with the experiment file
-                # print out the exception, so we can fix the data and skip it for now
-                # ideally the data set should not throw an exception
-                # this here is to aid in fixing the issues through the dataset
-                print(str(e))
 
-    def __add_experiment__(self, exp: Experiment):
+                # Add the experiment to the system
+                self._add_experiment(exp)
+            except Exception as e:
+                print(f"[LOG] Exception {e} thrown with experiment {exp_file_path}. Not adding it to the list. ")
+
+        print(f"[LOG] Done adding all the experiments.")
+
+    def _add_experiment(self, exp: Experiment):
         if self.use_db_web_service == AppMode.db.value:
             raise Exception(gs.error_wrong_mode)
 

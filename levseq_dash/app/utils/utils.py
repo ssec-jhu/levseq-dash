@@ -8,6 +8,7 @@ import pandas as pd
 
 from levseq_dash.app import components
 from levseq_dash.app import global_strings as gs
+from levseq_dash.app.utils import u_reaction
 from levseq_dash.app.utils.u_protein_viewer import substitution_indices_pattern
 
 # def gather_residues_from_selection(selected_rows):
@@ -133,14 +134,14 @@ def decode_csv_file_base64_string_to_dataframe(base64_encoded_string):
 def calculate_group_mean_ratios_per_smiles_and_plate(df):
     # df = df.loc[:, ["smiles", gs.c_plate, "well", "amino_acid_substitutions", "fitness_value"]]
     group_cols = [gs.c_smiles, gs.c_plate]
-    value_col = "fitness_value"
+    value_col = gs.c_fitness_value
 
     # Compute min and max fitness for each group
     group_stats = df.groupby(group_cols)[value_col].agg(["min", "max"]).reset_index()
 
     # Compute mean ONLY for rows where parent_col == parent_value, per group
     parent_mean = (
-        df[df["amino_acid_substitutions"] == "#PARENT#"]
+        df[df[gs.c_substitutions] == "#PARENT#"]
         .groupby(group_cols)[value_col]
         .mean()
         .reset_index()
@@ -152,81 +153,13 @@ def calculate_group_mean_ratios_per_smiles_and_plate(df):
     df = df.merge(parent_mean, on=group_cols, how="left")  # Keeps all rows, even if no mean exists
 
     # Compute fitness ratio relative to the mean
-    df["ratio"] = df[value_col] / df["mean"]
+    df[gs.cc_ratio] = df[value_col] / df["mean"]
     # TODO: rounding creates an error
-    # df["ratio"] = df["ratio"].round(2)
-    group_stats_ratio = df.groupby(group_cols)["ratio"].agg(["min", "max"]).reset_index()
+    # df[gs.cc_ratio] = df[gs.cc_ratio].round(2)
+    group_stats_ratio = df.groupby(group_cols)[gs.cc_ratio].agg(["min", "max"]).reset_index()
     df = df.merge(group_stats_ratio, on=group_cols, suffixes=("", "_group"))
 
     return df
-
-
-# def generate_random_cas_numbers():
-#     """
-#     This method is only to be used for debugging and reading from disk and prototyping.
-#     """
-#     num_cas = random.randint(1, 3)  # Randomly choose between 1 and 3 smiles
-#     cas_list = []
-#
-#     for _ in range(num_cas):
-#         part1 = random.randint(10000, 999999)  # 5-6 digits
-#         part2 = random.randint(10, 99)  # 2 digits
-#         part3 = random.randint(0, 9)  # 1-digit check number
-#         smiles = f"{part1}-{part2}-{part3}"
-#         cas_list.append(smiles)
-#
-#     return cas_list
-
-
-def generate_random_smiles():
-    VALID_SMILES = [
-        "CCO",  # ethanol
-        "CC(=O)O",  # acetic acid
-        "C1=CC=CC=C1",  # benzene
-        "CCN(CC)CC",  # triethylamine
-        "CC(C)O",  # isopropanol
-        "C(CN)O",  # serinol
-        "CCOC(=O)C",  # ethyl acetate
-        "C1CCCCC1",  # cyclohexane
-        "N[C@@H](CC1=CC=CC=C1)C(=O)O",  # phenylalanine
-        "O=C(NC)C",  # acetamide
-        "C#N",  # hydrogen cyanide
-        "C1=CC=C(C=C1)O",  # phenol
-        "CC1=CC=CC=C1",  # toluene
-        "CN1CCCC1C",  # N-methylpiperidine
-        "NC(=O)C",  # acetamide
-        "CC(C)CC",  # isopentane
-        "C=CCBr",  # allyl bromide
-        "CC(C)CO",  # butanol isomer
-        "OC(=O)CCl",  # chloroacetic acid
-        "CC(C)(C)O",  # tert-butanol
-        "CCO.CC(=O)O",  # ethanol + acetic acid
-        "N#N.CC(C)O",  # nitrogen + isopropanol
-        "O=C=O.CN(C)C",  # CO2 + dimethylamine
-        "C1=CC=C(C=C1)C=O",
-        "CC(C)CC1=CC=C(C=C1)C(C)C(=O)O",
-        "CC(C)(C)C(=O)ON.CCC#Cc1ccsc1.O=S(=O)(O)C(F)(F)F",
-    ]
-
-    return [random.choice(VALID_SMILES)]
-
-
-# def extract_all_unique_smiles_from_lab_data(list_of_all_lab_experiments_with_meta: list[{}]):
-#     """
-#     This method extracts all the unique substrate smiles  used in the lab data.
-#     The data is already pulled from the disk/db along with other metadata
-#     The input is a list of dictionaries, data type used by AgGrid
-#     """
-#     # TODO: which unique smiles do we want to show here? unique files? substrate only?
-#     all_unique_smiles = ""
-#     if len(list_of_all_lab_experiments_with_meta) != 0:
-#         unique_smiles_set = set()
-#         for exp in list_of_all_lab_experiments_with_meta:
-#             unique_smiles_set.update(exp[gs.cc_substrate])
-#             unique_smiles_set.update(exp[gs.cc_product])
-#         all_unique_smiles = ";  ".join(sorted(unique_smiles_set))
-#
-#     return all_unique_smiles
 
 
 def extract_all_substrate_product_smiles_from_lab_data(list_of_all_lab_experiments_with_meta: list[{}]):
@@ -240,8 +173,8 @@ def extract_all_substrate_product_smiles_from_lab_data(list_of_all_lab_experimen
         substrate_smiles_set = set()
         product_smiles_set = set()
         for exp in list_of_all_lab_experiments_with_meta:
-            substrate_smiles_set.update(exp[gs.cc_substrate])
-            product_smiles_set.update(exp[gs.cc_product])
+            substrate_smiles_set.add(exp[gs.cc_substrate])
+            product_smiles_set.add(exp[gs.cc_product])
         all_product_smiles = ";  ".join(sorted(product_smiles_set))
         all_substrate_smiles = ";  ".join(sorted(substrate_smiles_set))
 
@@ -272,3 +205,22 @@ def export_data_as_csv(option, file_name):
 
     # https://ag-grid.com/javascript-data-grid/csv-export/#reference-CsvExportParams-exportedRows
     return True, {"fileName": f"{file_name}_{exported_rows}_{timestamp}.csv", "exportedRows": exported_rows}
+
+
+def validate_smiles_string(smiles_string):
+    """
+    This function is a helper function to show the substrate and product text boxes
+    as valid or invalid text boxes in the UI.
+    """
+    # set the defaults
+    valid = False
+    invalid = True
+    try:
+        if u_reaction.is_valid_smiles(smiles_string):
+            valid = True
+            invalid = False
+    except Exception as e:
+        # if any exception is thrown, it's still invalid
+        pass
+    # TODO: look into reducing this into either valid or invalid
+    return valid, invalid

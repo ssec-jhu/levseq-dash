@@ -48,11 +48,14 @@ def get_form():
                 [
                     components.get_label_fixed_for_form(gs.substrate_smiles_input),
                     dbc.Col(
-                        dbc.Input(
-                            type="text",
+                        dbc.Textarea(
+                            # type="text",
                             id="id-input-substrate",
                             placeholder=gs.smiles_input_placeholder,
-                            debounce=True,
+                            invalid=True,
+                            # need to remove debounce
+                            # smiles string needs to be verified on demand
+                            # debounce=True,
                         ),
                     ),
                 ],
@@ -62,11 +65,14 @@ def get_form():
                 [
                     components.get_label_fixed_for_form(gs.product_smiles_input),
                     dbc.Col(
-                        dbc.Input(
-                            type="text",
+                        dbc.Textarea(
+                            # type="text",
                             id="id-input-product",
                             placeholder=gs.smiles_input_placeholder,
-                            debounce=True,
+                            invalid=True,
+                            # need to remove debounce
+                            # smiles string needs to be verified on demand
+                            # debounce=True,
                         ),
                     ),
                 ],

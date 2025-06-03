@@ -71,8 +71,8 @@ def test_calculate_group_mean(experiment_ep_pcr, smiles, plate, mean):
 
     # ratio must be increasing. this ensures the ranking was done within group
     plate_per_smiles_data_per.fillna(0)
-    plate_per_smiles_data_per = plate_per_smiles_data_per.sort_values(by="ratio", ascending=True)
-    assert plate_per_smiles_data_per["ratio"].dropna().is_monotonic_increasing
+    plate_per_smiles_data_per = plate_per_smiles_data_per.sort_values(by=gs.cc_ratio, ascending=True)
+    assert plate_per_smiles_data_per[gs.cc_ratio].dropna().is_monotonic_increasing
 
 
 def test_decode_csv_file_base64_string_to_dataframe():

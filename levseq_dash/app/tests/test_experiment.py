@@ -216,27 +216,27 @@ def test_exp_core_data_to_dict(experiment_ep_pcr_with_user_smiles):
 @pytest.mark.parametrize(
     "index, key, value",
     [
-        (0, "aa_sequence", "#N.A.#"),
-        (0, "alignment_count", 0),
-        (0, "alignment_probability", 0.0),
-        (0, "amino_acid_substitutions", "#N.A.#"),
+        (0, gs.c_aa_sequence, "#N.A.#"),
+        (0, gs.c_alignment_count, 0),
+        (0, gs.c_alignment_probability, 0.0),
+        (0, gs.c_substitutions, "#N.A.#"),
         (0, gs.c_smiles, "CC(C)CC1=CC=C(C=C1)C(C)C(=O)O"),
-        (94, "fitness_value", 1917633.707),
+        (94, gs.c_fitness_value, 1917633.707),
         (0, gs.c_plate, "20240422-ParLQ-ep1-300-1"),
-        (0, "well", "A1"),
+        (0, gs.c_well, "A1"),
         (
             36,
             "aa_sequence",
             "MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVEDILDLWYGLQGSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTLCKPLDRQWL"
             "NYMYEIGLRHHRTKKGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAIWSYPYAKTGEWLE",
         ),
-        (51, "alignment_count", 29),
-        (61, "alignment_probability", 0.0),
-        (69, "amino_acid_substitutions", "#PARENT#"),
+        (51, gs.c_alignment_count, 29),
+        (61, gs.c_alignment_probability, 0.0),
+        (69, gs.c_substitutions, "#PARENT#"),
         (99, gs.c_smiles, "C1=CC=C(C=C1)C=O"),
-        (99, "fitness_value", 1244116.159),
+        (99, gs.c_fitness_value, 1244116.159),
         (42, gs.c_plate, "20240422-ParLQ-ep1-300-1"),
-        (0, "well", "A1"),
+        (0, gs.c_well, "A1"),
     ],
 )
 def test_exp_core_data_to_dict_2(experiment_ep_pcr_with_user_smiles, index, key, value):

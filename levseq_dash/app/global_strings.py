@@ -13,7 +13,7 @@ experiment_name = "Experiment Name"
 experiment_date = "Experiment Date"
 substrate_smiles_input = "Substrate SMILES"
 product_smiles_input = "Product SMILES"
-smiles_input_placeholder = "Enter a valid SMILES string"
+smiles_input_placeholder = "Must enter a valid SMILES string"
 assay = "Assay"
 tech = "Mutagenesis Method"
 

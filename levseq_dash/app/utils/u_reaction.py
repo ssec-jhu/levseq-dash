@@ -4,24 +4,23 @@ from rdkit import Chem
 from rdkit.Chem import Draw, rdChemReactions
 
 
-def smiles_is_empty_or_only_space(smiles_string):
-    is_empty_or_only_spaces = not smiles_string or smiles_string.replace(" ", "") == ""
-    return is_empty_or_only_spaces
-
-
 def is_valid_smiles(smiles):
     """
     Args:
         smiles: the smiles string we would like to validate
 
     Returns:
-        MolFromSmiles will sanitize and validat the string. It will return None upon failure
+        MolFromSmiles will sanitize and validat the string. It will return None upon failure.
+        It will return the mol if smiles is valid
 
     """
+    if isinstance(smiles, str):
+        # remove spaces if any
+        smiles = smiles.replace(" ", "")
 
-    if smiles_is_empty_or_only_space(smiles):
+    if smiles == "":
         # Chem.MolFromSmiles accepts this as a mol! so putting in a check here
-        raise ValueError("SMILES string provided is empty.")
+        return None
 
     # MolFromSmiles will sanitize and canonicalize the molecule , defaults to True.
     # example here: https://www.rdkit.org/docs/GettingStartedInPython.html
@@ -31,12 +30,13 @@ def is_valid_smiles(smiles):
     # >>> 'c1ccncc1'
     # Chem.MolToSmiles(Chem.MolFromSmiles('n1ccccc1'))
     # >>> 'c1ccncc1'
-    mol = Chem.MolFromSmiles(smiles)
-
-    if mol is None:
-        return False
-    else:
-        return True
+    try:
+        mol = Chem.MolFromSmiles(smiles)
+        return mol
+    except Exception as e:
+        # this function will rarely throw an exception.
+        # One case is when the smiles string is None.
+        raise Exception(f"Chem.MolFromSmiles exception:{str(e)} for smiles: {smiles}")
 
 
 def convert_svg_img_to_src(svg_img):
@@ -69,8 +69,10 @@ def create_reaction_image(substrate_smiles: str, product_smiles: str):
 
     """
     # verify the smiles string
-    if not is_valid_smiles(substrate_smiles) or not is_valid_smiles(product_smiles):
-        raise ValueError("Smiles String is not valid for creating an image.")
+    if is_valid_smiles(substrate_smiles) is None:
+        raise ValueError(f"Smiles String is not valid for creating an image: {substrate_smiles}")
+    if is_valid_smiles(product_smiles) is None:
+        raise ValueError(f"Smiles String is not valid for creating an image: {product_smiles}")
 
     rxn_smarts = f"{substrate_smiles}>>{product_smiles}"
     rxn = rdChemReactions.ReactionFromSmarts(rxn_smarts, useSmiles=True)
@@ -109,9 +111,9 @@ def create_mols_grid(all_smiles_strings: str):
         for smi in smiles_list:
             # if the smiles string is in the system then it's in canonical for but just in case
             # this already makes the molecule internally
-            # and probably there is double code here, but I want to keep the sematics of this separate because
+            # and probably there is double code here, but I want to keep the semantics of this separate because
             # there may be more validation added to the function then just using Chem.MolFromSmiles(smiles)
-            mol = Chem.MolFromSmiles(smi)
+            mol = is_valid_smiles(smi)
             if mol is not None:
                 mols.append(mol)
                 captions.append(smi)

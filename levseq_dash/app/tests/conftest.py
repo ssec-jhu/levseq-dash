@@ -18,23 +18,33 @@ def test_data_path(package_root):
 
 
 @pytest.fixture(scope="session")
-def path_exp_ep_data(test_data_path):
-    return test_data_path / "data" / "flatten_ep_processed_xy_cas.csv"
+def path_data_experiments(test_data_path):
+    return test_data_path / "data" / "experiments"
 
 
 @pytest.fixture(scope="session")
-def path_exp_ep_cif(test_data_path):
-    return test_data_path / "data" / "flatten_ep_processed_xy_cas_row8.cif"
+def path_data_structures(test_data_path):
+    return test_data_path / "data" / "structures"
 
 
 @pytest.fixture(scope="session")
-def path_exp_ssm_data(test_data_path):
-    return test_data_path / "data" / "flatten_ssm_processed_xy_cas.csv"
+def path_exp_ep_data(path_data_experiments):
+    return path_data_experiments / "flatten_ep_processed_xy_cas.csv"
 
 
 @pytest.fixture(scope="session")
-def path_exp_ssm_cif(test_data_path):
-    return test_data_path / "data" / "flatten_ssm_processed_xy_cas_row3.cif"
+def path_exp_ep_cif(path_data_structures):
+    return path_data_structures / "flatten_ep_processed_xy_cas_row8.cif"
+
+
+@pytest.fixture(scope="session")
+def path_exp_ssm_data(path_data_experiments):
+    return path_data_experiments / "flatten_ssm_processed_xy_cas.csv"
+
+
+@pytest.fixture(scope="session")
+def path_exp_ssm_cif(path_data_structures):
+    return path_data_structures / "flatten_ssm_processed_xy_cas_row3.cif"
 
 
 @pytest.fixture(scope="session")
@@ -45,15 +55,14 @@ def path_cif_bytes_string_file_sample(test_data_path):
 @pytest.fixture
 def mock_load_config_from_disk(mocker, test_data_path):
     """
-    Fixture to mock a response
+    Fixture to mock a response for load config from disk
     """
     # data_path = test_data_path / "data"
     mock = mocker.patch("levseq_dash.app.settings.load_config")
+    data_path = test_data_path / "data"
     mock.return_value = {
         "app-mode": "disk",
-        "load-from-disk": {
-            "data_path": str(test_data_path),
-        },
+        "load-from-disk": {"data_path": data_path},
     }
     return mock
 
@@ -66,6 +75,43 @@ def mock_load_config_use_web(mocker):
     mock = mocker.patch("levseq_dash.app.settings.load_config")
     mock.return_value = {"app-mode": "db"}
     return mock
+
+
+@pytest.fixture
+def mock_load_config_invalid(mocker):
+    """
+    Fixture to mock a config file in disk mode with an invalid path
+    """
+    mock = mocker.patch("levseq_dash.app.settings.load_config")
+    mock.return_value = {
+        "app-mode": "disk",
+        "load-from-disk": {"data_path": "non/existent/path"},
+    }
+    return mock
+
+
+@pytest.fixture
+def mock_load_config_app_mode_error(mocker):
+    """
+    Fixture to mock a config file in an invalid app-mode
+    """
+    mock = mocker.patch("levseq_dash.app.settings.load_config")
+    mock.return_value = {
+        "app-mode": "invalid_string",
+        # path is not important here
+        "load-from-disk": {"data_path": "non/existent/path"},
+    }
+    return mock
+
+
+@pytest.fixture
+def mock_load_using_existing_env_data_path(mock_load_config_from_disk, monkeypatch, tmp_path):
+    """
+    Fixture to mock a DATA_PATH env with a temp_path
+    """
+    # using monkeypatch for env variables
+    # Note: tmp_path fixture already exists
+    monkeypatch.setenv("DATA_PATH", str(tmp_path))
 
 
 @pytest.fixture

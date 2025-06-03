@@ -3,6 +3,8 @@ import plotly_express as px
 from dash import html
 from dash_iconify import DashIconify
 
+from levseq_dash.app import global_strings as gs
+
 # --------------------
 #   Inline styles
 # --------------------
@@ -131,7 +133,7 @@ icon_download = DashIconify(icon="mdi:tray-download", height=MEDIUM, width=MEDIU
 
 
 def data_bars_group_mean_colorscale(
-    df, value_col="ratio", min_col="min_group", max_col="max_group", color_scale=px.colors.diverging.RdBu
+    df, value_col=gs.cc_ratio, min_col="min_group", max_col="max_group", color_scale=px.colors.diverging.RdBu
 ):
     """
     Generate Dash AG Grid cell styles with a color gradient bar.

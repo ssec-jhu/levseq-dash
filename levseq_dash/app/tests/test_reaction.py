@@ -22,32 +22,27 @@ expected_svg_prefix = "data:image/svg+xml;base64,"
     ],
 )
 def test_valid_smiles(valid_smiles):
-    assert u_reaction.is_valid_smiles(valid_smiles) is True
+    assert u_reaction.is_valid_smiles(valid_smiles) is not None
 
 
 @pytest.mark.parametrize(
     "invalid_smiles",
     [
-        # "C1CC1C1",  # invalid ring closure
-        # "N[N@@",  # malformed chiral center
-        # "C(C(C",  # incomplete branches
-        # "*&^%$#",  # nonsense
-        # "12345",  # numeric string
-        "random"
+        "C1CC1C1",  # invalid ring closure
+        "N[N@@",  # malformed chiral center
+        "C(C(C",  # incomplete branches
+        "*&^%$#",  # nonsense
+        "12345",  # numeric string
+        "random",  # empty string
+        " ",  # empty spaces
+        "   ",
+        "\t",
+        "abc",
+        "(",
     ],
 )
 def test_invalid_smiles(invalid_smiles):
-    assert u_reaction.is_valid_smiles(invalid_smiles) is False
-
-
-def test_empty_string_1():
-    with pytest.raises(Exception):
-        u_reaction.is_valid_smiles("")
-
-
-def test_empty_string_2():
-    with pytest.raises(Exception):
-        u_reaction.is_valid_smiles(" ")
+    assert u_reaction.is_valid_smiles(invalid_smiles) is None
 
 
 def test_none_input():
@@ -90,20 +85,6 @@ def test_canonical_smiles_2(smiles):
     """
     sm = Chem.MolToSmiles(Chem.MolFromSmiles(smiles))
     assert sm == "C1CCC(C2CCCCC2C2CCCCC2C2CCCCC2)CC1"
-
-
-@pytest.mark.parametrize(
-    "smiles,value",
-    [
-        ("", True),
-        ("   ", True),
-        ("\t", False),
-        ("abc", False),
-        ("(", False),
-    ],
-)
-def test_smiles_is_empty_or_only_space(smiles, value):
-    assert u_reaction.smiles_is_empty_or_only_space(smiles) == value
 
 
 def test_basic_svg_encoding():
