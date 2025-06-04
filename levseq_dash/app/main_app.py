@@ -13,6 +13,7 @@ from levseq_dash.app import global_strings as gs
 from levseq_dash.app.components import column_definitions as cd
 from levseq_dash.app.components import graphs, vis
 from levseq_dash.app.components.layout import (
+    layout_about,
     layout_bars,
     layout_experiment,
     layout_landing,
@@ -73,6 +74,8 @@ def display_page(pathname):
         return layout_upload.layout
     elif pathname == "/explore-sequences":
         return layout_matching_sequences.get_seq_align_layout()
+    elif pathname == "/about":
+        return layout_about.get_about_page()
     else:
         return html.Div([html.H2("Page not found!")])
 
