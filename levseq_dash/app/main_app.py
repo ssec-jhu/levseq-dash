@@ -480,6 +480,10 @@ def redirect_to_experiment_page(n_clicks):
 
 @app.callback(
     # -------------------------------
+    # Tab name
+    # -------------------------------
+    Output("id-experiment-tab-1", "label"),
+    # -------------------------------
     # Top variant table
     # -------------------------------
     Output("id-table-exp-top-variants", "rowData"),
@@ -598,6 +602,10 @@ def load_experiment_page(pathname, experiment_id):
         svg_src_image = u_reaction.create_reaction_image(substrate, product)
 
         return (
+            # -------------------------------
+            # Tab name
+            # -------------------------------
+            f"Experiment #{experiment_id}:  {exp.experiment_name}",
             # -------------------------------
             # Top variant table
             # -------------------------------

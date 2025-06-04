@@ -1,0 +1,25 @@
+/* applied to both tabs */
+.custom-tab-container {
+    font-weight: bold !important;
+    /*padding: 12px !important;*/
+    /*display: flex !important;*/
+    /*align-items: center;*/
+    /*justify-content: center;*/
+}
+
+/* unselected background tab */
+.custom-tab {
+    color: var(--cal-tech-color-4);
+    background-color: var(--cal-tech-color-3);
+
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+.custom-tab--selected {
+    color: var(--cal-tech-color-1);
+    font-weight: bold !important;
+    /*box-shadow: 1px 1px 1px white;*/
+    /*border-left: 1px solid lightgrey !important;*/
+    /*border-right: 1px solid lightgrey !important;*/
+    border-top: 2px solid var(--cal-tech-color-2) !important;
+}

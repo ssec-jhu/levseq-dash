@@ -691,19 +691,23 @@ def get_experiment_page():
                 [
                     # Experiment dashboard
                     dcc.Tab(
-                        get_experiment_tab_dash(),
+                        id="id-experiment-tab-1",
+                        children=get_experiment_tab_dash(),
                         label=gs.tab_1,
                         value="id-tab-exp-dash",
+                        className="custom-tab",
+                        selected_className="custom-tab--selected",
                     ),
-                    # Gene Expression Query Tab
                     dcc.Tab(
                         get_experiment_tab_related_seq(),
                         label=gs.tab_2,
                         value="id-tab-exp-variants",
+                        className="custom-tab",
+                        selected_className="custom-tab--selected",
                     ),
                 ],
+                className="custom-tab-container",
                 value="id-tab-exp-dash",
-                className="dbc nav-fill",  # Use Bootstrap's nav-fill class to fill the tab_horizontal_bootstrap space
             )
         ]
     )
