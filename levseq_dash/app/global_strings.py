@@ -49,7 +49,7 @@ sequence = "Amino Acid Sequence"
 viewer_header = "Protein Structure"
 well_heatmap = "Plate Map"
 top_variants = "Top Variants"
-retention_function = "Retention Function"
+retention_function = "Retention of Function Curve"
 reaction = "Reaction"
 
 tab_1 = "Experiment Dashboard"
