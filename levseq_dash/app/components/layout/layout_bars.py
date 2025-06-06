@@ -93,6 +93,15 @@ def get_sidebar():
                         href="/explore-sequences",
                         className="custom-nav-item",
                     ),
+                    dbc.NavLink(
+                        [
+                            html.Span(vis.icon_about, className="custom-nav-icon"),
+                            html.Span(gs.nav_about, className="custom-nav-text"),
+                        ],
+                        active="exact",
+                        href="/about",
+                        className="custom-nav-item",
+                    ),
                 ],
             ),
         ],

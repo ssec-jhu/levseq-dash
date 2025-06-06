@@ -73,8 +73,7 @@ icon_info = html.I(
 )
 icon_sequence = DashIconify(icon="fa-solid:dna", width=MEDIUM)
 icon_download = DashIconify(icon="mdi:tray-download", height=MEDIUM, width=MEDIUM)
-
-
+icon_about = DashIconify(icon="fa6-solid:clipboard-question", height=28, width=28)
 # --------------------
 #   AGGrid Cell colorings
 # --------------------
