@@ -10,14 +10,19 @@ def format_mutation_annotation(text):
     Format the mutations to remove the underscore and stack them on top of each other up to 3
     mutations. If it's more than 3, set the annotation as 4Mut*
     """
-    items = text.split("_")  # Split by underscore
+    # dataframe text can be empty
+    annotation = ""
 
-    if len(items) < 4:
-        return "<br>".join(items)  # Stack them vertically
-    else:
-        cnt = len(items)
-        annotation = f"{cnt}Mut*"
-        return annotation
+    if isinstance(text, str):
+        items = text.split("_")  # Split by underscore
+
+        if len(items) < 4:
+            annotation = "<br>".join(items)  # Stack them vertically
+        else:
+            cnt = len(items)
+            annotation = f"{cnt}Mut*"
+
+    return annotation
 
 
 def creat_heatmap(df, plate_number, property, smiles):

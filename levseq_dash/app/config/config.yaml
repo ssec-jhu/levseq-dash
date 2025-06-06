@@ -10,7 +10,12 @@ db-service:
 
 
 load-from-disk:
-  # use this for loading from disk for playground mode
+  # use this for loading from disk
   # these files MUST be embedded in the repo for the docker file to work
   # define from package root (levseq_dash) here, don't put a '/' at the beginning
-  data_path: "app/tests/test_data/data" # use this for dev mode
+
+  # use this for loading the test-data in dev mode
+  #data_path: "app/tests/test_data/data"
+
+  # use this for loading the playground-mode data
+  data_path: "app/data/DEDB"

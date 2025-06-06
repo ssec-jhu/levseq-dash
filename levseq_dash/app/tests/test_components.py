@@ -99,6 +99,8 @@ def test_get_experiment_page():
         ("N56T_T45R_D32R_Y78T", "4Mut*"),  # More than 3 mutations
         ("X_Y_Z_W_V", "5Mut*"),  # More than 3 mutations
         ("single", "single"),  # Only one mutation
+        (3, ""),
+        (float("nan"), ""),  # dataframe procedures may result in a nan column
     ],
 )
 def test_format_mutation_annotation(input_text, expected_output):
