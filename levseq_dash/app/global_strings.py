@@ -73,11 +73,8 @@ exp_seq_align_query_info_1 = "Selected ExperimentID"
 exp_seq_align_query_info_2 = "Query ExperimentID"
 
 # -----------------------------
-# Sequence Alignment Strings
+# Sequence Alignment Strings: General
 # -----------------------------
-seq_align_blurb = (
-    "Lots of good stuff to write here about the algorithms being used: BLOSOM matrix and blastp algorithm ... !"
-)
 seq_align_form_input_sequence_default = (
     "MTPSDISGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLAGGWAASNEHLIYYGSNPDTGAPIKEYLERVRARI"
     "GAWVLDTTCRDYNREWLDYQYEVGLRHHRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVVLQVAIW"
@@ -87,23 +84,23 @@ seq_align_form_placeholder = "Enter your query sequence here."
 seq_align_form_input = "Query Sequence"
 seq_align_form_threshold = "Threshold"
 seq_align_form_threshold_default = "0.8"
-seq_align_form_hot_cold = "# Hot/Cold to extract"
+seq_align_form_hot_cold = "# GoF/LoF Mutations to extract"
 seq_align_form_hot_cold_n = "2"
 seq_align_form_button_sequence_matching = "Find Matching Sequences"
+seq_align_residues = "Gain-of-function (GoF) and Loss-of-function (LoF) Mutations"
+seq_align_visualize = "Visualize Selected Experiment"
+seg_align_results = "Matched Experiments"
+seg_align_hot = "GoF"
+seg_align_cold = "LoF"
 
 # if you change below, make sure you also change
 # the string lookup in js function seqAlignmentVis -> search for it in assets
 hot = "H"
 cold = "C"
 hot_cold = "B"  # both hot and cold indicator
-# this will be treated as markdown
-markdown_note_matched_seq = """
-- Number of matched sequences is calculated per experiment match not per smiles string.
-- Each row represents experiment-compound information.
-- An experiment _may_ have one or more alignments. Each will be represented per compound(SMILES)
-"""
+
 # -----------------------------
-# download ing residue information related
+# Sequence Alignment Strings: downloading residue information related
 # -----------------------------
 filename_download_residue_info = "matched_seq_aligned_experiment_hot_cold_residues"
 download_results = " Download Results"
@@ -113,14 +110,19 @@ help_download = 'Download results in CSV format. Default is set to "Unfiltered" 
 help_download_mode_unfiltered = "Results will be downloaded without table filters applied."
 help_download_mode_filtered = "Results will be downloaded WITH table filters applied."
 
+# -----------------------------
+# Table column header renaming across the interface
+# -----------------------------
 header_experiment_id = "Experiment ID"
 header_experiment_name = "Experiment Name"
 header_smiles = "SMILES"
-# header_substrate = "Substrate"
-# header_product = "Product"
 header_substitutions = "Substitutions"
 header_fitness = "Fitness"
 header_mutagenesis = "Mutagenesis Method"
+header_hot_indices_per_smiles = "GoF Residue/SMILES"
+header_cold_indices_per_smiles = "LoF Residue/SMILES"
+header_hot_cold_type = "Type"
+header_aa_sequence = "Parent Amino Acid Sequence"
 
 # -----------------------------
 #   Error messages
@@ -152,8 +154,7 @@ cc_hot_and_cold_indices_per_smiles = "hot_and_cold_residue_indices_per_smiles"
 cc_exp_residue_per_smiles = "all_exp_residue_indices_per_smiles"
 cc_seq_alignment_mismatches = "seq_align_mismatch_indices"
 cc_hot_cold_type = "variant_type"
-cc_hot = "Hot"
-cc_cold = "Cold"
+
 
 # -----------------------------
 # These strings follow the column headers in the csv file.

@@ -301,8 +301,8 @@ def test_exp_hot_cold_spots_n_values(experiment_ep_pcr, n):
     hot_cold_spots_df, _ = experiment_ep_pcr.exp_hot_cold_spots(n)
 
     # Ensure we get exactly N hot and cold variants per smiles + Plate combo
-    hot_count = hot_cold_spots_df[hot_cold_spots_df[gs.cc_hot_cold_type] == gs.cc_hot].shape[0]
-    cold_count = hot_cold_spots_df[hot_cold_spots_df[gs.cc_hot_cold_type] == gs.cc_cold].shape[0]
+    hot_count = hot_cold_spots_df[hot_cold_spots_df[gs.cc_hot_cold_type] == gs.seg_align_hot].shape[0]
+    cold_count = hot_cold_spots_df[hot_cold_spots_df[gs.cc_hot_cold_type] == gs.seg_align_cold].shape[0]
 
     assert hot_count == cold_count
 

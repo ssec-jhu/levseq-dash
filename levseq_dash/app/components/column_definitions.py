@@ -308,12 +308,12 @@ def get_matched_sequences_column_defs():
     column_def += [
         {
             "field": gs.cc_hot_indices_per_smiles,
-            "headerName": "Hot Residue/smiles",
+            "headerName": gs.header_hot_indices_per_smiles,
             "width": 250,
         },
         {
             "field": gs.cc_cold_indices_per_smiles,
-            "headerName": "Cold Residue/smiles",
+            "headerName": gs.header_cold_indices_per_smiles,
             "width": 250,
         },
     ]
@@ -330,7 +330,7 @@ def get_matched_sequences_exp_hot_cold_data_column_defs():
     column_def += [
         {
             "field": gs.cc_hot_cold_type,
-            "headerName": "Type",
+            "headerName": gs.header_hot_cold_type,
             # "width": 150,
             "flex": 1,
         },
@@ -344,7 +344,7 @@ def get_matched_sequences_exp_hot_cold_data_column_defs():
     column_def += [
         {
             "field": gs.c_aa_sequence,
-            "headerName": "Parent Amino Acid Sequence",
+            "headerName": gs.header_aa_sequence,
             "tooltipField": gs.c_aa_sequence,
             "flex": 5,
             # "cellStyle": {"styleConditions": vis.data_bars_colorscale(df, gs.c_fitness_value)},

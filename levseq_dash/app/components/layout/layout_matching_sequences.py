@@ -2,6 +2,7 @@ import dash_bootstrap_components as dbc
 from dash import html
 
 from levseq_dash.app import global_strings as gs
+from levseq_dash.app import global_strings_html as gsh
 from levseq_dash.app.components import vis, widgets
 
 
@@ -90,9 +91,14 @@ def get_seq_align_form():
 def get_seq_align_layout():
     return html.Div(
         [
-            dbc.Row(
-                [html.P(gs.seq_align_blurb)],
-                className="mb-4 mt-4",  # add some margin to the top and bottom
+            html.Div(
+                [
+                    html.H4(gs.nav_seq, style=vis.level_4_titles),
+                    html.Hr(),
+                    # add some left and right padding -> px-5
+                    html.P(gsh.seq_align_blurb, className="px-5 text-primary text-wrap"),
+                ],
+                className="p-5",
             ),
             # the form row
             dbc.Row(
@@ -114,7 +120,7 @@ def get_seq_align_layout():
                                 [
                                     dbc.Card(
                                         [
-                                            dbc.CardHeader("Matched Experiments", className=vis.top_card_head),
+                                            dbc.CardHeader(gs.seg_align_results, className=vis.top_card_head),
                                             dbc.CardBody(
                                                 [
                                                     dbc.Row(
@@ -125,7 +131,7 @@ def get_seq_align_layout():
                                                                 [
                                                                     widgets.get_info_icon_tooltip_bundle(
                                                                         info_icon_id="id-info-1",
-                                                                        help_string=gs.markdown_note_matched_seq,
+                                                                        help_string=gsh.markdown_note_matched_seq,
                                                                         location="top",
                                                                         allow_html=True,
                                                                     ),
@@ -163,9 +169,7 @@ def get_seq_align_layout():
                                 [
                                     dbc.Card(
                                         [
-                                            dbc.CardHeader(
-                                                "Visualize Selected Experiment", className=vis.top_card_head
-                                            ),
+                                            dbc.CardHeader(gs.seq_align_visualize, className=vis.top_card_head),
                                             dbc.CardBody(
                                                 [
                                                     dbc.Row(
@@ -202,7 +206,7 @@ def get_seq_align_layout():
                                 [
                                     dbc.Card(
                                         [
-                                            dbc.CardHeader("Hot and Cold residues", className=vis.top_card_head),
+                                            dbc.CardHeader(gs.seq_align_residues, className=vis.top_card_head),
                                             dbc.CardBody(
                                                 [
                                                     dbc.Row(

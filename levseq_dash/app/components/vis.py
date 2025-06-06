@@ -50,6 +50,8 @@ top_card_head = "card-title fw-bold custom-card-header"
 top_card_body = "text-primary-emphasis"
 
 experiment_info = {"fontWeight": "bold", "marginRight": "15px"}
+
+level_4_titles = {"color": "var(--cal-tech-color-2)"}
 # --------------------
 #   Icons
 # --------------------

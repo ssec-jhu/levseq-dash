@@ -265,8 +265,8 @@ class Experiment:
                 hot_cold_residue_per_smiles = hot_cold_residue_per_smiles.merge(sub_per_smiles, how="left")
 
                 # add a column to identify results
-                hot_n[gs.cc_hot_cold_type] = gs.cc_hot
-                cold_n[gs.cc_hot_cold_type] = gs.cc_cold
+                hot_n[gs.cc_hot_cold_type] = gs.seg_align_hot
+                cold_n[gs.cc_hot_cold_type] = gs.seg_align_cold
 
                 # merge the hot and the cold together
                 hot_cold_spots_merged_df = pd.concat([hot_n, cold_n], ignore_index=True)

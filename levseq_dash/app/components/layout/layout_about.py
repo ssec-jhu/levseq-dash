@@ -1,14 +1,18 @@
 import dash_bootstrap_components as dbc
 from dash import html
 
-level_4 = {"color": "var(--cal-tech-color-2)"}
+from levseq_dash.app.components import vis
+
 primary_bold = "text-primary fw-bold"
 
 
 def get_about_page():
-    return dbc.Container(
+    # you can convert this div into a dbc.Container but note that it will add a
+    # lot of margins and padding around this by default. Maybe that is needed
+    # if not much text here
+    return html.Div(
         [
-            html.H4("Overview & Design Philosophy", style=level_4),
+            html.H4("Overview & Design Philosophy", style=vis.level_4_titles),
             html.Hr(),
             html.Div(
                 [
@@ -51,9 +55,9 @@ def get_about_page():
                         "protein design strategies."
                     ),
                 ],
-                style={"marginLeft": "40px"},
+                className="px-5",
             ),
-            html.H4("Core Functionality", style=level_4, className="mt-4"),
+            html.H4("Core Functionality", style=vis.level_4_titles, className="mt-4"),
             html.Hr(),
             html.Div(
                 [
@@ -68,7 +72,6 @@ def get_about_page():
                                 "between variants."
                             ),
                         ],
-                        style={"marginLeft": "40px"},
                     ),
                     html.Div(
                         [
@@ -82,7 +85,6 @@ def get_about_page():
                                 "affect protein folding, active sites, and functional domains."
                             ),
                         ],
-                        style={"marginLeft": "40px"},
                     ),
                     html.Div(
                         [
@@ -94,7 +96,6 @@ def get_about_page():
                                 "mutations (cold spots) that should be avoided."
                             ),
                         ],
-                        style={"marginLeft": "40px"},
                     ),
                     html.Div(
                         [
@@ -106,10 +107,9 @@ def get_about_page():
                                 "for comprehensive understanding."
                             ),
                         ],
-                        style={"marginLeft": "40px"},
                     ),
                 ],
-                style={"marginBottom": "40px"},
+                className="px-5",
             ),
             html.Div(
                 [
@@ -117,7 +117,7 @@ def get_about_page():
                         [
                             dbc.Col(
                                 [
-                                    html.H4("Key Features", style=level_4),
+                                    html.H4("Key Features", style=vis.level_4_titles),
                                     html.Hr(),
                                     html.Div(
                                         [
@@ -176,61 +176,72 @@ def get_about_page():
                                                 ]
                                             ),
                                         ],
-                                        style={"marginLeft": "40px"},
+                                        className="px-5",
                                     ),
                                 ]
                             ),
                             dbc.Col(
                                 [
-                                    html.H4("Use Cases", style=level_4),
+                                    html.H4("Use Cases", style=vis.level_4_titles),
                                     html.Hr(),
                                     html.Div(
                                         [
-                                            html.Span("Directed Evolution Projects: ", className=primary_bold),
-                                            html.Span(
-                                                "Track the progress of evolutionary campaigns and identify "
-                                                "successful design strategies"
+                                            html.Div(
+                                                [
+                                                    html.Span("Directed Evolution Projects: ", className=primary_bold),
+                                                    html.Span(
+                                                        "Track the progress of evolutionary campaigns and identify "
+                                                        "successful design strategies"
+                                                    ),
+                                                ],
+                                                className="mb-2",
+                                            ),
+                                            html.Div(
+                                                [
+                                                    html.Span("Mutation Effect Analysis: ", className=primary_bold),
+                                                    html.Span(
+                                                        "Systematically assess how specific mutations "
+                                                        "affect protein function"
+                                                    ),
+                                                ],
+                                                className="mb-2",
+                                            ),
+                                            html.Div(
+                                                [
+                                                    html.Span(
+                                                        "Structure-Function Relationships: ", className=primary_bold
+                                                    ),
+                                                    html.Span(
+                                                        "Correlate sequence changes with structural features "
+                                                        "and functional outcomes"
+                                                    ),
+                                                ],
+                                                className="mb-2",
+                                            ),
+                                            html.Div(
+                                                [
+                                                    html.Span("Protein Engineering: ", className=primary_bold),
+                                                    html.Span(
+                                                        "Make informed decisions about which mutations to "
+                                                        "combine in the next generation of designs"
+                                                    ),
+                                                ],
+                                                className="mb-2",
+                                            ),
+                                            html.Div(
+                                                [
+                                                    html.Span(
+                                                        "Evolutionary Pathway Exploration: ", className=primary_bold
+                                                    ),
+                                                    html.Span(
+                                                        "Visualize the evolutionary trajectories "
+                                                        "of successful protein variants"
+                                                    ),
+                                                ],
+                                                className="mb-2",
                                             ),
                                         ],
-                                        className="mb-2",
-                                    ),
-                                    html.Div(
-                                        [
-                                            html.Span("Mutation Effect Analysis: ", className=primary_bold),
-                                            html.Span(
-                                                "Systematically assess how specific mutations affect protein function"
-                                            ),
-                                        ],
-                                        className="mb-2",
-                                    ),
-                                    html.Div(
-                                        [
-                                            html.Span("Structure-Function Relationships: ", className=primary_bold),
-                                            html.Span(
-                                                "Correlate sequence changes with structural features "
-                                                "and functional outcomes"
-                                            ),
-                                        ],
-                                        className="mb-2",
-                                    ),
-                                    html.Div(
-                                        [
-                                            html.Span("Protein Engineering: ", className=primary_bold),
-                                            html.Span(
-                                                "Make informed decisions about which mutations to "
-                                                "combine in the next generation of designs"
-                                            ),
-                                        ],
-                                        className="mb-2",
-                                    ),
-                                    html.Div(
-                                        [
-                                            html.Span("Evolutionary Pathway Exploration: ", className=primary_bold),
-                                            html.Span(
-                                                "Visualize the evolutionary trajectories of successful protein variants"
-                                            ),
-                                        ],
-                                        className="mb-2",
+                                        className="px-5",
                                     ),
                                 ]  # end of col
                             ),
@@ -238,7 +249,7 @@ def get_about_page():
                     ),
                 ],
             ),
-            html.H4("Technical Details", style=level_4, className="mt-4"),
+            html.H4("Technical Details", style=vis.level_4_titles, className="mt-4"),
             html.Hr(),
             html.Div(
                 [
@@ -282,9 +293,9 @@ def get_about_page():
                         className="mb-2",
                     ),
                 ],
-                style={"marginLeft": "40px"},
+                className="px-5",
             ),
-            html.H4("Getting Started", style=level_4, className="mt-4"),
+            html.H4("Getting Started", style=vis.level_4_titles, className="mt-4"),
             html.Hr(),
             html.Div(
                 [
@@ -337,9 +348,9 @@ def get_about_page():
                         className="mb-4",
                     ),
                 ],
-                style={"marginLeft": "40px"},
+                className="px-5",
             ),
-            html.H4("Development Team", style=level_4, className="mt-4"),
+            html.H4("Development Team", style=vis.level_4_titles, className="mt-4"),
             html.Hr(),
             html.Div(
                 [
@@ -351,9 +362,8 @@ def get_about_page():
                         "and data visualization."
                     )
                 ],
-                style={"marginLeft": "40px"},
+                className="px-5",
             ),
         ],
-        style={"width": "90%"},
-        className="mt-5 tex-primary",
+        className="p-5",
     )
