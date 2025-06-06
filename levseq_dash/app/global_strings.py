@@ -52,7 +52,7 @@ retention_function = "Retention Function"
 reaction = "Reaction"
 
 tab_1 = "Experiment Dashboard"
-tab_2 = "Related Variants"
+tab_2 = "Related Variants and Position Search"
 view_all = "View all residues"
 select_plate = "Select Plate ID"
 select_smiles = "Select Compound(SMILES)"
