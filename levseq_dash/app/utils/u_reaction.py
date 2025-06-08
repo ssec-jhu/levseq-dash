@@ -83,7 +83,7 @@ def create_reaction_image(substrate_smiles: str, product_smiles: str):
     # return img
 
     # this option produces a svg image
-    svg_img = Draw.ReactionToImage(rxn, subImgSize=(150, 150), useSVG=True)
+    svg_img = Draw.ReactionToImage(rxn, subImgSize=(200, 200), useSVG=True)
     svg_src = convert_svg_img_to_src(svg_img)
 
     return svg_src

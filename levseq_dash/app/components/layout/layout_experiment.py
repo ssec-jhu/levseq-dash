@@ -4,6 +4,7 @@ from dash import dcc, html
 
 from levseq_dash.app import global_strings as gs
 from levseq_dash.app.components import vis, widgets
+from levseq_dash.app.components.widgets import generate_label_with_info
 
 
 def get_experiment_tab_dash():
@@ -37,55 +38,28 @@ def get_experiment_tab_dash():
                                     [
                                         html.Div(
                                             [
-                                                html.Div(
-                                                    [
-                                                        html.Span(gs.experiment, style=vis.experiment_info),
-                                                        html.Span(id="id-experiment-name"),
-                                                    ]
+                                                generate_label_with_info(gs.experiment, "id-experiment-name"),
+                                                generate_label_with_info(gs.date, "id-experiment-date"),
+                                                generate_label_with_info(gs.upload_date, "id-experiment-upload"),
+                                                generate_label_with_info(
+                                                    gs.technique, "id-experiment-mutagenesis-method"
                                                 ),
-                                                html.Div(
-                                                    [
-                                                        html.Span(gs.date, style=vis.experiment_info),
-                                                        html.Span(id="id-experiment-date"),
-                                                    ]
-                                                ),
-                                                html.Div(
-                                                    [
-                                                        html.Span(gs.upload_date, style=vis.experiment_info),
-                                                        html.Span(id="id-experiment-upload"),
-                                                    ]
-                                                ),
-                                                html.Div(
-                                                    [
-                                                        html.Span(gs.technique, style=vis.experiment_info),
-                                                        html.Span(id="id-experiment-mutagenesis-method"),
-                                                    ]
-                                                ),
-                                                html.Div(
-                                                    [
-                                                        html.Span(gs.assay, style=vis.experiment_info),
-                                                        html.Span(id="id-experiment-assay"),
-                                                    ]
-                                                ),
-                                                html.Div(
-                                                    [
-                                                        html.Span(gs.technique, style=vis.experiment_info),
-                                                        html.Span(id="id-experiment-mutagenesis-method"),
-                                                    ]
-                                                ),
-                                                html.Div(
-                                                    [
-                                                        html.Span(gs.plates_count, style=vis.experiment_info),
-                                                        html.Span(id="id-experiment-plate-count"),
-                                                    ]
-                                                ),
-                                                html.Div(
-                                                    [
-                                                        html.Span(gs.smiles_file, style=vis.experiment_info),
-                                                        html.Span(id="id-experiment-file-smiles"),
-                                                    ]
-                                                ),
-                                            ]
+                                                generate_label_with_info(gs.assay, "id-experiment-assay"),
+                                                generate_label_with_info(gs.plates_count, "id-experiment-plate-count"),
+                                                generate_label_with_info(gs.smiles_file, "id-experiment-file-smiles"),
+                                            ],
+                                            style={
+                                                # the smiles strings are very long at times,
+                                                # we need them to break if they can to allow
+                                                # for the reaction image to the right
+                                                # to have space as well
+                                                "wordBreak": "break-all",  # this is the key
+                                                "whiteSpace": "normal",
+                                                # BUT: sometimes the card collapse into 10% width because the reaction
+                                                # image is too long, so keep a min width for the info,
+                                                # if it doesn't work out let the connects flow into the next row
+                                                "minWidth": "150px",
+                                            },
                                         )
                                     ],
                                     className=vis.top_card_body,
@@ -93,21 +67,54 @@ def get_experiment_tab_dash():
                             ],
                             style=vis.card_shadow,
                         ),
-                        width=5,
+                        # NOTE: if I keep this a fixed width and the reaction images flows over, user will see this
+                        # card as a fixed 3 so commenting out, but if you decide to put it back in,  make sure you
+                        # set the image below with style={"maxWidth": "100%"}
+                        # width=3,
+                        # NOTE: allowing the card to flex to
+                        # the next row will need a margin for the card, so they don't look like it looks seamless
+                        className="mb-3",
                         style=vis.border_column,
                     ),
+                    # --------------------------------------
+                    # Experiment page reaction image card
+                    # --------------------------------------
                     dbc.Col(
                         dbc.Card(
                             [
                                 dbc.CardHeader(gs.reaction, className=vis.top_card_head),
                                 dbc.CardBody(
                                     [
+                                        html.Img(
+                                            id="id-experiment-reaction-image",
+                                            className="mx-auto d-block",  # this will center the image
+                                            # NOTE: see comments above regarding below
+                                            # style={"maxWidth": "100%"}
+                                        ),
                                         dbc.Row(
-                                            widgets.create_layout_reaction(
-                                                "id-experiment-reaction-image",
-                                                "id-experiment-substrate",
-                                                "id-experiment-product",
-                                            )
+                                            [
+                                                dbc.Col(
+                                                    [
+                                                        generate_label_with_info(
+                                                            "Substrate SMILES: ",
+                                                            "id-experiment-substrate",
+                                                        )
+                                                    ],
+                                                    # I am setting this to be 6, so they don't collapse if the whole
+                                                    # card flows into the other row
+                                                    width=6,
+                                                ),
+                                                dbc.Col(
+                                                    [
+                                                        generate_label_with_info(
+                                                            "Product SMILES: ", "id-experiment-product"
+                                                        )
+                                                    ],
+                                                ),
+                                            ],
+                                            style=vis.border_row,
+                                            # add some padding around the smiles string area for better aesthetics
+                                            className="p-2",
                                         ),
                                     ],
                                     className=vis.top_card_body,
@@ -116,11 +123,14 @@ def get_experiment_tab_dash():
                             style=vis.card_shadow,
                         ),
                         style=vis.border_column,
+                        className="mb-3",
                     ),
                 ],
                 className="mb-3",
             ),
+            # --------------------------------------
             # top variants and viewer row
+            # --------------------------------------
             dbc.Row(
                 [
                     dbc.Col(
