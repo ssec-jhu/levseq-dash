@@ -385,29 +385,26 @@ def get_experiment_tab_dash():
 
 
 def get_seq_align_form_exp():
+    """
+    This is a wrapper function for the form on the Related Variants and Positions Search tab.
+    """
     return dbc.Container(
         [
+            dbc.Row(dbc.Label(gs.exp_seq_align_form_input, className="fw-bolder fs-6")),
             dbc.Row(
                 [
-                    widgets.get_label_fixed_for_form(gs.exp_seq_align_form_input, w=3),
-                    # don't remove this dbc.Col, it creates a nice padding
-                    dbc.Col(
-                        [
-                            html.Div(
-                                id="id-input-exp-related-variants-query-sequence",
-                                style={
-                                    "width": "750px",
-                                    "height": "100px",
-                                    "whiteSpace": "normal",  # ensures wrapping
-                                    "wordWrap": "break-word",  # breaks long words if needed
-                                    "padding": "4px",
-                                },
-                                className="dbc text-muted",
-                            ),
-                        ]
+                    html.Div(
+                        id="id-input-exp-related-variants-query-sequence",
+                        style={
+                            "whiteSpace": "normal",  # ensures wrapping
+                            "wordWrap": "break-word",  # breaks long words if needed
+                            # to reduce the font size for the sequence here, it's just put for reference so
+                            # I am setting it 85% od the root element
+                            "fontSize": "0.85rem",
+                        },
+                        className="text-muted mb-1",
                     ),
                 ],
-                className="mb-1",
                 style=vis.border_row,
             ),
             dbc.Row(
@@ -425,27 +422,8 @@ def get_seq_align_form_exp():
                         width=3,
                     ),
                 ],
-                className="mb-1",
                 style=vis.border_row,
             ),
-            # dbc.Row(
-            #     [
-            #         components.get_label_fixed_for_form(gs.seq_align_form_hot_cold),
-            #         dbc.Col(
-            #             [
-            #                 dbc.Input(
-            #                     id="id-input-exp-related-variants-hot-cold",
-            #                     value=gs.seq_align_form_hot_cold_n,
-            #                     type="text",
-            #                     debounce=True,
-            #                 ),
-            #             ],
-            #             width=3,
-            #         ),
-            #     ],
-            #     className="mb-1",
-            #     style=vis.border_row,
-            # ),
             dbc.Row(
                 [
                     widgets.get_label_fixed_for_form(gs.exp_seq_align_residue),
