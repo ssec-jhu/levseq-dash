@@ -342,24 +342,16 @@ def get_button_download(button_id):
 
 def generate_label_with_info(label, id_info):
     """
-    Produces a bold label with a string. This is used in multimple places throughout the layout.
+    Produces a bold label with a string. This is used in multiple places throughout the layout.
     """
     return html.Div(
         [
             html.Span(label, style=vis.experiment_info),
-            html.Span(
-                id=id_info,
-                style={"maxWidth": "100%"},
-            ),
+            html.Span(id=id_info),
         ],
         style={
+            "wordBreak": "break-all",  # this is the key
             "whiteSpace": "normal",  # text wrap onto the next line.
-            "wordWrap": "break-word",  # ensures long strings (like one very long word or URL) break properly.
-            # below combo won't allow for word break
-            # "display": "flex",
-            # "alignItems": "center",
-            # "flexWrap": "wrap",
-            "justifyContent": "center",
         },
     )
 
