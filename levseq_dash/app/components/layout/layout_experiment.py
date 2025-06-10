@@ -7,7 +7,7 @@ from levseq_dash.app.components import vis, widgets
 from levseq_dash.app.components.widgets import generate_label_with_info
 
 
-def get_experiment_tab_dash():
+def get_tab_experiment_main():
     # dbc.Container doesn't pick up the fluid container from parent keep as html.Div
     return html.Div(
         [
@@ -96,8 +96,7 @@ def get_experiment_tab_dash():
                                                 dbc.Col(
                                                     [
                                                         generate_label_with_info(
-                                                            "Substrate SMILES: ",
-                                                            "id-experiment-substrate",
+                                                            gs.sub_smiles, "id-experiment-substrate"
                                                         )
                                                     ],
                                                     # I am setting this to be 6, so they don't collapse if the whole
@@ -105,11 +104,7 @@ def get_experiment_tab_dash():
                                                     width=6,
                                                 ),
                                                 dbc.Col(
-                                                    [
-                                                        generate_label_with_info(
-                                                            "Product SMILES: ", "id-experiment-product"
-                                                        )
-                                                    ],
+                                                    [generate_label_with_info(gs.prod_smiles, "id-experiment-product")],
                                                 ),
                                             ],
                                             style=vis.border_row,
@@ -388,7 +383,7 @@ def get_seq_align_form_exp():
     """
     This is a wrapper function for the form on the Related Variants and Positions Search tab.
     """
-    return dbc.Container(
+    return html.Div(
         [
             dbc.Row(dbc.Label(gs.exp_seq_align_form_input, className="fw-bolder fs-6")),
             dbc.Row(
@@ -471,178 +466,191 @@ def get_seq_align_form_exp():
                 className="mt-5 mb-5",
             ),
         ],
-        className="mt-3",
-        style={
-            "width": "60%",  # % width of the div
-            "margin": "0 auto",
-        },
     )
 
 
-def get_experiment_tab_related_seq():
-    return html.Div(
+def get_card_experiment_related_variants_result():
+    return dbc.Card(
         [
-            dbc.Row(html.P(gs.exp_seq_align_blurb)),
-            dbc.Row(get_seq_align_form_exp()),
-            html.Div(
-                id="id-div-exp-related-variants-section",
-                children=[
+            dbc.CardHeader(gs.exp_seq_align_related_experiments, className=vis.top_card_head),
+            dbc.CardBody(
+                [
+                    dbc.Row(
+                        [
+                            dbc.Col(
+                                [generate_label_with_info(gs.exp_seq_align_query_info_2, "id-exp-related-variants-id")],
+                                width=6,
+                                className="p-2 border-end",
+                            ),
+                            dbc.Col(
+                                [
+                                    generate_label_with_info(
+                                        gs.exp_seq_align_query_info_1, "id-exp-related-variants-selected-id"
+                                    )
+                                ],
+                                className="p-2",
+                            ),
+                        ],
+                        className="g-1 mt-2 border",
+                        style=vis.border_row,
+                    ),
+                    # -----------------------------
+                    # reaction images
+                    # -----------------------------
                     dbc.Row(
                         [
                             dbc.Col(
                                 [
-                                    dbc.Card(
-                                        [
-                                            dbc.CardHeader("Related Experiments", className=vis.top_card_head),
-                                            dbc.CardBody(
-                                                [
-                                                    dbc.Row(
-                                                        [
-                                                            html.P(
-                                                                "TBD: (placeholder) We need some instructions "
-                                                                "here for "
-                                                                "the user, on what are they are seeing and "
-                                                                "to know that they can click on a row...."
-                                                            )
-                                                        ],
-                                                        className="mt-3",  # fits to the card border
-                                                    ),
-                                                    dbc.Row(
-                                                        [widgets.get_table_experiment_related_variants()],
-                                                        className="dbc dbc-ag-grid mt-3",
-                                                    ),
-                                                ],
-                                                className="p-1 mt-3",  # fits to the card border
-                                            ),
-                                        ],
-                                        className="d-flex flex-column",  # Flexbox for vertical stacking
+                                    html.Img(
+                                        id="id-exp-related-variants-reaction-image",
+                                        # this will center the image
+                                        className="mx-auto d-block",
+                                        # Note: this will make the reaction image width fill the container width and
+                                        # not overflow so a smaller screen will show the image smaller and a big
+                                        # monitor will show the image bigger
+                                        # style={"maxWidth": "100%"},
                                         style={
-                                            "box-shadow": "1px 2px 7px 0px grey",
-                                            "border-radius": "5px",
-                                            "height": vis.related_variants_card_height,
+                                            "width": "100%",  # Stretch to column width and do NOT overflow
+                                            "objectFit": "contain",  # Fit inside container
                                         },
                                     ),
                                 ],
                                 width=6,
-                                style=vis.border_column,
-                                # remove all gutters from the col to snap to the card
-                                # className="g-3"
+                                className="border-end",
                             ),
                             dbc.Col(
                                 [
-                                    dbc.Card(
+                                    html.Img(
+                                        id="id-exp-related-variants-selected-reaction-image",
+                                        # this will center the image
+                                        className="mx-auto d-block",
+                                        # Note: this will make the reaction image width fill the container width and
+                                        # not overflow so a smaller screen will show the image smaller and a big
+                                        # monitor will show the image bigger
+                                        style={"maxWidth": "100%"},
+                                    ),
+                                ],
+                            ),
+                        ],
+                        className="g-1 border border-top-0 border-bottom-0",
+                    ),
+                    # -----------------------------
+                    # substrate and product smiles for experiment and selected match
+                    # -----------------------------
+                    dbc.Row(
+                        [
+                            dbc.Col(
+                                [generate_label_with_info(gs.sub_smiles, "id-exp-related-variants-substrate")],
+                                width=3,
+                                className="p-2",
+                            ),
+                            dbc.Col(
+                                [generate_label_with_info(gs.prod_smiles, "id-exp-related-variants-product")],
+                                width=3,
+                                className="p-2 border-end",
+                            ),
+                            dbc.Col(
+                                [generate_label_with_info(gs.sub_smiles, "id-exp-related-variants-selected-substrate")],
+                                width=3,
+                                className="p-2",
+                            ),
+                            dbc.Col(
+                                [generate_label_with_info(gs.prod_smiles, "id-exp-related-variants-selected-product")],
+                                width=3,
+                                className="p-2",
+                            ),
+                        ],
+                        className="g-1 border border-top-0",
+                        style=vis.border_row,
+                    ),
+                    dbc.Row(
+                        [
+                            # -----------------------------
+                            # table with all related variants results
+                            # -----------------------------
+                            dbc.Col(
+                                [widgets.get_table_experiment_related_variants()],
+                                width=6,
+                                className="p-1 dbc dbc-ag-grid",
+                                style=vis.border_column,
+                            ),
+                            dbc.Col(
+                                [
+                                    # -----------------------------
+                                    # side by side protein structure comparison
+                                    # -----------------------------
+                                    dbc.Row(
                                         [
-                                            dbc.CardHeader(
-                                                " Query Protein vs. Selected Protein Substitutions",
-                                                className=vis.top_card_head,
-                                            ),
-                                            dbc.CardBody(
+                                            dbc.Col(
                                                 [
-                                                    # experiment id of the comparison
-                                                    dbc.Row(
-                                                        [
-                                                            dbc.Col(
-                                                                [
-                                                                    widgets.generate_label_with_info(
-                                                                        label="Query Experiment ID: ",
-                                                                        id_info="id-exp-related-variants-id",
-                                                                    )
-                                                                ],
-                                                                className="text-center",
-                                                            ),
-                                                            dbc.Col(
-                                                                [
-                                                                    widgets.generate_label_with_info(
-                                                                        label="Selected Experiment ID: ",
-                                                                        id_info="id-exp-related-variants-selected-id",
-                                                                    )
-                                                                ],
-                                                                className="text-center",
-                                                            ),
-                                                        ],
-                                                        className="mb-3",
-                                                    ),
-                                                    # reaction image and the substrate and product
-                                                    # strings of the comparison
-                                                    dbc.Row(
-                                                        [
-                                                            dbc.Col(
-                                                                [
-                                                                    widgets.create_layout_reaction(
-                                                                        "id-exp-related-variants-reaction-image",
-                                                                        "id-exp-related-variants-substrate",
-                                                                        "id-exp-related-variants-product",
-                                                                    )
-                                                                ],
-                                                                className="text-center",
-                                                            ),
-                                                            dbc.Col(
-                                                                [
-                                                                    widgets.create_layout_reaction(
-                                                                        "id-exp-related-variants-selected-reaction-image",
-                                                                        "id-exp-related-variants-selected-substrate",
-                                                                        "id-exp-related-variants-selected-product",
-                                                                    )
-                                                                ],
-                                                                className="text-center",
-                                                            ),
-                                                        ],
-                                                        className="mb-3",
-                                                    ),
-                                                    dbc.Row(
-                                                        [
-                                                            dbc.Col(
-                                                                [
-                                                                    html.Div(
-                                                                        id="id-exp-related-variants-protein-viewer"
-                                                                    ),
-                                                                ],
-                                                                width=6,
-                                                                className="text-center",
-                                                            ),
-                                                            dbc.Col(
-                                                                [
-                                                                    html.Div(
-                                                                        id="id-exp-related-variants-selected-protein-viewer"
-                                                                    ),
-                                                                ],
-                                                                className="text-center",
-                                                            ),
-                                                        ],
-                                                        className="p-0 mb-3",
-                                                    ),
-                                                    # specify the substitutions that are being visualized
-                                                    dbc.Row(
-                                                        [
-                                                            dbc.Col(
-                                                                [
-                                                                    widgets.generate_label_with_info(
-                                                                        label="Selected Substitutions: ",
-                                                                        id_info="id-exp-related-variants-selected-subs",
-                                                                    )
-                                                                ]
-                                                            )
-                                                        ],
-                                                        className="justify-content-center",
-                                                    ),
+                                                    html.Span("Query Protein Structure", style=vis.experiment_info),
+                                                    html.Div(id="id-exp-related-variants-protein-viewer"),
                                                 ],
-                                                className="p-1 mt-3",
+                                                width=6,
+                                                # className="text-center",
+                                                style=vis.border_column,
+                                            ),
+                                            dbc.Col(
+                                                [
+                                                    html.Span("Selected Protein Structure", style=vis.experiment_info),
+                                                    html.Div(id="id-exp-related-variants-selected-protein-viewer"),
+                                                ],
+                                                # className="text-center",
+                                                style=vis.border_column,
                                             ),
                                         ],
-                                        style={
-                                            "box-shadow": "1px 2px 7px 0px grey",
-                                            "border-radius": "5px",
-                                            # Leave this commented so the card height
-                                            # can grow since there are dynamic components in it
-                                            # "height": vis.related_variants_card_height,
-                                        },
-                                    )
-                                ],
-                                width=6,
+                                        className="g-1 p-0 mb-3",
+                                    ),
+                                    # -----------------------------
+                                    # specify the substitutions that are being visualized
+                                    # -----------------------------
+                                    dbc.Row(
+                                        [
+                                            dbc.Col(
+                                                [
+                                                    widgets.generate_label_with_info(
+                                                        label=gs.exp_seq_align_substitutions,
+                                                        id_info="id-exp-related-variants-selected-subs",
+                                                    )
+                                                ]
+                                            )
+                                        ],
+                                    ),
+                                ]
                             ),
-                        ]
+                        ],
+                        className="g-1 mt-4",
                     ),
-                ],  # html.Div
+                ],
+            ),
+        ],
+        style={
+            "box-shadow": "1px 2px 7px 0px grey",
+            "border-radius": "5px",
+            # "height": vis.related_variants_card_height,
+        },
+    )
+
+
+def get_tab_experiment_related_variants():
+    return html.Div(
+        [
+            # intro at the top
+            dbc.Row(html.P(gs.exp_seq_align_blurb)),
+            # form layout
+            dbc.Row(
+                [get_seq_align_form_exp()],
+                className="mt-3",
+                style={
+                    "width": "70%",  # % width of the div
+                    "margin": "0 auto",
+                    # "border": "1px solid magenta",
+                },
+            ),
+            # putting all this in a Div because it needs to appear after results are in
+            html.Div(
+                id="id-div-exp-related-variants-section",
+                children=[get_card_experiment_related_variants_result()],
             ),
         ],
         className="mt-4",
@@ -653,41 +661,19 @@ def get_experiment_page():
     """This defines the tab layout."""
     return html.Div(
         [
-            # dbc.Tabs(
-            #     [
-            #         # Experiment dashboard
-            #         dbc.Tab(
-            #             get_experiment_tab_dash(),
-            #             label=gs.tab_1,
-            #             activeTabClassName="fw-bold",
-            #             tab_id="id-tab-exp-dash",
-            #         ),
-            #         # Gene Expression Query Tab
-            #         dbc.Tab(
-            #             get_experiment_tab_related_seq(),
-            #             label=gs.tab_2,
-            #             activeTabClassName="fw-bold",
-            #             # tab_id="id-tab-horizontal-bootstrap-geq",
-            #         ),
-            #     ],
-            #     active_tab="id-tab-exp-dash",
-            #     className="dbc nav-fill",  # Use Bootstrap's nav-fill class to fill the tab_horizontal_bootstrap space
-            # )
-            # TODO: replacing dbc.tabs with dcc ones as they created a glitch when dockerized!
-            # debug this later or add better styling
             dcc.Tabs(
                 [
                     # Experiment dashboard
                     dcc.Tab(
                         id="id-experiment-tab-1",
-                        children=get_experiment_tab_dash(),
+                        children=get_tab_experiment_main(),
                         label=gs.tab_1,
                         value="id-tab-exp-dash",
                         className="custom-tab",
                         selected_className="custom-tab--selected",
                     ),
                     dcc.Tab(
-                        get_experiment_tab_related_seq(),
+                        children=get_tab_experiment_related_variants(),
                         label=gs.tab_2,
                         value="id-tab-exp-variants",
                         className="custom-tab",

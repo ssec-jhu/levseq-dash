@@ -780,7 +780,16 @@ def on_view_all_residue(view, slider_value, selected_smiles, rowData):
     Output("id-table-exp-related-variants", "rowData"),
     # Output("id-exp-related-variants-protein-viewer", "children"),
     # Output("id-div-exp-related-variants-section", "style"),
-    # inputs
+    # --------------
+    # Query protein related
+    # --------------
+    Output("id-exp-related-variants-id", "children"),
+    Output("id-exp-related-variants-reaction-image", "src"),
+    Output("id-exp-related-variants-substrate", "children"),
+    Output("id-exp-related-variants-product", "children"),
+    # --------------
+    # Inputs
+    # --------------
     Input("id-button-run-seq-matching-exp", "n_clicks"),
     # from the form
     State("id-input-exp-related-variants-query-sequence", "children"),
@@ -832,7 +841,15 @@ def on_exp_related_variants(
                 seq_match_data=lab_seq_match_data[i],
                 exp_results_row_data=exp_results_row_data,
             )
-        return exp_results_row_data
+
+        # gather the info for making this experiments reaction image for use in comparison
+        experiment = data_mgr.get_experiment(experiment_id)
+        experiment_substrate = experiment.substrate
+        experiment_product = experiment.product
+        experiment_svg_src = u_reaction.create_reaction_image(experiment_substrate, experiment_product)
+
+        return exp_results_row_data, experiment_id, experiment_svg_src, experiment_substrate, experiment_product
+
     raise PreventUpdate
 
 
@@ -850,10 +867,6 @@ def on_exp_related_variants(
     # Query protein related
     # --------------
     Output("id-exp-related-variants-protein-viewer", "children", allow_duplicate=True),
-    Output("id-exp-related-variants-id", "children"),
-    Output("id-exp-related-variants-reaction-image", "src"),
-    Output("id-exp-related-variants-substrate", "children"),
-    Output("id-exp-related-variants-product", "children"),
     Input("id-table-exp-related-variants", "selectedRows"),
     State("id-experiment-selected", "data"),
     prevent_initial_call=True,
@@ -873,8 +886,6 @@ def display_selected_matching_sequences_protein_visualization_exp(selected_rows,
         selected_experiment_geometry_file = selected_experiment.geometry_file_path
 
         experiment = data_mgr.get_experiment(experiment_id)
-        experiment_substrate = experiment.substrate
-        experiment_product = experiment.product
         experiment_geometry_file = experiment.geometry_file_path
 
         # if there is no geometry for the file ignore it
@@ -919,9 +930,9 @@ def display_selected_matching_sequences_protein_visualization_exp(selected_rows,
                 )
             ]
 
-            # create the reaction image
+            # create the reaction image for the selected row
             selected_svg_src = u_reaction.create_reaction_image(selected_substrate, selected_product)
-            experiment_svg_src = u_reaction.create_reaction_image(experiment_substrate, experiment_product)
+
             return (
                 selected_substitutions,
                 # --------------
@@ -936,10 +947,6 @@ def display_selected_matching_sequences_protein_visualization_exp(selected_rows,
                 # query protein related
                 # --------------
                 query_experiment_viewer,
-                experiment_id,
-                experiment_svg_src,
-                experiment_substrate,
-                experiment_product,
             )
 
     raise PreventUpdate
