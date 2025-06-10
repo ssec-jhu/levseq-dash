@@ -37,14 +37,20 @@ lab_smiles = "Used smiles"
 # -----------------------------
 # Experiment Page Strings
 # -----------------------------
-# experiment info strings
+tab_1 = "Experiment Dashboard"
+tab_2 = "Related Variants and Position Search"
+
+# ------- experiment info strings
 experiment = "Experiment Name"
 date = "Experiment Date"
 upload_date = "Uploaded On"
 technique = "Mutagenesis Method"
 plates_count = "Plates Count"
 smiles_file = "SMILES in experiment file"
-# car headers
+sub_smiles = "Substrate SMILES: "
+prod_smiles = "Product SMILES: "
+
+# ------- card headers
 sequence = "Amino Acid Sequence"
 viewer_header = "Protein Structure"
 well_heatmap = "Plate Map"
@@ -52,8 +58,6 @@ top_variants = "Top Variants"
 retention_function = "Retention of Function Curve"
 reaction = "Reaction"
 
-tab_1 = "Experiment Dashboard"
-tab_2 = "Related Variants and Position Search"
 view_all = "View all residues"
 select_plate = "Select Plate ID"
 select_smiles = "Select Compound(SMILES)"
@@ -69,9 +73,10 @@ exp_seq_align_residue = "Residue for Lookup"
 exp_seq_align_residue_help = (
     "Specify one or more residue indices from the experiment for lookup in the matching sequences."
 )
-exp_seq_align_query_info_1 = "Selected ExperimentID"
-exp_seq_align_query_info_2 = "Query ExperimentID"
-
+exp_seq_align_query_info_1 = "Selected Experiment ID: "
+exp_seq_align_query_info_2 = "Query Experiment ID: "
+exp_seq_align_related_experiments = "Related Experiments"
+exp_seq_align_substitutions = "Selected Substitutions: "
 # -----------------------------
 # Sequence Alignment Strings: General
 # -----------------------------
@@ -130,7 +135,6 @@ header_aa_sequence = "Parent Amino Acid Sequence"
 error_app_mode = "Incorrect app mode in config file. Use 'disk' or 'db'"
 error_wrong_mode = "This function should only be used in the 'disk' app-mode. Change the settings in the config file.'"
 
-
 # -----------------------------
 # -----------------------------
 #   DO NOT CHANGE PAST HERE
@@ -154,7 +158,6 @@ cc_hot_and_cold_indices_per_smiles = "hot_and_cold_residue_indices_per_smiles"
 cc_exp_residue_per_smiles = "all_exp_residue_indices_per_smiles"
 cc_seq_alignment_mismatches = "seq_align_mismatch_indices"
 cc_hot_cold_type = "variant_type"
-
 
 # -----------------------------
 # These strings follow the column headers in the csv file.
