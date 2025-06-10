@@ -109,10 +109,9 @@ def create_layout_reaction(id_image, id_substrate_smiles, id_product_smiles):
                         style={"maxWidth": "100%"},
                     ),
                 ],
-                # align="center"  # align vertically
             ),
             # a row under it with the substrate and product smiles at width=6 exactly
-            # this will not allow it to cstack vertically
+            # this will not allow it to stack vertically
             dbc.Row(
                 [
                     dbc.Col(
@@ -140,11 +139,6 @@ def create_layout_reaction(id_image, id_substrate_smiles, id_product_smiles):
                     ),
                 ],
                 className="p-2",
-                # start will make sure the text for the smiles are top aligned,
-                # and it will let the rest flow
-                # note this will apply to both columns
-                # align="start",
-                style=vis.border_row,
             ),
         ]
     )
@@ -214,7 +208,6 @@ def get_seq_align_layout():
                                                 className="p-1 mt-3",  # fits to the card border
                                             ),
                                         ],
-                                        # className="d-flex flex-column",  # Flexbox for vertical stacking
                                         style={
                                             "box-shadow": "1px 2px 7px 0px grey",
                                             "border-radius": "5px",
@@ -249,7 +242,6 @@ def get_seq_align_layout():
                                                 className="p-1 mb-3",  # fits to the card border
                                             ),
                                         ],
-                                        # className="d-flex flex-column",  # Flexbox for vertical stacking
                                         style={
                                             "box-shadow": "1px 2px 7px 0px grey",
                                             "border-radius": "5px",

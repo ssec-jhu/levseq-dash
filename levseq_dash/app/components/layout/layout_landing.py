@@ -160,7 +160,6 @@ def get_landing_page():
                                         # style={"height": "100%", "overflowX": "auto"}  # Allow content to expand
                                     ),
                                 ],
-                                # className="d-flex flex-column",  # Flexbox for vertical stacking
                                 style={
                                     "box-shadow": "1px 2px 7px 0px grey",
                                     "border-radius": "5px",
