@@ -4,6 +4,7 @@ from dash import html
 from levseq_dash.app import global_strings as gs
 from levseq_dash.app import global_strings_html as gsh
 from levseq_dash.app.components import vis, widgets
+from levseq_dash.app.components.widgets import generate_label_with_info
 
 
 def get_seq_align_form():
@@ -88,6 +89,67 @@ def get_seq_align_form():
     )
 
 
+def create_layout_reaction(id_image, id_substrate_smiles, id_product_smiles):
+    """
+    Produces a specific layout for the reaction image if substrate -> product
+    with the substrate and the product smiles strings under the image
+    This combo is used in multiple places, so I am putting it in one function
+    """
+    return html.Div(
+        [
+            dbc.Row(
+                [
+                    html.Img(
+                        id=id_image,
+                        # this will center the image
+                        className="mx-auto d-block",
+                        # Note: this will make the reaction image width fill the container width
+                        # and not overflow so a smaller screen will show the image smaller and a big monitor
+                        # will show the image bigger
+                        style={"maxWidth": "100%"},
+                    ),
+                ],
+                # align="center"  # align vertically
+            ),
+            # a row under it with the substrate and product smiles at width=6 exactly
+            # this will not allow it to cstack vertically
+            dbc.Row(
+                [
+                    dbc.Col(
+                        [
+                            generate_label_with_info(
+                                gs.sub_smiles,
+                                id_substrate_smiles,
+                            )
+                        ],
+                        # I am setting this to be 6, so they don't
+                        # collapse if the whole card flows into the
+                        # other row
+                        width=6,
+                        style=vis.border_column,
+                    ),
+                    dbc.Col(
+                        [
+                            generate_label_with_info(
+                                gs.prod_smiles,
+                                id_product_smiles,
+                            )
+                        ],
+                        width=6,
+                        style=vis.border_column,
+                    ),
+                ],
+                className="p-2",
+                # start will make sure the text for the smiles are top aligned,
+                # and it will let the rest flow
+                # note this will apply to both columns
+                # align="start",
+                style=vis.border_row,
+            ),
+        ]
+    )
+
+
 def get_seq_align_layout():
     return html.Div(
         [
@@ -152,7 +214,7 @@ def get_seq_align_layout():
                                                 className="p-1 mt-3",  # fits to the card border
                                             ),
                                         ],
-                                        className="d-flex flex-column",  # Flexbox for vertical stacking
+                                        # className="d-flex flex-column",  # Flexbox for vertical stacking
                                         style={
                                             "box-shadow": "1px 2px 7px 0px grey",
                                             "border-radius": "5px",
@@ -160,7 +222,7 @@ def get_seq_align_layout():
                                         },
                                     ),
                                 ],
-                                width=8,
+                                width=7,
                                 style=vis.border_column,
                                 # remove all gutters from the col to snap to the card
                                 # className="g-3"
@@ -174,7 +236,7 @@ def get_seq_align_layout():
                                                 [
                                                     dbc.Row(
                                                         [
-                                                            widgets.create_layout_reaction(
+                                                            create_layout_reaction(
                                                                 "id-selected-seq-matched-reaction-image",
                                                                 "id-selected-seq-matched-substrate",
                                                                 "id-selected-seq-matched-product",
@@ -187,7 +249,7 @@ def get_seq_align_layout():
                                                 className="p-1 mb-3",  # fits to the card border
                                             ),
                                         ],
-                                        className="d-flex flex-column",  # Flexbox for vertical stacking
+                                        # className="d-flex flex-column",  # Flexbox for vertical stacking
                                         style={
                                             "box-shadow": "1px 2px 7px 0px grey",
                                             "border-radius": "5px",

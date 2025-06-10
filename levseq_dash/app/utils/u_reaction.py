@@ -82,8 +82,16 @@ def create_reaction_image(substrate_smiles: str, product_smiles: str):
     # img = Draw.ReactionToImage(rxn)
     # return img
 
+    # I am adding an adaptive height and width calculation here based on how internally rdkit
+    # is calculating its height and width. I am simply reversing its calculation.
+    # rdkit calculation is : width = subImgSize[0] * (rxn.GetNumReactantTemplates() + rxn.GetNumProductTemplates() + 1)
+    # ideally a final width of 1000 seems to be working well with the current layout.
+    # This number may need to change in the future
+    ideal_final_width = 1000
+    w = int(ideal_final_width / (rxn.GetNumReactantTemplates() + rxn.GetNumProductTemplates() + 1))
+
     # this option produces a svg image
-    svg_img = Draw.ReactionToImage(rxn, subImgSize=(200, 200), useSVG=True)
+    svg_img = Draw.ReactionToImage(rxn, subImgSize=(w, 200), useSVG=True)
     svg_src = convert_svg_img_to_src(svg_img)
 
     return svg_src
