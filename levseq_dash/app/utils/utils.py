@@ -223,3 +223,14 @@ def validate_smiles_string(smiles_string):
         pass
     # TODO: look into reducing this into either valid or invalid
     return valid, invalid
+
+
+def select_first_row_of_data(data):
+    if data:
+        # set the default selected row to be the first row that is rendered on the front end
+        # the table sets the sorting and all on the front end side after it is rendered, so we
+        # can not select the first row of the data output that gets sent from the previous
+        # callback.
+        return [data[0]]
+
+    return None

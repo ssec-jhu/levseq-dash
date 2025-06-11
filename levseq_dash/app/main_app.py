@@ -388,6 +388,19 @@ def on_load_matching_sequences(n_clicks, query_sequence, threshold, n_top_hot_co
 
 
 @app.callback(
+    Output("id-table-matched-sequences", "selectedRows"),
+    Input("id-table-matched-sequences", "virtualRowData"),
+    prevent_initial_call=True,
+)
+def display_default_selected_matching_sequences(data):
+    # set the default selected row to be the first row that is rendered on the front end
+    # the table sets the sorting and all on the front end side after it is rendered, so we
+    # can not select the first row of the data output that gets sent from the previous
+    # callback.
+    return utils.select_first_row_of_data(data)
+
+
+@app.callback(
     Output("id-viewer-selected-seq-matched-protein", "children"),
     Output("id-selected-seq-matched-reaction-image", "src"),
     Output("id-selected-seq-matched-substrate", "children"),
@@ -395,7 +408,7 @@ def on_load_matching_sequences(n_clicks, query_sequence, threshold, n_top_hot_co
     Input("id-table-matched-sequences", "selectedRows"),
     prevent_initial_call=True,
 )
-def display_selected_matching_sequences_protein_visualization(selected_rows):
+def display_selected_matching_sequences(selected_rows):
     if selected_rows and len(selected_rows) > 0:
         # extract the info from the table
         substitutions = f"{selected_rows[0][gs.cc_seq_alignment_mismatches]}"
@@ -463,7 +476,7 @@ def export_data_as_csv_jiq(n_clicks, option):
 
 
 # -------------------------------
-#   Experiment Dashboard related
+#   Experiment Dashboard - Main Tab related
 # -------------------------------
 @app.callback(
     Output("url", "pathname"),
@@ -776,6 +789,9 @@ def on_view_all_residue(view, slider_value, selected_smiles, rowData):
     return sel, foc, enable_components, enable_components
 
 
+# ----------------------------------------
+#   Experiment related - Variants Tab related
+# ----------------------------------------
 @app.callback(
     Output("id-table-exp-related-variants", "rowData"),
     # Output("id-exp-related-variants-protein-viewer", "children"),
@@ -801,7 +817,7 @@ def on_view_all_residue(view, slider_value, selected_smiles, rowData):
     prevent_initial_call=True,
     running=[(Output("id-button-run-seq-matching-exp", "disabled"), True, False)],  # requires the latest Dash 2.16
 )
-def on_exp_related_variants(
+def on_load_exp_related_variants(
     n_clicks,
     query_sequence,
     threshold,
@@ -854,6 +870,19 @@ def on_exp_related_variants(
 
 
 @app.callback(
+    Output("id-table-exp-related-variants", "selectedRows"),
+    Input("id-table-exp-related-variants", "virtualRowData"),
+    prevent_initial_call=True,
+)
+def display_default_selected_exp_related_variants(data):
+    # set the default selected row to be the first row that is rendered on the front end
+    # the table sets the sorting and all on the front end side after it is rendered, so we
+    # can not select the first row of the data output that gets sent from the previous
+    # callback.
+    return utils.select_first_row_of_data(data)
+
+
+@app.callback(
     Output("id-exp-related-variants-selected-subs", "children"),
     # --------------
     # selected protein related
@@ -871,7 +900,7 @@ def on_exp_related_variants(
     State("id-experiment-selected", "data"),
     prevent_initial_call=True,
 )
-def display_selected_matching_sequences_protein_visualization_exp(selected_rows, experiment_id):
+def display_selected_exp_related_variants(selected_rows, experiment_id):
     if selected_rows:
         # selected experiment from the table
         selected_experiment_id = selected_rows[0][gs.cc_experiment_id]
