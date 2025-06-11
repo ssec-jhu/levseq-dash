@@ -135,7 +135,7 @@ def get_molstar_rendered_components_related_variants(substitution_residue_list):
     # make the representations
     # main chain
     rep_by_seq_id = Representation(type="cartoon", color="sequence-id")
-    rep_by_seq_id.set_type_params({"alpha": 0.5})
+    rep_by_seq_id.set_type_params({"alpha": 0.3})
 
     rep_uniform_red = Representation(type="cartoon", color="uniform", size="uniform")
     rep_uniform_red.set_color_params({"value": 0xC41E3A})
