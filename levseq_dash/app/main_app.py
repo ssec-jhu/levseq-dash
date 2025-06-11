@@ -340,6 +340,7 @@ def on_submit_experiment(
     State("id-input-query-sequence-threshold", "value"),
     State("id-input-num-hot-cold", "value"),
     prevent_initial_call=True,
+    running=[(Output("id-button-run-seq-matching", "disabled"), True, False)],  # requires the latest Dash 2.16
 )
 def on_load_matching_sequences(n_clicks, query_sequence, threshold, n_top_hot_cold):
     if n_clicks != 0 and ctx.triggered_id == "id-button-run-seq-matching":
