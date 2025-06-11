@@ -57,7 +57,7 @@ app.layout = dbc.Container(
         dcc.Store(id="id-exp-upload-csv"),
         dcc.Store(id="id-exp-upload-structure"),
         dcc.Store(id="id-experiment-selected"),
-        dcc.Store(id="id-store-heatmap-data"),
+        dcc.Store(id="id-cleared-run-seq-matching", data=False),
         dcc.Location(id="url", refresh=False),
     ],
     fluid=True,
@@ -335,15 +335,19 @@ def on_submit_experiment(
     Output("id-table-matched-sequences-exp-hot-cold-data", "rowData"),
     Output("id-div-matched-sequences-info", "children"),
     Output("id-div-seq-alignment-results", "style"),
-    Input("id-button-run-seq-matching", "n_clicks"),
+    Output("id-cleared-run-seq-matching", "data"),
+    State("id-button-run-seq-matching", "n_clicks"),  # keep the button so "loading" works
+    Input("id-cleared-run-seq-matching", "data"),
     State("id-input-query-sequence", "value"),
     State("id-input-query-sequence-threshold", "value"),
     State("id-input-num-hot-cold", "value"),
     prevent_initial_call=True,
     running=[(Output("id-button-run-seq-matching", "disabled"), True, False)],  # requires the latest Dash 2.16
 )
-def on_load_matching_sequences(n_clicks, query_sequence, threshold, n_top_hot_cold):
-    if n_clicks != 0 and ctx.triggered_id == "id-button-run-seq-matching":
+def on_load_matching_sequences(n_clicks, results_are_cleared, query_sequence, threshold, n_top_hot_cold):
+    if ctx.triggered_id != "id-cleared-run-seq-matching" or not results_are_cleared:
+        raise PreventUpdate
+    else:
         # get all the lab sequences
         all_lab_sequences = data_mgr.get_lab_sequences()
 
@@ -383,9 +387,35 @@ def on_load_matching_sequences(n_clicks, query_sequence, threshold, n_top_hot_co
             )
 
         info = f"# Matched Sequences: {n_matches}"
-        return seq_match_row_data, hot_cold_row_data.to_dict("records"), info, vis.display_block
+        return (
+            seq_match_row_data,  # the results in records format for aggrid
+            hot_cold_row_data.to_dict("records"),
+            info,
+            vis.display_block,  # set the visibility on
+            False,  # make sure cleared is set to False
+        )
 
-    raise PreventUpdate
+
+@app.callback(
+    Output("id-div-seq-alignment-results", "style", allow_duplicate=True),
+    Output("id-cleared-run-seq-matching", "data", allow_duplicate=True),
+    Input("id-button-run-seq-matching", "n_clicks"),
+    State("id-cleared-run-seq-matching", "data"),
+    prevent_initial_call=True,
+)
+def on_button_run_seq_matching(n_clicks, results_are_cleared):
+    """
+    Upon id-button-run-seq-matching button click the previous
+    results and alerts (if any) are cleared and flag is set to recalculate
+    """
+    if ctx.triggered_id == "id-button-run-seq-matching" and n_clicks > 0 and not results_are_cleared:
+        return (  # clear everything
+            # [],  # clear alert if any
+            vis.display_none,  # seq_alignment page results
+            True,  # set clear to true
+        )
+    else:
+        raise PreventUpdate
 
 
 @app.callback(
