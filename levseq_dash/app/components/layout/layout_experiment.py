@@ -647,9 +647,15 @@ def get_tab_experiment_related_variants():
                 },
             ),
             # putting all this in a Div because it needs to appear after results are in
-            html.Div(
-                id="id-div-exp-related-variants-section",
-                children=[get_card_experiment_related_variants_result()],
+            dcc.Loading(
+                overlay_style={"visibility": "visible", "filter": "blur(2px)"},
+                type="circle",
+                color="var(--bs-secondary)",
+                children=html.Div(
+                    id="id-div-exp-related-variants-section",
+                    style=vis.display_none,
+                    children=[get_card_experiment_related_variants_result()],
+                ),
             ),
         ],
         className="mt-4",

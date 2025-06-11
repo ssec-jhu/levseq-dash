@@ -57,7 +57,9 @@ app.layout = dbc.Container(
         dcc.Store(id="id-exp-upload-csv"),
         dcc.Store(id="id-exp-upload-structure"),
         dcc.Store(id="id-experiment-selected"),
+        # stores for clearing results
         dcc.Store(id="id-cleared-run-seq-matching", data=False),
+        dcc.Store(id="id-cleared-run-exp-related-variants", data=False),
         dcc.Location(id="url", refresh=False),
     ],
     fluid=True,
@@ -834,10 +836,13 @@ def on_view_all_residue(view, slider_value, selected_smiles, rowData):
     Output("id-exp-related-variants-reaction-image", "src"),
     Output("id-exp-related-variants-substrate", "children"),
     Output("id-exp-related-variants-product", "children"),
+    Output("id-div-exp-related-variants-section", "style"),
+    Output("id-cleared-run-exp-related-variants", "data"),  # reset the flag
     # --------------
     # Inputs
     # --------------
-    Input("id-button-run-seq-matching-exp", "n_clicks"),
+    Input("id-cleared-run-exp-related-variants", "data"),
+    State("id-button-run-seq-matching-exp", "n_clicks"),  # keep the button so "loading" works
     # from the form
     State("id-input-exp-related-variants-query-sequence", "children"),
     State("id-input-exp-related-variants-threshold", "value"),
@@ -849,6 +854,7 @@ def on_view_all_residue(view, slider_value, selected_smiles, rowData):
     running=[(Output("id-button-run-seq-matching-exp", "disabled"), True, False)],  # requires the latest Dash 2.16
 )
 def on_load_exp_related_variants(
+    results_are_cleared,
     n_clicks,
     query_sequence,
     threshold,
@@ -856,7 +862,9 @@ def on_load_exp_related_variants(
     experiment_id,
     # experiment_top_variants_row_data,
 ):
-    if n_clicks != 0 and ctx.triggered_id == "id-button-run-seq-matching-exp":
+    if ctx.triggered_id != "id-cleared-run-exp-related-variants" or not results_are_cleared:
+        raise PreventUpdate
+    else:
         # get all the lab sequences
         all_lab_sequences = data_mgr.get_lab_sequences()
 
@@ -895,9 +903,37 @@ def on_load_exp_related_variants(
         experiment_product = experiment.product
         experiment_svg_src = u_reaction.create_reaction_image(experiment_substrate, experiment_product)
 
-        return exp_results_row_data, experiment_id, experiment_svg_src, experiment_substrate, experiment_product
+        return (
+            exp_results_row_data,
+            experiment_id,
+            experiment_svg_src,
+            experiment_substrate,
+            experiment_product,
+            vis.display_block,  # set the visibility on
+            False,  # make sure cleared is set to False
+        )
 
-    raise PreventUpdate
+
+@app.callback(
+    Output("id-div-exp-related-variants-section", "style", allow_duplicate=True),
+    Output("id-cleared-run-exp-related-variants", "data", allow_duplicate=True),
+    Input("id-button-run-seq-matching-exp", "n_clicks"),
+    State("id-cleared-run-exp-related-variants", "data"),
+    prevent_initial_call=True,
+)
+def on_button_run_exp_related_variants(n_clicks, results_are_cleared):
+    """
+    Upon id-button-run-seq-matching-exp button click the previous
+    results and alerts (if any) are cleared and flag is set to recalculate
+    """
+    if ctx.triggered_id == "id-button-run-seq-matching-exp" and n_clicks > 0 and not results_are_cleared:
+        return (  # clear everything
+            # [],  # clear alert if any
+            vis.display_none,  # seq_alignment page results
+            True,  # set clear to true
+        )
+    else:
+        raise PreventUpdate
 
 
 @app.callback(
