@@ -32,6 +32,7 @@ def get_experiment_name(record):
         {
             "field": "experiment_name",
             "headerName": gs.header_experiment_name,
+            "tooltipField": "experiment_name",
         }
     ]
     if record:
@@ -46,18 +47,22 @@ def get_experiment_meta(record_1, record_2, record_3, record_4, record_5):
             "field": "experiment_date",
             "headerName": "Date",
             "filter": "agDateColumnFilter",
+            "tooltipField": "experiment_date",
         },
         {
             "field": "upload_time_stamp",
             "headerName": "Uploaded",
             "filter": "agDateColumnFilter",
+            "tooltipField": "upload_time_stamp",
         },
         {
             "field": "assay",
+            "tooltipField": "assay",
         },
         {
             "field": gs.cc_mutagenesis,
             "headerName": gs.header_mutagenesis,
+            "tooltipField": gs.cc_mutagenesis,
         },
         {
             "field": "plates_count",
@@ -85,10 +90,12 @@ def get_experiment_meta_smiles(record_1, record_2):
         {
             "field": gs.cc_substrate,
             # "headerName": gs.header_substrate,
+            "tooltipField": gs.cc_substrate,
         },
         {
             "field": gs.cc_product,
             # "headerName": gs.header_product,
+            "tooltipField": gs.cc_product,
         },
     ]
 
@@ -105,8 +112,7 @@ def get_smiles(record):
         {
             "field": gs.c_smiles,
             "headerName": gs.header_smiles,
-            # flex allows the resizing to be dynamic
-            # "flex": 2,
+            "tooltipField": gs.c_smiles,
         }
     ]
     if record:
@@ -167,7 +173,6 @@ def get_substitutions(record):
             # mouse hover over the truncated cell will show the contents of the cell
             "tooltipField": gs.c_substitutions,
             "headerName": gs.header_substitutions,
-            # "flex": 2,
         },
     ]
     if record:
@@ -218,6 +223,7 @@ def get_alignment_stats():
         {
             "field": gs.cc_seq_alignment_mismatches,
             "headerName": "Mismatched Residue",
+            "tooltipField": gs.cc_seq_alignment_mismatches,
             "width": 300,
         },
     ]
@@ -232,11 +238,11 @@ def get_alignment_string():
             "cellStyle": {
                 "whiteSpace": "pre-wrap",
                 "fontFamily": "monospace",
-                "fontSize": 12,
-                "lineHeight": "1.2",
-                "padding": "10px",
+                "fontSize": 10,
+                "lineHeight": "1.1",
+                "padding": "5px",
             },
-            "width": 1500,
+            "width": 7000,
         },
     ]
 
@@ -265,9 +271,9 @@ def get_all_experiments_column_defs():
 
     column_def = (
         get_checkbox()
-        + get_experiment_id({"flex": 3})
-        + get_experiment_name({"flex": 3})
-        + get_experiment_meta_smiles({"flex": 4}, {"flex": 4})
+        + get_experiment_id({"width": 120})
+        + get_experiment_name({"flex": 4})
+        + get_experiment_meta_smiles({"flex": 6}, {"flex": 5})
         + get_experiment_meta(
             {"flex": 3},
             {"flex": 3},
@@ -290,7 +296,7 @@ def get_matched_sequences_column_defs():
         # + get_smiles({"width": 150, "pinned": "left"})
         get_experiment_id({"width": 120})
         + get_smiles({"width": 200})
-        + get_experiment_name({"width": 130})
+        + get_experiment_name({"width": 250})
         + get_alignment_scores()
         + get_experiment_meta_smiles({"width": 200}, {"width": 200})
         + get_experiment_meta(
@@ -361,7 +367,7 @@ def get_an_experiments_matched_sequences_column_defs():
         # It doesn't make sense to sort by experiment ID but keeping commented for PI if of interest
         # get_experiment_id({"width": 120, "pinned": "left", "initialSort": "desc"})
         get_experiment_id({"width": 120, "pinned": "left"})
-        + get_experiment_name({"width": 130})
+        + get_experiment_name({"width": 250})
         + get_alignment_scores()
     )
     column_def += (

@@ -31,16 +31,19 @@ def get_table_experiment_top_variants():
             # Set BOTH items below to True for header to wrap text
             "wrapHeaderText": True,
             "autoHeaderHeight": True,
+            "filterParams": {
+                "buttons": ["reset", "apply"],
+                "closeOnApply": True,
+            },
             # change the cell padding and font to make it more compact
             # 'cellStyle': {
             #     'fontSize': '12px',
             #     'padding': '5px',
             #     'verticalAlign': 'middle',
             # }
-            "filterParams": {
-                "buttons": ["reset", "apply"],
-                "closeOnApply": True,
-            },
+            # we  NEED to add this line or the cells won't adjust per columns
+            # row height to fit wrapped text
+            "autoHeight": True,
         },
         style={"height": "755px", "width": "100%"},
         dashGridOptions={
@@ -48,9 +51,18 @@ def get_table_experiment_top_variants():
             "rowSelection": "single",
             # https://ag-grid.com/javascript-data-grid/selection-overview/#cell-text-selection
             "enableCellTextSelection": True,
-            "rowHeight": 30,
+            "rowHeight": 30,  # creating a more compact look for the table
             "headerHeight": 50,
             "pagination": True,
+            # https://dash.plotly.com/dash-ag-grid/tooltips
+            # If tooltipInteraction is set to True in the Grid Options, the tooltips will not
+            # disappear while being hovered, and you will be able to click and select the text within the tooltip.
+            "tooltipInteraction": True,
+            # By default, when you hover on an item, it will take 2 seconds for the tooltip to be displayed
+            # and then 10 seconds for the tooltip to hide. If you need to change these delays,
+            # the tooltipShowDelay and tooltipHideDelay configs should be used, which are set in milliseconds.
+            "tooltipShowDelay": 1000,
+            "tooltipHideDelay": 2000,
         },
         rowClassRules={
             # "bg-secondary": "params.data.well == 'A2'",
@@ -78,20 +90,21 @@ def get_table_experiment_related_variants():
             # Set BOTH items below to True for header to wrap text
             "wrapHeaderText": True,
             "autoHeaderHeight": True,
-            # "flex": 1,  # TODO: remove this after you put fixed width
             "filterParams": {
                 "buttons": ["reset", "apply"],
                 "closeOnApply": True,
             },
-            "cellStyle": {
-                "whiteSpace": "normal",
-                "wordBreak": "break-word",
-                # "fontSize": "12px",
-                # 'padding': '5px',
-                # 'verticalAlign': 'middle',
-            },
-            "autoHeight": True,  # Adjusts row height to fit wrapped text
-            "tooltipComponent": "agTooltipComponent",
+            # "cellStyle": {
+            #     "whiteSpace": "normal",
+            #     "wordBreak": "break-word",
+            #     # "fontSize": "12px",
+            #     # 'padding': '5px',
+            #     # 'verticalAlign': 'middle',
+            # },
+            # we  NEED to add this line or the cells won't adjust per columns
+            # row height to fit wrapped text
+            "autoHeight": True,
+            # "tooltipComponent": "agTooltipComponent", #what does this do?
         },
         style={"height": vis.related_variants_table_height, "width": "100%"},
         dashGridOptions={
@@ -107,8 +120,16 @@ def get_table_experiment_related_variants():
             # # to hide what is not visible, so it takes longer for the page to load
             # "paginationAutoPageSize": True,
             "pagination": True,
+            # https://dash.plotly.com/dash-ag-grid/tooltips
+            # If tooltipInteraction is set to True in the Grid Options, the tooltips will not
+            # disappear while being hovered, and you will be able to click and select the text within the tooltip.
+            "tooltipInteraction": True,
+            # By default, when you hover on an item, it will take 2 seconds for the tooltip to be displayed
+            # and then 10 seconds for the tooltip to hide. If you need to change these delays,
+            # the tooltipShowDelay and tooltipHideDelay configs should be used, which are set in milliseconds.
+            "tooltipShowDelay": 1000,
+            "tooltipHideDelay": 2000,
         },
-        # className="ag-theme-alpine",
     )
 
 
@@ -131,21 +152,31 @@ def get_table_all_experiments():
             # Set BOTH items below to True for header to wrap text
             "wrapHeaderText": True,
             "autoHeaderHeight": True,
-            # "flex": 1,  # TODO: remove this after you put fixed width
             "filterParams": {
                 "buttons": ["reset", "apply"],
                 "closeOnApply": True,
             },
+            # we  NEED to add this line or the cells won't adjust per columns
+            "autoHeight": True,
         },
-        # style={"height": "600px", "width": "100%"},
+        style={"height": "600px", "width": "100%"},
         dashGridOptions={
             # Enable multiple selection
             "rowSelection": "multiple",
-            "suppressRowClickSelection": True,
-            "animateRows": True,
+            # "suppressRowClickSelection": True,
+            # "animateRows": True,
             # https://ag-grid.com/javascript-data-grid/selection-overview/#cell-text-selection
             "enableCellTextSelection": True,
             "pagination": True,
+            # https://dash.plotly.com/dash-ag-grid/tooltips
+            # If tooltipInteraction is set to True in the Grid Options, the tooltips will not
+            # disappear while being hovered, and you will be able to click and select the text within the tooltip.
+            "tooltipInteraction": True,
+            # By default, when you hover on an item, it will take 2 seconds for the tooltip to be displayed
+            # and then 10 seconds for the tooltip to hide. If you need to change these delays,
+            # the tooltipShowDelay and tooltipHideDelay configs should be used, which are set in milliseconds.
+            "tooltipShowDelay": 1000,
+            "tooltipHideDelay": 2000,
         },
     )
 
@@ -169,20 +200,18 @@ def get_table_matched_sequences():
             # Set BOTH items below to True for header to wrap text
             "wrapHeaderText": True,
             "autoHeaderHeight": True,
-            # "flex": 1,  # TODO: remove this after you put fixed width
             "filterParams": {
                 "buttons": ["reset", "apply"],
                 "closeOnApply": True,
             },
-            "cellStyle": {
-                "whiteSpace": "normal",
-                "wordBreak": "break-word",
-                # "fontSize": "12px",
-                # 'padding': '5px',
-                # 'verticalAlign': 'middle',
-            },
-            "autoHeight": True,  # Adjusts row height to fit wrapped text
-            "tooltipComponent": "agTooltipComponent",
+            # "cellStyle": {
+            #     "whiteSpace": "normal",
+            #     "wordBreak": "break-word",
+            #     # "fontSize": "12px",
+            #     # 'padding': '5px',
+            #     # 'verticalAlign': 'middle',
+            # },
+            # "autoHeight": True,  # Adjusts row height to fit wrapped text
         },
         style={"height": vis.seq_match_table_height, "width": "100%"},
         dashGridOptions={
@@ -197,8 +226,16 @@ def get_table_matched_sequences():
             # # if we load too many rows that are not visible, the graphics is not smart enough
             # # to hide what is not visible, so it takes longer for the page to load
             # "paginationAutoPageSize": True,
+            # https://dash.plotly.com/dash-ag-grid/tooltips
+            # If tooltipInteraction is set to True in the Grid Options, the tooltips will not
+            # disappear while being hovered, and you will be able to click and select the text within the tooltip.
+            "tooltipInteraction": True,
+            # By default, when you hover on an item, it will take 2 seconds for the tooltip to be displayed
+            # and then 10 seconds for the tooltip to hide. If you need to change these delays,
+            # the tooltipShowDelay and tooltipHideDelay configs should be used, which are set in milliseconds.
+            "tooltipShowDelay": 1000,
+            "tooltipHideDelay": 2000,
         },
-        # className="ag-theme-alpine",
     )
 
 
@@ -218,7 +255,6 @@ def get_table_matched_sequences_exp_hot_cold_data():
             # Set BOTH items below to True for header to wrap text
             "wrapHeaderText": True,
             "autoHeaderHeight": True,
-            # "flex": 1,  # TODO: remove this after you put fixed width
             "filterParams": {
                 "buttons": ["reset", "apply"],
                 "closeOnApply": True,
@@ -229,7 +265,7 @@ def get_table_matched_sequences_exp_hot_cold_data():
             # Enable multiple selection
             # "rowSelection": "multiple",
             # "suppressRowClickSelection": True,
-            "animateRows": True,
+            # "animateRows": True,
             # https://ag-grid.com/javascript-data-grid/selection-overview/#cell-text-selection
             "enableCellTextSelection": True,
             "rowHeight": 30,
@@ -238,6 +274,15 @@ def get_table_matched_sequences_exp_hot_cold_data():
             # # if we load too many rows that are not visible, the graphics is not smart enough
             # # to hide what is not visible, so it takes longer for the page to load
             # "paginationAutoPageSize": True,
+            # https://dash.plotly.com/dash-ag-grid/tooltips
+            # If tooltipInteraction is set to True in the Grid Options, the tooltips will not
+            # disappear while being hovered, and you will be able to click and select the text within the tooltip.
+            "tooltipInteraction": True,
+            # By default, when you hover on an item, it will take 2 seconds for the tooltip to be displayed
+            # and then 10 seconds for the tooltip to hide. If you need to change these delays,
+            # the tooltipShowDelay and tooltipHideDelay configs should be used, which are set in milliseconds.
+            "tooltipShowDelay": 1000,
+            "tooltipHideDelay": 2000,
         },
     )
 
