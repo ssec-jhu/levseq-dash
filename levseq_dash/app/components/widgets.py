@@ -104,7 +104,6 @@ def get_table_experiment_related_variants():
             # we  NEED to add this line or the cells won't adjust per columns
             # row height to fit wrapped text
             "autoHeight": True,
-            # "tooltipComponent": "agTooltipComponent", #what does this do?
         },
         style={"height": vis.related_variants_table_height, "width": "100%"},
         dashGridOptions={
