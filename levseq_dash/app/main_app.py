@@ -20,6 +20,7 @@ from levseq_dash.app.components.layout import (
     layout_matching_sequences,
     layout_upload,
 )
+from levseq_dash.app.components.widgets import get_alert
 from levseq_dash.app.config import settings
 from levseq_dash.app.data_manager.experiment import run_sanity_checks_on_experiment_file
 from levseq_dash.app.data_manager.manager import DataManager
@@ -164,11 +165,12 @@ def on_upload_experiment_file(dash_upload_string_contents, filename, last_modifi
     if not dash_upload_string_contents:
         return "No file uploaded.", no_update
     else:
-        base64_encoded_string = utils.decode_dash_upload_data_to_base64_encoded_string(dash_upload_string_contents)
-
-        # convert the bytes string into a data frame
-        df = utils.decode_csv_file_base64_string_to_dataframe(base64_encoded_string)
         try:
+            base64_encoded_string = utils.decode_dash_upload_data_to_base64_encoded_string(dash_upload_string_contents)
+
+            # convert the bytes string into a data frame
+            df = utils.decode_csv_file_base64_string_to_dataframe(base64_encoded_string)
+
             # sanity check will raise exceptions if any check is not passed
             checks_passed = run_sanity_checks_on_experiment_file(df)
             if checks_passed:
@@ -208,7 +210,13 @@ def on_upload_experiment_file(dash_upload_string_contents, filename, last_modifi
                 html.Div("Error found in file: ", style={"fontWeight": "bold", "color": "red"}),
                 html.Div(str(e), style={"color": "red"}),
             ]
-            return info, no_update
+            alert = dbc.Alert(
+                children=info,
+                is_open=True,
+                dismissable=True,
+                class_name="user-alert-error",
+            )
+            return alert, no_update
 
 
 @app.callback(
@@ -222,16 +230,20 @@ def on_upload_structure_file(dash_upload_string_contents, filename, last_modifie
     if not dash_upload_string_contents:
         return "No file uploaded.", no_update
     else:
-        base64_encoded_string = utils.decode_dash_upload_data_to_base64_encoded_string(dash_upload_string_contents)
-        info = [
-            html.Div(
-                [
-                    html.Span("Uploaded Structure: ", style={"fontWeight": "bold"}),
-                    html.Span(filename, style={"color": "var(--cal-tech-color-2)"}),
-                ]
-            ),
-        ]
-        return info, base64_encoded_string
+        try:
+            base64_encoded_string = utils.decode_dash_upload_data_to_base64_encoded_string(dash_upload_string_contents)
+            info = [
+                html.Div(
+                    [
+                        html.Span("Uploaded Structure: ", style={"fontWeight": "bold"}),
+                        html.Span(filename, style={"color": "var(--cal-tech-color-2)"}),
+                    ]
+                ),
+            ]
+            return info, base64_encoded_string
+        except Exception as e:
+            alert = get_alert(f"Error: {e}")
+            return alert, no_update
 
 
 @app.callback(
@@ -278,7 +290,6 @@ def enable_submit_experiment(experiment_success, structure_success, valid_substr
 
 @app.callback(
     Output("id-alert-upload", "children"),
-    Output("id-alert-upload", "is_open"),
     Input("id-button-submit", "n_clicks"),
     State("id-input-experiment-name", "value"),
     State("id-input-experiment-date", "date"),
@@ -302,7 +313,6 @@ def on_submit_experiment(
     experiment_content_base64_encoded_string,
 ):
     if n_clicks > 0 and ctx.triggered_id == "id-button-submit":
-        # TODO: verify the smiles numbers somewhere or in another callback
         try:
             experiment_id = data_mgr.add_experiment_from_ui(
                 user_id="some_user_name",
@@ -318,12 +328,16 @@ def on_submit_experiment(
 
             # you can verify the information here
             # exp = data_mgr.get_experiment(index)
-            # TODO: return a success alert here
+
             success = f"Experiment {experiment_id} has been added successfully!"
-            return success, True
+            alert = get_alert(success, error=False)
+
         except Exception as e:
-            error_message = str(e)
-            return error_message, True
+            # alert = get_alert(exceptions.alert_message_from_exception(e))
+            alert = get_alert(f"Error: {e}")
+
+        # return the alert message which is either success or error
+        return alert
 
     else:
         raise PreventUpdate
@@ -337,7 +351,8 @@ def on_submit_experiment(
     Output("id-table-matched-sequences-exp-hot-cold-data", "rowData"),
     Output("id-div-matched-sequences-info", "children"),
     Output("id-div-seq-alignment-results", "style"),
-    Output("id-cleared-run-seq-matching", "data"),
+    Output("id-cleared-run-seq-matching", "data"),  # flag
+    Output("id-alert-seq-alignment", "children"),  # alert
     State("id-button-run-seq-matching", "n_clicks"),  # keep the button so "loading" works
     Input("id-cleared-run-seq-matching", "data"),
     State("id-input-query-sequence", "value"),
@@ -350,55 +365,67 @@ def on_load_matching_sequences(n_clicks, results_are_cleared, query_sequence, th
     if ctx.triggered_id != "id-cleared-run-seq-matching" or not results_are_cleared:
         raise PreventUpdate
     else:
-        # get all the lab sequences
-        all_lab_sequences = data_mgr.get_lab_sequences()
+        try:
+            # get all the lab sequences
+            all_lab_sequences = data_mgr.get_lab_sequences()
 
-        # get the alignment and the base score
-        lab_seq_match_data, base_score = bio_python_pairwise_aligner.get_alignments(
-            query_sequence=query_sequence, threshold=float(threshold), targets=all_lab_sequences
-        )
-
-        n_matches = len(lab_seq_match_data)
-
-        seq_match_row_data = list(dict())
-
-        # for each matching experiment pull out it's metadata
-        hot_cold_row_data = pd.DataFrame()
-        for i in range(len(lab_seq_match_data)):
-            # add experiment id
-            exp_id = lab_seq_match_data[i][gs.cc_experiment_id]
-
-            # get the experiment core data for the db
-            exp = data_mgr.get_experiment(exp_id)
-
-            # extract the top N (hot) and bottom N (cold) fitness values of this experiment
-            hot_cold_spots_merged_df, hot_cold_residue_per_smiles = exp.exp_hot_cold_spots(int(n_top_hot_cold))
-
-            # add the experiment id to this data
-            hot_cold_spots_merged_df[gs.cc_experiment_id] = exp_id
-
-            # concatenate this info with the rest of the hot and cold spot data
-            hot_cold_row_data = pd.concat([hot_cold_row_data, hot_cold_spots_merged_df], ignore_index=True)
-
-            # expand the data of each row per smiles - request by PI
-            seq_match_row_data = u_seq_alignment.gather_seq_alignment_data_per_smiles(
-                df_hot_cold_residue_per_smiles=hot_cold_residue_per_smiles,
-                seq_match_data=lab_seq_match_data[i],
-                exp_meta_data=exp.exp_meta_data_to_dict(),
-                seq_match_row_data=seq_match_row_data,
+            # get the alignment and the base score
+            lab_seq_match_data, base_score = bio_python_pairwise_aligner.get_alignments(
+                query_sequence=query_sequence, threshold=float(threshold), targets=all_lab_sequences
             )
 
-        info = f"# Matched Sequences: {n_matches}"
-        return (
-            seq_match_row_data,  # the results in records format for aggrid
-            hot_cold_row_data.to_dict("records"),
-            info,
-            vis.display_block,  # set the visibility on
-            False,  # make sure cleared is set to False
-        )
+            n_matches = len(lab_seq_match_data)
+
+            # alert the user that no matches were found
+            if n_matches == 0:
+                raise Exception("Sequence alignment returned 0 matches.")
+
+            seq_match_row_data = list(dict())
+
+            # for each matching experiment pull out it's metadata
+            hot_cold_row_data = pd.DataFrame()
+            for i in range(len(lab_seq_match_data)):
+                # add experiment id
+                exp_id = lab_seq_match_data[i][gs.cc_experiment_id]
+
+                # get the experiment core data for the db
+                exp = data_mgr.get_experiment(exp_id)
+
+                # extract the top N (hot) and bottom N (cold) fitness values of this experiment
+                hot_cold_spots_merged_df, hot_cold_residue_per_smiles = exp.exp_hot_cold_spots(int(n_top_hot_cold))
+
+                # add the experiment id to this data
+                hot_cold_spots_merged_df[gs.cc_experiment_id] = exp_id
+
+                # concatenate this info with the rest of the hot and cold spot data
+                hot_cold_row_data = pd.concat([hot_cold_row_data, hot_cold_spots_merged_df], ignore_index=True)
+
+                # expand the data of each row per smiles - request by PI
+                seq_match_row_data = u_seq_alignment.gather_seq_alignment_data_per_smiles(
+                    df_hot_cold_residue_per_smiles=hot_cold_residue_per_smiles,
+                    seq_match_data=lab_seq_match_data[i],
+                    exp_meta_data=exp.exp_meta_data_to_dict(),
+                    seq_match_row_data=seq_match_row_data,
+                )
+
+            info = f"# Matched Sequences: {n_matches}"
+            return (
+                seq_match_row_data,  # the results in records format for ag-grid
+                hot_cold_row_data.to_dict("records"),
+                info,
+                vis.display_block,  # set the visibility on
+                False,  # make sure cleared is set to False
+                no_update,  # alert
+            )
+        except Exception as e:
+            # put the exception message in an alert box
+            # alert_message = exceptions.alert_message_from_exception(e)
+            alert = get_alert(f"Error: {e}")
+            return no_update, no_update, no_update, no_update, False, alert
 
 
 @app.callback(
+    Output("id-alert-seq-alignment", "children", allow_duplicate=True),
     Output("id-div-seq-alignment-results", "style", allow_duplicate=True),
     Output("id-cleared-run-seq-matching", "data", allow_duplicate=True),
     Input("id-button-run-seq-matching", "n_clicks"),
@@ -411,9 +438,10 @@ def on_button_run_seq_matching(n_clicks, results_are_cleared):
     results and alerts (if any) are cleared and flag is set to recalculate
     """
     if ctx.triggered_id == "id-button-run-seq-matching" and n_clicks > 0 and not results_are_cleared:
-        return (  # clear everything
-            # [],  # clear alert if any
-            vis.display_none,  # seq_alignment page results
+        return (
+            # clear everything
+            [],  # clear alert if any
+            vis.display_none,  # clear seq_alignment page results
             True,  # set clear to true
         )
     else:
@@ -827,8 +855,6 @@ def on_view_all_residue(view, slider_value, selected_smiles, rowData):
 # ----------------------------------------
 @app.callback(
     Output("id-table-exp-related-variants", "rowData"),
-    # Output("id-exp-related-variants-protein-viewer", "children"),
-    # Output("id-div-exp-related-variants-section", "style"),
     # --------------
     # Query protein related
     # --------------
@@ -836,8 +862,9 @@ def on_view_all_residue(view, slider_value, selected_smiles, rowData):
     Output("id-exp-related-variants-reaction-image", "src"),
     Output("id-exp-related-variants-substrate", "children"),
     Output("id-exp-related-variants-product", "children"),
-    Output("id-div-exp-related-variants-section", "style"),
+    Output("id-div-exp-related-variants", "style"),
     Output("id-cleared-run-exp-related-variants", "data"),  # reset the flag
+    Output("id-alert-exp-related-variants", "children"),  # alert
     # --------------
     # Inputs
     # --------------
@@ -862,60 +889,79 @@ def on_load_exp_related_variants(
     experiment_id,
     # experiment_top_variants_row_data,
 ):
-    if ctx.triggered_id != "id-cleared-run-exp-related-variants" or not results_are_cleared:
-        raise PreventUpdate
-    else:
-        # get all the lab sequences
-        all_lab_sequences = data_mgr.get_lab_sequences()
+    if ctx.triggered_id == "id-cleared-run-exp-related-variants" and results_are_cleared:
+        try:
+            # get the lookup list
+            if lookup_residues is None:
+                raise Exception("Please provide at least one residue index for lookup.")
 
-        # get the alignment and the base score
-        lab_seq_match_data, base_score = bio_python_pairwise_aligner.get_alignments(
-            query_sequence=query_sequence, threshold=float(threshold), targets=all_lab_sequences
-        )
+            lookup_residues_list = lookup_residues.split(",")
 
-        # get the lookup list
-        lookup_residues_list = lookup_residues.split(",")
+            # get all the lab sequences
+            all_lab_sequences = data_mgr.get_lab_sequences()
 
-        # gather final list of records data for table here
-        exp_results_row_data = list(dict())
-        for i in range(len(lab_seq_match_data)):
-            # get experiment id of the matched sequence
-            mathc_exp_id = lab_seq_match_data[i][gs.cc_experiment_id]
-
-            # skip if it's the same experiment we're on
-            if mathc_exp_id == experiment_id:
-                continue
-
-            # does my experiments variant show up in the other experiment
-            # get the experiment core data from the db
-            match_exp = data_mgr.get_experiment(mathc_exp_id)
-            exp_results_row_data = u_seq_alignment.search_and_gather_variant_info_for_matching_experiment(
-                experiment=match_exp,
-                experiment_id=mathc_exp_id,
-                lookup_residues_list=lookup_residues_list,
-                seq_match_data=lab_seq_match_data[i],
-                exp_results_row_data=exp_results_row_data,
+            # get the alignment and the base score
+            lab_seq_match_data, base_score = bio_python_pairwise_aligner.get_alignments(
+                query_sequence=query_sequence, threshold=float(threshold), targets=all_lab_sequences
             )
 
-        # gather the info for making this experiments reaction image for use in comparison
-        experiment = data_mgr.get_experiment(experiment_id)
-        experiment_substrate = experiment.substrate
-        experiment_product = experiment.product
-        experiment_svg_src = u_reaction.create_reaction_image(experiment_substrate, experiment_product)
+            if len(lab_seq_match_data) == 0:
+                raise Exception("Sequence alignment returned 0 matches.")
 
-        return (
-            exp_results_row_data,
-            experiment_id,
-            experiment_svg_src,
-            experiment_substrate,
-            experiment_product,
-            vis.display_block,  # set the visibility on
-            False,  # make sure cleared is set to False
-        )
+            # gather final list of records data for table here
+            exp_results_row_data = list(dict())
+            for i in range(len(lab_seq_match_data)):
+                # get experiment id of the matched sequence
+                mathc_exp_id = lab_seq_match_data[i][gs.cc_experiment_id]
+
+                # skip if it's the same experiment we're on
+                if mathc_exp_id == experiment_id:
+                    continue
+
+                # does my experiments variant show up in the other experiment
+                # get the experiment core data from the db
+                match_exp = data_mgr.get_experiment(mathc_exp_id)
+                exp_results_row_data = u_seq_alignment.search_and_gather_variant_info_for_matching_experiment(
+                    experiment=match_exp,
+                    experiment_id=mathc_exp_id,
+                    lookup_residues_list=lookup_residues_list,
+                    seq_match_data=lab_seq_match_data[i],
+                    exp_results_row_data=exp_results_row_data,
+                )
+
+            if len(exp_results_row_data) == 0:
+                raise Exception(
+                    f"Among the {len(lab_seq_match_data)} sequence matches, "
+                    f"residues: {lookup_residues_list} were not found."
+                )
+
+            # gather the info for making this experiments reaction image for use in comparison
+            experiment = data_mgr.get_experiment(experiment_id)
+            experiment_substrate = experiment.substrate
+            experiment_product = experiment.product
+            experiment_svg_src = u_reaction.create_reaction_image(experiment_substrate, experiment_product)
+
+            return (
+                exp_results_row_data,
+                experiment_id,
+                experiment_svg_src,
+                experiment_substrate,
+                experiment_product,
+                vis.display_block,  # set the visibility on
+                False,  # make sure cleared is set to False
+                no_update,  # no alert
+            )
+
+        except Exception as e:
+            alert = get_alert(f"Error: {e}")
+            return no_update, no_update, no_update, no_update, no_update, no_update, False, alert
+    else:
+        raise PreventUpdate
 
 
 @app.callback(
-    Output("id-div-exp-related-variants-section", "style", allow_duplicate=True),
+    Output("id-alert-exp-related-variants", "children", allow_duplicate=True),
+    Output("id-div-exp-related-variants", "style", allow_duplicate=True),
     Output("id-cleared-run-exp-related-variants", "data", allow_duplicate=True),
     Input("id-button-run-seq-matching-exp", "n_clicks"),
     State("id-cleared-run-exp-related-variants", "data"),
@@ -928,7 +974,7 @@ def on_button_run_exp_related_variants(n_clicks, results_are_cleared):
     """
     if ctx.triggered_id == "id-button-run-seq-matching-exp" and n_clicks > 0 and not results_are_cleared:
         return (  # clear everything
-            # [],  # clear alert if any
+            [],  # clear alert if any
             vis.display_none,  # seq_alignment page results
             True,  # set clear to true
         )

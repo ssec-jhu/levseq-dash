@@ -354,3 +354,17 @@ def generate_label_with_info(label, id_info):
             "whiteSpace": "normal",  # text wrap onto the next line.
         },
     )
+
+
+def get_alert(alert_message, error=True):
+    if error:
+        class_name = "p-3 user-alert-error"
+    else:
+        class_name = "p-3 user-alert"
+
+    return dbc.Alert(
+        children=alert_message,
+        is_open=True,
+        dismissable=True,
+        className=class_name,
+    )

@@ -646,13 +646,17 @@ def get_tab_experiment_related_variants():
                     # "border": "1px solid magenta",
                 },
             ),
+            html.Div(
+                id="id-alert-exp-related-variants",
+                className="d-flex justify-content-center",
+            ),
             # putting all this in a Div because it needs to appear after results are in
             dcc.Loading(
                 overlay_style={"visibility": "visible", "filter": "blur(2px)"},
                 type="circle",
                 color="var(--bs-secondary)",
                 children=html.Div(
-                    id="id-div-exp-related-variants-section",
+                    id="id-div-exp-related-variants",
                     style=vis.display_none,
                     children=[get_card_experiment_related_variants_result()],
                 ),

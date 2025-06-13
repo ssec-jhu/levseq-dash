@@ -25,7 +25,7 @@ def get_form():
                         ),
                     ),
                 ],
-                className="mb-3",
+                className="mb-1",
             ),
             dbc.Row(
                 [
@@ -42,7 +42,7 @@ def get_form():
                         ],
                     ),
                 ],
-                className="mb-3",
+                className="mb-1",
             ),
             dbc.Row(
                 [
@@ -59,7 +59,7 @@ def get_form():
                         ),
                     ),
                 ],
-                className="mb-3",
+                className="mb-1",
             ),
             dbc.Row(
                 [
@@ -76,22 +76,13 @@ def get_form():
                         ),
                     ),
                 ],
-                className="mb-3",
+                className="mb-1",
             ),
             dbc.Row(
                 [
                     widgets.get_label_fixed_for_form(gs.assay),
                     dbc.Col(
                         [
-                            # html.Div(
-                            #     [
-                            #         dcc.Dropdown(
-                            #             ["Apple", "Carrots", "Chips", "Cookies"],
-                            #             "Cookies"
-                            #         ),
-                            #     ],
-                            #     className="dbc"
-                            # ),
                             html.Div(
                                 [
                                     dcc.Dropdown(
@@ -101,15 +92,10 @@ def get_form():
                                 ],
                                 className="dbc",
                             ),
-                            # dcc.Dropdown(
-                            #     id="id-list-assay",
-                            #     placeholder="Select Assay Technique.",
-                            #     className="dbc"
-                            # ),
                         ]
                     ),
                 ],
-                className="mb-3",
+                className="mb-1",
             ),
             dbc.Row(
                 [
@@ -132,8 +118,6 @@ def get_form():
                         # className="d-flex justify-content-center",
                     ),
                 ],
-                className="mb-3",
-                # style={"border": "1px solid #dee2e6"},
             ),
             html.Br(),
             dbc.Row(
@@ -157,11 +141,21 @@ def get_form():
                         width=6,
                     ),
                 ],
-                className="mb-3",
+                className="mb-1",
             ),
             dbc.Row(
                 [
-                    dbc.Col(html.Div(id="id-button-upload-data-info"), width=6),
+                    dbc.Col(
+                        html.Div(
+                            id="id-button-upload-data-info",
+                            style={
+                                "word-break": "break-all",  # allows breaking between any characters
+                                "whiteSpace": "normal",  # enables wrapping
+                                "width": "100%",  # ensure it fits container
+                            },
+                        ),
+                        width=6,
+                    ),
                     dbc.Col(html.Div(id="id-button-upload-structure-info"), width=6),
                 ]
             ),
@@ -184,23 +178,9 @@ def get_form():
                 ],
                 className="mb-3",
             ),
-            dbc.Row(
-                [
-                    dbc.Col(
-                        [
-                            dbc.Alert(
-                                id="id-alert-upload",
-                                is_open=False,
-                                dismissable=True,
-                                # className="fs-5 fw-bold",
-                                class_name="user-alert",
-                            )
-                        ],
-                        width=8,
-                    )
-                ],
-                justify="center",
-                className="text-center mt-5",
+            html.Div(
+                id="id-alert-upload",
+                className="d-flex justify-content-center",
             ),
         ]
     )
