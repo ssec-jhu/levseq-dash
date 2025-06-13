@@ -135,9 +135,11 @@ dagcomponentfuncs.seqAlignmentVis = function(params) {
         {
           style: {
             fontFamily: 'monospace',
-            whiteSpace: 'pre-wrap',
-            fontSize: '11px',
-            lineHeight: '1.1',
+            // keeping here for reference but th style
+            // is set in column definitions
+            // whiteSpace: 'pre-wrap',
+            // fontSize: '10px',
+            // lineHeight: '1.1',
           },
         },
         lines.map((line, lineIndex) => [
