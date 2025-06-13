@@ -55,27 +55,44 @@ level_4_titles = {"color": "var(--cal-tech-color-2)"}
 # --------------------
 #   Icons
 # --------------------
+
+
+# Font Awesome 6 Solid: https://icon-sets.iconify.design/fa6-solid/
 MEDIUM = 20
 SMALL = 16
+icon_home = "fa6-solid:house"
+icon_menu = "fa6-solid:bars"
+icon_upload = "fa6-solid:upload"
+icon_download = "fa6-solid:download"
+icon_info = "fa6-solid:circle-info"
+icon_sequence = "fa6-solid:dna"
+icon_search = "fa6-solid:magnifying-glass"
+icon_about = "fa6-solid:circle-question"
+icon_del_exp = "fa6-solid:trash-can"
+icon_go_to_next = "fa6-solid:circle-chevron-right"
+icon_database = "fa6-solid:database"
 
-icon_del_exp = html.I(
-    DashIconify(icon="fa-solid:trash", height=SMALL, width=SMALL),
-    # style={"margin-right": "8px"} # add the margin if there is text next to it
-    # style={"color": "var(--bs-danger)"}
-)
-icon_go_to_next = html.I(
-    DashIconify(icon="fa-solid:chart-line", height=SMALL, width=SMALL), style={"margin-left": "8px"}
-)
-icon_home = DashIconify(icon="fa-solid:home", width=MEDIUM)
-icon_upload = DashIconify(icon="fa-solid:upload", width=MEDIUM)
-icon_menu = DashIconify(icon="fa-solid:bars", width=MEDIUM)
-icon_info = html.I(
-    DashIconify(icon="fa6-solid:circle-info", height=SMALL, width=SMALL),
-    # style={"color": "var(--bs-info)"}
-)
-icon_sequence = DashIconify(icon="fa-solid:dna", width=MEDIUM)
-icon_download = DashIconify(icon="mdi:tray-download", height=MEDIUM, width=MEDIUM)
-icon_about = DashIconify(icon="fa6-solid:clipboard-question", height=28, width=28)
+
+# # Material Symbols Light https://icon-sets.iconify.design/material-symbols-light/
+# MEDIUM = 30
+# SMALL = 16
+# icon_home = "material-symbols:home-rounded"  # can add -rounded
+# icon_menu = "material-symbols:menu-rounded"  # -rounded
+# icon_upload = "material-symbols:upload-rounded"  # -rounded or -sharp
+# icon_download = "material-symbols:download-rounded"  # -rounded or -sharp
+# icon_info = "material-symbols:info-rounded"  # -rounded
+# icon_sequence = "material-symbols:genetics-rounded"  # -rounded
+# icon_search = "material-symbols:search-rounded"  # -rounded
+# icon_about = "material-symbols:help-rounded"  # -rounded
+# icon_del_exp = "material-symbols:delete-forever-rounded"
+# icon_go_to_next = "material-symbols:chevron-right-rounded"  # -rounded
+# icon_database = "material-symbols:database-outline-rounded"
+
+
+def get_icon(icon_string, size=MEDIUM):
+    return DashIconify(icon=icon_string, width=size)
+
+
 # --------------------
 #   AGGrid Cell colorings
 # --------------------

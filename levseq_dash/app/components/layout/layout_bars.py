@@ -13,7 +13,7 @@ def get_navbar():
                     [
                         dbc.Col(
                             [
-                                html.Span(vis.icon_menu, id="id-menu-icon", className="hamburger_menu"),
+                                html.Span(vis.get_icon(vis.icon_menu), id="id-menu-icon", className="hamburger_menu"),
                             ],
                             width=1,
                             style=vis.border_column,
@@ -68,7 +68,7 @@ def get_sidebar():
                 [
                     dbc.NavLink(
                         [
-                            html.Span(vis.icon_home, className="custom-nav-icon"),
+                            html.Span(vis.get_icon(vis.icon_home), className="custom-nav-icon"),
                             html.Span(gs.nav_lab, className="custom-nav-text"),
                         ],
                         active="exact",
@@ -77,7 +77,7 @@ def get_sidebar():
                     ),
                     dbc.NavLink(
                         [
-                            html.Span(vis.icon_upload, className="custom-nav-icon"),
+                            html.Span(vis.get_icon(vis.icon_upload), className="custom-nav-icon"),
                             html.Span(gs.nav_upload, className="custom-nav-text"),
                         ],
                         active="exact",
@@ -86,7 +86,7 @@ def get_sidebar():
                     ),
                     dbc.NavLink(
                         [
-                            html.Span(vis.icon_sequence, className="custom-nav-icon"),
+                            html.Span(vis.get_icon(vis.icon_sequence), className="custom-nav-icon"),
                             html.Span(gs.nav_seq, className="custom-nav-text"),
                         ],
                         active="exact",
@@ -95,7 +95,7 @@ def get_sidebar():
                     ),
                     dbc.NavLink(
                         [
-                            html.Span(vis.icon_about, className="custom-nav-icon"),
+                            html.Span(vis.get_icon(vis.icon_about), className="custom-nav-icon"),
                             html.Span(gs.nav_about, className="custom-nav-text"),
                         ],
                         active="exact",

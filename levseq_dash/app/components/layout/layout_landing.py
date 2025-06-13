@@ -128,7 +128,7 @@ def get_landing_page():
                                                             n_clicks=0,
                                                             # children=html.Span([del_exp, "Delete Experiment"]),
                                                             children=html.Span(
-                                                                [vis.icon_del_exp],
+                                                                [vis.get_icon(vis.icon_del_exp)],
                                                                 # override the button color
                                                                 # since it's of type "link"
                                                                 style={"color": "var(--bs-danger)"},
@@ -144,7 +144,15 @@ def get_landing_page():
                                                     ),
                                                     dbc.Col(
                                                         dbc.Button(
-                                                            children=html.Span([gs.go_to, vis.icon_go_to_next]),
+                                                            children=html.Span(
+                                                                [
+                                                                    html.Span(gs.go_to),
+                                                                    html.Span(
+                                                                        vis.get_icon(vis.icon_go_to_next),
+                                                                        style={"marginLeft": "8px"},
+                                                                    ),
+                                                                ]
+                                                            ),
                                                             id="id-button-goto-experiment",
                                                             n_clicks=0,
                                                             disabled=True,
