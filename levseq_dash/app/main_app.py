@@ -333,7 +333,6 @@ def on_submit_experiment(
             alert = get_alert(success, error=False)
 
         except Exception as e:
-            # alert = get_alert(exceptions.alert_message_from_exception(e))
             alert = get_alert(f"Error: {e}")
 
         # return the alert message which is either success or error
@@ -353,18 +352,16 @@ def on_submit_experiment(
     Output("id-div-seq-alignment-results", "style"),
     Output("id-cleared-run-seq-matching", "data"),  # flag
     Output("id-alert-seq-alignment", "children"),  # alert
+    Input("id-cleared-run-seq-matching", "data"),  # flag
     State("id-button-run-seq-matching", "n_clicks"),  # keep the button so "loading" works
-    Input("id-cleared-run-seq-matching", "data"),
     State("id-input-query-sequence", "value"),
     State("id-input-query-sequence-threshold", "value"),
     State("id-input-num-hot-cold", "value"),
     prevent_initial_call=True,
     running=[(Output("id-button-run-seq-matching", "disabled"), True, False)],  # requires the latest Dash 2.16
 )
-def on_load_matching_sequences(n_clicks, results_are_cleared, query_sequence, threshold, n_top_hot_cold):
-    if ctx.triggered_id != "id-cleared-run-seq-matching" or not results_are_cleared:
-        raise PreventUpdate
-    else:
+def on_load_matching_sequences(results_are_cleared, n_clicks, query_sequence, threshold, n_top_hot_cold):
+    if ctx.triggered_id == "id-cleared-run-seq-matching" and results_are_cleared:
         try:
             # get all the lab sequences
             all_lab_sequences = data_mgr.get_lab_sequences()
@@ -422,6 +419,8 @@ def on_load_matching_sequences(n_clicks, results_are_cleared, query_sequence, th
             # alert_message = exceptions.alert_message_from_exception(e)
             alert = get_alert(f"Error: {e}")
             return no_update, no_update, no_update, no_update, False, alert
+    else:
+        raise PreventUpdate
 
 
 @app.callback(

@@ -311,13 +311,14 @@ def get_seq_align_layout():
             ),
             # these results will appear/clear
             dcc.Loading(
-                overlay_style={  # "display": "block",
-                    "alignItems": "flex-start",
-                    "justifyContent": "center",  # Center horizontally
-                    "position": "absolute",  # the KEY
-                    # "paddingTop": "20px",  # Add space from top
-                    # "zIndex": 1000
-                },
+                overlay_style={"visibility": "visible", "filter": "blur(2px)"},
+                # overlay_style={  # "display": "block",
+                #     "alignItems": "flex-start",
+                #     "justifyContent": "center",  # Center horizontally
+                #     "position": "absolute",  # the KEY
+                #     # "paddingTop": "20px",  # Add space from top
+                #     # "zIndex": 1000
+                # },
                 type="circle",
                 color="var(--bs-secondary)",
                 # Use the target_components property to specify which component id and component property
