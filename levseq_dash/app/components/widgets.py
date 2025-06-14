@@ -219,7 +219,7 @@ def get_table_matched_sequences():
             "rowSelection": "single",
             # https://ag-grid.com/javascript-data-grid/selection-overview/#cell-text-selection
             "enableCellTextSelection": True,
-            "rowHeight": 30,  # TODO: is this overwritten by the alignnmnet width
+            "rowHeight": 30,
             "pagination": True,
             # # this will set the number of items per page be a function of the height
             # # if we load too many rows that are not visible, the graphics is not smart enough
