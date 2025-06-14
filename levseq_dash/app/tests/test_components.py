@@ -84,11 +84,11 @@ def test_get_sidebar():
 
 
 def test_get_landing_page():
-    assert isinstance(layout_landing.get_landing_page(), html.Div)
+    assert isinstance(layout_landing.get_layout(), html.Div)
 
 
 def test_get_experiment_page():
-    assert isinstance(layout_experiment.get_experiment_page(), html.Div)
+    assert isinstance(layout_experiment.get_layout(), html.Div)
 
 
 @pytest.mark.parametrize(
@@ -276,4 +276,4 @@ def test_get_seq_align_form():
 
 
 def test_get_seq_align_layout():
-    assert isinstance(layout_matching_sequences.get_seq_align_layout(), html.Div)
+    assert isinstance(layout_matching_sequences.get_layout(), html.Div)
