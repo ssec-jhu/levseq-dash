@@ -2,9 +2,10 @@
 # General App Strings
 # -----------------------------
 web_title = "Levseq Dashboard"
-nav_lab = "Overview Dashboard"
-nav_upload = "Upload New Experiment"
-nav_seq = "Explore Similar Sequences"
+nav_lab = "Dashboard"
+nav_upload = "Upload Your Experiment"
+nav_explore = "Explore the Database"
+nav_find_seq = "Find Similar Sequences"
 nav_about = "About LevSeq Dashboard"
 
 # -----------------------------
@@ -195,3 +196,12 @@ experiment_heatmap_properties_list = [
     # "p_value", # removed
     # "p_adj_value", # removed
 ]
+
+# -----------------------------
+# nav strings
+# -----------------------------
+nav_find_seq_path = "/similar-sequences"
+nav_explore_path = "/explore"
+nav_upload_path = "/upload"
+nav_about_path = "/about"
+nav_experiment_path = "/experiment"

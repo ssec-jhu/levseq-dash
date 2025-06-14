@@ -81,16 +81,25 @@ def get_sidebar():
                             html.Span(gs.nav_upload, className="custom-nav-text"),
                         ],
                         active="exact",
-                        href="/upload",
+                        href=gs.nav_upload_path,
                         className="custom-nav-item",
                     ),
                     dbc.NavLink(
                         [
-                            html.Span(vis.get_icon(vis.icon_sequence), className="custom-nav-icon"),
-                            html.Span(gs.nav_seq, className="custom-nav-text"),
+                            html.Span(vis.get_icon(vis.icon_search), className="custom-nav-icon"),
+                            html.Span(gs.nav_find_seq, className="custom-nav-text"),
                         ],
                         active="exact",
-                        href="/explore-sequences",
+                        href=gs.nav_find_seq_path,
+                        className="custom-nav-item",
+                    ),
+                    dbc.NavLink(
+                        [
+                            html.Span(vis.get_icon(vis.icon_database), className="custom-nav-icon"),
+                            html.Span(gs.nav_explore, className="custom-nav-text"),
+                        ],
+                        active="exact",
+                        href=gs.nav_explore_path,
                         className="custom-nav-item",
                     ),
                     dbc.NavLink(
@@ -99,7 +108,7 @@ def get_sidebar():
                             html.Span(gs.nav_about, className="custom-nav-text"),
                         ],
                         active="exact",
-                        href="/about",
+                        href=gs.nav_about_path,
                         className="custom-nav-item",
                     ),
                 ],

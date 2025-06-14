@@ -1,4 +1,3 @@
-import numpy as np
 import plotly_express as px
 
 from levseq_dash.app import global_strings as gs
