@@ -16,6 +16,7 @@ from levseq_dash.app.components.layout import (
     layout_about,
     layout_bars,
     layout_experiment,
+    layout_explore,
     layout_landing,
     layout_matching_sequences,
     layout_upload,
@@ -70,15 +71,17 @@ app.layout = dbc.Container(
 @app.callback(Output("id-page-content", "children"), Input("url", "pathname"))
 def display_page(pathname):
     if pathname == "/":
-        return layout_landing.get_landing_page()
-    elif pathname == "/experiment":
-        return layout_experiment.get_experiment_page()
-    elif pathname == "/upload":
+        return layout_landing.get_layout()
+    elif pathname == gs.nav_experiment_path:
+        return layout_experiment.get_layout()
+    elif pathname == gs.nav_upload_path:
         return layout_upload.layout
-    elif pathname == "/explore-sequences":
-        return layout_matching_sequences.get_seq_align_layout()
-    elif pathname == "/about":
+    elif pathname == gs.nav_find_seq_path:
+        return layout_matching_sequences.get_layout()
+    elif pathname == gs.nav_about_path:
         return layout_about.get_about_page()
+    elif pathname == gs.nav_explore_path:
+        return layout_explore.get_layout()
     else:
         return html.Div([html.H2("Page not found!")])
 
@@ -88,27 +91,20 @@ def display_page(pathname):
 # -------------------------------
 @app.callback(
     Output("id-table-all-experiments", "rowData"),
-    # image of all the substrate and products in the lab
-    Output("id-lab-substrate", "src"),
-    Output("id-lab-product", "src"),
     Input("id-table-all-experiments", "columnDefs"),
 )
 def load_landing_page(temp_text):
     list_of_all_lab_experiments_with_meta = data_mgr.get_lab_experiments_with_meta_data()
 
-    all_substrate, all_product = utils.extract_all_substrate_product_smiles_from_lab_data(
-        list_of_all_lab_experiments_with_meta
-    )
-
-    # it's Ok if the substrate_svg_image or product_svg_image are None to any issues in the smiles
-    # UI will just not have an image, but won't fail
-    substrate_svg_image = u_reaction.create_mols_grid(all_substrate)
-    product_svg_image = u_reaction.create_mols_grid(all_product)
-    return (
-        list_of_all_lab_experiments_with_meta,
-        substrate_svg_image,
-        product_svg_image,
-    )
+    # all_substrate, all_product = utils.extract_all_substrate_product_smiles_from_lab_data(
+    #     list_of_all_lab_experiments_with_meta
+    # )
+    #
+    # # it's Ok if the substrate_svg_image or product_svg_image are None to any issues in the smiles
+    # # UI will just not have an image, but won't fail
+    # substrate_svg_image = u_reaction.create_mols_grid(all_substrate)
+    # product_svg_image = u_reaction.create_mols_grid(all_product)
+    return list_of_all_lab_experiments_with_meta
 
 
 @app.callback(
@@ -549,7 +545,7 @@ def export_data_as_csv_jiq(n_clicks, option):
 )
 def redirect_to_experiment_page(n_clicks):
     if n_clicks != 0 and ctx.triggered_id == "id-button-goto-experiment":
-        return "/experiment", layout_experiment.get_experiment_page()
+        return gs.nav_experiment_path, layout_experiment.get_layout()
     else:
         raise PreventUpdate
 
@@ -623,7 +619,7 @@ def redirect_to_experiment_page(n_clicks):
     prevent_initial_call=True,
 )
 def load_experiment_page(pathname, experiment_id):
-    if pathname == "/experiment":
+    if pathname == gs.nav_experiment_path:
         exp = data_mgr.get_experiment(experiment_id)
 
         # viewer data
