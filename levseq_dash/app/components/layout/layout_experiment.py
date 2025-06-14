@@ -666,7 +666,7 @@ def get_tab_experiment_related_variants():
     )
 
 
-def get_experiment_page():
+def get_layout():
     """This defines the tab layout."""
     return html.Div(
         [
