@@ -693,5 +693,5 @@ def get_layout():
                 value="id-tab-exp-dash",
             )
         ],
-        className=vis.main_page_class
+        className=vis.main_page_class,
     )

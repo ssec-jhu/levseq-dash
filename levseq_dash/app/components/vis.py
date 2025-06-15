@@ -152,7 +152,7 @@ def get_icon(icon_string, size=MEDIUM):
 
 
 def data_bars_group_mean_colorscale(
-        df, value_col=gs.cc_ratio, min_col="min_group", max_col="max_group", color_scale=px.colors.diverging.RdBu
+    df, value_col=gs.cc_ratio, min_col="min_group", max_col="max_group", color_scale=px.colors.diverging.RdBu
 ):
     """
     Generate Dash AG Grid cell styles with a color gradient bar.

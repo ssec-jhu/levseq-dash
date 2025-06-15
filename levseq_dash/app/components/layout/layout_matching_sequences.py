@@ -329,5 +329,5 @@ def get_layout():
                 children=get_se_alignment_results_layout(),
             ),
         ],
-        className=vis.main_page_class
+        className=vis.main_page_class,
     )
