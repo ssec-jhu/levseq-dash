@@ -9,14 +9,14 @@
 
 /* Make the card header more compact */
 .card-header {
-    padding: 5px 10px;    /* Adjust padding */
-    font-size: 14px;      /* Smaller font size for the header */
+    padding: 5px 10px; /* Adjust padding */
+    font-size: 14px; /* Smaller font size for the header */
 }
 
 /* Make the card body more compact */
 .card-body {
-    padding: 8px 10px;    /* Adjust padding */
-    font-size: 14px;      /* Smaller font size for the body */
+    padding: 8px 10px; /* Adjust padding */
+    font-size: 14px; /* Smaller font size for the body */
 }
 
 .user-alert {
@@ -40,7 +40,7 @@
     --bs-btn-hover-color: #fff;
     --bs-btn-hover-bg: #003442;
     --bs-btn-hover-border-color: #003442;
-    --bs-btn-focus-shadow-rgb: 76,91,106;
+    --bs-btn-focus-shadow-rgb: 76, 91, 106;
     --bs-btn-active-color: #fff;
     --bs-btn-active-bg: #003442;
     --bs-btn-active-border-color: #003442;
