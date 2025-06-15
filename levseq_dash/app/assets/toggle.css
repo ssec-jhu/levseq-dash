@@ -1,19 +1,20 @@
 /*
     use with dmc switch
 */
-.custom-switch input:checked + .mantine-Switch-track{
+.custom-switch input:checked + .mantine-Switch-track {
     background-color: var(--cal-tech-color-1) !important; /* caltech color */
     border: 0 solid var(--cal-tech-color-1) !important;
     /*font-size: 12px;*/
 }
-.custom-switch .mantine-Switch-track{
+
+.custom-switch .mantine-Switch-track {
     font-size: 12px;
 }
 
 /*
     use with dbc switch
 */
-.custom-switch .form-check-input:checked input:checked{
+.custom-switch .form-check-input:checked input:checked {
     background-color: var(--cal-tech-color-1) !important; /* caltech color *!*/
     border: 0 solid var(--cal-tech-color-1) !important;
 }
