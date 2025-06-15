@@ -6,7 +6,7 @@ from levseq_dash.app.components import vis
 primary_bold = "text-primary fw-bold"
 
 
-def get_about_page():
+def get_layout():
     # you can convert this div into a dbc.Container but note that it will add a
     # lot of margins and padding around this by default. Maybe that is needed
     # if not much text here
@@ -365,5 +365,5 @@ def get_about_page():
                 className="px-5",
             ),
         ],
-        className="p-5",
+        className=vis.main_page_class,
     )

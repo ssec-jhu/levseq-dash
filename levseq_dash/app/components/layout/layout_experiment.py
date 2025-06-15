@@ -692,5 +692,6 @@ def get_layout():
                 className="custom-tab-container",
                 value="id-tab-exp-dash",
             )
-        ]
+        ],
+        className=vis.main_page_class
     )

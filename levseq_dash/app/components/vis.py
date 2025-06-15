@@ -49,6 +49,8 @@ top_card_body = "text-primary-emphasis"
 experiment_info = {"fontWeight": "bold", "marginRight": "15px"}
 
 level_4_titles = {"color": "var(--cal-tech-color-2)"}
+main_page_class = "p-4"  # this will align all titles and location the pages int he same loaction
+
 # --------------------
 #   Icons
 # --------------------
@@ -150,7 +152,7 @@ def get_icon(icon_string, size=MEDIUM):
 
 
 def data_bars_group_mean_colorscale(
-    df, value_col=gs.cc_ratio, min_col="min_group", max_col="max_group", color_scale=px.colors.diverging.RdBu
+        df, value_col=gs.cc_ratio, min_col="min_group", max_col="max_group", color_scale=px.colors.diverging.RdBu
 ):
     """
     Generate Dash AG Grid cell styles with a color gradient bar.
