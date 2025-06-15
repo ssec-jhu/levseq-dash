@@ -290,7 +290,7 @@ def get_layout():
         [
             html.Div(
                 [
-                    html.H4(gs.nav_find_seq, style=vis.level_4_titles),
+                    html.H4(gs.nav_find_seq, className="page-title"),
                     html.Hr(),
                     # add some left and right padding -> px-5
                     html.P(gsh.seq_align_blurb, className="px-5 text-primary text-wrap"),
