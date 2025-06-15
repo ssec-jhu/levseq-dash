@@ -1,6 +1,5 @@
 import pandas as pd
 import plotly_express as px
-from dash import html
 from dash_iconify import DashIconify
 
 from levseq_dash.app import global_strings as gs
@@ -56,6 +55,7 @@ level_4_titles = {"color": "var(--cal-tech-color-2)"}
 
 
 # Font Awesome 6 Solid: https://icon-sets.iconify.design/fa6-solid/
+LARGE = 50
 MEDIUM = 20
 SMALL = 16
 icon_home = "fa6-solid:house"
@@ -72,6 +72,7 @@ icon_database = "fa6-solid:database"
 
 
 # # Material Symbols Light https://icon-sets.iconify.design/material-symbols-light/
+# LARGE = 80
 # MEDIUM = 30
 # SMALL = 16
 # icon_home = "material-symbols:home-rounded"  # can add -rounded
