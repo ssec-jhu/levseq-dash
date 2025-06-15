@@ -192,6 +192,6 @@ def get_form():
 
 def get_layout():
     return html.Div(
-        [html.H4(gs.nav_upload, style=vis.level_4_titles), html.Hr(), get_form()],
+        [html.H4(gs.nav_upload, className="page-title"), html.Hr(), get_form()],
         className=vis.main_page_class,
     )

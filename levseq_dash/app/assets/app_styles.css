@@ -49,3 +49,8 @@
     --bs-btn-disabled-bg: var(--cal-tech-color-1);
     --bs-btn-disabled-border-color: var(--cal-tech-color-1);
 }
+
+.page-title {
+    color: var(--cal-tech-color-2) !important;
+    font-weight: bold;
+}

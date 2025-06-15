@@ -12,7 +12,7 @@ def get_layout():
     # if not much text here
     return html.Div(
         [
-            html.H4("Overview & Design Philosophy", style=vis.level_4_titles),
+            html.H4("Overview & Design Philosophy", className="page-title"),
             html.Hr(),
             html.Div(
                 [
@@ -57,7 +57,7 @@ def get_layout():
                 ],
                 className="px-5",
             ),
-            html.H4("Core Functionality", style=vis.level_4_titles, className="mt-4"),
+            html.H4("Core Functionality", className="page-title mt-4"),
             html.Hr(),
             html.Div(
                 [
@@ -117,7 +117,7 @@ def get_layout():
                         [
                             dbc.Col(
                                 [
-                                    html.H4("Key Features", style=vis.level_4_titles),
+                                    html.H4("Key Features", className="page-title"),
                                     html.Hr(),
                                     html.Div(
                                         [
@@ -182,7 +182,7 @@ def get_layout():
                             ),
                             dbc.Col(
                                 [
-                                    html.H4("Use Cases", style=vis.level_4_titles),
+                                    html.H4("Use Cases", className="page-title"),
                                     html.Hr(),
                                     html.Div(
                                         [
@@ -249,7 +249,7 @@ def get_layout():
                     ),
                 ],
             ),
-            html.H4("Technical Details", style=vis.level_4_titles, className="mt-4"),
+            html.H4("Technical Details", className="page-title mt-4"),
             html.Hr(),
             html.Div(
                 [
@@ -295,7 +295,7 @@ def get_layout():
                 ],
                 className="px-5",
             ),
-            html.H4("Getting Started", style=vis.level_4_titles, className="mt-4"),
+            html.H4("Getting Started", className="page-title mt-4"),
             html.Hr(),
             html.Div(
                 [
@@ -350,7 +350,7 @@ def get_layout():
                 ],
                 className="px-5",
             ),
-            html.H4("Development Team", style=vis.level_4_titles, className="mt-4"),
+            html.H4("Development Team", className="page-title mt-4"),
             html.Hr(),
             html.Div(
                 [

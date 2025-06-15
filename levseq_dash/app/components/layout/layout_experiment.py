@@ -660,6 +660,7 @@ def get_tab_experiment_related_variants():
                     style=vis.display_none,
                     children=[get_card_experiment_related_variants_result()],
                 ),
+                target_components={"id-table-exp-related-variants": "rowData"},
             ),
         ],
         className="mt-4",
