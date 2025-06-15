@@ -182,17 +182,16 @@ def get_form():
                 id="id-alert-upload",
                 className="d-flex justify-content-center",
             ),
-        ]
+        ],
+        style={
+            "width": "70%",
+            "margin": "0 auto",  # Center horizontally
+        },
     )
 
 
-layout = html.Div(
-    [get_form()],
-    style={
-        "width": "70%",  # 50% width
-        "margin": "0 auto",  # Center horizontally
-        # "text-align": "center",  # Center text inside the div
-        # "border": "1px solid black",  # for visual debugging
-        # "padding": "10px",  #spacing inside the div
-    },
-)
+def get_layout():
+    return html.Div(
+        [html.H4(gs.nav_upload, style=vis.level_4_titles), html.Hr(), get_form()],
+        className=vis.main_page_class,
+    )

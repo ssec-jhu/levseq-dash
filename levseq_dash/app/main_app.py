@@ -75,7 +75,7 @@ def display_page(pathname):
     elif pathname == gs.nav_experiment_path:
         return layout_experiment.get_layout()
     elif pathname == gs.nav_upload_path:
-        return layout_upload.layout
+        return layout_upload.get_layout()
     elif pathname == gs.nav_find_seq_path:
         return layout_matching_sequences.get_layout()
     elif pathname == gs.nav_about_path:
