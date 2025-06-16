@@ -82,7 +82,7 @@ def get_layout():
                                             ),
                                         ],
                                         justify="between",
-                                        className="mb-4"
+                                        className="mb-4",
                                     ),
                                 ],
                                 className="p-1",  # fits to the card border
