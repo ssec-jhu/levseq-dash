@@ -1,0 +1,82 @@
+.bg-image-center-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /*height: 80vh;*/
+    /*height: 50vh;*/
+    overflow: hidden;
+}
+
+.bg-image-center {
+    max-width: 75%;
+    height: auto;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.bg-image-washed {
+    position: absolute;
+    top: 5%;
+    z-index: -1; /* Behind content */
+    pointer-events: none; /* Doesn't interfere with clicks */
+    /*filter: grayscale(100%);*/
+    opacity: 0.1; /* Washed out */
+}
+
+
+.icon-style1 {
+    /* creates a background circle shape over the icon */
+    background-color: var(--cal-tech-color-1); /* your brand color */
+    border-radius: 50%;
+    padding: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /*width: 70px;*/
+    /*height: 70px;*/
+    margin-bottom: 0.75rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+
+.icon-style3 {
+    position: relative;
+    display: inline-block;
+}
+
+.icon-style3::before {
+    /* creates a transparent circle around the icon */
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90px;
+    height: 90px;
+    /*background-color: rgba(255, 108, 12, 0.1); !* soft orange *!*/
+    background-color: rgba(0, 59, 76, 0.1);
+    border-radius: 50%;
+    z-index: -1;
+}
+
+
+.label-icon-style {
+    /* will change the color orange icon color*/
+    color: var(--cal-tech-color-2);
+    /* make sure all is centered */
+    /*align-items: center;*/
+    /*justify-content: center;*/
+    /*text-align: center;*/
+}
+
+
+.card-style {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-style:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1)
+}
