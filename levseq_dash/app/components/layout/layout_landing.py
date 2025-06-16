@@ -1,195 +1,90 @@
 import dash_bootstrap_components as dbc
-from dash import html
+from dash import dcc, html
 
 from levseq_dash.app import global_strings as gs
-from levseq_dash.app.components import vis, widgets
-
+from levseq_dash.app.components import vis
 
 # -------------------------------------------------------
-def get_landing_page():
+
+
+def get_layout():
     return html.Div(  # TODO: dbc.Container doesn't pick up the fluid container from parent
         [
-            # dbc.Row(
-            #     [
-            #         dbc.Col(
-            #             [
-            #                 dbc.Card(
-            #                     [
-            #                         dbc.CardHeader("All Substrate", className=vis.top_card_head),
-            #                         dbc.CardBody(
-            #                             [
-            #                                 html.Div(
-            #                                     html.Img(
-            #                                         id="id-lab-substrate",
-            #                                         style={"maxWidth": "auto", "height": "auto"},
-            #                                     ),
-            #                                     style={
-            #                                         "display": "flex",
-            #                                         "justifyContent": "center",
-            #                                         "alignItems": "center",
-            #                                     },
-            #                                 )
-            #                             ],
-            #                             className=vis.top_card_body
-            #                         ),
-            #                     ],
-            #                     style=vis.card_shadow,
-            #                 ),
-            #             ],
-            #             style=vis.border_column
-            #         )
-            #     ],
-            #     style=vis.border_row
-            # ),
-            # all the product molecules from mols to grid
-            dbc.Accordion(
+            dbc.Container(
                 [
-                    dbc.AccordionItem(
+                    dbc.Row(
                         [
-                            html.Div(
-                                html.Img(
-                                    id="id-lab-substrate",
-                                    # TODO: does maxwidth auto make a difference
-                                    style={"maxWidth": "100%", "height": "100%"},
-                                ),
-                                style={
-                                    "display": "flex",
-                                    "justifyContent": "center",
-                                    "alignItems": "center",
-                                },
+                            html.Img(
+                                src="/assets/bg1.png",
+                                className="bg-image-center bg-image-center-container bg-image-washed",
+                            ),
+                            html.H1("Welcome to the Levseq Dashboard!", className="fw-bold text-primary text-center"),
+                            html.H6(
+                                "a visualization tool for analyzing directed "
+                                "evolution experiments in protein engineering",
+                                className="text-secondary text-center",
                             ),
                         ],
-                        title="Visualization of Substrates Across All Experiments",
-                        style=vis.card_shadow,
-                    )
-                ],
-                start_collapsed=True,
-                flush=True,
-                className="g-0 mt-4 mb-4 fw-bold custom-accordion",
-            ),
-            # all the product molecules from mols to grid
-            dbc.Accordion(
-                [
-                    dbc.AccordionItem(
+                        className="p-5 d-flex justify-content-center align-items-center",
+                    ),
+                    dbc.Row(
                         [
-                            html.Div(
-                                html.Img(
-                                    id="id-lab-product",
-                                    style={"maxWidth": "auto", "height": "auto"},
-                                ),
-                                style={
-                                    "display": "flex",
-                                    "justifyContent": "center",
-                                    "alignItems": "center",
-                                },
+                            dbc.Col(
+                                action_card(icon=vis.icon_upload, label=gs.nav_upload, href=gs.nav_upload_path),
+                                md=4,
+                                className="mb-4",
+                            ),
+                            dbc.Col(
+                                action_card(icon=vis.icon_search, label=gs.nav_find_seq, href=gs.nav_find_seq_path),
+                                md=4,
+                                className="mb-4",
+                            ),
+                            dbc.Col(
+                                action_card(icon=vis.icon_database, label=gs.nav_explore, href=gs.nav_explore_path),
+                                md=4,
+                                className="mb-4",
                             ),
                         ],
-                        title="Visualization of Products Across all Experiments ",
-                        style=vis.card_shadow,
-                    )
-                ],
-                start_collapsed=True,
-                flush=True,
-                className="g-0 mt-4 mb-4 fw-bold custom-accordion",
-            ),
-            dbc.Row(
-                [
-                    dbc.Col(
-                        [
-                            dbc.Card(
-                                [
-                                    dbc.CardHeader(gs.lab_exp, className=vis.top_card_head),
-                                    dbc.CardBody(
-                                        [
-                                            html.Div(  # TODO: dbc.container adds padding to the surrounding area
-                                                [widgets.get_table_all_experiments()],
-                                                className="dbc dbc-ag-grid",
-                                                style=vis.border_table,
-                                            ),
-                                            html.Br(),
-                                            # html.Div(
-                                            #     [
-                                            #
-                                            # dbc.Button( id="id-button-delete-experiment", n_clicks=0,
-                                            # children=html.Span([del_exp, "Delete Experiment"]), # since this button is
-                                            # a dynamic component that is added to the layout, # the display changes
-                                            # override the style={"color": "var(--bs-secondary)"} properties,
-                                            # but defining it as a class in assets seems to do the trick. #
-                                            # class_name="del-button", # size="sm", class_name="gap-2 col-2 btn-dark",
-                                            # className="me-2 btn-lg col-3", ), dbc.Button( children=html.Span(["Go to
-                                            # Experiment Dashboard", go_to_next]), id="id-button-goto-experiment",
-                                            # n_clicks=0, disabled=True, class_name="gap-2 col-2 btn-primary", ), ],
-                                            # className="text-center", ),
-                                            dbc.Row(
-                                                [
-                                                    dbc.Col(
-                                                        dbc.Button(
-                                                            id="id-button-delete-experiment",
-                                                            n_clicks=0,
-                                                            # children=html.Span([del_exp, "Delete Experiment"]),
-                                                            children=html.Span(
-                                                                [vis.get_icon(vis.icon_del_exp)],
-                                                                # override the button color
-                                                                # since it's of type "link"
-                                                                style={"color": "var(--bs-danger)"},
-                                                            ),
-                                                            # since this button is a dynamic component that is added to
-                                                            # the layout, the display changes override the style={
-                                                            # "color": "var(--bs-secondary)"} properties,
-                                                            # but defining it as a class in assets
-                                                            # seems to do the trick.
-                                                            color="link",  # Removes background color
-                                                        ),
-                                                        width="auto",
-                                                    ),
-                                                    dbc.Col(
-                                                        dbc.Button(
-                                                            children=html.Span(
-                                                                [
-                                                                    html.Span(gs.go_to),
-                                                                    html.Span(
-                                                                        vis.get_icon(vis.icon_go_to_next),
-                                                                        style={"marginLeft": "8px"},
-                                                                    ),
-                                                                ]
-                                                            ),
-                                                            id="id-button-goto-experiment",
-                                                            n_clicks=0,
-                                                            disabled=True,
-                                                        ),
-                                                        width="auto",
-                                                        className="text-end",
-                                                    ),
-                                                ],
-                                                justify="between",
-                                            ),
-                                        ],
-                                        className="p-1",  # fits to the card border
-                                        # style={"height": "100%", "overflowX": "auto"}  # Allow content to expand
-                                    ),
-                                ],
-                                style={
-                                    "box-shadow": "1px 2px 7px 0px grey",
-                                    "border-radius": "5px",
-                                    # "width": "530px", "height": "630px"
-                                },
-                            ),
-                        ],
-                        # width=6,
-                        style=vis.border_column,
+                        justify="center",
                     ),
                 ],
-                className="mb-4",  # TODO: change gutter to g-1 here? or not
+                className="py-5",
             ),
         ],
-        # className="mt-5 mb-5 bg-light"
-        # fluid=True,
-        className="g-0 p-1 bs-light-bg-subtle",
+        className=vis.main_page_class,
         style={
-            # "width": "90%",  # 50% width
-            # "margin": "0 auto",  # Center horizontally
-            # "text-align": "center",  # Center text inside the div
-            # "border": "1px solid cyan",  # for visual debugging
-            # "padding": "10px",  #spacing inside the div
+            # this is very important with the background image
+            "zIndex": 1,
         },
+    )
+
+
+def action_card(icon: str, label: str, href: str):
+    """Return a clickable action card with an icon and label."""
+    card = dbc.Card(
+        dbc.CardBody(
+            [
+                html.Div(
+                    [vis.get_icon(icon, size=vis.LARGE)],
+                    # className="icon-style1", style={"color": "white"},
+                    className="icon-style3",  # hover creates a background circle shape
+                    # className="label-icon-style", # colors everything orange
+                ),
+                html.H4(
+                    label,
+                    className="mt-3 fw-semibold text-center",
+                    # className="label-icon-style mt-2 fw-semibold text-center"
+                ),
+                html.Small("maybe a small text here", className="text-secondary"),
+            ],
+            # make sure everything is centered
+            className=" text-primary d-flex flex-column align-items-center justify-content-center py-4",
+        ),
+        # h-100 takes up 100% of the container
+        className="card-style rounded-3 h-100 p-3",
+    )
+    return dcc.Link(
+        card,
+        href=href,
+        className="text-decoration-none",  # remove the hyperlink
     )
