@@ -15,7 +15,7 @@ def get_layout():
                     dbc.Row(
                         [
                             html.Img(
-                                src="/assets/bg1.png",
+                                src="/assets/bg.png",
                                 className="bg-image-center bg-image-center-container bg-image-washed",
                             ),
                             html.H1("Welcome to the Levseq Dashboard!", className="fw-bold text-primary text-center"),
