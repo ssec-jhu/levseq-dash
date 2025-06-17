@@ -16,7 +16,6 @@ dependencies = [
     "dash-bootstrap-templates",
     "dash-iconify",
     "pandas",
-    "dash-loading-spinners",
     "gunicorn",
     "pyyaml",
     "dash_molstar",

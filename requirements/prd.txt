@@ -1,10 +1,9 @@
-dash==3.0.4
+dash==2.18.2
 dash-ag-grid==31.3.1
 dash-bootstrap-components==1.6.0
 dash-bootstrap-templates==2.1.0
 dash-iconify==0.1.2
 pandas==2.2.3
-dash-loading-spinners==1.0.3
 gunicorn==23.0.0
 pyyaml==6.0.2
 dash_molstar==1.2.1
