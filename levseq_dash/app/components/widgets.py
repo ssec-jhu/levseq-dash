@@ -356,11 +356,11 @@ def get_radio_items_download_options(radio_id):
         dbc.RadioItems(
             options=[
                 {
-                    "label": html.Span(id=id_1, children=[vis.icon_download, gs.download_original]),
+                    "label": html.Span(id=id_1, children=[vis.get_icon(vis.icon_download), gs.download_original]),
                     "value": DownloadType.ORIGINAL.value,
                 },
                 {
-                    "label": html.Span(id=id_2, children=[vis.icon_download, gs.download_filtered]),
+                    "label": html.Span(id=id_2, children=[vis.get_icon(vis.icon_download), gs.download_filtered]),
                     "value": DownloadType.FILTERED.value,
                 },
             ],
@@ -376,7 +376,17 @@ def get_radio_items_download_options(radio_id):
 def get_button_download(button_id):
     return [
         dbc.Button(
-            children=html.Span([vis.icon_download, gs.download_results]),
+            children=[
+                html.Span(
+                    [
+                        html.Span(vis.get_icon(vis.icon_download)),
+                        html.Span(
+                            [gs.download_results],
+                            style={"marginLeft": "10px"},
+                        ),
+                    ]
+                )
+            ],
             id=button_id,
             n_clicks=0,
             size="md",
