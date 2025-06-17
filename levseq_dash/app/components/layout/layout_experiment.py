@@ -48,6 +48,7 @@ def get_tab_experiment_main():
                                                 generate_label_with_info(gs.plates_count, "id-experiment-plate-count"),
                                                 generate_label_with_info(gs.smiles_file, "id-experiment-file-smiles"),
                                             ],
+                                            className="overflow-auto",  # enables scroll if needed
                                             style={
                                                 # the smiles strings are very long at times,
                                                 # we need them to break if they can to allow
@@ -59,6 +60,9 @@ def get_tab_experiment_main():
                                                 # image is too long, so keep a min width for the info,
                                                 # if it doesn't work out let the connects flow into the next row
                                                 "minWidth": "150px",
+                                                # the smiles strings are too long. Capping out the height,
+                                                # so it doesn't create a long card
+                                                "maxHeight": "280px",  # limit height of the content
                                             },
                                         )
                                     ],
