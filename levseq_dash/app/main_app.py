@@ -69,7 +69,7 @@ app.layout = dbc.Container(
 
 
 @app.callback(Output("id-page-content", "children"), Input("url", "pathname"))
-def display_page(pathname):
+def route_page(pathname):
     if pathname == "/":
         return layout_landing.get_layout()
     elif pathname == gs.nav_experiment_path:
@@ -527,8 +527,22 @@ def display_selected_matching_sequences(selected_rows):
     # so multiple cliks don't happen
     running=[(Output("id-button-download-hot-cold-results", "disabled"), True, False)],  # requires the latest Dash 2.16
 )
-def export_data_as_csv_jiq(n_clicks, option):
+def on_download_matched_sequences_exp_hot_cold_data_as_csv(n_clicks, option):
     return utils.export_data_as_csv(option, gs.filename_download_residue_info)
+
+
+@app.callback(
+    Output("id-table-matched-sequences", "exportDataAsCsv"),
+    Output("id-table-matched-sequences", "csvExportParams"),
+    Input("id-button-download-matched-sequences-results", "n_clicks"),
+    State("id-button-download-matched-sequences-results-options", "value"),
+    prevent_initial_call=True,
+    # in case the download takes time this will disable the button
+    # so multiple cliks don't happen
+    running=[(Output("id-button-download-matched-sequences-results", "disabled"), True, False)],
+)
+def on_download_matched_sequence_data_as_csv(n_clicks, option):
+    return utils.export_data_as_csv(option, gs.filename_download_matched_sequences)
 
 
 # -------------------------------
@@ -618,7 +632,7 @@ def redirect_to_experiment_page(n_clicks):
     State("id-experiment-selected", "data"),
     prevent_initial_call=True,
 )
-def load_experiment_page(pathname, experiment_id):
+def on_load_experiment_page(pathname, experiment_id):
     if pathname == gs.nav_experiment_path:
         exp = data_mgr.get_experiment(experiment_id)
 
@@ -846,7 +860,7 @@ def on_view_all_residue(view, slider_value, selected_smiles, rowData):
 
 
 # ----------------------------------------
-#   Experiment related - Variants Tab related
+#   Experiment Related Variants Tab related
 # ----------------------------------------
 @app.callback(
     Output("id-table-exp-related-variants", "rowData"),
@@ -1087,6 +1101,20 @@ def display_selected_exp_related_variants(selected_rows, experiment_id):
             )
 
     raise PreventUpdate
+
+
+@app.callback(
+    Output("id-table-exp-related-variants", "exportDataAsCsv"),
+    Output("id-table-exp-related-variants", "csvExportParams"),
+    Input("id-button-download-related-variants-results", "n_clicks"),
+    State("id-button-download-related-variants-results-options", "value"),
+    prevent_initial_call=True,
+    # in case the download takes time this will disable the button
+    # so multiple cliks don't happen
+    running=[(Output("id-button-download-related-variants-results", "disabled"), True, False)],
+)
+def on_download_exp_relate_variants_results(n_clicks, option):
+    return utils.export_data_as_csv(option, gs.filename_download_related_variants)
 
 
 @app.callback(

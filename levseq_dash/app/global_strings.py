@@ -108,12 +108,14 @@ hot_cold = "B"  # both hot and cold indicator
 # -----------------------------
 # Sequence Alignment Strings: downloading residue information related
 # -----------------------------
-filename_download_residue_info = "matched_seq_aligned_experiment_hot_cold_residues"
-download_results = " Download Results"
-download_filtered = " Filtered"
-download_original = " Unfiltered"
+filename_download_residue_info = "similar_seq_hot_cold_residues"
+filename_download_matched_sequences = "similar_seq_results"
+filename_download_related_variants = "related_variants_results"
+download_results = "Download Results"
+download_filtered = "Filtered"
+download_original = "Unfiltered"
 help_download = 'Download results in CSV format. Default is set to "Unfiltered" mode.'
-help_download_mode_unfiltered = "Results will be downloaded without table filters applied."
+help_download_mode_unfiltered = "Results will be downloaded WITHOUT table filters applied."
 help_download_mode_filtered = "Results will be downloaded WITH table filters applied."
 
 # -----------------------------

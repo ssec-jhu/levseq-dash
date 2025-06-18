@@ -572,7 +572,31 @@ def get_card_experiment_related_variants_result():
                             # table with all related variants results
                             # -----------------------------
                             dbc.Col(
-                                [widgets.get_table_experiment_related_variants()],
+                                [
+                                    # download button row
+                                    dbc.Row(
+                                        [
+                                            dbc.Col(
+                                                widgets.get_button_download(
+                                                    "id-button-download-related-variants-results"
+                                                ),
+                                                width=3,
+                                                align="center",
+                                                style=vis.border_column,
+                                            ),
+                                            dbc.Col(
+                                                widgets.get_radio_items_download_options(
+                                                    "id-button-download-related-variants-results-options"
+                                                ),
+                                                width="auto",
+                                                align="center",
+                                                style=vis.border_column,
+                                            ),
+                                        ],
+                                        className="mb-2 g-1",
+                                    ),
+                                    widgets.get_table_experiment_related_variants(),
+                                ],
                                 width=6,
                                 className="p-1 dbc dbc-ag-grid",
                                 style=vis.border_column,

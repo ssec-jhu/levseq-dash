@@ -364,6 +364,7 @@ def get_radio_items_download_options(radio_id):
                     "value": DownloadType.FILTERED.value,
                 },
             ],
+            className="d-flex align-items-center",
             value=DownloadType.ORIGINAL.value,
             id=radio_id,
             inline=True,
@@ -382,7 +383,7 @@ def get_button_download(button_id):
                         html.Span(vis.get_icon(vis.icon_download)),
                         html.Span(
                             [gs.download_results],
-                            style={"marginLeft": "10px"},
+                            style={"marginLeft": "12px"},
                         ),
                     ]
                 )

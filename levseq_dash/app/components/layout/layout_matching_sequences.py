@@ -151,6 +151,7 @@ def get_se_alignment_results_layout():
         children=[
             dbc.Row(
                 [
+                    # left column with the  table data
                     dbc.Col(
                         [
                             dbc.Card(
@@ -158,26 +159,74 @@ def get_se_alignment_results_layout():
                                     dbc.CardHeader(gs.seg_align_results, className=vis.top_card_head),
                                     dbc.CardBody(
                                         [
+                                            # dbc.Row(
+                                            #     [
+                                            #         # this info icon uses markdown in the tooltip, so we
+                                            #         # must allow html and set the flag to true
+                                            #         html.Div(
+                                            #             [
+                                            #                 widgets.get_info_icon_tooltip_bundle(
+                                            #                     info_icon_id="id-info-1",
+                                            #                     help_string=gsh.markdown_note_matched_seq,
+                                            #                     location="top",
+                                            #                     allow_html=True,
+                                            #                 ),
+                                            #                 html.P(
+                                            #                     id="id-div-matched-sequences-info",
+                                            #                     className="fw-bolder",
+                                            #                 ),
+                                            #             ],
+                                            #             style={"display": "flex", "gap": "5px"},
+                                            #         ),
+                                            #     ],
+                                            # ),
                                             dbc.Row(
                                                 [
-                                                    # this info icon uses markdown in the tooltip, so we
-                                                    # must allow html and set the flag to true
-                                                    html.Div(
+                                                    dbc.Col(
+                                                        widgets.get_button_download(
+                                                            "id-button-download-matched-sequences-results"
+                                                        ),
+                                                        width=3,
+                                                        align="center",
+                                                        style=vis.border_column,
+                                                    ),
+                                                    dbc.Col(
+                                                        widgets.get_radio_items_download_options(
+                                                            "id-button-download-matched-sequences-results-options"
+                                                        ),
+                                                        width="auto",
+                                                        align="center",
+                                                        style=vis.border_column,
+                                                    ),
+                                                    dbc.Col(
                                                         [
-                                                            widgets.get_info_icon_tooltip_bundle(
-                                                                info_icon_id="id-info-1",
-                                                                help_string=gsh.markdown_note_matched_seq,
-                                                                location="top",
-                                                                allow_html=True,
-                                                            ),
-                                                            html.P(
-                                                                id="id-div-matched-sequences-info",
-                                                                className="fw-bolder",
+                                                            html.Span(
+                                                                [
+                                                                    html.Span(
+                                                                        id="id-div-matched-sequences-info",
+                                                                        className="fw-bolder",
+                                                                    ),
+                                                                    html.Span(
+                                                                        [
+                                                                            widgets.get_info_icon_tooltip_bundle(
+                                                                                info_icon_id="id-info-1",
+                                                                                help_string=gsh.markdown_note_matched_seq,
+                                                                                location="top",
+                                                                                allow_html=True,
+                                                                            )
+                                                                        ],
+                                                                        style={"margin": "5px"},
+                                                                    ),
+                                                                ],
+                                                                # style={"display": "flex", "gap": "5px"},
                                                             ),
                                                         ],
-                                                        style={"display": "flex", "gap": "5px"},
+                                                        style=vis.border_column,
+                                                        width="auto",
+                                                        className="ms-auto d-flex align-items-end justify-content-end",
                                                     ),
                                                 ],
+                                                className="mb-2 g-1",
                                             ),
                                             dbc.Row(
                                                 [widgets.get_table_matched_sequences()],
@@ -199,6 +248,7 @@ def get_se_alignment_results_layout():
                         # remove all gutters from the col to snap to the card
                         # className="g-3"
                     ),
+                    # right column with the protein viewer and the reaction of the selected row
                     dbc.Col(
                         [
                             dbc.Card(
@@ -256,7 +306,7 @@ def get_se_alignment_results_layout():
                                                         widgets.get_radio_items_download_options(
                                                             "id-button-download-hot-cold-results-options"
                                                         ),
-                                                        width=3,
+                                                        width="auto",
                                                         align="center",
                                                         style=vis.border_column,
                                                     ),
