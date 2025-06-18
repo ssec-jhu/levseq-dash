@@ -188,6 +188,7 @@ def get_tab_experiment_main():
                                                                 location="top",
                                                             ),
                                                         ],
+                                                        # keep the spans horizontally in one row
                                                         style={"display": "flex", "gap": "5px"},
                                                     )
                                                 ],
@@ -577,21 +578,12 @@ def get_card_experiment_related_variants_result():
                                     dbc.Row(
                                         [
                                             dbc.Col(
-                                                widgets.get_button_download(
-                                                    "id-button-download-related-variants-results"
-                                                ),
-                                                width=3,
-                                                align="center",
-                                                style=vis.border_column,
-                                            ),
-                                            dbc.Col(
-                                                widgets.get_radio_items_download_options(
-                                                    "id-button-download-related-variants-results-options"
+                                                widgets.get_download_radio_combo(
+                                                    "id-button-download-related-variants-results",
+                                                    "id-button-download-related-variants-results-options",
                                                 ),
                                                 width="auto",
-                                                align="center",
-                                                style=vis.border_column,
-                                            ),
+                                            )
                                         ],
                                         className="mb-2 g-1",
                                     ),

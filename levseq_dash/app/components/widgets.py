@@ -397,6 +397,62 @@ def get_button_download(button_id):
     ]
 
 
+def get_download_radio_combo(button_id, radio_id):
+    # Note: tooltips will only bind with the first radio_id that comes in, the GEQ one that comes after will not bind
+    # the tooltips because the tooltip id is the same as the radio item id not the radio button group as a whole
+    id_1 = f"{radio_id}_1"
+    id_2 = f"{radio_id}_2"
+    return html.Span(
+        [
+            # keep this span here
+            # removing it makes the buttons big
+            html.Span(
+                dbc.Button(
+                    children=[
+                        html.Span(
+                            [
+                                html.Span(vis.get_icon(vis.icon_download)),
+                                html.Span(
+                                    [gs.download_results],
+                                    style={"marginLeft": "12px"},
+                                ),
+                            ]
+                        )
+                    ],
+                    id=button_id,
+                    n_clicks=0,
+                    size="md",
+                    # col-12 will take up the full space of the container
+                    class_name="d-grid gap-2 col-12 btn-primary align-items-center",
+                ),
+            ),
+            dbc.RadioItems(
+                options=[
+                    {
+                        "label": html.Span(id=id_1, children=[vis.get_icon(vis.icon_download), gs.download_original]),
+                        "value": DownloadType.ORIGINAL.value,
+                    },
+                    {
+                        "label": html.Span(id=id_2, children=[vis.get_icon(vis.icon_download), gs.download_filtered]),
+                        "value": DownloadType.FILTERED.value,
+                    },
+                ],
+                className="d-flex align-items-center",
+                style={"marginLeft": "5px"},
+                value=DownloadType.ORIGINAL.value,
+                id=radio_id,
+                inline=True,
+            ),
+            # the tooltips for the components
+            get_tooltip(button_id, gs.help_download, "top"),
+            get_tooltip(id_1, gs.help_download_mode_unfiltered, "top"),
+            get_tooltip(id_2, gs.help_download_mode_filtered, "top"),
+        ],
+        # keep the spans horizontally in one row
+        style={"display": "flex"},
+    )
+
+
 def generate_label_with_info(label, id_info):
     """
     Produces a bold label with a string. This is used in multiple places throughout the layout.

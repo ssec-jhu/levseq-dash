@@ -111,6 +111,7 @@ def get_form():
                                         inline=True,
                                     ),
                                 ],
+                                # keep the spans horizontally in one row
                                 style={"display": "flex", "flexDirection": "row", "alignItems": "left", "gap": "20px"},
                             )
                         ],

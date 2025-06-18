@@ -159,40 +159,12 @@ def get_se_alignment_results_layout():
                                     dbc.CardHeader(gs.seg_align_results, className=vis.top_card_head),
                                     dbc.CardBody(
                                         [
-                                            # dbc.Row(
-                                            #     [
-                                            #         # this info icon uses markdown in the tooltip, so we
-                                            #         # must allow html and set the flag to true
-                                            #         html.Div(
-                                            #             [
-                                            #                 widgets.get_info_icon_tooltip_bundle(
-                                            #                     info_icon_id="id-info-1",
-                                            #                     help_string=gsh.markdown_note_matched_seq,
-                                            #                     location="top",
-                                            #                     allow_html=True,
-                                            #                 ),
-                                            #                 html.P(
-                                            #                     id="id-div-matched-sequences-info",
-                                            #                     className="fw-bolder",
-                                            #                 ),
-                                            #             ],
-                                            #             style={"display": "flex", "gap": "5px"},
-                                            #         ),
-                                            #     ],
-                                            # ),
                                             dbc.Row(
                                                 [
                                                     dbc.Col(
-                                                        widgets.get_button_download(
-                                                            "id-button-download-matched-sequences-results"
-                                                        ),
-                                                        width=3,
-                                                        align="center",
-                                                        style=vis.border_column,
-                                                    ),
-                                                    dbc.Col(
-                                                        widgets.get_radio_items_download_options(
-                                                            "id-button-download-matched-sequences-results-options"
+                                                        widgets.get_download_radio_combo(
+                                                            "id-button-download-matched-sequences-results",
+                                                            "id-button-download-matched-sequences-results-options",
                                                         ),
                                                         width="auto",
                                                         align="center",
@@ -218,7 +190,6 @@ def get_se_alignment_results_layout():
                                                                         style={"margin": "5px"},
                                                                     ),
                                                                 ],
-                                                                # style={"display": "flex", "gap": "5px"},
                                                             ),
                                                         ],
                                                         style=vis.border_column,
@@ -295,21 +266,13 @@ def get_se_alignment_results_layout():
                                             dbc.Row(
                                                 [
                                                     dbc.Col(
-                                                        widgets.get_button_download(
-                                                            "id-button-download-hot-cold-results"
-                                                        ),
-                                                        width=2,
-                                                        align="center",
-                                                        style=vis.border_column,
-                                                    ),
-                                                    dbc.Col(
-                                                        widgets.get_radio_items_download_options(
-                                                            "id-button-download-hot-cold-results-options"
+                                                        widgets.get_download_radio_combo(
+                                                            "id-button-download-hot-cold-results",
+                                                            "id-button-download-hot-cold-results-options",
                                                         ),
                                                         width="auto",
                                                         align="center",
-                                                        style=vis.border_column,
-                                                    ),
+                                                    )
                                                 ],
                                                 className="mb-2 g-1",
                                             ),
