@@ -9,20 +9,20 @@ from dash.exceptions import CallbackException
 from levseq_dash.app import global_strings as gs
 
 
-def run_callback_display_page(pathname):
-    from levseq_dash.app.main_app import display_page
+def run_callback_route_page(pathname):
+    from levseq_dash.app.main_app import route_page
 
     # input trigger to the function
     context_value.set(AttributeDict(**{"triggered_inputs": [{"prop_id": "url.pathname"}]}))
-    return display_page(pathname=pathname)
+    return route_page(pathname=pathname)
 
 
 @pytest.mark.parametrize(
     "pathname", ["/", gs.nav_experiment_path, gs.nav_upload_path, gs.nav_find_seq_path, "any-other-random-string"]
 )
-def test_callback_display_page(pathname):
+def test_callback_route_page(pathname):
     ctx = copy_context()
-    output = ctx.run(run_callback_display_page, pathname)
+    output = ctx.run(run_callback_route_page, pathname)
     assert isinstance(output, html.Div)
 
 
