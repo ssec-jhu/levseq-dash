@@ -612,7 +612,7 @@ def redirect_to_experiment_page(n_clicks):
     # -------------------------------
     # residue highlight slider
     # --------------------------------
-    Output("id-slider-ratio", "marks"),
+    # Output("id-slider-ratio", "value"),
     Output("id-slider-ratio", "max"),
     Output("id-list-smiles-residue-highlight", "options"),
     Output("id-list-smiles-residue-highlight", "value"),
@@ -672,7 +672,8 @@ def on_load_experiment_page(pathname, experiment_id):
         max_value = np.ceil(df_filtered_with_ratio["ratio"].max())
         # generate the slider marks based on the max value
         # make sure the value is an int
-        slider_marks = utils.generate_slider_marks_dict(int(max_value))
+        # slider_marks = utils.generate_slider_marks_dict(int(max_value))
+        # slider_value = [0.5, max_value]
 
         # heatmap_df = exp.data_df[[gs.c_smiles, gs.c_plate, gs.c_well, gs.c_alignment_count,
         #                          gs.c_alignment_probability, gs.c_fitness_value]]
@@ -735,7 +736,7 @@ def on_load_experiment_page(pathname, experiment_id):
             # -------------------------------
             # residue highlight slider
             # --------------------------------
-            slider_marks,
+            # slider_value,
             max_value,
             exp.unique_smiles_in_data,  # list of smiles values
             default_smiles,  # default smiles
@@ -828,21 +829,26 @@ def on_view_all_residue(view, slider_value, selected_smiles, rowData):
     # default the values
     sel = u_protein_viewer.reset_selection()
     foc = no_update
-    enable_components = (not view) if view else no_update
     if view and rowData:
+        # let's turn it on unless we have a reason turn it off
+        slider_disabled = False
         df = pd.DataFrame(rowData)
         # filter by smiles value
         if selected_smiles:
             df_smiles = df[df[gs.c_smiles] == selected_smiles]
-        else:
-            df_smiles = df
+            # does this smiles_string have a parent combo
+            # ration is only calculated if a parent exists
+            # if one does not exist then the slider is meaningless and thus disabled.
+            if "#PARENT#" not in df_smiles[gs.c_substitutions].values:
+                df_filtered = df_smiles
+                # disable the slider when no parent is present
+                slider_disabled = True
+            else:
+                # apply the slider values
+                delta = math.fabs(slider_value[0] - slider_value[1])
+                df_filtered = df_smiles[df_smiles[gs.cc_ratio].between(slider_value[0], slider_value[1])]
 
-        # apply the slider values
-        delta = math.fabs(slider_value[0] - slider_value[1])
-        if delta != 0:
-            df_filtered = df_smiles[df_smiles[gs.cc_ratio].between(slider_value[0], slider_value[1])]
-            # extract the residue indices for the viewer
-            # residues = sorted(df_filtered[gs.c_substitutions].str.extractall(r"(\d+)")[0].unique().tolist())
+            # extract the indices for the protein viewer
             residues = (
                 df_filtered[gs.c_substitutions]
                 .apply(lambda x: utils.extract_all_indices(x))
@@ -853,10 +859,15 @@ def on_view_all_residue(view, slider_value, selected_smiles, rowData):
             )
 
             # set up the protein viewer selection and focus
-            if len(residues) != 0:
-                sel, foc = u_protein_viewer.get_selection_focus(residues, analyse=False)
 
-    return sel, foc, enable_components, enable_components
+            sel, foc = u_protein_viewer.get_selection_focus(residues, analyse=False)
+            if len(residues) == 0:
+                # if there is no residue to show, just reset the selection
+                sel = u_protein_viewer.reset_selection()
+
+        return sel, foc, slider_disabled, False
+
+    return sel, foc, True, True
 
 
 # ----------------------------------------

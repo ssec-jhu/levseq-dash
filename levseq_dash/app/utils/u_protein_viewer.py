@@ -34,7 +34,7 @@ def get_selection_focus(residues, analyse=True):
         # default select mode (true) or hover mode (false)
         # select=False,
         add=False,
-    )  # TODO: do we want to add to the list?
+    )
 
     # Focus the camera on the specified targets.
     # If analyse is set to True, non-covalent interactions within 5 angstroms will be analysed.

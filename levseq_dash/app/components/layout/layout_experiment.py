@@ -213,16 +213,18 @@ def get_tab_experiment_main():
                                                                     [
                                                                         dcc.RangeSlider(
                                                                             id="id-slider-ratio",
-                                                                            value=[0.5, 1.5],
+                                                                            value=[0.5, 2.5],
                                                                             min=0,
-                                                                            step=0.1,
+                                                                            marks=None,
                                                                             tooltip={
-                                                                                "always_visible": True,
                                                                                 "placement": "bottom",
+                                                                                "always_visible": True,
+                                                                                "style": {
+                                                                                    "color": "bg-primary",
+                                                                                },
                                                                             },
+                                                                            className="custom-slider fw-bold",
                                                                             disabled=True,
-                                                                            # className="dbc"
-                                                                            className="custom-slider",
                                                                         ),
                                                                     ],
                                                                 ),

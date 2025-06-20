@@ -303,6 +303,7 @@ def get_protein_viewer():
             # ‘outside’, ‘portrait’, ‘landscape’ and ‘reactive’ (default)
             "layoutControlsDisplay": "landscape",
             "layoutIsExpanded": False,  # if true it makes it full screen
+            "disableFog": True,
         },
     )
 

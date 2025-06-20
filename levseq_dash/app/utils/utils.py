@@ -180,13 +180,13 @@ def extract_all_substrate_product_smiles_from_lab_data(list_of_all_lab_experimen
     return all_substrate_smiles, all_product_smiles
 
 
-def generate_slider_marks_dict(max_value):
-    """
-    This method extracts generates tick marks text for the range slider based on the
-    max value provided by the experiment. The tick marks are to be set in a dictionary.
-    """
-    data_range = range(0, max_value, 1)
-    return {str(round(value, 1)): str(round(value, 1)) for value in data_range}
+# def generate_slider_marks_dict(max_value):
+#     """
+#     This method extracts generates tick marks text for the range slider based on the
+#     max value provided by the experiment. The tick marks are to be set in a dictionary.
+#     """
+#     data_range = range(0, max_value, 1)
+#     return {str(round(value, 1)): str(round(value, 1)) for value in data_range}
 
 
 def export_data_as_csv(option, file_name):
