@@ -320,9 +320,7 @@ def get_info_icon_tooltip_bundle(info_icon_id, help_string, location, allow_html
     return html.Span(
         [
             # html.Span(vis.icon_info, id=info_icon_id, weight=500, size="md"),
-            dbc.Label(
-                id=info_icon_id, children=vis.get_icon(vis.icon_info, vis.SMALL), style={"color": "var(--bs-primary)"}
-            ),
+            dbc.Label(id=info_icon_id, children=vis.get_icon(vis.icon_info, vis.SMALL), className="main-color"),
             get_tooltip(info_icon_id, help_string, location, allow_html),
         ]
     )

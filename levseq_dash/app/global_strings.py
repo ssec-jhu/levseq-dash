@@ -64,6 +64,12 @@ select_plate = "Select Plate ID"
 select_smiles = "Select Compound(SMILES)"
 select_property = "Select Property"
 
+exp_slider_help = (
+    "Enable to view all residues on the protein structure. "
+    "The slider activates for selected SMILES with a parent sequence, "
+    "allowing precise filtering of residues based on ratio values."
+)
+
 # -----------------------------
 # Sequence Alignment - Related Variants specific
 # -----------------------------

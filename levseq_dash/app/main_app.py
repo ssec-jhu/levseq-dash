@@ -818,8 +818,7 @@ def focus_select_output(selected_rows):
     Output("id-viewer", "focus", allow_duplicate=True),
     Output("id-slider-ratio", "disabled"),
     Output("id-list-smiles-residue-highlight", "disabled"),
-    Input("id-switch-residue-view", "checked"),  # DMC
-    # Input("id-switch-residue-view", "value"),  # DBC
+    Input("id-switch-residue-view", "value"),
     Input("id-slider-ratio", "value"),
     Input("id-list-smiles-residue-highlight", "value"),
     State("id-table-exp-top-variants", "rowData"),

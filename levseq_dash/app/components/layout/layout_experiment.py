@@ -1,5 +1,4 @@
 import dash_bootstrap_components as dbc
-import dash_mantine_components as dmc
 from dash import dcc, html
 
 from levseq_dash.app import global_strings as gs
@@ -172,19 +171,15 @@ def get_tab_experiment_main():
                                                 [
                                                     html.Span(
                                                         [
-                                                            dmc.Switch(
-                                                                # thumbIcon=vis.icon_home,
+                                                            dbc.Switch(
                                                                 id="id-switch-residue-view",
                                                                 label=gs.view_all,
-                                                                onLabel="ON",  # vis.icon_eye_open,
-                                                                offLabel="OFF",  # vis.icon_eye_closed,
-                                                                size="md",
                                                                 className="custom-switch",
-                                                                checked=False,
+                                                                value=False,
                                                             ),
                                                             widgets.get_info_icon_tooltip_bundle(
                                                                 info_icon_id="id-switch-residue-view-info",
-                                                                help_string="some help string",
+                                                                help_string=gs.exp_slider_help,
                                                                 location="top",
                                                             ),
                                                         ],
