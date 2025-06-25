@@ -6,6 +6,89 @@ from levseq_dash.app.components import vis, widgets
 from levseq_dash.app.components.widgets import generate_label_with_info
 
 
+def get_slider_area_layout():
+    return dbc.Card(
+        [
+            dbc.Row(
+                [
+                    dbc.Col(
+                        html.Span(
+                            [
+                                html.Div(
+                                    widgets.get_info_icon_tooltip_bundle(
+                                        info_icon_id="id-switch-residue-view-info",
+                                        help_string=gs.exp_slider_help,
+                                        location="top",
+                                    ),
+                                    style={"margin-right": "7px"},
+                                ),
+                                html.Div(
+                                    dbc.Switch(
+                                        id="id-switch-residue-view",
+                                        className="custom-switch",
+                                        label=gs.view_all,
+                                        value=False,
+                                    ),
+                                    # this switch has internal
+                                    # padding that would NOT budge
+                                    # with any style I tried to
+                                    # center it horizontally. Not the
+                                    # ideal solution but this seems
+                                    # to work!
+                                    style={
+                                        "transform": "translateY(6px)",
+                                    },
+                                ),
+                            ],
+                            className="d-flex align-items-center",
+                        ),
+                        width=3,
+                    ),
+                    dbc.Col(
+                        [gs.select_smiles],
+                        # make this test align to the right horizontally
+                        # and center it vertically
+                        className="m-0 p-0 align-items-center text-end",
+                        style=vis.border_column,
+                    ),
+                    dbc.Col(
+                        dcc.Dropdown(
+                            id="id-list-smiles-residue-highlight",
+                            disabled=True,
+                        ),
+                        style=vis.border_column,
+                    ),
+                ],
+                align="center",
+                class_name="mt-2 px-1",
+            ),
+            dbc.Row(
+                [
+                    html.Div(
+                        id="id-div-filtered-residue",
+                        children="",
+                        className="mt-3 text-body fw-bolder",
+                    ),
+                    dcc.RangeSlider(
+                        id="id-slider-ratio",
+                        value=[0.5, 2.5],
+                        min=0,
+                        marks=None,
+                        tooltip={
+                            "placement": "bottom",
+                            "always_visible": True,
+                        },
+                        className="custom-slider fw-bold mt-3 mb-3",
+                        disabled=True,
+                    ),
+                ],
+                style=vis.border_row,
+            ),
+        ],
+        # class_name="border rounded-2",
+    )
+
+
 def get_tab_experiment_main():
     # dbc.Container doesn't pick up the fluid container from parent keep as html.Div
     return html.Div(
@@ -168,73 +251,8 @@ def get_tab_experiment_main():
                                     dbc.CardBody(
                                         [
                                             dbc.Row(
-                                                [
-                                                    html.Span(
-                                                        [
-                                                            dbc.Switch(
-                                                                id="id-switch-residue-view",
-                                                                label=gs.view_all,
-                                                                className="custom-switch",
-                                                                value=False,
-                                                            ),
-                                                            widgets.get_info_icon_tooltip_bundle(
-                                                                info_icon_id="id-switch-residue-view-info",
-                                                                help_string=gs.exp_slider_help,
-                                                                location="top",
-                                                            ),
-                                                        ],
-                                                        # keep the spans horizontally in one row
-                                                        style={"display": "flex", "gap": "5px"},
-                                                    )
-                                                ],
-                                                class_name="p-2",  # add some padding around the switch
-                                            ),
-                                            dbc.Row(
-                                                [
-                                                    dbc.Card(
-                                                        dbc.Row(
-                                                            [
-                                                                dbc.Col(
-                                                                    [
-                                                                        dbc.Label(gs.select_smiles),
-                                                                        dcc.Dropdown(
-                                                                            id="id-list-smiles-residue-highlight",
-                                                                            disabled=True,
-                                                                        ),
-                                                                    ],
-                                                                    width=3,
-                                                                ),
-                                                                dbc.Col(
-                                                                    [
-                                                                        dcc.RangeSlider(
-                                                                            id="id-slider-ratio",
-                                                                            value=[0.5, 2.5],
-                                                                            min=0,
-                                                                            marks=None,
-                                                                            tooltip={
-                                                                                "placement": "bottom",
-                                                                                "always_visible": True,
-                                                                                "style": {
-                                                                                    "color": "bg-primary",
-                                                                                },
-                                                                            },
-                                                                            className="custom-slider fw-bold",
-                                                                            disabled=True,
-                                                                        ),
-                                                                    ],
-                                                                ),
-                                                            ],
-                                                            # removing the dbc.CardBody around this row also removes
-                                                            # the padding. I am manually putting the padding back.
-                                                            class_name="p-2 align-items-center",
-                                                        )
-                                                    )
-                                                ],
-                                                # if you justify the components to center then
-                                                # the text overflows to the next row
-                                                # justify="between",
-                                                class_name="mt-3 mb-3 g-0 d-flex align-items-center",
-                                                style=vis.border_row,
+                                                [get_slider_area_layout()],
+                                                class_name="p-2",
                                             ),
                                             dbc.Row(dbc.Col(widgets.get_protein_viewer())),
                                         ],

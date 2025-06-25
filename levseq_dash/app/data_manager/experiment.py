@@ -103,7 +103,9 @@ class Experiment:
         self.plates_count = len(self.plates)
 
         # sanity check already checks that such a row exists
-        self.parent_sequence = self.data_df[self.data_df[gs.c_substitutions] == "#PARENT#"][gs.c_aa_sequence].iloc[0]
+        self.parent_sequence = (
+            self.data_df[self.data_df[gs.c_substitutions] == gs.hashtag_parent][gs.c_aa_sequence].iloc
+        )[0]
 
         if self.geometry_file_path:
             self.geometry_file_format = self.geometry_file_path.suffix
@@ -292,7 +294,7 @@ def run_sanity_checks_on_experiment_file(df: pd.DataFrame):
         raise ValueError(f"Experiment file is missing required columns: {', '.join(missing_columns)}")
 
     # check for presence of '#PARENT#' in 'amino_acid_substitutions' column
-    if "#PARENT#" not in df[gs.c_substitutions].values:
+    if gs.hashtag_parent not in df[gs.c_substitutions].values:
         raise ValueError(f"Experiment file does not contain any '#PARENT#' entry in the {gs.c_substitutions} column.")
 
     # check all the smiles strings are valid in the file
