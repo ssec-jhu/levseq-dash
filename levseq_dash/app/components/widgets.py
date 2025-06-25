@@ -319,10 +319,8 @@ def get_label_fixed_for_form(string, w=2):
 def get_info_icon_tooltip_bundle(info_icon_id, help_string, location, allow_html=False):
     return html.Span(
         [
-            # html.Span(vis.icon_info, id=info_icon_id, weight=500, size="md"),
-            dbc.Label(
-                id=info_icon_id, children=vis.get_icon(vis.icon_info, vis.SMALL), style={"color": "var(--bs-primary)"}
-            ),
+            # do not use html.span or dbc.label it will mess with the layout
+            html.Div(id=info_icon_id, children=vis.get_icon(vis.icon_info, vis.SMALL), className="main-color"),
             get_tooltip(info_icon_id, help_string, location, allow_html),
         ]
     )

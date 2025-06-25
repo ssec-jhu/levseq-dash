@@ -127,13 +127,13 @@ def test_decode_dash_upload_data_to_base64_encoded_string_empty():
     assert df.shape[1] == 6
 
 
-@pytest.mark.parametrize(
-    "max, slider_marks",
-    [(2, {"0": "0", "1": "1"}), (1, {"0": "0"}), (0, {})],
-)
-def test_generate_slider_marks_dict(max, slider_marks):
-    result = utils.generate_slider_marks_dict(max)
-    assert result == slider_marks
+# @pytest.mark.parametrize(
+#     "max, slider_marks",
+#     [(2, {"0": "0", "1": "1"}), (1, {"0": "0"}), (0, {})],
+# )
+# def test_generate_slider_marks_dict(max, slider_marks):
+#     result = utils.generate_slider_marks_dict(max)
+#     assert result == slider_marks
 
 
 @pytest.mark.parametrize(

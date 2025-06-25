@@ -64,6 +64,12 @@ select_plate = "Select Plate ID"
 select_smiles = "Select Compound(SMILES)"
 select_property = "Select Property"
 
+exp_slider_help = (
+    "Enable to view all residues on the protein structure. "
+    "The slider activates for selected SMILES with a parent sequence, "
+    "allowing precise filtering of residues based on ratio values."
+)
+
 # -----------------------------
 # Sequence Alignment - Related Variants specific
 # -----------------------------
@@ -165,6 +171,7 @@ cc_hot_cold_type = "variant_type"
 # -----------------------------
 # These strings follow the column headers in the csv file.
 # -----------------------------
+hashtag_parent = "#PARENT#"
 c_smiles = "smiles_string"
 c_plate = "plate"
 c_well = "well"

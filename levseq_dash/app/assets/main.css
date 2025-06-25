@@ -7,17 +7,6 @@
 
 }
 
-/* Make the card header more compact */
-.card-header {
-    padding: 5px 10px; /* Adjust padding */
-    font-size: 14px; /* Smaller font size for the header */
-}
-
-/* Make the card body more compact */
-.card-body {
-    padding: 8px 10px; /* Adjust padding */
-    font-size: 14px; /* Smaller font size for the body */
-}
 
 .user-alert {
     background-color: var(--bs-success-bg-subtle) !important;
@@ -53,4 +42,8 @@
 .page-title {
     color: var(--cal-tech-color-2) !important;
     font-weight: bold;
+}
+
+.main-color {
+    color: var(--cal-tech-color-1) !important;
 }

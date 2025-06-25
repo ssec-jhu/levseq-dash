@@ -1,0 +1,11 @@
+/* Make the card header more compact */
+.card-header {
+    padding: 5px 10px; /* Adjust padding */
+    font-size: 14px; /* Smaller font size for the header */
+}
+
+/* Make the card body more compact */
+.card-body {
+    padding: 8px 10px; /* Adjust padding */
+    font-size: 14px; /* Smaller font size for the body */
+}

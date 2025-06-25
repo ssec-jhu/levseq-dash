@@ -612,7 +612,7 @@ def redirect_to_experiment_page(n_clicks):
     # -------------------------------
     # residue highlight slider
     # --------------------------------
-    Output("id-slider-ratio", "marks"),
+    # Output("id-slider-ratio", "value"),
     Output("id-slider-ratio", "max"),
     Output("id-list-smiles-residue-highlight", "options"),
     Output("id-list-smiles-residue-highlight", "value"),
@@ -672,7 +672,8 @@ def on_load_experiment_page(pathname, experiment_id):
         max_value = np.ceil(df_filtered_with_ratio["ratio"].max())
         # generate the slider marks based on the max value
         # make sure the value is an int
-        slider_marks = utils.generate_slider_marks_dict(int(max_value))
+        # slider_marks = utils.generate_slider_marks_dict(int(max_value))
+        # slider_value = [0.5, max_value]
 
         # heatmap_df = exp.data_df[[gs.c_smiles, gs.c_plate, gs.c_well, gs.c_alignment_count,
         #                          gs.c_alignment_probability, gs.c_fitness_value]]
@@ -735,7 +736,7 @@ def on_load_experiment_page(pathname, experiment_id):
             # -------------------------------
             # residue highlight slider
             # --------------------------------
-            slider_marks,
+            # slider_value,
             max_value,
             exp.unique_smiles_in_data,  # list of smiles values
             default_smiles,  # default smiles
@@ -798,18 +799,43 @@ def update_rank_plot(selected_plate, selected_smiles, rowData):
 @app.callback(
     Output("id-viewer", "selection"),
     Output("id-viewer", "focus"),
+    Output("id-div-filtered-residue", "children"),
+    Output("id-switch-residue-view", "value"),  # tur off the switch
     Input("id-table-exp-top-variants", "selectedRows"),
     prevent_initial_call=True,
 )
-def focus_select_output(selected_rows):
-    if selected_rows:
-        # residues = utils.gather_residues_from_selection(selected_rows)
-        residues = utils.extract_all_indices(f"{selected_rows[0][gs.c_substitutions]}")
-        if len(residues) != 0:
-            sel, foc = u_protein_viewer.get_selection_focus(residues)
-            return sel, foc
+def on_view_selected_residue_from_table(selected_rows):
+    """
+    This callback gets called when the user selects a row from the Top Variants table.
+    Make sure changes here are consistent with the callback 'on_view_all_residue'
+    """
+    # default values
+    sel = no_update  # u_protein_viewer.reset_selection()
+    foc = no_update
+    highlighted_residue_info = no_update
+    view_all_residue_switch = no_update
 
-    raise PreventUpdate
+    # highlight and focus on residues from the selected row
+    if selected_rows:
+        highlighted_residue_info = ""
+        view_all_residue_switch = False  # turn the switch off to avoid confusion
+        sel = u_protein_viewer.reset_selection()
+
+        highlighted_residue_info += f"Highlighted Residues: "
+        if selected_rows[0][gs.c_substitutions] == gs.hashtag_parent:
+            highlighted_residue_info += gs.hashtag_parent
+        else:
+            residues = utils.extract_all_indices(f"{selected_rows[0][gs.c_substitutions]}")
+
+            # set up the protein viewer selection and focus
+            if len(residues) != 0:
+                sel, foc = u_protein_viewer.get_selection_focus(residues)
+                highlighted_residue_info += f"{', '.join(residues)}"
+            else:
+                # if there is no residue to show, just reset the selection
+                highlighted_residue_info += f"None"
+
+    return sel, foc, highlighted_residue_info, view_all_residue_switch
 
 
 @app.callback(
@@ -817,46 +843,80 @@ def focus_select_output(selected_rows):
     Output("id-viewer", "focus", allow_duplicate=True),
     Output("id-slider-ratio", "disabled"),
     Output("id-list-smiles-residue-highlight", "disabled"),
-    Input("id-switch-residue-view", "checked"),  # DMC
-    # Input("id-switch-residue-view", "value"),  # DBC
+    Output("id-div-filtered-residue", "children", allow_duplicate=True),
+    Input("id-switch-residue-view", "value"),
     Input("id-slider-ratio", "value"),
     Input("id-list-smiles-residue-highlight", "value"),
     State("id-table-exp-top-variants", "rowData"),
     prevent_initial_call=True,
 )
 def on_view_all_residue(view, slider_value, selected_smiles, rowData):
-    # default the values
-    sel = u_protein_viewer.reset_selection()
+    """
+    This callback gets called when the user switches the 'view all residues' toggle switch.
+    Make sure changes here are consistent with the callback 'on_view_selected_residue_from_table'
+    """
+    # default values
+    sel = no_update  # u_protein_viewer.reset_selection()
     foc = no_update
-    enable_components = (not view) if view else no_update
+    highlighted_residue_info = no_update
+    slider_disabled = True
+    listbox_disabled = True
+
     if view and rowData:
-        df = pd.DataFrame(rowData)
+        # let's turn it on unless we have a reason turn it off
+        slider_disabled = False
+        listbox_disabled = False
+        highlighted_residue_info = ""
+        sel = u_protein_viewer.reset_selection()
+
         # filter by smiles value
         if selected_smiles:
+            df = pd.DataFrame(rowData)
             df_smiles = df[df[gs.c_smiles] == selected_smiles]
-        else:
-            df_smiles = df
+            # does this smiles_string have a parent combo
+            # ratio is only calculated if a parent exists
+            # if one does not exist, then the slider is meaningless and thus disabled.
+            if gs.hashtag_parent not in df_smiles[gs.c_substitutions].values:
+                df_filtered = df_smiles
+                # disable the slider when no parent is present
+                slider_disabled = True
+                highlighted_residue_info += "No parent for selected SMILES; "
+            else:
+                # apply the slider values
+                # delta = math.fabs(slider_value[0] - slider_value[1])
+                df_filtered = df_smiles[df_smiles[gs.cc_ratio].between(slider_value[0], slider_value[1])]
 
-        # apply the slider values
-        delta = math.fabs(slider_value[0] - slider_value[1])
-        if delta != 0:
-            df_filtered = df_smiles[df_smiles[gs.cc_ratio].between(slider_value[0], slider_value[1])]
-            # extract the residue indices for the viewer
-            # residues = sorted(df_filtered[gs.c_substitutions].str.extractall(r"(\d+)")[0].unique().tolist())
-            residues = (
-                df_filtered[gs.c_substitutions]
-                .apply(lambda x: utils.extract_all_indices(x))
-                .explode()  # flatten the series
-                .dropna()  # remove all the na
-                .unique()
-                .tolist()
-            )
+            # after the filtering there may only be the parent left
+            highlighted_residue_info += f" Highlighted Residues: "
+            if df_filtered.shape[0] == 1 and df_filtered[gs.c_substitutions].iloc[0] == gs.hashtag_parent:
+                residues = []
+                highlighted_residue_info += gs.hashtag_parent
+            else:
+                # extract the indices for the protein viewer
+                residues = (
+                    df_filtered[gs.c_substitutions]
+                    .apply(lambda x: utils.extract_all_indices(x))
+                    .explode()  # flatten the series
+                    .dropna()  # remove all the na
+                    .unique()
+                    .tolist()
+                )
 
-            # set up the protein viewer selection and focus
-            if len(residues) != 0:
-                sel, foc = u_protein_viewer.get_selection_focus(residues, analyse=False)
+                # set up the protein viewer selection and focus
+                if len(residues) != 0:
+                    sel, foc = u_protein_viewer.get_selection_focus(residues, analyse=False)
+                    highlighted_residue_info += f"{', '.join(residues)}"
+                else:
+                    # if there is no residue to show, just reset the selection
+                    highlighted_residue_info += f"None"
 
-    return sel, foc, enable_components, enable_components
+    return (
+        sel,
+        foc,
+        slider_disabled,  # slider
+        listbox_disabled,  # list box
+        highlighted_residue_info,
+    )
 
 
 # ----------------------------------------
