@@ -2,7 +2,7 @@
 # General App Strings
 # -----------------------------
 web_title = "Levseq Dashboard"
-nav_lab = "Dashboard"
+nav_lab = "Home"
 nav_upload = "Upload Your Experiment"
 nav_explore = "Explore the Database"
 nav_find_seq = "Find Similar Sequences"
