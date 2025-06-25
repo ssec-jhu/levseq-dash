@@ -14,35 +14,23 @@ def get_slider_area_layout():
                     dbc.Col(
                         html.Span(
                             [
-                                html.Div(
-                                    widgets.get_info_icon_tooltip_bundle(
-                                        info_icon_id="id-switch-residue-view-info",
-                                        help_string=gs.exp_slider_help,
-                                        location="top",
-                                    ),
-                                    style={"margin-right": "7px"},
+                                dbc.Switch(
+                                    id="id-switch-residue-view",
+                                    className="custom-switch",
+                                    label=gs.view_all,
+                                    value=False,
+                                    style={"margin-right": "5px"},
                                 ),
-                                html.Div(
-                                    dbc.Switch(
-                                        id="id-switch-residue-view",
-                                        className="custom-switch",
-                                        label=gs.view_all,
-                                        value=False,
-                                    ),
-                                    # this switch has internal
-                                    # padding that would NOT budge
-                                    # with any style I tried to
-                                    # center it horizontally. Not the
-                                    # ideal solution but this seems
-                                    # to work!
-                                    style={
-                                        "transform": "translateY(6px)",
-                                    },
+                                widgets.get_info_icon_tooltip_bundle(
+                                    info_icon_id="id-switch-residue-view-info",
+                                    help_string=gs.exp_slider_help,
+                                    location="top",
                                 ),
                             ],
-                            className="d-flex align-items-center",
+                            className="d-flex",
                         ),
-                        width=3,
+                        width=4,
+                        align="center",
                     ),
                     dbc.Col(
                         [gs.select_smiles],
