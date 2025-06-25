@@ -172,6 +172,7 @@ cc_hot_cold_type = "variant_type"
 # These strings follow the column headers in the csv file.
 # -----------------------------
 hashtag_parent = "#PARENT#"
+c_experiment_name = "experiment_name"
 c_smiles = "smiles_string"
 c_plate = "plate"
 c_well = "well"

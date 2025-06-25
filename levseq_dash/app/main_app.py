@@ -389,6 +389,8 @@ def on_load_matching_sequences(results_are_cleared, n_clicks, query_sequence, th
 
                 # add the experiment id to this data
                 hot_cold_spots_merged_df[gs.cc_experiment_id] = exp_id
+                # add the experiment name to the data
+                hot_cold_spots_merged_df[gs.c_experiment_name] = exp.experiment_name
 
                 # concatenate this info with the rest of the hot and cold spot data
                 hot_cold_row_data = pd.concat([hot_cold_row_data, hot_cold_spots_merged_df], ignore_index=True)
@@ -403,8 +405,8 @@ def on_load_matching_sequences(results_are_cleared, n_clicks, query_sequence, th
 
             info = f"# Matched Sequences: {n_matches}"
             return (
-                seq_match_row_data,  # the results in records format for ag-grid
-                hot_cold_row_data.to_dict("records"),
+                seq_match_row_data,  # the results in records format for ag-grid table: id-table-matched-sequences
+                hot_cold_row_data.to_dict("records"),  # table: id-table-matched-sequences-exp-hot-cold-data
                 info,
                 vis.display_block,  # set the visibility on
                 False,  # make sure cleared is set to False
