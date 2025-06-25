@@ -144,7 +144,7 @@ def create_layout_reaction(id_image, id_substrate_smiles, id_product_smiles):
     )
 
 
-def get_se_alignment_results_layout():
+def get_similar_sequences_results_layout():
     return html.Div(
         id="id-div-seq-alignment-results",
         style=vis.display_none,
@@ -190,6 +190,7 @@ def get_se_alignment_results_layout():
                                                                         style={"margin": "5px"},
                                                                     ),
                                                                 ],
+                                                                className="d-flex align-items-center",
                                                             ),
                                                         ],
                                                         style=vis.border_column,
@@ -235,7 +236,7 @@ def get_se_alignment_results_layout():
                                                         "id-selected-seq-matched-product",
                                                     )
                                                 ],
-                                                className="mb-3",
+                                                className="mb-2 g-0 border rounded-1 p-1",
                                             ),
                                             dbc.Row([html.Div(id="id-viewer-selected-seq-matched-protein")]),
                                         ],
@@ -339,7 +340,7 @@ def get_layout():
                 # The spinner component is displayed only when one of the
                 # target component and properties enters loading state.
                 target_components={"id-table-matched-sequences": "rowData"},
-                children=get_se_alignment_results_layout(),
+                children=get_similar_sequences_results_layout(),
             ),
         ],
         className=vis.main_page_class,

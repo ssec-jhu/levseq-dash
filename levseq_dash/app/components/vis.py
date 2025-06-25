@@ -27,7 +27,7 @@ upload_success = success_style = {
 # seq_match_card_height number must be seq_match_table_height + any text written above the table or viewer
 seq_match_table_height = "650px"
 seq_match_protein_viewer_height = "600px"
-seq_match_card_height = "850px"
+seq_match_card_height = "950px"
 
 # related variants of an experiment table and protein viewer need to have close height
 # it depends on components above the table and or the viewer
