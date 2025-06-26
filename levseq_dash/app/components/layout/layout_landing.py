@@ -30,17 +30,32 @@ def get_layout():
                     dbc.Row(
                         [
                             dbc.Col(
-                                action_card(icon=vis.icon_upload, label=gs.nav_upload, href=gs.nav_upload_path),
+                                action_card(
+                                    icon=vis.icon_upload,
+                                    label=gs.nav_upload,
+                                    href=gs.nav_upload_path,
+                                    text_below=gs.small_text_upload,
+                                ),
                                 md=4,
                                 className="mb-4",
                             ),
                             dbc.Col(
-                                action_card(icon=vis.icon_search, label=gs.nav_find_seq, href=gs.nav_find_seq_path),
+                                action_card(
+                                    icon=vis.icon_search,
+                                    label=gs.nav_find_seq,
+                                    href=gs.nav_find_seq_path,
+                                    text_below=gs.small_text_find,
+                                ),
                                 md=4,
                                 className="mb-4",
                             ),
                             dbc.Col(
-                                action_card(icon=vis.icon_database, label=gs.nav_explore, href=gs.nav_explore_path),
+                                action_card(
+                                    icon=vis.icon_database,
+                                    label=gs.nav_explore,
+                                    href=gs.nav_explore_path,
+                                    text_below=gs.small_text_explore,
+                                ),
                                 md=4,
                                 className="mb-4",
                             ),
@@ -59,7 +74,7 @@ def get_layout():
     )
 
 
-def action_card(icon: str, label: str, href: str):
+def action_card(icon: str, label: str, href: str, text_below: str):
     """Return a clickable action card with an icon and label."""
     card = dbc.Card(
         dbc.CardBody(
@@ -75,7 +90,7 @@ def action_card(icon: str, label: str, href: str):
                     className="mt-3 fw-semibold text-center",
                     # className="label-icon-style mt-2 fw-semibold text-center"
                 ),
-                html.Small("maybe a small text here", className="text-secondary"),
+                html.Small(text_below, className="text-secondary"),
             ],
             # make sure everything is centered
             className=" text-primary d-flex flex-column align-items-center justify-content-center py-4",

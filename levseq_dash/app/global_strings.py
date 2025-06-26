@@ -8,6 +8,9 @@ nav_explore = "Explore the Database"
 nav_find_seq = "Find Similar Sequences"
 nav_about = "About LevSeq Dashboard"
 
+small_text_upload = "submit your sequence-function data"
+small_text_find = "discover related engineered variants"
+small_text_explore = "browse curated evolution datasets"
 # -----------------------------
 # Upload page strings
 # -----------------------------
