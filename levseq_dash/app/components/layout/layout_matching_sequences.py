@@ -239,6 +239,22 @@ def get_similar_sequences_results_layout():
                                                 className="mb-2 g-0 border rounded-1 p-1",
                                             ),
                                             dbc.Row([html.Div(id="id-viewer-selected-seq-matched-protein")]),
+                                            dbc.Row(
+                                                [
+                                                    widgets.generate_label_with_info(
+                                                        label="Residue with both GoF and LoF (purple):",
+                                                        id_info="id-div-selected-seq-matched-protein-highlights-info1",
+                                                    ),
+                                                    widgets.generate_label_with_info(
+                                                        label="Residue with GoF only (red): ",
+                                                        id_info="id-div-selected-seq-matched-protein-highlights-info2",
+                                                    ),
+                                                    widgets.generate_label_with_info(
+                                                        label="Residue with LoF only (blue): ",
+                                                        id_info="id-div-selected-seq-matched-protein-highlights-info3",
+                                                    ),
+                                                ]
+                                            ),
                                         ],
                                         className="p-1 mb-3",  # fits to the card border
                                     ),
