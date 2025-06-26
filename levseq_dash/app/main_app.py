@@ -389,6 +389,8 @@ def on_load_matching_sequences(results_are_cleared, n_clicks, query_sequence, th
 
                 # add the experiment id to this data
                 hot_cold_spots_merged_df[gs.cc_experiment_id] = exp_id
+                # add the experiment name to the data
+                hot_cold_spots_merged_df[gs.c_experiment_name] = exp.experiment_name
 
                 # concatenate this info with the rest of the hot and cold spot data
                 hot_cold_row_data = pd.concat([hot_cold_row_data, hot_cold_spots_merged_df], ignore_index=True)
@@ -403,8 +405,8 @@ def on_load_matching_sequences(results_are_cleared, n_clicks, query_sequence, th
 
             info = f"# Matched Sequences: {n_matches}"
             return (
-                seq_match_row_data,  # the results in records format for ag-grid
-                hot_cold_row_data.to_dict("records"),
+                seq_match_row_data,  # the results in records format for ag-grid table: id-table-matched-sequences
+                hot_cold_row_data.to_dict("records"),  # table: id-table-matched-sequences-exp-hot-cold-data
                 info,
                 vis.display_block,  # set the visibility on
                 False,  # make sure cleared is set to False
@@ -461,6 +463,11 @@ def display_default_selected_matching_sequences(data):
     Output("id-selected-seq-matched-reaction-image", "src"),
     Output("id-selected-seq-matched-substrate", "children"),
     Output("id-selected-seq-matched-product", "children"),
+    # informative text
+    Output("id-div-selected-seq-matched-protein-highlights-info1", "children"),
+    Output("id-div-selected-seq-matched-protein-highlights-info2", "children"),
+    Output("id-div-selected-seq-matched-protein-highlights-info3", "children"),
+    # Input
     Input("id-table-matched-sequences", "selectedRows"),
     prevent_initial_call=True,
 )
@@ -471,7 +478,7 @@ def display_selected_matching_sequences(selected_rows):
         hot_spots = f"{selected_rows[0][gs.cc_hot_indices_per_smiles]}"
         cold_spots = f"{selected_rows[0][gs.cc_cold_indices_per_smiles]}"
         experiment_id = selected_rows[0][gs.cc_experiment_id]
-        experiment_smiles = selected_rows[0][gs.c_smiles]
+        # experiment_smiles = selected_rows[0][gs.c_smiles]
         substrate = selected_rows[0][gs.cc_substrate]
         product = selected_rows[0][gs.cc_product]
 
@@ -488,6 +495,17 @@ def display_selected_matching_sequences(selected_rows):
                 hot_residue_indices_list=hot_spots,
                 cold_residue_indices_list=cold_spots,
                 substitution_residue_list=substitutions,
+            )
+
+            # the lists are ints, need to convert back to string
+            highlights_hot = ", ".join(
+                str(num) for num in list_of_rendered_components[1]["targets"][0]["residue_numbers"]
+            )
+            highlights_cold = ", ".join(
+                str(num) for num in list_of_rendered_components[2]["targets"][0]["residue_numbers"]
+            )
+            highlights_both = ", ".join(
+                str(num) for num in list_of_rendered_components[3]["targets"][0]["residue_numbers"]
             )
 
             # set up the molecular viewer and render it
@@ -512,6 +530,9 @@ def display_selected_matching_sequences(selected_rows):
             svg_src_image,
             substrate,
             product,
+            highlights_both,
+            highlights_hot,
+            highlights_cold,
         )
     else:
         raise PreventUpdate

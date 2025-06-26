@@ -269,7 +269,7 @@ def seq_align_per_smiles_data():
     df = pd.DataFrame(d)
 
     meta_data = {
-        "experiment_name": "flatten_ssm_processed_xy_cas.csv",
+        gs.c_experiment_name: "flatten_ssm_processed_xy_cas.csv",
         "experiment_date": "01-01-2025",
         "upload_time_stamp": "2025-04-04 19:36:26",
         "assay": "NMR Spectroscopy",

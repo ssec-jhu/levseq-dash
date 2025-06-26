@@ -25,14 +25,14 @@ upload_success = success_style = {
 
 # Sequence Match table and the protein viewer need to have close height
 # seq_match_card_height number must be seq_match_table_height + any text written above the table or viewer
-seq_match_table_height = "650px"
-seq_match_protein_viewer_height = "600px"
-seq_match_card_height = "850px"
+seq_match_table_height = "75vh"  # 75% of the viewport
+seq_match_protein_viewer_height = "55vh"
+seq_match_card_height = "95vh"  # 95% of the viewport, 100 is too tight
 
 # related variants of an experiment table and protein viewer need to have close height
 # it depends on components above the table and or the viewer
-related_variants_table_height = "750px"
-related_protein_viewer_height = "600px"
+related_variants_table_height = "65vh"
+related_protein_viewer_height = "65vh"
 
 border_row = {"border": "0px solid blue"}
 border_column = {"border": "0px solid red"}

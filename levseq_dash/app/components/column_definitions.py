@@ -30,9 +30,9 @@ def get_experiment_id(record):
 def get_experiment_name(record):
     c = [
         {
-            "field": "experiment_name",
+            "field": gs.c_experiment_name,
             "headerName": gs.header_experiment_name,
-            "tooltipField": "experiment_name",
+            "tooltipField": gs.c_experiment_name,
         }
     ]
     if record:
@@ -333,6 +333,7 @@ def get_matched_sequences_exp_hot_cold_data_column_defs():
     Returns column definitions for the matched sequences experiment data
     """
     column_def = get_experiment_id({"width": 120, "pinned": "left"})
+    column_def += get_experiment_name({"width": 250})
     column_def += [
         {
             "field": gs.cc_hot_cold_type,

@@ -80,8 +80,8 @@ def test_db_get_lab_experiments_with_meta_data_general(dbmanager_read_all_from_f
 )
 def test_db_get_lab_experiments_with_meta_data_data(dbmanager_read_all_from_file, index, name, n_plates, n_unique):
     list_of_all_lab_experiments_with_meta = dbmanager_read_all_from_file.get_lab_experiments_with_meta_data()
-    sorted_list = sorted(list_of_all_lab_experiments_with_meta, key=lambda x: x["experiment_name"])
-    assert sorted_list[index]["experiment_name"] == name
+    sorted_list = sorted(list_of_all_lab_experiments_with_meta, key=lambda x: x[gs.c_experiment_name])
+    assert sorted_list[index][gs.c_experiment_name] == name
     assert sorted_list[index]["plates_count"] == n_plates
     assert len(sorted_list[index]["unique_smiles_in_data"]) == n_unique
 
