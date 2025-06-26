@@ -69,7 +69,9 @@ def get_molstar_rendered_components_seq_alignment(
 
     # extract the residues that are both in hot and cold groups and isolate the others out
     both_hs_and_cs = list(set(hot_residues).intersection(set(cold_residues)))
+    both_hs_and_cs.sort()
     hs_only = [item for item in hot_residues if item not in both_hs_and_cs]
+    hs_only.sort()
     cs_only = [item for item in cold_residues if item not in both_hs_and_cs]
 
     # make the representations
