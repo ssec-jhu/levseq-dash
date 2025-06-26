@@ -128,7 +128,7 @@ dagcomponentfuncs.seqAlignmentVis = function(params) {
     // This code removes the H C B line
     // comment below  to see H C B for debugging
     // and uncomment the H C B results.push above
-    lines.splice(2, 1);
+    // lines.splice(2, 1);
 
     return React.createElement(
         'div',
