@@ -83,7 +83,7 @@ exp_seq_align_residue_help = (
 exp_seq_align_query_info_1 = "Selected Experiment ID: "
 exp_seq_align_query_info_2 = "Query Experiment ID: "
 exp_seq_align_related_experiments = "Related Experiments"
-exp_seq_align_substitutions = "Selected Substitutions: "
+exp_seq_align_substitutions = "Highlighted Residues: "
 # -----------------------------
 # Sequence Alignment Strings: General
 # -----------------------------
