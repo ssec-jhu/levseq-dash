@@ -487,7 +487,7 @@ def get_card_experiment_related_variants_result():
                             dbc.Col(
                                 [generate_label_with_info(gs.exp_seq_align_query_info_2, "id-exp-related-variants-id")],
                                 width=6,
-                                className="p-2 border-end",
+                                className="p-1 border-end",
                             ),
                             dbc.Col(
                                 [
@@ -495,10 +495,10 @@ def get_card_experiment_related_variants_result():
                                         gs.exp_seq_align_query_info_1, "id-exp-related-variants-selected-id"
                                     )
                                 ],
-                                className="p-2",
+                                className="p-1",
                             ),
                         ],
-                        className="g-1 mt-2 border",
+                        className="g-1 mt-1 border",
                         style=vis.border_row,
                     ),
                     # -----------------------------
@@ -549,17 +549,17 @@ def get_card_experiment_related_variants_result():
                             dbc.Col(
                                 [generate_label_with_info(gs.sub_smiles, "id-exp-related-variants-substrate")],
                                 width=3,
-                                className="p-2",
+                                className="p-1",
                             ),
                             dbc.Col(
                                 [generate_label_with_info(gs.prod_smiles, "id-exp-related-variants-product")],
                                 width=3,
-                                className="p-2 border-end",
+                                className="p-1 border-end",
                             ),
                             dbc.Col(
                                 [generate_label_with_info(gs.sub_smiles, "id-exp-related-variants-selected-substrate")],
                                 width=3,
-                                className="p-2",
+                                className="p-1",
                             ),
                             dbc.Col(
                                 [generate_label_with_info(gs.prod_smiles, "id-exp-related-variants-selected-product")],
@@ -573,75 +573,89 @@ def get_card_experiment_related_variants_result():
                     dbc.Row(
                         [
                             # -----------------------------
-                            # table with all related variants results
+                            # download button row
                             # -----------------------------
                             dbc.Col(
                                 [
-                                    # download button row
-                                    dbc.Row(
-                                        [
-                                            dbc.Col(
-                                                widgets.get_download_radio_combo(
-                                                    "id-button-download-related-variants-results",
-                                                    "id-button-download-related-variants-results-options",
-                                                ),
-                                                width="auto",
-                                            )
-                                        ],
-                                        className="mb-2 g-1",
+                                    widgets.get_download_radio_combo(
+                                        "id-button-download-related-variants-results",
+                                        "id-button-download-related-variants-results-options",
                                     ),
-                                    widgets.get_table_experiment_related_variants(),
                                 ],
                                 width=6,
-                                className="p-1 dbc dbc-ag-grid",
                                 style=vis.border_column,
                             ),
                             dbc.Col(
                                 [
-                                    # -----------------------------
-                                    # side by side protein structure comparison
-                                    # -----------------------------
                                     dbc.Row(
                                         [
                                             dbc.Col(
-                                                [
-                                                    html.Span("Query Protein Structure", style=vis.experiment_info),
-                                                    html.Div(id="id-exp-related-variants-protein-viewer"),
-                                                ],
+                                                "Query Protein Structure",
                                                 width=6,
-                                                # className="text-center",
+                                                className="text-center fw-bold",
                                                 style=vis.border_column,
                                             ),
                                             dbc.Col(
-                                                [
-                                                    html.Span("Selected Protein Structure", style=vis.experiment_info),
-                                                    html.Div(id="id-exp-related-variants-selected-protein-viewer"),
-                                                ],
-                                                # className="text-center",
+                                                "Selected Protein Structure",
+                                                className="text-center fw-bold",
                                                 style=vis.border_column,
                                             ),
-                                        ],
-                                        className="g-1 p-0 mb-3",
-                                    ),
-                                    # -----------------------------
-                                    # specify the substitutions that are being visualized
-                                    # -----------------------------
-                                    dbc.Row(
-                                        [
-                                            dbc.Col(
-                                                [
-                                                    widgets.generate_label_with_info(
-                                                        label=gs.exp_seq_align_substitutions,
-                                                        id_info="id-exp-related-variants-selected-subs",
-                                                    )
-                                                ]
-                                            )
                                         ],
                                     ),
                                 ]
                             ),
                         ],
-                        className="g-1 mt-4",
+                        align="end",
+                        className="g-0 mt-3",
+                        style=vis.border_row,
+                    ),
+                    dbc.Row(
+                        [
+                            dbc.Col(
+                                [
+                                    widgets.get_table_experiment_related_variants(),
+                                ],
+                                width=6,
+                                className="p-1 dbc dbc-ag-grid",
+                            ),
+                            dbc.Col(
+                                [
+                                    dbc.Row(
+                                        [
+                                            dbc.Col(
+                                                [
+                                                    html.Div(id="id-exp-related-variants-protein-viewer"),
+                                                ],
+                                                width=6,
+                                                style=vis.border_column,
+                                            ),
+                                            dbc.Col(
+                                                [
+                                                    html.Div(id="id-exp-related-variants-selected-protein-viewer"),
+                                                ],
+                                                style=vis.border_column,
+                                            ),
+                                        ],
+                                        className="g-0 p-0",
+                                    ),
+                                ],
+                                className="p-1",
+                            ),
+                        ],
+                        className="mb-1",
+                    ),
+                    dbc.Row(
+                        [
+                            dbc.Col(width=6),
+                            dbc.Col(
+                                [
+                                    widgets.generate_label_with_info(
+                                        label=gs.exp_seq_align_substitutions,
+                                        id_info="id-exp-related-variants-selected-subs",
+                                    )
+                                ]
+                            ),
+                        ]
                     ),
                 ],
             ),
