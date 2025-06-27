@@ -419,7 +419,7 @@ def get_download_radio_combo(button_id, radio_id):
                     ],
                     id=button_id,
                     n_clicks=0,
-                    size="md",
+                    size="sm",
                     # col-12 will take up the full space of the container
                     class_name="d-grid gap-2 col-12 btn-primary align-items-center",
                 ),
