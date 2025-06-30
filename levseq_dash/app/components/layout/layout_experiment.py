@@ -2,6 +2,7 @@ import dash_bootstrap_components as dbc
 from dash import dcc, html
 
 from levseq_dash.app import global_strings as gs
+from levseq_dash.app import global_strings_html as gsh
 from levseq_dash.app.components import vis, widgets
 from levseq_dash.app.components.widgets import generate_label_with_info
 
@@ -414,11 +415,10 @@ def get_seq_align_form_exp():
                     widgets.get_label_fixed_for_form(gs.seq_align_form_threshold),
                     dbc.Col(
                         [
-                            dbc.Input(
-                                id="id-input-exp-related-variants-threshold",
-                                value=gs.seq_align_form_threshold_default,
-                                type="text",
-                                debounce=True,
+                            widgets.get_input_plus_info_ico_bundle(
+                                input_id="id-input-exp-related-variants-threshold",
+                                input_value=gs.seq_align_form_threshold_default,
+                                info_icon_help_string=gs.help_threshold,
                             ),
                         ],
                         width=3,
@@ -431,26 +431,14 @@ def get_seq_align_form_exp():
                     widgets.get_label_fixed_for_form(gs.exp_seq_align_residue),
                     dbc.Col(
                         [
-                            dbc.Input(
-                                id="id-input-exp-related-variants-residue",
-                                type="text",
-                                debounce=True,
-                            )
+                            widgets.get_input_plus_info_ico_bundle(
+                                input_id="id-input-exp-related-variants-residue",
+                                input_value="",
+                                info_icon_help_string=gs.exp_seq_align_residue_help,
+                            ),
                         ],
                         width=3,
                         align="center",
-                    ),
-                    dbc.Col(
-                        [
-                            widgets.get_info_icon_tooltip_bundle(
-                                info_icon_id="id-exp-seq-align-info",
-                                help_string=gs.exp_seq_align_residue_help,
-                                location="top",
-                            ),
-                        ],
-                        width=1,
-                        align="center",
-                        className="p-0",
                     ),
                 ],
                 className="mb-1",
@@ -672,7 +660,10 @@ def get_tab_experiment_related_variants():
     return html.Div(
         [
             # intro at the top
-            dbc.Row(html.P(gs.exp_seq_align_blurb)),
+            html.H5("Search for related variants", className="page-title"),
+            html.Div(
+                html.P(gsh.exp_seq_align_blurb, className="px-5 text-primary text-wrap"),
+            ),
             # form layout
             dbc.Row(
                 [get_seq_align_form_exp()],
