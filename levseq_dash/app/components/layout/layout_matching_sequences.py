@@ -34,12 +34,11 @@ def get_seq_align_form():
                     widgets.get_label_fixed_for_form(gs.seq_align_form_threshold),
                     dbc.Col(
                         [
-                            dbc.Input(
-                                id="id-input-query-sequence-threshold",
-                                value=gs.seq_align_form_threshold_default,
-                                type="text",
-                                debounce=True,
-                            ),
+                            widgets.get_input_plus_info_ico_bundle(
+                                input_id="id-input-query-sequence-threshold",
+                                input_value=gs.seq_align_form_threshold_default,
+                                info_icon_help_string=gs.help_threshold,
+                            )
                         ],
                         width=2,
                     ),
@@ -52,11 +51,10 @@ def get_seq_align_form():
                     widgets.get_label_fixed_for_form(gs.seq_align_form_hot_cold),
                     dbc.Col(
                         [
-                            dbc.Input(
-                                id="id-input-num-hot-cold",
-                                value=gs.seq_align_form_hot_cold_n,
-                                type="text",
-                                debounce=True,
+                            widgets.get_input_plus_info_ico_bundle(
+                                input_id="id-input-num-hot-cold",
+                                input_value=gs.seq_align_form_hot_cold_n,
+                                info_icon_help_string=gs.help_gof_lof,
                             ),
                         ],
                         width=2,
