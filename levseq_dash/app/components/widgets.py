@@ -340,6 +340,28 @@ def get_tooltip(target_id, string, tip_placement, allow_html=False):
     )
 
 
+def get_input_plus_info_ico_bundle(input_id, input_value, info_icon_help_string):
+    return html.Span(
+        [
+            dbc.Input(
+                id=input_id,
+                value=input_value,
+                type="text",
+                debounce=True,
+            ),
+            html.Span(
+                get_info_icon_tooltip_bundle(
+                    info_icon_id=f"{input_id}-info",
+                    help_string=info_icon_help_string,
+                    location="top",
+                ),
+                style={"marginLeft": "5px"},
+            ),
+        ],
+        className="d-flex align-items-center",
+    )
+
+
 class DownloadType(Enum):
     ORIGINAL = 1
     FILTERED = 2
