@@ -236,7 +236,16 @@ def get_similar_sequences_results_layout():
                                                 ],
                                                 className="mb-2 g-0 border rounded-1 p-1",
                                             ),
-                                            dbc.Row([html.Div(id="id-viewer-selected-seq-matched-protein")]),
+                                            dbc.Row(
+                                                [
+                                                    dbc.Col(
+                                                        widgets.get_protein_viewer(
+                                                            id_viewer="id-viewer-selected-seq-matched-protein",
+                                                            height=vis.seq_match_protein_viewer_height,
+                                                        )
+                                                    )
+                                                ]
+                                            ),
                                             dbc.Row(
                                                 [
                                                     widgets.generate_label_with_info(

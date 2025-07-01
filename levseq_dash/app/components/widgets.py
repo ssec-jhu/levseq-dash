@@ -289,14 +289,14 @@ def get_table_matched_sequences_exp_hot_cold_data():
 # --------------------------------
 # Protein Viewer
 # --------------------------------
-def get_protein_viewer():
+def get_protein_viewer(id_viewer, height):
     """
     Returns the dash molstar viewer component
     """
     return dash_molstar.MolstarViewer(
-        id="id-viewer",
+        id=id_viewer,  # "id-viewer",
         # data=data,
-        style={"width": "auto", "height": "600px"},
+        style={"width": "auto", "height": height},
         layout={
             # "layoutShowControls": True,
             # https://dash-molstar.readthedocs.io/en/latest/load.html#general-options

@@ -65,9 +65,9 @@ def test_get_table_all_experiments():
 
 # Test if `get_protein_viewer` returns a valid MolstarViewer component
 def test_get_protein_viewer():
-    viewer = widgets.get_protein_viewer()
+    viewer = widgets.get_protein_viewer(id_viewer="some-id", height="600px")
     assert isinstance(viewer, dash_molstar.MolstarViewer)  # Ensure it's a MolstarViewer
-    assert viewer.id == "id-viewer"  # Check ID
+    assert viewer.id == "some-id"  # Check ID
     # assert viewer.style["height"] == "600px"  # Ensure height is set
 
 
