@@ -498,15 +498,15 @@ def display_selected_matching_sequences(selected_rows):
             )
 
             # the lists are ints, need to convert back to string
-            # highlights_hot = ", ".join(
-            #     str(num) for num in list_of_rendered_components[1]["targets"][0]["residue_numbers"]
-            # )
-            # highlights_cold = ", ".join(
-            #     str(num) for num in list_of_rendered_components[2]["targets"][0]["residue_numbers"]
-            # )
-            # highlights_both = ", ".join(
-            #     str(num) for num in list_of_rendered_components[3]["targets"][0]["residue_numbers"]
-            # )
+            highlights_hot = ", ".join(
+                str(num) for num in list_of_rendered_components[1]["targets"][0]["residue_numbers"]
+            )
+            highlights_cold = ", ".join(
+                str(num) for num in list_of_rendered_components[2]["targets"][0]["residue_numbers"]
+            )
+            highlights_both = ", ".join(
+                str(num) for num in list_of_rendered_components[3]["targets"][0]["residue_numbers"]
+            )
 
             # set up the molecular viewer and render it
             pdb_cif = molstar_helper.parse_molecule(
@@ -524,9 +524,9 @@ def display_selected_matching_sequences(selected_rows):
             svg_src_image,
             substrate,
             product,
-            "test",  # highlights_both,
-            hot_spots,  # highlights_hot,
-            cold_spots,  # highlights_cold,
+            highlights_both,
+            highlights_hot,
+            highlights_cold,
         )
     else:
         raise PreventUpdate

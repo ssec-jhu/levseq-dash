@@ -294,7 +294,7 @@ def get_protein_viewer(id_viewer, height):
     Returns the dash molstar viewer component
     """
     return dash_molstar.MolstarViewer(
-        id=id_viewer,  # "id-viewer",
+        id=id_viewer,
         # data=data,
         style={"width": "auto", "height": height},
         layout={
