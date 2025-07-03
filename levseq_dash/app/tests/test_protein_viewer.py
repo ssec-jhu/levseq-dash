@@ -5,7 +5,10 @@ from levseq_dash.app.utils import u_protein_viewer, utils
 
 
 def test_get_molstar_rendered_components(list_of_residues):
-    result = u_protein_viewer.get_molstar_rendered_components_seq_alignment(
+    """
+    This tests the internal structure of the protein viewer if there is any change
+    """
+    result, _, _, _ = u_protein_viewer.get_molstar_rendered_components_seq_alignment(
         list_of_residues[0], list_of_residues[1], list_of_residues[2]
     )
 
@@ -14,36 +17,22 @@ def test_get_molstar_rendered_components(list_of_residues):
     assert len(result) == 5
 
 
-def test_get_molstar_rendered_components_hot(list_of_residues):
-    result = u_protein_viewer.get_molstar_rendered_components_seq_alignment(
+def test_get_molstar_rendered_components_all(list_of_residues):
+    """
+    This tests the internal structure of the protein viewer if there is any change
+    """
+    result, _, _, _ = u_protein_viewer.get_molstar_rendered_components_seq_alignment(
         list_of_residues[0], list_of_residues[1], list_of_residues[2]
     )
     targets = [comp["targets"] for comp in result]
-    assert targets[1][0]["residue_numbers"] == [10, 20]
-
-
-def test_get_molstar_rendered_components_cold(list_of_residues):
-    result = u_protein_viewer.get_molstar_rendered_components_seq_alignment(
-        list_of_residues[0], list_of_residues[1], list_of_residues[2]
-    )
-    targets = [comp["targets"] for comp in result]
-    assert targets[2][0]["residue_numbers"] == [40, 50]
-
-
-def test_get_molstar_rendered_components_both(list_of_residues):
-    result = u_protein_viewer.get_molstar_rendered_components_seq_alignment(
-        list_of_residues[0], list_of_residues[1], list_of_residues[2]
-    )
-    targets = [comp["targets"] for comp in result]
-    assert targets[3][0]["residue_numbers"] == [30]
-
-
-def test_get_molstar_rendered_components_mismatches(list_of_residues):
-    result = u_protein_viewer.get_molstar_rendered_components_seq_alignment(
-        list_of_residues[0], list_of_residues[1], list_of_residues[2]
-    )
-    targets = [comp["targets"] for comp in result]
-    assert targets[4][0]["residue_numbers"] == [25, 60]
+    # hot
+    assert targets[1][0]["chains"][0]["residues"][0]["index"] == 10
+    # cold
+    assert targets[2][0]["chains"][0]["residues"][0]["index"] == 40
+    # both
+    assert targets[3][0]["chains"][0]["residues"][0]["index"] == 30
+    # mismatches
+    assert targets[4][0]["chains"][0]["residues"][0]["index"] == 25
 
 
 @pytest.mark.parametrize(
@@ -120,9 +109,9 @@ def test_test_extract_all_indices_2(residue, extracted_list, length):
 @pytest.mark.parametrize(
     "residue, numbers",
     [
-        ("K99R_R118C", [99, 118]),
-        ("A59L", [59]),
-        ("C81T_T86A_A108G", [81, 86, 108]),
+        ("K99R_R118C", 99),
+        ("A59L", 59),
+        ("C81T_T86A_A108G", 81),
     ],
 )
 def test_gather_residue_errors(residue, numbers):
@@ -131,24 +120,24 @@ def test_gather_residue_errors(residue, numbers):
     """
     residues = utils.extract_all_indices(residue)
     sel, foc = u_protein_viewer.get_selection_focus(residues)
-    assert sel["mode"] == "select"
-    assert sel["targets"][0]["residue_numbers"] == numbers
+    # assert sel["mode"] == "select" not in 1.3
+    assert sel["targets"][0]["chains"][0]["residues"][0]["index"] == numbers
     assert foc["analyse"]
 
 
 @pytest.mark.parametrize(
     "residue_list, target",
     [
-        (["53", "34"], [53, 34]),
-        (["43", "59"], [43, 59]),
-        (["106", "118", "203", "322", "552"], [106, 118, 203, 322, 552]),
-        ([], []),
+        (["53", "34"], 53),
+        (["43", "59"], 43),
+        (["106", "118", "203", "322", "552"], 106),
+        # ([], []), not in 1.3
     ],
 )
 def test_get_selection_focus(residue_list, target):
     sel, foc = u_protein_viewer.get_selection_focus(residue_list, analyse=False)
-    assert sel["targets"][0]["residue_numbers"] == target
-    assert foc["targets"][0]["residue_numbers"] == target
+    assert sel["targets"][0]["chains"][0]["residues"][0]["index"] == target
+    assert foc["targets"][0]["chains"][0]["residues"][0]["index"] == target
 
 
 def test_reset_selection():

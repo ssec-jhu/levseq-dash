@@ -136,7 +136,7 @@ def get_molstar_rendered_components_seq_alignment(
         )
         component_list.append(component_mismatch_residue)
 
-    return component_list
+    return component_list, hs_only, cs_only, both_hs_and_cs
 
 
 def get_molstar_rendered_components_related_variants(substitution_residue_list):
