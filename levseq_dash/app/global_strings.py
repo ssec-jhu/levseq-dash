@@ -1,7 +1,7 @@
 # -----------------------------
 # General App Strings
 # -----------------------------
-web_title = "Levseq Dashboard"
+web_title = "Directed Evolution Database"
 nav_lab = "Home"
 nav_upload = "Upload Your Experiment"
 nav_explore = "Explore the Database"
