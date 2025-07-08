@@ -34,7 +34,7 @@ def get_navbar():
                             className="d-flex align-items-center justify-content-start",
                         ),
                         dbc.Col(
-                            [gs.web_title],
+                            [html.Div(gs.web_title,className="app-title")],
                             style=vis.border_column,
                             # center the title
                             className="display-4 d-flex align-items-center justify-content-center",

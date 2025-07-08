@@ -47,3 +47,7 @@
 .main-color {
     color: var(--cal-tech-color-1) !important;
 }
+
+.app-title{
+    font-weight: 900;
+}

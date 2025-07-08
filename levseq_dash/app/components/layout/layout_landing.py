@@ -18,12 +18,8 @@ def get_layout():
                                 src="/assets/bg.png",
                                 className="bg-image-center bg-image-center-container bg-image-washed",
                             ),
-                            html.H1("Welcome to the Levseq Dashboard!", className="fw-bold text-primary text-center"),
-                            html.H6(
-                                "a visualization tool for analyzing directed "
-                                "evolution experiments in protein engineering",
-                                className="text-secondary text-center",
-                            ),
+                            html.H1(gs.welcome, className="fw-bold text-primary text-center"),
+                            html.H6(gs.welcome_text, className="text-secondary text-center"),
                         ],
                         className="p-5 d-flex justify-content-center align-items-center",
                     ),
