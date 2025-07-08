@@ -125,7 +125,10 @@ download_original = "Unfiltered"
 help_download = 'Download results in CSV format. Default is set to "Unfiltered" mode.'
 help_download_mode_unfiltered = "Results will be downloaded WITHOUT table filters applied."
 help_download_mode_filtered = "Results will be downloaded WITH table filters applied."
-help_threshold = "Select a similarity threshold between 0 and 1 (default: 0.8)."
+help_threshold = (
+    "Specify a sequence similarity threshold in the range [0, 1], "
+    "where the default value of 0.8 corresponds to 80% pairwise identity."
+)
 help_gof_lof = "Enter the number of GoF and LoF mutations to extract from the matched sequence."
 
 # -----------------------------

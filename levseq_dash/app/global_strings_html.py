@@ -37,8 +37,9 @@ markdown_note_matched_seq = """
 """
 
 exp_seq_align_blurb = [
-    "The parent sequence is preloaded for convenience. Select a similarity threshold between 0 and 1 (default: 0.8). "
-    "Enter residue positions separated by commas (e.g., 59, 102), then click on ",
+    "The parent sequence is preloaded for convenience. ",
+    gs.help_threshold,
+    " Enter residue positions separated by commas (e.g., 59, 102), then click on ",
     html.B(gs.seq_align_form_button_sequence_matching),
     " to identify variants containing those mutations along with any co-occurring changes. ",
 ]
