@@ -315,33 +315,33 @@ def get_layout():
                             html.Li(
                                 [
                                     html.Span("Explore Experiments: ", className=primary_bold),
-                                    html.P("Select an experiment TBD"),
+                                    html.P("Select an experiment."),
                                 ],
                                 className="mb-2",
                             ),
                             html.Li(
                                 [
                                     html.Span("Configure Settings: ", className=primary_bold),
-                                    html.P("Adjust visualization parameters to suit your analysis needs"),
+                                    html.P("Adjust visualization parameters to suit your analysis needs."),
                                 ],
                                 className="mb-2",
                             ),
                             html.Li(
                                 [
                                     html.Span("Explore Results: ", className=primary_bold),
-                                    html.P("Interact with plots, tables, and 3D models to explore your data"),
+                                    html.P("Interact with plots, tables, and 3D models to explore your data."),
                                 ]
                             ),
                             html.Li(
                                 [
                                     html.Span("Compare Sequences: ", className=primary_bold),
-                                    html.P("Use alignment tools to find related sequences and shared motifs"),
+                                    html.P("Use alignment tools to find related sequences and shared motifs."),
                                 ]
                             ),
                             html.Li(
                                 [
                                     html.Span("Export Findings: ", className=primary_bold),
-                                    html.P("Download visualizations and data for further analysis"),
+                                    html.P("Download visualizations and data for further analysis."),
                                 ]
                             ),
                         ],
