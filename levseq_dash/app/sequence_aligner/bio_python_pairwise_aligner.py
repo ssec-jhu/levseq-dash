@@ -41,7 +41,7 @@ def setup_aligner_blastp():
     #  The substitution matrix is identical to BLOSUM62, except for some
     #  values of the ambiguous amino acids B, Z, and X; the values for
     #  the ambiguous amino acids U, O, and J are not included in BLOSUM62.
-    #  REQUEST BY PI to use BLOSOM62 matrix
+    #  REQUEST BY PI to use BLOSUM62 matrix
     aligner.substitution_matrix = substitution_matrices.load("BLOSUM62")
 
     # verify the matrix has been replaced with BLOSUM62
