@@ -8,7 +8,7 @@ nav_explore = "Explore the Database"
 nav_find_seq = "Find Similar Sequences"
 nav_about = "About LevSeq Dashboard"
 
-welcome = "Welcome to the Directed Evolution Database!"
+welcome = "Welcome to the DEDB Dashboard!"
 welcome_text = "a visualization tool for analyzing directed evolution experiments in protein engineering"
 
 
