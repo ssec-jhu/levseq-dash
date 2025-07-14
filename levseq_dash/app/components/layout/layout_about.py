@@ -17,13 +17,13 @@ def get_layout():
             html.Div(
                 [
                     html.P(
-                        "LevSeq Dashboard is a specialized visualization tool for analyzing directed "
-                        "evolution experiments in protein engineering. This dashboard enables researchers to "
+                        "The Directed Evolution Database (DEDB) Dashboard is a specialized visualization tool for "
+                        "analyzing directed evolution experiments in protein engineering. "
+                        "This dashboard enables researchers to "
                         "explore sequence-function relationships, identify beneficial and detrimental "
-                        "mutations,"
-                        "and make data-driven decisions for protein design."
+                        "mutations, and make data-driven decisions for protein design."
                     ),
-                    html.P("LevSeq Dashboard was designed with three core principles in mind:", className="mb-3"),
+                    html.P("DEDB Dashboard was designed with three core principles in mind:", className="mb-3"),
                     html.Ol(
                         [
                             html.Li(
@@ -254,7 +254,7 @@ def get_layout():
             html.Div(
                 [
                     html.P(
-                        "LevSeq Dashboard is built using a modern technology stack "
+                        "The Directed Evolution Database Dashboard is built using a modern technology stack "
                         "optimized for scientific visualization:"
                     ),
                     html.Div(
@@ -355,12 +355,78 @@ def get_layout():
             html.Div(
                 [
                     html.P(
-                        "LevSeq Dashboard is developed and maintained by the Scientific "
-                        "Software Engineering Center (SSEC) at Johns Hopkins University and "
-                        "the California Institute of Technology. Our interdisciplinary team "
-                        "combines expertise in protein engineering, computational biology, "
-                        "and data visualization."
+                        "The Directed Evolution Database Dashboard was developed and is maintained as a joint effort "
+                        "between the Scientific Software Engineering Center (SSEC) at Johns Hopkins University "
+                        "and the California Institute of Technology. The project brings together domain experts "
+                        "in protein engineering, computational biology, data visualization, and "
+                        "scientific software development to "
+                        "create accessible and reproducible tools for the scientific community."
                     )
+                ],
+                className="px-5",
+            ),
+            html.H4("Acknowledgments", className="page-title mt-4"),
+            html.Hr(),
+            html.Div(
+                [
+                    "We gratefully acknowledge funding and support provided by:",
+                    html.Ul(
+                        [
+                            html.Li(
+                                [
+                                    "The Scientific Software Engineering Center at Johns Hopkins University ",
+                                    html.A("(SSEC-JHU)", href="https://ai.jhu.edu/ssec/", target="_blank"),
+                                ]
+                            ),
+                            html.Li(
+                                [
+                                    "The generosity of Eric and Wendy Schmidt by recommendation of the ",
+                                    html.A(
+                                        "Schmidt Sciences Program.",
+                                        href="https://www.schmidtsciences.org/",
+                                        target="_blank",
+                                    ),
+                                ]
+                            ),
+                            html.Li(["NSF Grant(s): TBD"]),
+                        ],
+                    ),
+                    "We also thank collaborators and users whose feedback has helped shape the design "
+                    "and functionality of this tool.",
+                ],
+                className="px-5",
+            ),
+            html.H4("GitHub & Support", className="page-title mt-4"),
+            html.Hr(),
+            html.Div(
+                [
+                    "The source code for the DEDB Dashboard is open-source and available on ",
+                    html.A("GitHub", href="https://github.com/ssec-jhu/levseq-dash", target="_blank"),
+                    html.P(
+                        "If you encounter a bug, would like to request a feature, or wish to contribute, "
+                        "please open an issue on the GitHub Issues page."
+                    ),
+                ],
+                className="px-5",
+            ),
+            html.H4("Citation", className="page-title mt-4"),
+            html.Hr(),
+            html.Div(
+                [
+                    "If you use the DEDB Dashboard in your research, please cite both the paper and the software:",
+                    html.Ul(
+                        [
+                            html.Li("Paper Citation: [TBD]"),
+                            html.Li(
+                                [
+                                    "Software Citation: ",
+                                    html.A(
+                                        "Zenodo DOI", href="https://doi.org/10.5281/zenodo.15880412", target="_blank"
+                                    ),
+                                ]
+                            ),
+                        ]
+                    ),
                 ],
                 className="px-5",
             ),
