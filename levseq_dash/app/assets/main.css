@@ -51,3 +51,11 @@
 .app-title{
     font-weight: 900;
 }
+
+a {
+  color: var(--cal-tech-color-4);; /* Replace with your desired color */
+}
+
+a:hover {
+  color: var(--cal-tech-color-2);; /* Hover color */
+}
