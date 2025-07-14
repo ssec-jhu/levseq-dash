@@ -421,7 +421,7 @@ def get_layout():
                                 [
                                     "Software Citation: ",
                                     html.A(
-                                        "Zenodo DOI", href="https://doi.org/10.5281/zenodo.15880412", target="_blank"
+                                        "Zenodo DOI", href="https://doi.org/10.5281/zenodo.15880411", target="_blank"
                                     ),
                                 ]
                             ),
