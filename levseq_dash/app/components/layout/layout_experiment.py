@@ -243,7 +243,11 @@ def get_tab_experiment_main():
                                                 [get_slider_area_layout()],
                                                 class_name="p-2",
                                             ),
-                                            dbc.Row(dbc.Col(widgets.get_protein_viewer())),
+                                            dbc.Row(
+                                                dbc.Col(
+                                                    widgets.get_protein_viewer(id_viewer="id-viewer", height="600px")
+                                                )
+                                            ),
                                         ],
                                         # style={
                                         #     "height": "100%",
@@ -612,14 +616,20 @@ def get_card_experiment_related_variants_result():
                                         [
                                             dbc.Col(
                                                 [
-                                                    html.Div(id="id-exp-related-variants-protein-viewer"),
+                                                    widgets.get_protein_viewer(
+                                                        id_viewer="id-exp-related-variants-protein-viewer",
+                                                        height=vis.related_protein_viewer_height,
+                                                    ),
                                                 ],
                                                 width=6,
                                                 style=vis.border_column,
                                             ),
                                             dbc.Col(
                                                 [
-                                                    html.Div(id="id-exp-related-variants-selected-protein-viewer"),
+                                                    widgets.get_protein_viewer(
+                                                        id_viewer="id-exp-related-variants-selected-protein-viewer",
+                                                        height=vis.related_protein_viewer_height,
+                                                    )
                                                 ],
                                                 style=vis.border_column,
                                             ),

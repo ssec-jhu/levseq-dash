@@ -459,7 +459,7 @@ def display_default_selected_matching_sequences(data):
 
 
 @app.callback(
-    Output("id-viewer-selected-seq-matched-protein", "children"),
+    Output("id-viewer-selected-seq-matched-protein", "data"),
     Output("id-selected-seq-matched-reaction-image", "src"),
     Output("id-selected-seq-matched-substrate", "children"),
     Output("id-selected-seq-matched-product", "children"),
@@ -491,42 +491,32 @@ def display_selected_matching_sequences(selected_rows):
         # if there is no geometry for the file ignore it
         if geometry_file:
             # gather the rendering components per the indices
-            list_of_rendered_components = u_protein_viewer.get_molstar_rendered_components_seq_alignment(
-                hot_residue_indices_list=hot_spots,
-                cold_residue_indices_list=cold_spots,
-                substitution_residue_list=substitutions,
+            list_of_rendered_components, hs_only, cs_only, both_hs_and_cs = (
+                u_protein_viewer.get_molstar_rendered_components_seq_alignment(
+                    hot_residue_indices_list=hot_spots,
+                    cold_residue_indices_list=cold_spots,
+                    substitution_residue_list=substitutions,
+                )
             )
 
             # the lists are ints, need to convert back to string
-            highlights_hot = ", ".join(
-                str(num) for num in list_of_rendered_components[1]["targets"][0]["residue_numbers"]
-            )
-            highlights_cold = ", ".join(
-                str(num) for num in list_of_rendered_components[2]["targets"][0]["residue_numbers"]
-            )
-            highlights_both = ", ".join(
-                str(num) for num in list_of_rendered_components[3]["targets"][0]["residue_numbers"]
-            )
+            highlights_hot = ", ".join(str(num) for num in hs_only)
+            highlights_cold = ", ".join(str(num) for num in cs_only)
+            highlights_both = ", ".join(str(num) for num in both_hs_and_cs)
 
             # set up the molecular viewer and render it
             pdb_cif = molstar_helper.parse_molecule(
                 geometry_file,
                 component=list_of_rendered_components,
-                preset={"kind": "empty"},
+                preset={"kind": "empty"},  # need to keep this. not having this renders the chain as a component
                 fmt="cif",
             )
-            viewer = [
-                dash_molstar.MolstarViewer(
-                    data=pdb_cif,
-                    style={"width": "auto", "height": vis.seq_match_protein_viewer_height},
-                    # focus=analyse,
-                )
-            ]
+
         else:
             # if something goes down with the geometry file, it will still show everything else
-            viewer = no_update
+            pdb_cif = no_update
         return (
-            viewer,
+            pdb_cif,
             svg_src_image,
             substrate,
             product,
@@ -855,8 +845,9 @@ def on_view_selected_residue_from_table(selected_rows):
             else:
                 # if there is no residue to show, just reset the selection
                 highlighted_residue_info += f"None"
-
-    return sel, foc, highlighted_residue_info, view_all_residue_switch
+        return sel, foc, highlighted_residue_info, view_all_residue_switch
+    raise PreventUpdate
+    # return sel, foc, highlighted_residue_info, view_all_residue_switch
 
 
 @app.callback(
@@ -1090,7 +1081,7 @@ def display_default_selected_exp_related_variants(data):
     # --------------
     # selected protein related
     # --------------
-    Output("id-exp-related-variants-selected-protein-viewer", "children", allow_duplicate=True),
+    Output("id-exp-related-variants-selected-protein-viewer", "data", allow_duplicate=True),
     Output("id-exp-related-variants-selected-id", "children"),
     Output("id-exp-related-variants-selected-reaction-image", "src"),
     Output("id-exp-related-variants-selected-substrate", "children"),
@@ -1098,7 +1089,7 @@ def display_default_selected_exp_related_variants(data):
     # --------------
     # Query protein related
     # --------------
-    Output("id-exp-related-variants-protein-viewer", "children", allow_duplicate=True),
+    Output("id-exp-related-variants-protein-viewer", "data", allow_duplicate=True),
     Input("id-table-exp-related-variants", "selectedRows"),
     State("id-experiment-selected", "data"),
     prevent_initial_call=True,
@@ -1130,17 +1121,9 @@ def display_selected_exp_related_variants(selected_rows, experiment_id):
                 component=u_protein_viewer.get_molstar_rendered_components_related_variants(
                     selected_substitutions_list
                 ),
-                preset={"kind": "empty"},
+                preset={"kind": "empty"},  # need to keep this. not having this renders the chain as a component
                 fmt="cif",
             )
-
-            selected_experiment_viewer = [
-                dash_molstar.MolstarViewer(
-                    data=pdb_cif_selection,
-                    style={"width": "auto", "height": vis.related_protein_viewer_height},
-                    # focus=analyse,
-                )
-            ]
 
             # -------------------
             # Setup the experiment's molecular viewer
@@ -1150,17 +1133,9 @@ def display_selected_exp_related_variants(selected_rows, experiment_id):
                 component=u_protein_viewer.get_molstar_rendered_components_related_variants(
                     selected_substitutions_list
                 ),
-                preset={"kind": "empty"},
+                preset={"kind": "empty"},  # need to keep this. not having this renders the chain as a component
                 fmt="cif",
             )
-
-            query_experiment_viewer = [
-                dash_molstar.MolstarViewer(
-                    data=pdb_cif_query,
-                    style={"width": "auto", "height": vis.related_protein_viewer_height},
-                    # focus=analyse,
-                )
-            ]
 
             # create the reaction image for the selected row
             selected_svg_src = u_reaction.create_reaction_image(selected_substrate, selected_product)
@@ -1170,7 +1145,7 @@ def display_selected_exp_related_variants(selected_rows, experiment_id):
                 # --------------
                 # selected experiment related
                 # --------------
-                selected_experiment_viewer,
+                pdb_cif_selection,
                 selected_experiment_id,
                 selected_svg_src,
                 selected_substrate,
@@ -1178,7 +1153,7 @@ def display_selected_exp_related_variants(selected_rows, experiment_id):
                 # --------------
                 # query protein related
                 # --------------
-                query_experiment_viewer,
+                pdb_cif_query,
             )
 
     raise PreventUpdate

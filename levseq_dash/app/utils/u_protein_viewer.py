@@ -105,28 +105,38 @@ def get_molstar_rendered_components_seq_alignment(
     both_hot_and_cold_residue = molstar_helper.get_targets(chain="A", residue=both_hs_and_cs)
     mismatch_residue = molstar_helper.get_targets(chain="A", residue=mismatch_residues)
 
+    # gather components if any
+    component_list = list()
     component_main_chain = molstar_helper.create_component(
         label="main", targets=main_chain, representation=rep_cartoon_gray
     )
-    component_hot_residue = molstar_helper.create_component(
-        label=gs.cc_hot_indices_per_smiles, targets=hot_residue, representation=rep_hot
-    )
-    component_cold_residue = molstar_helper.create_component(
-        label=gs.cc_cold_indices_per_smiles, targets=cold_residue, representation=rep_cold
-    )
-    component_both_residue = molstar_helper.create_component(
-        label=gs.cc_hot_and_cold_indices_per_smiles, targets=both_hot_and_cold_residue, representation=rep_hot_cold
-    )
-    component_mismatch_residue = molstar_helper.create_component(
-        label=gs.c_substitutions, targets=mismatch_residue, representation=rep_mismatches
-    )
-    return [
-        component_main_chain,
-        component_hot_residue,
-        component_cold_residue,
-        component_both_residue,
-        component_mismatch_residue,
-    ]
+    component_list.append(component_main_chain)
+
+    if hs_only:
+        component_hot_residue = molstar_helper.create_component(
+            label=gs.cc_hot_indices_per_smiles, targets=hot_residue, representation=rep_hot
+        )
+        component_list.append(component_hot_residue)
+
+    if cs_only:
+        component_cold_residue = molstar_helper.create_component(
+            label=gs.cc_cold_indices_per_smiles, targets=cold_residue, representation=rep_cold
+        )
+        component_list.append(component_cold_residue)
+
+    if both_hs_and_cs:
+        component_both_residue = molstar_helper.create_component(
+            label=gs.cc_hot_and_cold_indices_per_smiles, targets=both_hot_and_cold_residue, representation=rep_hot_cold
+        )
+        component_list.append(component_both_residue)
+
+    if mismatch_residues:
+        component_mismatch_residue = molstar_helper.create_component(
+            label=gs.c_substitutions, targets=mismatch_residue, representation=rep_mismatches
+        )
+        component_list.append(component_mismatch_residue)
+
+    return component_list, hs_only, cs_only, both_hs_and_cs
 
 
 def get_molstar_rendered_components_related_variants(substitution_residue_list):
@@ -149,14 +159,20 @@ def get_molstar_rendered_components_related_variants(substitution_residue_list):
     analyse = molstar_helper.get_focus(main_chain, analyse=False)
     sub_residue = molstar_helper.get_targets(chain="A", residue=sub_residues_list)
 
+    components_list = list()
     component_main_chain = molstar_helper.create_component(
         label="main", targets=main_chain, representation=rep_by_seq_id
     )
+    components_list.append(component_main_chain)
 
-    component_sub_residue = molstar_helper.create_component(
-        label=gs.c_substitutions, targets=sub_residue, representation=rep_uniform_red
-    )
-    component_sub_residue_2 = molstar_helper.create_component(
-        label=f"{gs.c_substitutions}_2", targets=sub_residue, representation=rep_ball_stick
-    )
-    return [component_main_chain, component_sub_residue, component_sub_residue_2]
+    if sub_residues_list:
+        component_sub_residue = molstar_helper.create_component(
+            label=gs.c_substitutions, targets=sub_residue, representation=rep_uniform_red
+        )
+        component_sub_residue_2 = molstar_helper.create_component(
+            label=f"{gs.c_substitutions}_2", targets=sub_residue, representation=rep_ball_stick
+        )
+        components_list.append(component_sub_residue)
+        components_list.append(component_sub_residue_2)
+
+    return components_list
