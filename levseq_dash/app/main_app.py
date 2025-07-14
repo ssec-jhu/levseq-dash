@@ -491,28 +491,24 @@ def display_selected_matching_sequences(selected_rows):
         # if there is no geometry for the file ignore it
         if geometry_file:
             # gather the rendering components per the indices
-            list_of_rendered_components = u_protein_viewer.get_molstar_rendered_components_seq_alignment(
-                hot_residue_indices_list=hot_spots,
-                cold_residue_indices_list=cold_spots,
-                substitution_residue_list=substitutions,
+            list_of_rendered_components, hs_only, cs_only, both_hs_and_cs = (
+                u_protein_viewer.get_molstar_rendered_components_seq_alignment(
+                    hot_residue_indices_list=hot_spots,
+                    cold_residue_indices_list=cold_spots,
+                    substitution_residue_list=substitutions,
+                )
             )
 
             # the lists are ints, need to convert back to string
-            highlights_hot = ", ".join(
-                str(num) for num in list_of_rendered_components[1]["targets"][0]["residue_numbers"]
-            )
-            highlights_cold = ", ".join(
-                str(num) for num in list_of_rendered_components[2]["targets"][0]["residue_numbers"]
-            )
-            highlights_both = ", ".join(
-                str(num) for num in list_of_rendered_components[3]["targets"][0]["residue_numbers"]
-            )
+            highlights_hot = ", ".join(str(num) for num in hs_only)
+            highlights_cold = ", ".join(str(num) for num in cs_only)
+            highlights_both = ", ".join(str(num) for num in both_hs_and_cs)
 
             # set up the molecular viewer and render it
             pdb_cif = molstar_helper.parse_molecule(
                 geometry_file,
                 component=list_of_rendered_components,
-                preset={"kind": "empty"},
+                preset={"kind": "empty"},  # need to keep this. not having this renders the chain as a component
                 fmt="cif",
             )
             viewer = [
@@ -856,7 +852,7 @@ def on_view_selected_residue_from_table(selected_rows):
                 # if there is no residue to show, just reset the selection
                 highlighted_residue_info += f"None"
 
-    return sel, foc, highlighted_residue_info, view_all_residue_switch
+        return sel, foc, highlighted_residue_info, view_all_residue_switch
 
 
 @app.callback(
@@ -1130,7 +1126,7 @@ def display_selected_exp_related_variants(selected_rows, experiment_id):
                 component=u_protein_viewer.get_molstar_rendered_components_related_variants(
                     selected_substitutions_list
                 ),
-                preset={"kind": "empty"},
+                preset={"kind": "empty"},  # need to keep this. not having this renders the chain as a component
                 fmt="cif",
             )
 
@@ -1150,7 +1146,7 @@ def display_selected_exp_related_variants(selected_rows, experiment_id):
                 component=u_protein_viewer.get_molstar_rendered_components_related_variants(
                     selected_substitutions_list
                 ),
-                preset={"kind": "empty"},
+                preset={"kind": "empty"},  # need to keep this. not having this renders the chain as a component
                 fmt="cif",
             )
 
