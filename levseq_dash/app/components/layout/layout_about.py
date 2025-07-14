@@ -17,13 +17,13 @@ def get_layout():
             html.Div(
                 [
                     html.P(
-                        "LevSeq Dashboard is a specialized visualization tool for analyzing directed "
-                        "evolution experiments in protein engineering. This dashboard enables researchers to "
+                        "The Directed Evolution Database (DEDB) Dashboard is a specialized visualization tool for "
+                        "analyzing directed evolution experiments in protein engineering. "
+                        "This dashboard enables researchers to "
                         "explore sequence-function relationships, identify beneficial and detrimental "
-                        "mutations,"
-                        "and make data-driven decisions for protein design."
+                        "mutations, and make data-driven decisions for protein design."
                     ),
-                    html.P("LevSeq Dashboard was designed with three core principles in mind:", className="mb-3"),
+                    html.P("DEDB Dashboard was designed with three core principles in mind:", className="mb-3"),
                     html.Ol(
                         [
                             html.Li(
@@ -254,7 +254,7 @@ def get_layout():
             html.Div(
                 [
                     html.P(
-                        "LevSeq Dashboard is built using a modern technology stack "
+                        "The Directed Evolution Database Dashboard is built using a modern technology stack "
                         "optimized for scientific visualization:"
                     ),
                     html.Div(
