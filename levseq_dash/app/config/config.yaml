@@ -2,20 +2,28 @@ app-mode: "disk"
 #app-mode: "db"
 
 
-# use these settings for db
-db-service:
-  host: "http://hplc-pc.che.caltech.edu"
-  port: 8051
-  session_key: "\xd6\x70\x04\xab\xd2\x08\x42\xe1\xa3\x5d\xfe\x1c\xce\x78\xd4\x7a"  # uuid.uuid4().hex
+disk:
+  # ---------------------------------
+  # VALUES BELOW ONLY USED FOR app-mode: "disk"
+  # ---------------------------------
 
-
-load-from-disk:
   # use this for loading from disk
   # these files MUST be embedded in the repo for the docker file to work
   # define from package root (levseq_dash) here, don't put a '/' at the beginning
 
-  # use this for loading the test-data in dev mode
+  # ----- use this for loading the test-data in dev mode
   #data_path: "app/tests/test_data/data"
 
-  # use this for loading the playground-mode data
+  # ----- use this for loading the playground-mode data
   data_path: "app/data/DEDB"
+
+  # in playground mode uploading new experiments or
+  # deleting current experiments is disabled
+  enable_data_modification: false
+
+# use these settings for db
+db:
+  db-service:
+    host: "http://hplc-pc.che.caltech.edu"
+    port: 8051
+    session_key: "\xd6\x70\x04\xab\xd2\x08\x42\xe1\xa3\x5d\xfe\x1c\xce\x78\xd4\x7a"  # uuid.uuid4().hex

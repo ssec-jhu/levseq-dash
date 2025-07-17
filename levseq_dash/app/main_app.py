@@ -43,7 +43,7 @@ server = app.server
 
 load_figure_template(gs.dbc_template_name)
 
-app.server.config.update(SECRET_KEY=settings.load_config()["db-service"]["session_key"])
+# app.server.config.update(SECRET_KEY=settings.load_config()["db-service"]["session_key"])
 
 # app keeps one instance of the db manager
 # TODO: this may be replaced

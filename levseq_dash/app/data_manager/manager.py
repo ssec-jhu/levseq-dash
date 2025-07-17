@@ -15,15 +15,13 @@ from levseq_dash.app.data_manager.experiment import Experiment, MutagenesisMetho
 class DataManager:
     def __init__(self):
         """Initialize the database"""
-        config = settings.load_config()
-        self.use_db_web_service = config["app-mode"]
-        if self.use_db_web_service == AppMode.db.value:
-            pass
+        if settings.is_db_mode():
+            self.use_db_web_service = AppMode.db.value
             # TODO: database connection happens on instance load
             # ideally defined in the config file
-            # BUT for now we can hardcode it here
             # connect_to_db( host, port, username, password)
-        elif self.use_db_web_service == AppMode.disk.value:
+        elif settings.is_disk_mode():
+            self.use_db_web_service = AppMode.disk.value
             print(f"------------------------------------------")
             # create a default empty dictionary of experiments
             self.experiments_dict = defaultdict(Experiment)
@@ -34,15 +32,15 @@ class DataManager:
 
             if env_data_path is None:
                 # if no path is provided, read from the path in config file
-                # this assumes the data  in the container somewhere
-                raw_path = config["load-from-disk"]["data_path"]
-                data_path = (settings.package_root / raw_path).resolve()  # .resolve will make a clean absolute path
+                disk_settings = settings.get_disk_settings()
+                raw_path = disk_settings.get("data_path")
+                data_path = (settings.package_root / raw_path).resolve() if raw_path else None
                 print(f"[LOG] Using config file data_path: {data_path}")
             else:
                 data_path = Path(env_data_path).resolve()
                 print(f"[LOG] Using env DATA_PATH for data path: {data_path}")
 
-            if not data_path.exists():
+            if not data_path or not data_path.exists():
                 print(f"[LOG] Data path not found: {data_path}")
                 raise FileNotFoundError()
 

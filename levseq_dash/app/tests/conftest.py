@@ -64,7 +64,7 @@ def mock_load_config_from_disk(mocker, test_data_path):
     data_path = test_data_path / "data"
     mock.return_value = {
         "app-mode": "disk",
-        "load-from-disk": {"data_path": data_path},
+        "disk": {"data_path": data_path},
     }
     return mock
 
@@ -87,7 +87,7 @@ def mock_load_config_invalid(mocker):
     mock = mocker.patch(load_config_mock_string)
     mock.return_value = {
         "app-mode": "disk",
-        "load-from-disk": {"data_path": "non/existent/path"},
+        "disk": {"data_path": "non/existent/path"},
     }
     return mock
 
@@ -101,7 +101,7 @@ def mock_load_config_app_mode_error(mocker):
     mock.return_value = {
         "app-mode": "invalid_string",
         # path is not important here
-        "load-from-disk": {"data_path": "non/existent/path"},
+        "disk": {"data_path": "non/existent/path"},
     }
     return mock
 

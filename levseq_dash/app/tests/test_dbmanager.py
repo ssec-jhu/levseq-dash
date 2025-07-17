@@ -139,9 +139,8 @@ def test_load_config():
     """
     Config file that is distributed must have the app mode set
     """
-    cfg = settings.load_config()
-    assert len(cfg) > 0
-    assert cfg.get("app-mode") == "disk" or cfg.get("app-mode") == "db"
+    # Use centralized settings helpers for config and mode checks
+    assert settings.is_disk_mode() or settings.is_db_mode()
 
 
 def test_load_config_invalid(mock_load_config_invalid):
