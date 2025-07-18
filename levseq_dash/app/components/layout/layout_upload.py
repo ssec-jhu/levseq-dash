@@ -3,7 +3,9 @@ from dash import dcc, html
 
 from levseq_dash.app import global_strings as gs
 from levseq_dash.app.components import vis, widgets
+from levseq_dash.app.config import settings
 from levseq_dash.app.data_manager.experiment import MutagenesisMethod
+
 
 # TODO: all placeholders must be in strings file
 
@@ -191,8 +193,36 @@ def get_form():
     )
 
 
-def get_layout():
+def get_upload_disabled_alert():
     return html.Div(
-        [html.H4(gs.nav_upload, className="page-title"), html.Hr(), get_form()],
+        children=[
+            dbc.Alert(
+                children=(
+                    ["To upload data, please use the local instance. "
+                     "You may continue to use the form to validate your SMILES strings and data files. "
+                     "For guidance on formatting your data for public release via the local instance, refer to the ",
+                     html.B("About"),
+                     " page. "
+                     ]
+                ),
+                className="p-4 user-alert-error",
+            )
+        ],
+        style={
+            "width": "70%",
+            "margin": "0 auto",  # Center horizontally
+        },
+    )
+
+
+def get_layout():
+    layout = [html.H4(gs.nav_upload, className="page-title"), html.Hr(), get_form()]
+
+    # add an alert text if upload is disabled
+    if not settings.is_data_modification_enabled():
+        layout.insert(2, get_upload_disabled_alert())
+
+    return html.Div(
+        layout,
         className=vis.main_page_class,
     )

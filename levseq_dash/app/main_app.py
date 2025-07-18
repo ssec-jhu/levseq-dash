@@ -278,7 +278,13 @@ def enable_submit_experiment(experiment_success, structure_success, valid_substr
     """
     This callback is used to enable the submit button once all requirements are met
     """
-    if experiment_success and structure_success and valid_substrate and valid_product:
+    if (
+        experiment_success
+        and structure_success
+        and valid_substrate
+        and valid_product
+        and settings.is_data_modification_enabled()
+    ):
         return False
     else:
         return True

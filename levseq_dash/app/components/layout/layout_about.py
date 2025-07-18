@@ -305,9 +305,28 @@ def get_layout():
                                 [
                                     html.Span("Upload Data: ", className=primary_bold),
                                     html.P(
-                                        "Import your sequence and fitness data through the upload interface. "
-                                        "Once your data is uploaded, your data will be listed amongst "
-                                        "other experiments in the home page."
+                                        [
+                                            "To upload your sequence and fitness data, please ",
+                                            html.I("use the local instance"),
+                                            ". This functionality is disabled on the public version to preserve "
+                                            "data integrity and protect your privacy. "
+                                            "Once your data is added locally, "
+                                            "your data will appear alongside other experiments. If you wish to "
+                                            "make your data public, first validate the upload "
+                                            "on the local instance"
+                                            "to ensure everything appears as intended. When satisfied with the "
+                                            "visualization, please take screenshots of the "
+                                            "dashboard and email them "
+                                            "to us at: ylong[at]caltech[dot]edu, "
+                                            "along with the upload files and "
+                                            "the required metadata. For more information, refer to our ",
+                                            html.A(
+                                                "GitHub repository",
+                                                href="https://github.com/ssec-jhu/levseq-dash",
+                                                target="_blank",
+                                            ),
+                                            ".",
+                                        ]
                                     ),
                                 ],
                                 className="mb-2",
