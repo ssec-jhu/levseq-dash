@@ -1,6 +1,9 @@
+import time
+
 import pytest
 
 from levseq_dash.app import global_strings as gs
+from levseq_dash.app.sequence_aligner import bio_python_pairwise_aligner
 from levseq_dash.app.utils import u_seq_alignment
 
 
@@ -166,3 +169,53 @@ def test_search_and_gather_variant_info_for_matching_experiment(residue_list, co
     assert len(exp_results_row_data) == count
     if count != 0:
         assert len(exp_results_row_data[0]) == 28
+
+
+def test_target_sequence_test_data(dbmanager_read_all_dedb_data):
+    # experiment 35's sequence
+    query = (
+        "MKGYFGPYGGQYVPEILMGALEELEAAYEGIMKDESFWKEFNDLLRDYAGRPTPLYFARRLSEKYGARVYLKREDLLH"
+        "TGAHKINNAIGQVLLAKLMGKTRIIAETGAGQHGVATATAAALFGMECVIYMGEEDTIRQKLNVERMKLLGAKVVPVK"
+        "SGSRTLKDAIDEALRDWITNLQTTYYVFGSVVGPHPYPIIVRNFQKVIGEETKKQIPEKEGRLPDYIVACVSGGSNAA"
+        "GIFYPFIDSGVKLIGVEAGGEGLETGKHAASLLKGKIGYLHGSKTFVLQDDWGQVQVSHSVSAGLDYSGVGPEHAYWR"
+        "ETGKVLYDAVTDEEALDAFIELSRLEGIIPALESSHALAYLKKINIKGKVVVVNLSGRGDKDLESVLNHPYVRERIR"
+    )
+
+    all_lab_sequences = dbmanager_read_all_dedb_data.get_lab_sequences()
+    assert len(all_lab_sequences) == 36
+    # get the alignment and the base score
+    start_time = time.time()
+    lab_seq_match_data, base_score = bio_python_pairwise_aligner.get_alignments(
+        query_sequence=query, threshold=float(0.8), targets=all_lab_sequences
+    )
+    end_time = time.time()
+    # verify the results
+    assert len(lab_seq_match_data) == 3
+    assert base_score == 2011.0
+    # test the experiment ids
+    assert lab_seq_match_data[0].get("experiment_id") == 2
+    assert lab_seq_match_data[1].get("experiment_id") == 11
+    assert lab_seq_match_data[2].get("experiment_id") == 35
+
+    assert lab_seq_match_data[0].get("alignment_score") == 2011.0
+    assert lab_seq_match_data[1].get("alignment_score") == 1953.0
+    assert lab_seq_match_data[2].get("alignment_score") == 2011.0
+
+    assert lab_seq_match_data[0].get("norm_score") == 1.0
+    assert lab_seq_match_data[1].get("norm_score") == 0.9712
+    assert lab_seq_match_data[2].get("norm_score") == 1.0
+
+    assert lab_seq_match_data[0].get("mismatches") == 0
+    assert lab_seq_match_data[1].get("mismatches") == 10
+    assert lab_seq_match_data[2].get("mismatches") == 0
+
+    assert lab_seq_match_data[0].get("gaps") == 0.0
+    assert lab_seq_match_data[1].get("gaps") == 0.0
+    assert lab_seq_match_data[2].get("gaps") == 0.0
+
+    # verify the sequence alignment
+    assert lab_seq_match_data[0].get("sequence_alignment") is not None
+    assert lab_seq_match_data[1].get("sequence_alignment") is not None
+    assert lab_seq_match_data[2].get("sequence_alignment") is not None
+
+    print(f"***** Execution time for get_alignments: {end_time - start_time} seconds")

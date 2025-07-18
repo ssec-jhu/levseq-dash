@@ -70,6 +70,20 @@ def mock_load_config_from_disk(mocker, test_data_path):
 
 
 @pytest.fixture
+def mock_load_config_from_disk_dedb_data(mocker, package_root):
+    """
+    Fixture to mock a response for load config from disk
+    """
+    data_path = package_root / "app" / "data" / "DEDB"
+    mock = mocker.patch(load_config_mock_string)
+    mock.return_value = {
+        "app-mode": "disk",
+        "disk": {"data_path": data_path},
+    }
+    return mock
+
+
+@pytest.fixture
 def mock_load_config_use_web(mocker):
     """
     Fixture to mock a response
@@ -118,6 +132,13 @@ def mock_load_using_existing_env_data_path(mock_load_config_from_disk, monkeypat
 
 @pytest.fixture
 def dbmanager_read_all_from_file(mock_load_config_from_disk):
+    from levseq_dash.app.data_manager.manager import DataManager
+
+    return DataManager()
+
+
+@pytest.fixture
+def dbmanager_read_all_dedb_data(mock_load_config_from_disk_dedb_data):
     from levseq_dash.app.data_manager.manager import DataManager
 
     return DataManager()
