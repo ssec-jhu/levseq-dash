@@ -1,4 +1,5 @@
 import base64
+from unittest.mock import patch
 
 import pandas as pd
 import pytest
@@ -148,3 +149,45 @@ def test_decode_dash_upload_data_to_base64_encoded_string_empty():
 def test_export_data_as_csv(option, sub_string):
     _, output = utils.export_data_as_csv(option, "test_file")
     assert sub_string in output["fileName"]
+
+
+def test_validate_smiles_string_valid_smiles():
+    valid_smiles = "CC(=O)OC1=CC=CC=C1C(=O)O"  # aspirin
+    with patch("levseq_dash.app.utils.utils.u_reaction.is_valid_smiles", return_value=True):
+        valid, invalid = utils.validate_smiles_string(valid_smiles)
+        assert valid is True
+        assert invalid is False
+
+
+def test_validate_smiles_string_invalid_smiles():
+    invalid_smiles = "C1CC1C(=O)(O"  # broken ring
+    with patch("levseq_dash.app.utils.utils.u_reaction.is_valid_smiles", return_value=False):
+        valid, invalid = utils.validate_smiles_string(invalid_smiles)
+        assert valid is False
+        assert invalid is True
+
+
+def test_validate_smiles_string_smiles_raises_exception():
+    # You can simulate errors in the function you're mocking
+    # with patch("your_module.u_reaction.is_valid_smiles", side_effect=Exception("something went wrong")):
+    with patch("levseq_dash.app.utils.utils.u_reaction.is_valid_smiles", side_effect=Exception("Error")):
+        valid, invalid = utils.validate_smiles_string("bad_input")
+        assert valid is False
+        assert invalid is True
+
+
+def test_returns_first_row_when_data_is_present():
+    data = [{"id": 1}, {"id": 2}, {"id": 3}]
+    result = utils.select_first_row_of_data(data)
+    assert result == [{"id": 1}]
+
+
+def test_returns_none_when_data_is_empty():
+    data = []
+    result = utils.select_first_row_of_data(data)
+    assert result is None
+
+
+def test_returns_none_when_data_is_none():
+    result = utils.select_first_row_of_data(None)
+    assert result is None

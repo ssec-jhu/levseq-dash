@@ -11,6 +11,7 @@ from levseq_dash.app.components.layout import (
     layout_about,
     layout_bars,
     layout_experiment,
+    layout_explore,
     layout_landing,
     layout_matching_sequences,
     layout_upload,
@@ -368,4 +369,4 @@ def test_about_page_layout():
 
 def test_explore_layout():
     """Test if the about page layout is correctly generated."""
-    assert isinstance(layout_about.get_layout(), html.Div)
+    assert isinstance(layout_explore.get_layout(), html.Div)
