@@ -7,9 +7,6 @@ from levseq_dash.app.config import settings
 from levseq_dash.app.data_manager.experiment import MutagenesisMethod
 
 
-# TODO: all placeholders must be in strings file
-
-
 def get_form():
     return dbc.Form(
         [
@@ -198,12 +195,13 @@ def get_upload_disabled_alert():
         children=[
             dbc.Alert(
                 children=(
-                    ["To upload data, please use the local instance. "
-                     "You may continue to use the form to validate your SMILES strings and data files. "
-                     "For guidance on formatting your data for public release via the local instance, refer to the ",
-                     html.B("About"),
-                     " page. "
-                     ]
+                    [
+                        "To upload data, please use the local instance. "
+                        "You may continue to use the form to validate your SMILES strings and data files. "
+                        "For guidance on formatting your data for public release via the local instance, refer to the ",
+                        html.B("About"),
+                        " page. ",
+                    ]
                 ),
                 className="p-4 user-alert-error",
             )
