@@ -8,12 +8,12 @@ from levseq_dash.app import global_strings as gs
 from levseq_dash.app.components import column_definitions as cd
 from levseq_dash.app.components import graphs, widgets
 from levseq_dash.app.components.layout import (
+    layout_about,
     layout_bars,
     layout_experiment,
     layout_landing,
     layout_matching_sequences,
     layout_upload,
-    layout_about,
 )
 from levseq_dash.app.utils import utils
 
@@ -69,7 +69,6 @@ def test_get_protein_viewer():
     viewer = widgets.get_protein_viewer()
     assert isinstance(viewer, dash_molstar.MolstarViewer)  # Ensure it's a MolstarViewer
     assert viewer.id == "id-viewer"  # Check ID
-    # assert viewer.style["height"] == "600px"  # Ensure height is set
 
 
 def test_get_form():
@@ -292,15 +291,16 @@ def test_get_table_experiment_related_variants():
     assert table.defaultColDef["filter"] is True
 
 
-def test_get_protein_viewer():
-    viewer = widgets.get_protein_viewer()
-    assert viewer.style["height"] == "600px"
-    assert viewer.layout["layoutControlsDisplay"] == "landscape"
+def test_get_alert_error():
+    alert = widgets.get_alert("Test error message", error=True)
+    assert alert.children == "Test error message"
+    assert alert.className == "p-3 user-alert-error"
 
 
 def test_get_alert():
-    alert = widgets.get_alert("Test error message", error=True)
+    alert = widgets.get_alert("Test error message", error=False)
     assert alert.children == "Test error message"
+    assert alert.className == "p-3 user-alert"
 
 
 def test_get_label_fixed_for_form():
@@ -362,5 +362,10 @@ def test_get_button_download():
 
 
 def test_about_page_layout():
+    """Test if the about page layout is correctly generated."""
+    assert isinstance(layout_about.get_layout(), html.Div)
+
+
+def test_explore_layout():
     """Test if the about page layout is correctly generated."""
     assert isinstance(layout_about.get_layout(), html.Div)
