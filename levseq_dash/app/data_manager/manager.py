@@ -412,3 +412,8 @@ class DataManager:
         n = len(self.experiments_dict.items())
         self.experiments_dict[n] = exp
         return n
+
+
+# Python will only run module-level code once per process, no matter how often Dash reloads pages or triggers callbacks
+# this will ensure Dash doesn't recreate the instance every time the page reloads or a callback is triggered
+singleton_data_mgr_instance = DataManager()
