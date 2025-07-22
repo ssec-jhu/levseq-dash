@@ -24,7 +24,7 @@ from levseq_dash.app.components.layout import (
 from levseq_dash.app.components.widgets import get_alert
 from levseq_dash.app.config import settings
 from levseq_dash.app.data_manager.experiment import run_sanity_checks_on_experiment_file
-from levseq_dash.app.data_manager.manager import DataManager
+from levseq_dash.app.data_manager.manager import singleton_data_mgr_instance
 from levseq_dash.app.sequence_aligner import bio_python_pairwise_aligner
 from levseq_dash.app.utils import u_protein_viewer, u_reaction, u_seq_alignment, utils
 
@@ -44,10 +44,6 @@ server = app.server
 load_figure_template(gs.dbc_template_name)
 
 # app.server.config.update(SECRET_KEY=settings.load_config()["db-service"]["session_key"])
-
-# app keeps one instance of the db manager
-# TODO: this may be replaced
-data_mgr = DataManager()
 
 app.layout = dbc.Container(
     [
@@ -94,7 +90,7 @@ def route_page(pathname):
     Input("id-table-all-experiments", "columnDefs"),
 )
 def load_landing_page(temp_text):
-    list_of_all_lab_experiments_with_meta = data_mgr.get_lab_experiments_with_meta_data()
+    list_of_all_lab_experiments_with_meta = singleton_data_mgr_instance.get_lab_experiments_with_meta_data()
 
     # all_substrate, all_product = utils.extract_all_substrate_product_smiles_from_lab_data(
     #     list_of_all_lab_experiments_with_meta
@@ -145,7 +141,7 @@ def update_landing_page_buttons(selected_rows):
 )
 def set_assay_list(assay_list):
     # TODO: check if this gets called back multiple times or not
-    assay_list = data_mgr.get_assays()
+    assay_list = singleton_data_mgr_instance.get_assays()
     return assay_list
 
 
@@ -316,7 +312,7 @@ def on_submit_experiment(
 ):
     if n_clicks > 0 and ctx.triggered_id == "id-button-submit":
         try:
-            experiment_id = data_mgr.add_experiment_from_ui(
+            experiment_id = singleton_data_mgr_instance.add_experiment_from_ui(
                 user_id="some_user_name",
                 experiment_name=experiment_name,
                 experiment_date=experiment_date,
@@ -366,7 +362,7 @@ def on_load_matching_sequences(results_are_cleared, n_clicks, query_sequence, th
     if ctx.triggered_id == "id-cleared-run-seq-matching" and results_are_cleared:
         try:
             # get all the lab sequences
-            all_lab_sequences = data_mgr.get_lab_sequences()
+            all_lab_sequences = singleton_data_mgr_instance.get_lab_sequences()
 
             # get the alignment and the base score
             lab_seq_match_data, base_score = bio_python_pairwise_aligner.get_alignments(
@@ -388,7 +384,7 @@ def on_load_matching_sequences(results_are_cleared, n_clicks, query_sequence, th
                 exp_id = lab_seq_match_data[i][gs.cc_experiment_id]
 
                 # get the experiment core data for the db
-                exp = data_mgr.get_experiment(exp_id)
+                exp = singleton_data_mgr_instance.get_experiment(exp_id)
 
                 # extract the top N (hot) and bottom N (cold) fitness values of this experiment
                 hot_cold_spots_merged_df, hot_cold_residue_per_smiles = exp.exp_hot_cold_spots(int(n_top_hot_cold))
@@ -489,7 +485,7 @@ def display_selected_matching_sequences(selected_rows):
         product = selected_rows[0][gs.cc_product]
 
         # get the experiment info from the db
-        exp = data_mgr.get_experiment(experiment_id)
+        exp = singleton_data_mgr_instance.get_experiment(experiment_id)
         geometry_file = exp.geometry_file_path
 
         svg_src_image = u_reaction.create_reaction_image(substrate, product)
@@ -657,7 +653,7 @@ def redirect_to_experiment_page(n_clicks):
 )
 def on_load_experiment_page(pathname, experiment_id):
     if pathname == gs.nav_experiment_path:
-        exp = data_mgr.get_experiment(experiment_id)
+        exp = singleton_data_mgr_instance.get_experiment(experiment_id)
 
         # viewer data
         # TODO : this needs to be moved out of here so it can pickup the file format
@@ -990,7 +986,7 @@ def on_load_exp_related_variants(
             lookup_residues_list = lookup_residues.split(",")
 
             # get all the lab sequences
-            all_lab_sequences = data_mgr.get_lab_sequences()
+            all_lab_sequences = singleton_data_mgr_instance.get_lab_sequences()
 
             # get the alignment and the base score
             lab_seq_match_data, base_score = bio_python_pairwise_aligner.get_alignments(
@@ -1012,7 +1008,7 @@ def on_load_exp_related_variants(
 
                 # does my experiments variant show up in the other experiment
                 # get the experiment core data from the db
-                match_exp = data_mgr.get_experiment(mathc_exp_id)
+                match_exp = singleton_data_mgr_instance.get_experiment(mathc_exp_id)
                 exp_results_row_data = u_seq_alignment.search_and_gather_variant_info_for_matching_experiment(
                     experiment=match_exp,
                     experiment_id=mathc_exp_id,
@@ -1028,7 +1024,7 @@ def on_load_exp_related_variants(
                 )
 
             # gather the info for making this experiments reaction image for use in comparison
-            experiment = data_mgr.get_experiment(experiment_id)
+            experiment = singleton_data_mgr_instance.get_experiment(experiment_id)
             experiment_substrate = experiment.substrate
             experiment_product = experiment.product
             experiment_svg_src = u_reaction.create_reaction_image(experiment_substrate, experiment_product)
@@ -1116,10 +1112,10 @@ def display_selected_exp_related_variants(selected_rows, experiment_id):
 
         # get the experiment info from the db
         # TODO: need to add a function to only get the geometry file not the whole experiment
-        selected_experiment = data_mgr.get_experiment(selected_experiment_id)
+        selected_experiment = singleton_data_mgr_instance.get_experiment(selected_experiment_id)
         selected_experiment_geometry_file = selected_experiment.geometry_file_path
 
-        experiment = data_mgr.get_experiment(experiment_id)
+        experiment = singleton_data_mgr_instance.get_experiment(experiment_id)
         experiment_geometry_file = experiment.geometry_file_path
 
         # if there is no geometry for the file ignore it
