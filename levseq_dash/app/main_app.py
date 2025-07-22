@@ -1,4 +1,5 @@
 import math
+import time
 
 import dash_bootstrap_components as dbc
 import dash_molstar
@@ -366,12 +367,24 @@ def on_load_matching_sequences(results_are_cleared, n_clicks, query_sequence, th
     if ctx.triggered_id == "id-cleared-run-seq-matching" and results_are_cleared:
         try:
             # get all the lab sequences
+            if settings.is_sequence_alignment_profiling_enabled():
+                start_time = time.time()
+
+            # get all the lab sequences
             all_lab_sequences = data_mgr.get_lab_sequences()
+
+            if settings.is_sequence_alignment_profiling_enabled():
+                print(f"[PROFILING] on_load_matching_sequences: get_lab_sequences() {time.time() - start_time} s")
+                start_time = time.time()
 
             # get the alignment and the base score
             lab_seq_match_data, base_score = bio_python_pairwise_aligner.get_alignments(
                 query_sequence=query_sequence, threshold=float(threshold), targets=all_lab_sequences
             )
+
+            if settings.is_sequence_alignment_profiling_enabled():
+                print(f"[PROFILING] on_load_matching_sequences: get_alignments() {time.time() - start_time} s")
+                start_time = time.time()
 
             n_matches = len(lab_seq_match_data)
 
@@ -408,6 +421,9 @@ def on_load_matching_sequences(results_are_cleared, n_clicks, query_sequence, th
                     exp_meta_data=exp.exp_meta_data_to_dict(),
                     seq_match_row_data=seq_match_row_data,
                 )
+
+            if settings.is_sequence_alignment_profiling_enabled():
+                print(f"[PROFILING] on_load_matching_sequences: finding gof/lof {time.time() - start_time} s")
 
             info = f"# Matched Sequences: {n_matches}"
             return (
@@ -989,13 +1005,24 @@ def on_load_exp_related_variants(
 
             lookup_residues_list = lookup_residues.split(",")
 
+            if settings.is_sequence_alignment_profiling_enabled():
+                start_time = time.time()
+
             # get all the lab sequences
             all_lab_sequences = data_mgr.get_lab_sequences()
+
+            if settings.is_sequence_alignment_profiling_enabled():
+                print(f"[PROFILING] on_load_exp_related_variants: get_lab_sequences() {time.time() - start_time} s")
+                start_time = time.time()
 
             # get the alignment and the base score
             lab_seq_match_data, base_score = bio_python_pairwise_aligner.get_alignments(
                 query_sequence=query_sequence, threshold=float(threshold), targets=all_lab_sequences
             )
+
+            if settings.is_sequence_alignment_profiling_enabled():
+                print(f"[PROFILING] on_load_exp_related_variants: get_alignments() {time.time() - start_time} s")
+                start_time = time.time()
 
             if len(lab_seq_match_data) == 0:
                 raise Exception("Sequence alignment returned 0 matches.")
@@ -1020,6 +1047,9 @@ def on_load_exp_related_variants(
                     seq_match_data=lab_seq_match_data[i],
                     exp_results_row_data=exp_results_row_data,
                 )
+
+            if settings.is_sequence_alignment_profiling_enabled():
+                print(f"[PROFILING] on_load_exp_related_variants: finding residues {time.time() - start_time} s")
 
             if len(exp_results_row_data) == 0:
                 raise Exception(
