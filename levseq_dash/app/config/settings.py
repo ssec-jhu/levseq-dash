@@ -47,6 +47,16 @@ def get_db_settings():
     return config.get("db", {})
 
 
+def get_profiling_settings():
+    config = load_config()
+    return config.get("profiling", {})
+
+
 def is_data_modification_enabled():
     disk_settings = get_disk_settings()
     return disk_settings.get("enable_data_modification", False)
+
+
+def is_sequence_alignment_profiling_enabled():
+    profile_settings = get_profiling_settings()
+    return profile_settings.get("sequence_alignment", False)
