@@ -29,7 +29,11 @@ db:
     session_key: "\xd6\x70\x04\xab\xd2\x08\x42\xe1\xa3\x5d\xfe\x1c\xce\x78\xd4\x7a"  # uuid.uuid4().hex
 
 
-# set to true to enable profiling for performance testing
-# default for production should be false
-profiling:
-  sequence_alignment: false  # or false
+logging:
+  # set to true to enable profiling for performance testing
+  # default for production should be false
+  sequence_alignment_profiling: false  # or false
+
+    # set to true to enable profiling for reading data in playground mode
+    # default for production should be false
+  data_manager: false

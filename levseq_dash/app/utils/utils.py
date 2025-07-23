@@ -1,6 +1,9 @@
 import base64
+import inspect
 import io
+import os
 import re
+import threading
 from datetime import datetime
 
 import pandas as pd
@@ -234,3 +237,20 @@ def select_first_row_of_data(data):
         return [data[0]]
 
     return None
+
+
+def log_with_context(msg, log_flag):
+    # Check if logging is enabled for the given flag
+    if not log_flag:
+        return  # Do not log if the flag is disabled
+
+    pid = os.getpid()
+    tid = threading.get_ident()
+    tname = threading.current_thread().name
+
+    # Get the name of the calling function
+    frame = inspect.currentframe()
+    caller_frame = frame.f_back
+    func_name = caller_frame.f_code.co_name if caller_frame else "<unknown>"
+
+    print(f"[PID:{pid}][TID:{tid}][{tname}][FUNC:{func_name}] {msg}")

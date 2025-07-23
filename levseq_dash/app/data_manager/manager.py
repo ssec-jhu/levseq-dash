@@ -8,6 +8,7 @@ from levseq_dash.app import global_strings as gs
 from levseq_dash.app.config import settings
 from levseq_dash.app.config.settings import AppMode
 from levseq_dash.app.data_manager.experiment import Experiment, MutagenesisMethod
+from levseq_dash.app.utils.utils import log_with_context
 
 # from levseq_dash.app.wsexec import Query
 
@@ -22,40 +23,50 @@ class DataManager:
             # connect_to_db( host, port, username, password)
         elif settings.is_disk_mode():
             self.use_db_web_service = AppMode.disk.value
-            print(f"------------------------------------------")
+            log_with_context(f"---------DISK MODE ---------------", log_flag=settings.is_data_manager_logging_enabled())
             # create a default empty dictionary of experiments
             self.experiments_dict = defaultdict(Experiment)
 
             # look for DATA_PATH in case data is mounted from elsewhere
             env_data_path = os.getenv("DATA_PATH")
-            print(f"[LOG] os.getenv: {env_data_path}")
+            log_with_context(f"[LOG] os.getenv: {env_data_path}", log_flag=settings.is_data_manager_logging_enabled())
 
             if env_data_path is None:
                 # if no path is provided, read from the path in config file
                 disk_settings = settings.get_disk_settings()
                 raw_path = disk_settings.get("data_path")
                 data_path = (settings.package_root / raw_path).resolve() if raw_path else None
-                print(f"[LOG] Using config file data_path: {data_path}")
+                log_with_context(
+                    f"[LOG] Using config file data_path: {data_path}",
+                    log_flag=settings.is_data_manager_logging_enabled(),
+                )
             else:
                 data_path = Path(env_data_path).resolve()
-                print(f"[LOG] Using env DATA_PATH for data path: {data_path}")
+                log_with_context(
+                    f"[LOG] Using env DATA_PATH for data path: {data_path}",
+                    log_flag=settings.is_data_manager_logging_enabled(),
+                )
 
             if not data_path or not data_path.exists():
-                print(f"[LOG] Data path not found: {data_path}")
+                log_with_context(
+                    f"[LOG] Data path not found: {data_path}", log_flag=settings.is_data_manager_logging_enabled()
+                )
                 raise FileNotFoundError()
 
             # read the assay file and set up the assay list
             if settings.assay_file_path.exists():
                 assays = pd.read_csv(settings.assay_file_path, encoding="utf-8", usecols=["Technique"])
                 self.assay_list = assays["Technique"].tolist()
-                print(f"[LOG] Read assay file at: {settings.assay_file_path} with size {len(self.assay_list)}")
+                log_with_context(
+                    f"[LOG] Read assay file at: {settings.assay_file_path} with size {len(self.assay_list)}",
+                    log_flag=settings.is_data_manager_logging_enabled(),
+                )
 
             # use this flag for debugging multiple files.
             # This will load all csv files in test/data
             # function below will load test data files and their geometry from the
             # data folder and fill self.experiments_dict
             self._load_test_experiment_data(data_directory=data_path)
-            print(f"------------------------------------------")
 
         else:
             raise Exception(gs.error_app_mode)
@@ -363,7 +374,10 @@ class DataManager:
             if not directory.is_dir():
                 raise FileNotFoundError(f"Required directory does not exist: {directory}")
 
-        print(f"[LOG] Found all data at: {data_directory}")
+        log_with_context(
+            f"[LOG] Found all data at: {data_directory}... reading experiments...",
+            log_flag=settings.is_data_manager_logging_enabled(),
+        )
 
         # read the file and iterate through metadata rows
         metadata_df = pd.read_csv(meta_data_file)
@@ -401,9 +415,14 @@ class DataManager:
                 # Add the experiment to the system
                 self._add_experiment(exp)
             except Exception as e:
-                print(f"[LOG] Exception {e} thrown with experiment {exp_file_path}. Not adding it to the list. ")
+                log_with_context(
+                    f"[LOG] Exception {e} thrown with experiment {exp_file_path}. Not adding it to the list. ",
+                    log_flag=settings.is_data_manager_logging_enabled(),
+                )
 
-        print(f"[LOG] Done adding all the experiments.")
+        log_with_context(
+            f"[LOG] Done reading and adding all the experiments.", log_flag=settings.is_data_manager_logging_enabled()
+        )
 
     def _add_experiment(self, exp: Experiment):
         if self.use_db_web_service == AppMode.db.value:

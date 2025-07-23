@@ -370,7 +370,10 @@ def on_load_matching_sequences(results_are_cleared, n_clicks, query_sequence, th
             all_lab_sequences = singleton_data_mgr_instance.get_lab_sequences()
 
             if settings.is_sequence_alignment_profiling_enabled():
-                print(f"[PROFILING] on_load_matching_sequences: get_lab_sequences() {time.time() - start_time} s")
+                utils.log_with_context(
+                    f"[PROFILING] on_load_matching_sequences: get_lab_sequences() {time.time() - start_time} s",
+                    log_flag=settings.is_sequence_alignment_profiling_enabled(),
+                )
                 start_time = time.time()
 
             # get the alignment and the base score
@@ -379,7 +382,10 @@ def on_load_matching_sequences(results_are_cleared, n_clicks, query_sequence, th
             )
 
             if settings.is_sequence_alignment_profiling_enabled():
-                print(f"[PROFILING] on_load_matching_sequences: get_alignments() {time.time() - start_time} s")
+                utils.log_with_context(
+                    f"[PROFILING] on_load_matching_sequences: get_alignments() {time.time() - start_time} s",
+                    log_flag=settings.is_sequence_alignment_profiling_enabled(),
+                )
                 start_time = time.time()
 
             n_matches = len(lab_seq_match_data)
@@ -419,7 +425,10 @@ def on_load_matching_sequences(results_are_cleared, n_clicks, query_sequence, th
                 )
 
             if settings.is_sequence_alignment_profiling_enabled():
-                print(f"[PROFILING] on_load_matching_sequences: finding gof/lof {time.time() - start_time} s")
+                utils.log_with_context(
+                    f"[PROFILING] on_load_matching_sequences: finding gof/lof {time.time() - start_time} s",
+                    log_flag=settings.is_sequence_alignment_profiling_enabled(),
+                )
 
             info = f"# Matched Sequences: {n_matches}"
             return (

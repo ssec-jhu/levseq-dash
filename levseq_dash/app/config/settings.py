@@ -47,9 +47,9 @@ def get_db_settings():
     return config.get("db", {})
 
 
-def get_profiling_settings():
+def get_logging_settings():
     config = load_config()
-    return config.get("profiling", {})
+    return config.get("logging", {})
 
 
 def is_data_modification_enabled():
@@ -58,5 +58,10 @@ def is_data_modification_enabled():
 
 
 def is_sequence_alignment_profiling_enabled():
-    profile_settings = get_profiling_settings()
-    return profile_settings.get("sequence_alignment", False)
+    log_settings = get_logging_settings()
+    return log_settings.get("sequence_alignment_profiling", False)
+
+
+def is_data_manager_logging_enabled():
+    log_settings = get_logging_settings()
+    return log_settings.get("data_manager", False)
