@@ -1,4 +1,5 @@
-import numpy as np
+from concurrent.futures import ProcessPoolExecutor
+
 from Bio.Align import PairwiseAligner, substitution_matrices
 
 
@@ -51,12 +52,40 @@ def setup_aligner_blastp():
     return aligner
 
 
+# Helper function for alignment
+def parallel_function_align_target(target_exp_id, target_exp_sequence, query_sequence, base_score, threshold, aligner):
+    # "Move the aligner creation inside the worker function, so it is not pickled or shared"
+    # but testing and experiencing shows that it makes it slower AND is pickled anyway
+    # keeping notes here that I tried to move aligner creation inside the worker
+    # function, but it only made the code slower
+    # aligner = setup_aligner_blastp()
+
+    alignments = aligner.align(target_exp_sequence, query_sequence)
+    results = []
+    for alignment in alignments:
+        counts = alignment.counts()
+        alignment_str = alignment.__str__()
+        norm_score_ratio = round(alignment.score / base_score, 4)
+        if norm_score_ratio >= threshold:
+            results.append(
+                {
+                    "experiment_id": target_exp_id,
+                    "sequence": target_exp_sequence,
+                    "sequence_alignment": alignment_str,
+                    "alignment_score": alignment.score,
+                    "norm_score": norm_score_ratio,
+                    "identities": counts.identities,
+                    "mismatches": counts.mismatches,
+                    "gaps": counts.gaps,
+                }
+            )
+    return results
+
+
 def get_alignments(query_sequence, threshold, targets: dict):
     """
     https://biopython.org/docs/dev/Tutorial/chapter_pairwise.html#basic-usage
     """
-
-    results = []
 
     if query_sequence is None or len(query_sequence) == 0:
         raise Exception("Empty query sequence was provided!")
@@ -74,36 +103,47 @@ def get_alignments(query_sequence, threshold, targets: dict):
     if base_score == 0:
         raise Exception("Base score has returned 0. Check your inputs!")
 
-    # now iterate over the target sequences and run the aligner on the sequence
-    for target_exp_id, target_exp_sequence in targets.items():
-        alignments = aligner.align(target_exp_sequence, query_sequence)
-        for i, alignment in enumerate(alignments):
-            # extract the stats
-            # https://biopython.org/docs/dev/Tutorial/chapter_align.html#subsec-slicing-indexing-alignment
-            # https://biopython.org/docs/dev/Tutorial/chapter_align.html#counting-identities-mismatches-and-gaps
-            counts = alignment.counts()
+    # ---------------------
+    # example workflow for ProcessPoolExecutor:
+    # def square(x):
+    #     return x * x
+    # with ProcessPoolExecutor(max_workers=4) as executor:
+    # futures = [executor.submit(square, x) for x in range(4)]
+    # for future in futures:
+    #     print(future.result())
+    # ---------------------
+    # ProcessPoolExecutor uses multiple processes, each with its own Python interpreter and memory space,
+    # bypassing the GIL and allowing real parallel computation on multiple CPU cores.
+    # ThreadPoolExecutor threads share the same interpreter and are limited by the GIL,
+    # so only one thread runs Python code
+    # at a time, making it no faster than a single-threaded loop for CPU-bound work.
+    # with ThreadPoolExecutor(max_workers=max(2, os.cpu_count() * 2)) as executor:  # does not speed up
+    # ---------------------
+    # default max_workers is the min(32, os.cpu_count() + 4)
+    # if you have N Gunicorn workers and each creates a ProcessPoolExecutor with M workers, you'll have N × M processes
+    # This can lead to resource contention
+    # a suggestion is max_workers=max(2, os.cpu_count() - 1)
+    # ---------------------
+    results = []
+    with ProcessPoolExecutor() as executor:
+        # use below for debugging purposes
+        # print(
+        #     f"[PID:{os.getpid()}][TID:{threading.get_ident()}][{threading.current_thread().name}] "
+        #     f"number of workers: {executor._max_workers}"
+        # )
+        futures = [
+            executor.submit(
+                parallel_function_align_target,  # function to be executed in parallel
+                target_exp_id,
+                target_exp_sequence,
+                query_sequence,
+                base_score,
+                threshold,
+                aligner,  # parameters
+            )
+            for target_exp_id, target_exp_sequence in targets.items()
+        ]
+        for future in futures:
+            results.extend(future.result())
 
-            # convert the alignment object result into a string
-            alignment_str = alignment.__str__()
-
-            # manually calculated values
-            norm_score_ratio = np.round(alignment.score / base_score, 4)
-
-            # only return the alignments that score above a threshold
-            if norm_score_ratio >= threshold:
-                results.append(
-                    {
-                        "experiment_id": target_exp_id,  # this should be an id
-                        "sequence": target_exp_sequence,
-                        "sequence_alignment": alignment_str,
-                        "alignment_score": alignment.score,
-                        # "coordinates": alignment.coordinates,
-                        "norm_score": norm_score_ratio,
-                        # "indices": alignment.indices,
-                        "identities": counts.identities,  # The number of identical letters in the alignment
-                        "mismatches": counts.mismatches,  # The number of mismatched letters in the alignment
-                        # The total number of gaps in the alignment, equal to left_gaps + right_gaps + internal_gaps
-                        "gaps": counts.gaps,
-                    }
-                )
     return results, base_score
