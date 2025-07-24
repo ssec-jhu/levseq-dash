@@ -116,25 +116,15 @@ def get_alignments(query_sequence, threshold, targets: dict):
         raise Exception("Base score has returned 0. Check your inputs!")
 
     # ---------------------
-    # example workflow for ProcessPoolExecutor:
-    # def square(x):
-    #     return x * x
-    # with ProcessPoolExecutor(max_workers=4) as executor:
-    # futures = [executor.submit(square, x) for x in range(4)]
-    # for future in futures:
-    #     print(future.result())
-    # ---------------------
     # ProcessPoolExecutor uses multiple processes, each with its own Python interpreter and memory space,
     # bypassing the GIL and allowing real parallel computation on multiple CPU cores.
     # ThreadPoolExecutor threads share the same interpreter and are limited by the GIL,
     # so only one thread runs Python code
-    # at a time, making it no faster than a single-threaded loop for CPU-bound work.
-    # with ThreadPoolExecutor(max_workers=max(2, os.cpu_count() * 2)) as executor:  # does not speed up
     # ---------------------
     # default max_workers is the min(32, os.cpu_count() + 4)
     # if you have N Gunicorn workers and each creates a ProcessPoolExecutor with M workers, you'll have N × M processes
     # This can lead to resource contention
-    # a suggestion is max_workers=max(2, os.cpu_count() - 1)
+
     # ---------------------
     results = []
     # create and configure the process pool
