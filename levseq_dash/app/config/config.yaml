@@ -34,7 +34,7 @@ logging:
   # default for production should be false
   sequence_alignment_profiling: false  # or false
 
-  pairwise_aligner: true  # or false
+  pairwise_aligner: false  # or false
 
   # set to true to enable profiling for reading data in playground mode
   # default for production should be false
