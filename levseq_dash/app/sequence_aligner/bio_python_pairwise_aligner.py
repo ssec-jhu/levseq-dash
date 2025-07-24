@@ -2,6 +2,9 @@ from concurrent.futures import ProcessPoolExecutor
 
 from Bio.Align import PairwiseAligner, substitution_matrices
 
+from levseq_dash.app.config import settings
+from levseq_dash.app.utils import utils
+
 
 def setup_aligner_blastp():
     # ---------------------
@@ -63,9 +66,18 @@ def parallel_function_align_target(target_exp_id, target_exp_sequence, query_seq
     alignments = aligner.align(target_exp_sequence, query_sequence)
     results = []
     for alignment in alignments:
+        # extract the stats
+        # https://biopython.org/docs/dev/Tutorial/chapter_align.html#subsec-slicing-indexing-alignment
+        # https://biopython.org/docs/dev/Tutorial/chapter_align.html#counting-identities-mismatches-and-gaps
         counts = alignment.counts()
+
+        # convert the alignment object result into a string
         alignment_str = alignment.__str__()
+
+        # normalize the score by the base score
         norm_score_ratio = round(alignment.score / base_score, 4)
+
+        # only return the alignments that score above a threshold
         if norm_score_ratio >= threshold:
             results.append(
                 {
@@ -125,13 +137,18 @@ def get_alignments(query_sequence, threshold, targets: dict):
     # a suggestion is max_workers=max(2, os.cpu_count() - 1)
     # ---------------------
     results = []
+    # create and configure the process pool
     with ProcessPoolExecutor() as executor:
         # use below for debugging purposes
-        # print(
-        #     f"[PID:{os.getpid()}][TID:{threading.get_ident()}][{threading.current_thread().name}] "
-        #     f"number of workers: {executor._max_workers}"
-        # )
+        utils.log_with_context(
+            f"[ProcessPoolExecutor] Starting with  default# Workers: {executor._max_workers}",
+            log_flag=settings.is_pairwise_aligner_logging_enabled(),
+        )
+
+        # The Future object allows the running asynchronous task to be queried, canceled,
+        # and for the results to be retrieved later once the task is done.
         futures = [
+            # issue tasks to the process pool
             executor.submit(
                 parallel_function_align_target,  # function to be executed in parallel
                 target_exp_id,
@@ -139,11 +156,14 @@ def get_alignments(query_sequence, threshold, targets: dict):
                 query_sequence,
                 base_score,
                 threshold,
-                aligner,  # parameters
+                aligner,
             )
             for target_exp_id, target_exp_sequence in targets.items()
         ]
         for future in futures:
             results.extend(future.result())
 
+        utils.log_with_context(
+            f"[ProcessPoolExecutor] Done with all tasks", log_flag=settings.is_pairwise_aligner_logging_enabled()
+        )
     return results, base_score

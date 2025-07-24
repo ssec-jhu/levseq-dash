@@ -65,3 +65,8 @@ def is_sequence_alignment_profiling_enabled():
 def is_data_manager_logging_enabled():
     log_settings = get_logging_settings()
     return log_settings.get("data_manager", False)
+
+
+def is_pairwise_aligner_logging_enabled():
+    log_settings = get_logging_settings()
+    return log_settings.get("pairwise_aligner", False)
