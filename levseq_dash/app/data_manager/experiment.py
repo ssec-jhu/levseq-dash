@@ -1,8 +1,4 @@
-import base64
-import os
-from datetime import datetime
 from enum import StrEnum
-from pathlib import Path
 
 import pandas as pd
 
@@ -17,143 +13,49 @@ class MutagenesisMethod(StrEnum):
 
 class Experiment:
     def __init__(
-        self,
-        experiment_data_file_path=None,
-        experiment_csv_data_base64_string=None,
-        experiment_name=None,
-        experiment_date=None,
-        upload_time_stamp=None,
-        substrate=None,
-        product=None,
-        assay=None,
-        mutagenesis_method=None,
-        geometry_file_path=None,
-        geometry_base64_string=None,
-        geometry_base64_bytes=None,
+            self,
+            experiment_data_file_path=None,
+            geometry_file_path=None,
     ):
         # ----------------------------
         # process the core data first
         # ----------------------------
+        if experiment_data_file_path is None or geometry_file_path is None:
+            raise ValueError(
+                "Experiment data file path, geometry file path, and metadata "
+                "must be provided in order to load an Experiment object."
+            )
 
-        # read th input data
-        input_df = pd.DataFrame()
-        if experiment_data_file_path and os.path.isfile(experiment_data_file_path):
-            input_df = pd.read_csv(experiment_data_file_path)
-        elif experiment_csv_data_base64_string:
-            input_df = utils.decode_csv_file_base64_string_to_dataframe(experiment_csv_data_base64_string)
+        # read the input data
+        try:
+            # read CSV file with only the required columns
+            self.data_df = pd.read_csv(experiment_data_file_path, usecols=gs.experiment_core_data_list)
+            if self.data_df.empty:
+                raise ValueError("Experiment data file is empty.")
 
-        # run all the sanity checks on this file
-        # sanity checks will raise Exceptions
-        # check that the df is not empty, check for missing columns, check for presence of '#PARENT#' and in combos,
-        # check all the smiles strings are valid
-        self.data_df = pd.DataFrame()
-        if run_sanity_checks_on_experiment_file(input_df):
-            self.data_df = input_df[gs.experiment_core_data_list].copy()
+            # read the cif file as bytes
+            with open(geometry_file_path, "rb") as f:
+                self.geometry_base64_bytes = f.read()
+                if self.geometry_base64_bytes is None or len(self.geometry_base64_bytes) == 0:
+                    raise ValueError("Geometry file is empty or not found.")
 
-        # ------------------
-        # process meta data
-        # ------------------
-        self.experiment_name = experiment_name if experiment_name else ""
-        self.experiment_date = experiment_date if experiment_date else ""
-        self.upload_time_stamp = (
-            upload_time_stamp if upload_time_stamp else datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        )
-        self.assay = assay if assay else ""
-        self.mutagenesis_method = mutagenesis_method if mutagenesis_method else ""
-        self.substrate = substrate if substrate else ""
-        self.product = product if product else ""
+            # self.experiment_id = metadata.get("experiment_id", "")
+            # self.experiment_name = metadata.get("experiment_name", "")
+            # self.experiment_date = metadata.get("experiment_date", "")
+            # self.substrate = metadata.get("substrate", "")
+            # self.product = metadata.get("product", "")
+            # self.assay = metadata.get("assay", "")
+            # self.mutagenesis_method = metadata.get("mutagenesis_method", "")
+            # self.parent_sequence = metadata.get("parent_sequence", "")
+            # self.plates_count = metadata.get("plates_count", 0)
+            # self.upload_time_stamp = metadata.get("upload_time_stamp", "")
 
-        # can be separate
-        # keep the list as a comma delimited string
-        # if substrate is None:
-        #     self.substrate = []  # ", ".join(self.unique_smiles_in_data)
-        # else:
-        #     self.substrate = ", ".join(substrate)
-        #
-        # if product is None:
-        #     self.product = []
-        # else:
-        #     self.product = ", ".join(product)
+            # internal calculations that are metadata but are not stored with the files
+            self.unique_smiles_in_data = list(self.data_df[gs.c_smiles].unique()) if not self.data_df.empty else []
+            self.plates = self.extract_plates_list(self.data_df)
 
-        # ------------------
-        # process geometry data
-        # ------------------
-        # if a path is provided, then we won't bother with the others
-        if geometry_file_path and os.path.isfile(geometry_file_path):
-            self.geometry_file_path = geometry_file_path
-        else:
-            self.geometry_file_path = None  # Path()
-
-        if geometry_base64_string:
-            self.geometry_base64_string = geometry_base64_string
-            self.geometry_base64_bytes = base64.b64decode(geometry_base64_string)
-        else:
-            # TODO: below should be None, check throughout code later
-            self.geometry_base64_string = ""
-            self.geometry_base64_bytes = bytes()
-
-        if geometry_base64_bytes:
-            self.geometry_base64_bytes = geometry_base64_bytes
-
-        # --------------------
-        # internal calculations
-        # --------------------
-        self.unique_smiles_in_data = list(self.data_df[gs.c_smiles].unique()) if not self.data_df.empty else []
-        self.plates = list(self.data_df[gs.c_plate].unique()) if not self.data_df.empty else []
-        self.plates_count = len(self.plates)
-
-        # sanity check already checks that such a row exists
-        self.parent_sequence = (
-            self.data_df[self.data_df[gs.c_substitutions] == gs.hashtag_parent][gs.c_aa_sequence].iloc
-        )[0]
-
-        if self.geometry_file_path:
-            self.geometry_file_format = self.geometry_file_path.suffix
-        else:
-            self.geometry_file_format = ""
-
-    def exp_to_dict(self):
-        """
-        Utility function to convert the data in the experiment object into a dictionary of records
-        """
-        # TODO: clean up this function if it end up not being used with JSON
-        result = {}
-        for attr, value in self.__dict__.items():
-            if isinstance(value, pd.DataFrame):
-                result[attr] = value.to_dict()  # Convert DataFrame to a dictionary
-            elif isinstance(value, Path):
-                result[attr] = str(value)  # Convert Path to string
-            else:
-                result[attr] = value  # Keep other types as is
-        return result
-
-    def exp_core_data_to_dict(self):
-        """
-        Utility function to convert the core stat data in the experiment object into a dictionary of records
-        """
-        # TODO: clean up this function if it end up not being used with JSON
-        if not self.data_df.empty:
-            return self.data_df.to_dict("records")
-        raise Exception("Experiment data is empty!")
-
-    def exp_meta_data_to_dict(self):
-        """
-        This extracts a bit more than metadata. It extracts all attributes.
-        This is easier to do as it is dynamic with any changes in attributes.
-        """
-        result = {}
-        for attr, value in self.__dict__.items():
-            if (
-                isinstance(value, pd.DataFrame)
-                or isinstance(value, Path)
-                or isinstance(value, bytes)
-                or attr == "geometry_base64_string"
-                or attr == "experiment_csv_data_base64_string"
-            ):
-                pass
-            else:
-                result[attr] = value  # Keep other types as is
-        return result
+        except Exception as e:
+            raise Exception(f"Error loading experiment data file: {e}")
 
     def exp_get_processed_core_data_for_valid_mutation_extractions(self):
         """
@@ -212,7 +114,7 @@ class Experiment:
                         # for this smiles number and this plate of the experiment sorted by fitness values...
                         df_per_smiles_plate = df[
                             (df[gs.c_smiles] == smiles) & (df[gs.c_plate] == plate_number)
-                        ].sort_values(by=gs.c_fitness_value, ascending=False)
+                            ].sort_values(by=gs.c_fitness_value, ascending=False)
 
                         # ... extract top/bottom N
                         df_hot_n = df_per_smiles_plate.head(n)
@@ -279,56 +181,47 @@ class Experiment:
         else:
             raise Exception("Experiment data is empty!")
 
+    @staticmethod
+    def extract_plates_list(df):
+        return list(df[gs.c_plate].unique()) if not df.empty else []
 
-def run_sanity_checks_on_experiment_file(df: pd.DataFrame):
-    # check that the df is not empty
-    if df.empty:
-        raise Exception("Experiment file has no data.")
+    @staticmethod
+    def extract_parent_sequence(df):
+        return df[df[gs.c_substitutions] == gs.hashtag_parent][gs.c_aa_sequence].iloc[0]
 
-    # check for missing columns
-    df_columns_set = set(df.columns)
-    column_names_set = set(gs.experiment_core_data_list)
-    missing_columns = list(column_names_set - df_columns_set)
+    @staticmethod
+    def run_sanity_checks_on_experiment_file(df: pd.DataFrame):
+        # check that the df is not empty
+        if df.empty:
+            raise Exception("Experiment file has no data.")
 
-    if len(missing_columns) != 0:
-        raise ValueError(f"Experiment file is missing required columns: {', '.join(missing_columns)}")
+        # check for missing columns
+        df_columns_set = set(df.columns)
+        column_names_set = set(gs.experiment_core_data_list)
+        missing_columns = list(column_names_set - df_columns_set)
 
-    # check for presence of '#PARENT#' in 'amino_acid_substitutions' column
-    if gs.hashtag_parent not in df[gs.c_substitutions].values:
-        raise ValueError(f"Experiment file does not contain any '#PARENT#' entry in the {gs.c_substitutions} column.")
+        if len(missing_columns) != 0:
+            raise ValueError(f"Experiment file is missing required columns: {', '.join(missing_columns)}")
 
-    # check all the smiles strings are valid in the file
-    invalid_smiles_rows = df[df[gs.c_smiles].apply(u_reaction.is_valid_smiles).isnull()]
+        # check for presence of '#PARENT#' in 'amino_acid_substitutions' column
+        if gs.hashtag_parent not in df[gs.c_substitutions].values:
+            raise ValueError(
+                f"Experiment file does not contain any '#PARENT#' entry in the {gs.c_substitutions} column.")
 
-    if not invalid_smiles_rows.empty:
-        invalid_indices = invalid_smiles_rows.index.tolist()
-        raise ValueError(f"Experiment file has invalid SMILES found at rows: {invalid_indices}")
+        # check all the smiles strings are valid in the file
+        invalid_smiles_rows = df[df[gs.c_smiles].apply(u_reaction.is_valid_smiles).isnull()]
 
-    # # Relaxing parent-smiles combo requirement
-    # # check any smiles-plate column combo has a #PARENT# in its gs.c_substitution column
-    # for (s, p), group in df.groupby([gs.c_smiles, gs.c_plate]):
-    #     if "#PARENT#" not in group[gs.c_substitutions].values:
-    #         raise ValueError(
-    #             f"Experiment file has missing '#PARENT#' in combo: {gs.c_smiles}='{s}' and {gs.c_plate}='{p}'"
-    #         )
+        if not invalid_smiles_rows.empty:
+            invalid_indices = invalid_smiles_rows.index.tolist()
+            raise ValueError(f"Experiment file has invalid SMILES found at rows: {invalid_indices}")
 
-    # you passed all checks
-    return True
+        # # Relaxing parent-smiles combo requirement
+        # # check any smiles-plate column combo has a #PARENT# in its gs.c_substitution column
+        # for (s, p), group in df.groupby([gs.c_smiles, gs.c_plate]):
+        #     if "#PARENT#" not in group[gs.c_substitutions].values:
+        #         raise ValueError(
+        #             f"Experiment file has missing '#PARENT#' in combo: {gs.c_smiles}='{s}' and {gs.c_plate}='{p}'"
+        #         )
 
-
-# # def read_structure_file(file_path):
-#     # Check if the file exists
-#     if not os.path.exists(file_path):
-#         raise FileNotFoundError(f"The file {file_path} does not exist.")
-#
-#     # Open the file in binary mode and read the content
-#     with open(file_path, "rb") as structure_file:
-#         file_content = structure_file.read()
-#
-#     # Convert content to base64 string
-#     base64_string = base64.b64encode(file_content).decode("utf-8")
-#
-#     # Convert content to base64 bytes
-#     base64_bytes = base64.b64encode(file_content)
-#
-#     return base64_string, base64_bytes
+        # you passed all checks
+        return True

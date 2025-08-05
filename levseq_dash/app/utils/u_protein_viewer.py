@@ -9,12 +9,13 @@ from levseq_dash.app import global_strings as gs
 substitution_indices_pattern = r"(\d+)"
 
 
-def get_geometry_for_viewer(exp):
-    if exp.geometry_file_path:
-        pdb_cif = molstar_helper.parse_molecule(exp.geometry_file_path, fmt="cif")
-    else:
-        pdb_cif = molstar_helper.parse_molecule(exp.geometry_base64_bytes, fmt="cif")
-    return pdb_cif
+# def get_geometry_for_viewer(exp):
+#     #if exp.geometry_file_path:
+#     #    pdb_cif = molstar_helper.parse_molecule(exp.geometry_file_path, fmt="cif")
+#     #else:
+#     #pdb_cif = molstar_helper.parse_molecule(exp.geometry_base64_bytes, fmt="cif")
+#     #return pdb_cif
+#     return molstar_helper.parse_molecule(exp.geometry_base64_bytes, fmt="cif")
 
 
 def get_selection_focus(residues, analyse=True):
