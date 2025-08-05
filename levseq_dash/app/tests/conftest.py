@@ -20,38 +20,41 @@ def test_data_path(package_root):
 
 
 @pytest.fixture(scope="session")
-def path_data_experiments(test_data_path):
-    return test_data_path / "data" / "experiments"
+def path_exp_ep_data(test_data_path):
+    return [
+        test_data_path / "data" / "flatten_ep_processed_xy_cas.csv",
+        test_data_path / "data" / "flatten_ep_processed_xy_cas.cif",
+        test_data_path / "data" / "flatten_ep_processed_xy_cas.json",
+    ]
 
 
 @pytest.fixture(scope="session")
-def path_data_structures(test_data_path):
-    return test_data_path / "data" / "structures"
+def experiment_ep_pcr_metadata(path_exp_ep_data):
+    """Load experiment metadata from JSON file"""
+    import json
+
+    with open(path_exp_ep_data[2], "r") as f:
+        metadata_dict = json.load(f)
+    return metadata_dict
 
 
 @pytest.fixture(scope="session")
-def path_exp_ep_data(path_data_experiments):
-    return path_data_experiments / "flatten_ep_processed_xy_cas.csv"
+def path_exp_ssm_data(test_data_path):
+    return [
+        test_data_path / "data" / "flatten_ssm_processed_xy_cas.csv",
+        test_data_path / "data" / "flatten_ssm_processed_xy_cas.cif",
+        test_data_path / "data" / "flatten_ssm_processed_xy_cas.json",
+    ]
 
 
 @pytest.fixture(scope="session")
-def path_exp_ep_cif(path_data_structures):
-    return path_data_structures / "flatten_ep_processed_xy_cas_row8.cif"
+def experiment_ssm_metadata(path_exp_ep_data):
+    """Load experiment metadata from JSON file"""
+    import json
 
-
-@pytest.fixture(scope="session")
-def path_exp_ssm_data(path_data_experiments):
-    return path_data_experiments / "flatten_ssm_processed_xy_cas.csv"
-
-
-@pytest.fixture(scope="session")
-def path_exp_ssm_cif(path_data_structures):
-    return path_data_structures / "flatten_ssm_processed_xy_cas_row3.cif"
-
-
-@pytest.fixture(scope="session")
-def path_cif_bytes_string_file_sample(test_data_path):
-    return test_data_path / "data" / "cif_bytes_string_sample.txt"
+    with open(path_exp_ep_data[2], "r") as f:
+        metadata_dict = json.load(f)
+    return metadata_dict
 
 
 @pytest.fixture
@@ -152,49 +155,41 @@ def assay_list(test_data_path):
 
 
 @pytest.fixture(scope="session")
-def experiment_empty():
-    return Experiment()
-
-
-@pytest.fixture(scope="session")
-def experiment_ep_pcr(assay_list, path_exp_ep_data, path_exp_ep_cif):
+def experiment_ep_pcr(path_exp_ep_data):
+    """Create experiment using new ExperimentMetadata pattern"""
     experiment_ep_example = Experiment(
-        experiment_data_file_path=path_exp_ep_data,
-        experiment_name="ep_file",
-        experiment_date="TBD",
-        mutagenesis_method=MutagenesisMethod.epPCR,
-        geometry_file_path=path_exp_ep_cif,
-        assay=assay_list[2],
+        experiment_data_file_path=path_exp_ep_data[0],
+        geometry_file_path=path_exp_ep_data[1],
     )
     return experiment_ep_example
 
 
 @pytest.fixture(scope="session")
-def experiment_ssm(assay_list, path_exp_ssm_data, path_exp_ssm_cif):
+def experiment_ssm(
+        path_exp_ssm_data,
+):
     experiment_ssm_example = Experiment(
-        experiment_data_file_path=path_exp_ssm_data,
-        experiment_name="ssm_file",
-        experiment_date="TBD",
-        mutagenesis_method="SSM",
-        geometry_file_path=path_exp_ssm_cif,
-        assay=assay_list[1],
+        experiment_data_file_path=path_exp_ssm_data[0],
+        geometry_file_path=path_exp_ssm_data[1],
     )
     return experiment_ssm_example
 
 
-@pytest.fixture(scope="session")
-def experiment_ep_pcr_with_user_smiles(assay_list, path_exp_ep_data, path_exp_ep_cif):
-    return Experiment(
-        experiment_data_file_path=path_exp_ep_data,
-        experiment_name="ep_file",
-        experiment_date="TBD",
-        # these are RANDOM for test only
-        substrate="CC(C)(C)C(=O)O[NH3+].CCC#CCCOCC.O=S(=O)([O-])C(F)(F)F",
-        product="C1=CC=C2C(=C1)C=CC=C2",
-        mutagenesis_method=MutagenesisMethod.epPCR,
-        geometry_file_path=path_exp_ep_cif,
-        assay=assay_list[3],
-    )
+# @pytest.fixture(scope="session")
+# def experiment_ep_pcr_with_user_smiles(path_exp_ep_data, experiment_metadata_ep_pcr):
+#     """Create experiment with user-defined SMILES using new ExperimentMetadata pattern"""
+#     # Create a copy of metadata with user-defined SMILES
+#     metadata_dict = experiment_metadata_ep_pcr.to_dict()
+#     metadata_dict["substrate"] = "CC(C)(C)C(=O)O[NH3+].CCC#CCCOCC.O=S(=O)([O-])C(F)(F)F"
+#     metadata_dict["product"] = "C1=CC=C2C(=C1)C=CC=C2"
+#
+#     user_metadata = ExperimentMetadata.from_dict(metadata_dict)
+#
+#     return Experiment(
+#         experiment_data_file_path=path_exp_ep_data[0],
+#         geometry_file_path=path_exp_ep_data[1],
+#         metadata=user_metadata,
+#     )
 
 
 @pytest.fixture(scope="session")
@@ -301,28 +296,28 @@ def seq_align_per_smiles_data():
         "plates": ["20241201-SSM-P1", "20241201SSM-P2", "20241201SSM-P3", "20241201SSM-P4"],
         "plates_count": 4,
         "parent_sequence": "MTPSDISGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLAGGWAASNEHLIYYGSNPDTG"
-        "APIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRHHRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLA"
-        "KKGGSPEDIEGMYNAWLKSVVLQVAIWSHPYTKENDR",
+                           "APIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRHHRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLA"
+                           "KKGGSPEDIEGMYNAWLKSVVLQVAIWSHPYTKENDR",
         "geometry_file_format": ".cif",
     }
     seq_data = {
         gs.cc_experiment_id: 1,
         "sequence": "MTPSDISGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLAGGWAASNEHLIYYGSNPDTGAPIKEYLERVR"
-        "ARIGAWVLDTTCRDYNREWLDYQYEVGLRHHRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVV"
-        "LQVAIWSHPYTKENDR",
+                    "ARIGAWVLDTTCRDYNREWLDYQYEVGLRHHRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVV"
+                    "LQVAIWSHPYTKENDR",
         "sequence_alignment": "target            0 MTPSDISGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLAG\n"
-        "                  0 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
-        "query             0 MTPSDISGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLAG\n"
-        "\n"
-        "target           60 GWAASNEHLIYYGSNPDTGAPIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRH\n"
-        "                 60 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
-        "query            60 GWAASNEHLIYYGSNPDTGAPIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRH\n\n"
-        "target          120 HRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVVL\n"
-        "                120 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
-        "query           120 HRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVVL\n"
-        "\n"
-        "target          180 QVAIWSHPYTKENDR 195\n                180 ||||||||||||||| 195\n"
-        "query           180 QVAIWSHPYTKENDR 195\n",
+                              "                  0 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+                              "query             0 MTPSDISGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLAG\n"
+                              "\n"
+                              "target           60 GWAASNEHLIYYGSNPDTGAPIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRH\n"
+                              "                 60 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+                              "query            60 GWAASNEHLIYYGSNPDTGAPIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRH\n\n"
+                              "target          120 HRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVVL\n"
+                              "                120 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+                              "query           120 HRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVVL\n"
+                              "\n"
+                              "target          180 QVAIWSHPYTKENDR 195\n                180 ||||||||||||||| 195\n"
+                              "query           180 QVAIWSHPYTKENDR 195\n",
         "alignment_score": 1040.0,
         "norm_score": 1.0,
         "identities": 195,
@@ -338,19 +333,19 @@ def seq_align_data():
     return {
         gs.cc_experiment_id: 1,
         "sequence": "MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVEDILDLWYGLQGSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTL"
-        "CKPLDRQWLNYMYEIGLRHHRTKKGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAIWSYPYAKTGEWLE",
+                    "CKPLDRQWLNYMYEIGLRHHRTKKGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAIWSYPYAKTGEWLE",
         "sequence_alignment": "target            0 MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVEDILDLWYGLQ\n"
-        "                  0 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
-        "query             0 MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVEDILDLWYGLQ\n"
-        "\n"
-        "target           60 GSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTLCKPLDRQWLNYMYEIGLRHHRTK\n"
-        "                 60 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
-        "query            60 GSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTLCKPLDRQWLNYMYEIGLRHHRTK\n\n"
-        "target          120 KGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAI\n"
-        "                120 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
-        "query           120 KGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAI\n\n"
-        "target          180 WSYPYAKTGEWLE 193\n                180 ||||||||||||| 193\n"
-        "query           180 WSYPYAKTGEWLE 193\n",
+                              "                  0 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+                              "query             0 MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVEDILDLWYGLQ\n"
+                              "\n"
+                              "target           60 GSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTLCKPLDRQWLNYMYEIGLRHHRTK\n"
+                              "                 60 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+                              "query            60 GSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTLCKPLDRQWLNYMYEIGLRHHRTK\n\n"
+                              "target          120 KGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAI\n"
+                              "                120 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+                              "query           120 KGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAI\n\n"
+                              "target          180 WSYPYAKTGEWLE 193\n                180 ||||||||||||| 193\n"
+                              "query           180 WSYPYAKTGEWLE 193\n",
         "alignment_score": 1053.0,
         "norm_score": 1.0,
         "identities": 193,

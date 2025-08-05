@@ -83,15 +83,15 @@ class DataManager:
     # -----------------------
 
     def add_experiment_from_ui(
-            self,
-            experiment_name,
-            experiment_date,
-            substrate,
-            product,
-            assay,
-            mutagenesis_method: MutagenesisMethod,  # epPCR or SSM
-            experiment_content_base64_string,
-            geometry_content_base64_string,
+        self,
+        experiment_name,
+        experiment_date,
+        substrate,
+        product,
+        assay,
+        mutagenesis_method: MutagenesisMethod,  # epPCR or SSM
+        experiment_content_base64_string,
+        geometry_content_base64_string,
     ) -> str:
         """
         Returns
