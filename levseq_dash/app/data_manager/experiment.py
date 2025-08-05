@@ -1,3 +1,4 @@
+import os
 from enum import StrEnum
 
 import pandas as pd
@@ -13,14 +14,19 @@ class MutagenesisMethod(StrEnum):
 
 class Experiment:
     def __init__(
-            self,
-            experiment_data_file_path=None,
-            geometry_file_path=None,
+        self,
+        experiment_data_file_path=None,
+        geometry_file_path=None,
     ):
         # ----------------------------
         # process the core data first
         # ----------------------------
-        if experiment_data_file_path is None or geometry_file_path is None:
+        if (
+            experiment_data_file_path is None
+            or geometry_file_path is None
+            or not os.path.exists(experiment_data_file_path)
+            or not os.path.exists(geometry_file_path)
+        ):
             raise ValueError(
                 "Experiment data file path, geometry file path, and metadata "
                 "must be provided in order to load an Experiment object."
@@ -114,7 +120,7 @@ class Experiment:
                         # for this smiles number and this plate of the experiment sorted by fitness values...
                         df_per_smiles_plate = df[
                             (df[gs.c_smiles] == smiles) & (df[gs.c_plate] == plate_number)
-                            ].sort_values(by=gs.c_fitness_value, ascending=False)
+                        ].sort_values(by=gs.c_fitness_value, ascending=False)
 
                         # ... extract top/bottom N
                         df_hot_n = df_per_smiles_plate.head(n)
@@ -206,7 +212,8 @@ class Experiment:
         # check for presence of '#PARENT#' in 'amino_acid_substitutions' column
         if gs.hashtag_parent not in df[gs.c_substitutions].values:
             raise ValueError(
-                f"Experiment file does not contain any '#PARENT#' entry in the {gs.c_substitutions} column.")
+                f"Experiment file does not contain any '#PARENT#' entry in the {gs.c_substitutions} column."
+            )
 
         # check all the smiles strings are valid in the file
         invalid_smiles_rows = df[df[gs.c_smiles].apply(u_reaction.is_valid_smiles).isnull()]
