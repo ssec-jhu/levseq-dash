@@ -60,7 +60,7 @@ def test_db_delete(dbmanager_read_all_from_file, index):
 
 
 def test_db_get_lab_experiments_with_meta_data_general(dbmanager_read_all_from_file):
-    data_list_of_dict = dbmanager_read_all_from_file.get_lab_experiments_with_meta_data()
+    data_list_of_dict = dbmanager_read_all_from_file.get_all_lab_experiments_with_meta_data()
     assert len(data_list_of_dict) == num_samples
     df = pd.DataFrame.from_records(data_list_of_dict)
     assert df.shape[0] == num_samples
@@ -79,7 +79,7 @@ def test_db_get_lab_experiments_with_meta_data_general(dbmanager_read_all_from_f
     ],
 )
 def test_db_get_lab_experiments_with_meta_data_data(dbmanager_read_all_from_file, index, name, n_plates, n_unique):
-    list_of_all_lab_experiments_with_meta = dbmanager_read_all_from_file.get_lab_experiments_with_meta_data()
+    list_of_all_lab_experiments_with_meta = dbmanager_read_all_from_file.get_all_lab_experiments_with_meta_data()
     sorted_list = sorted(list_of_all_lab_experiments_with_meta, key=lambda x: x[gs.c_experiment_name])
     assert sorted_list[index][gs.c_experiment_name] == name
     assert sorted_list[index]["plates_count"] == n_plates
@@ -94,7 +94,7 @@ def test_extract_all_substrate_product_smiles_from_lab_data(dbmanager_read_all_f
     """
     This test is similar to below but will test the substrates
     """
-    list_of_all_lab_experiments_with_meta = dbmanager_read_all_from_file.get_lab_experiments_with_meta_data()
+    list_of_all_lab_experiments_with_meta = dbmanager_read_all_from_file.get_all_lab_experiments_with_meta_data()
 
     all_smiles = utils.extract_all_substrate_product_smiles_from_lab_data(list_of_all_lab_experiments_with_meta)
     assert len(all_smiles) != 0
@@ -107,7 +107,7 @@ def test_extract_all_substrate_product_smiles_from_lab_data(dbmanager_read_all_f
 
 
 def test_get_lab_sequences(dbmanager_read_all_from_file):
-    list_of_sequences = dbmanager_read_all_from_file.get_lab_sequences()
+    list_of_sequences = dbmanager_read_all_from_file.get_all_lab_sequences()
     assert len(list_of_sequences) != 0
 
 

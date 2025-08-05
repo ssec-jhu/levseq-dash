@@ -43,7 +43,7 @@ def test_get_matched_sequences_exp_hot_cold_data_column_defs():
 
 # def test_get_all_experiments_column_defs(experiment_ep_pcr_with_user_smiles):
 #     #TODO
-#     df = data_mgr.get_lab_experiments_with_meta_data()
+#     df = data_mgr.get_all_lab_experiments_with_meta_data()
 #     d = components.get_all_experiments_column_defs(df)
 #     assert len(d) == 6
 
