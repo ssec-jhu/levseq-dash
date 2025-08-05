@@ -6,10 +6,11 @@ from levseq_dash.app.sequence_aligner import bio_python_pairwise_aligner
 
 
 @pytest.mark.parametrize(
-    "id, query_seq,n_lab_seq_match_data, score, experiment_ids, alignment_scores, norm_scores,mismatches, gaps",
+    "seq_id, query_seq,n_lab_seq_match_data, score, alignment_scores, norm_scores,mismatches, gaps",
     [
         (
-            35,
+            # a very lengthy seq alignment,
+            "seq_1",
             "MKGYFGPYGGQYVPEILMGALEELEAAYEGIMKDESFWKEFNDLLRDYAGRPTPLYFARRLSEKYGARVYLKREDLLHTGAHKINNAIGQVLLAKLMGKTRIIAE"
             "TGAGQHGVATATAAALFGMECVIYMGEEDTIRQKLNVERMKLLGAKVVPVK"
             "SGSRTLKDAIDEALRDWITNLQTTYYVFGSVVGPHPYPIIVRNFQKVIGEETKKQIPEKEGRLPDYIVACVSGGSNAA"
@@ -17,14 +18,13 @@ from levseq_dash.app.sequence_aligner import bio_python_pairwise_aligner
             "ETGKVLYDAVTDEEALDAFIELSRLEGIIPALESSHALAYLKKINIKGKVVVVNLSGRGDKDLESVLNHPYVRERIR",
             3,
             2011.0,
-            [2, 11, 35],
-            [2011.0, 1953.0, 2011.0],
-            [1.0, 0.9712, 1.0],
-            [0, 10, 0],
+            [2011.0, 2011.0, 1953.0],
+            [1.0, 1.0, 0.9712],
+            [0, 0, 10],
             [0, 0, 0],
         ),
         (
-            5,
+            "seq_2",
             "MTIKEMPQPKTFGELKNLPLLNTDKPVQALMKIADELGEIFKFEAPGRVTRYLSSQRLIKEACDESRFDKNLSQALKFARDFAGDGLVTSWTHEKNWKKAHNIL"
             "LPSFSQQAMKGYHAMMVDIAVQLVQKWERLNADEHIEVSEDMTRLTLDTIGLCGFNYRFNSFYRDQPHPFIISMVRALDEVMNKLQRANPDDPAYDENKRQFQ"
             "EDIKVMNDLVDKIIADRKARGEQSDDLLTQMLNGKDPETGETLDDGNIRYQIITFLGAGHEATSGLLSFALYFLVKNPHVLQKVAEEAARVLVDPVPSYKQVK"
@@ -38,15 +38,13 @@ from levseq_dash.app.sequence_aligner import bio_python_pairwise_aligner
             "KGRYAKDVWAG",
             9,
             5451.0,
-            [4, 5, 7],
-            [5375.0, 5451.0, 5405.0],
-            [0.9861, 1.0, 0.9916],
-            [13, 0, 9],
+            [5451.0, 5429.0, 5405.0],
+            [1.0, 0.996, 0.9916],
+            [0, 3, 9],
             [0, 0, 0],
         ),
-        # experiment 0
         (
-            0,
+            "seq_3",
             "MTIKEMPQPKTFGELKNLPLLNTDKPVQALMKIADELGEIFKFEAPGRVTRYLSSQRLIKEACDESRFDKNLSQALKFMRDFLGDGLATSWTHEKNWKKAHN"
             "ILLPSFSQQAMKGYHAMMVDIAVQLVQKWERLNADEHIEVSEDMTRLTLDTIGLCGFNYRFNSFYRDQPHPFIISMVRALDEVMNKLQRANPDDPAYDENKRQ"
             "FQEDIKVMNDLVDKIIADRKARGEQSDDLLTQMLNGKDPETGEPLDDGNIRYQIITFLMAGHEPTSGLLSFALYFLVKNPHVLQKVAEEAARVLVDPVPSYKQ"
@@ -54,14 +52,13 @@ from levseq_dash.app.sequence_aligner import bio_python_pairwise_aligner
             "TLVLGMMLKHFDFEDHTNYELDIKETGSLKPKGFVVKAKSKKIPLGGIPSPSTEQ",
             12,
             2437.0,
-            [0, 1, 8],
-            [2437.0, 2179.0, 2179.0],
-            [1.0, 0.8941, 0.8941],
-            [0, 9, 9],
-            [0, 199, 199],
+            [2437.0, 2343.0, 2237.0],
+            [1.0, 0.9614, 0.9179],
+            [0, 19, 9],
+            [0, 0, 22],
         ),
         (
-            17,
+            "seq_4",
             "MTIKEMPQPKTFGELKNLPLLNTDKPVQALMKIADELGEIFKFEAPGRVTRYLSSQRLIKEACDESRFDKNLSQGLKFLRDFLGDGLATSWTHEKNWKKAHN"
             "ILLPSFSQQAMKGYHAMMVDIAVQLVQKWERLNADEHIEVSEDMTRLTLDTIGLCGFNYRFNSFYRDQPHPFIISLVRALDEVMNKLQRANPDDPAYDENKR"
             "QFQEDIKVMNDLVDKIIADRKARGEQSDDLLTQMLNGKDPETGEPLDDGNIRYQIITFLYAGHEGTSGLLSFALYFLVKNPHVLQKVAEEAARVLVDPVPSYK"
@@ -71,48 +68,38 @@ from levseq_dash.app.sequence_aligner import bio_python_pairwise_aligner
             "REHMWSDVAAYFNLDIENSEDNKSTLSLQFVDSAADMPLAKMHGAFST",
             18,
             3478.0,  # base score
-            [1, 4, 5],  # experiment ids
-            [3478.0, 3072.0, 3015.0],  # alignment scores
-            [1.0, 0.8833, 0.8669],  # norm scores
-            [0, 1, 12],  # mismatches
-            [0, 384, 384],  # gaps
+            [3478.0, 3478.0, 3466.0],  # alignment scores
+            [1.0, 1, 0.9965],  # norm scores
+            [0, 0, 2],  # mismatches
+            [0, 0, 0],  # gaps
         ),
     ],
 )
 def test_target_sequence_test_data(
-    dbmanager_read_all_dedb_data,
-    id,
+    target_sequence_dictionary,
+    seq_id,
     query_seq,
     n_lab_seq_match_data,
     score,
-    experiment_ids,
     alignment_scores,
     norm_scores,
     mismatches,
     gaps,
 ):
-    all_lab_sequences = dbmanager_read_all_dedb_data.get_lab_sequences()
-    assert len(all_lab_sequences) == 36
-
     # get the alignment and the base score while timing the call
     start_time = time.time()
     lab_seq_match_data, base_score = bio_python_pairwise_aligner.get_alignments(
-        query_sequence=query_seq, threshold=float(0.8), targets=all_lab_sequences
+        query_sequence=query_seq, threshold=float(0.8), targets=target_sequence_dictionary
     )
     end_time = time.time()
     duration = end_time - start_time
 
     # Append timing info for this test case
-    TIME_RESULTS.append((id, duration))
+    TIME_RESULTS.append((seq_id, duration))
 
     # Verify the results (your existing assertions)
     assert len(lab_seq_match_data) == n_lab_seq_match_data
     assert base_score == score
-
-    # Test the experiment ids
-    assert lab_seq_match_data[0].get("experiment_id") == experiment_ids[0]
-    assert lab_seq_match_data[1].get("experiment_id") == experiment_ids[1]
-    assert lab_seq_match_data[2].get("experiment_id") == experiment_ids[2]
 
     # Additionally verify alignment scores, norm_scores, mismatches, gaps if needed:
     assert lab_seq_match_data[0].get("alignment_score") == alignment_scores[0]
