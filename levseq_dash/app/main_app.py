@@ -1,5 +1,3 @@
-import math
-import os
 import time
 
 import dash_bootstrap_components as dbc
@@ -66,37 +64,40 @@ app.layout = dbc.Container(
 )
 
 
-@app.callback(Output("memory-usage-display", "children"), Input("interval", "n_intervals"))
-def update_memory(n):
-    """Calculates the total memory usage of the Dash application instance.
-
-    This function accounts for multiple worker processes, such as those managed by Gunicorn.
-    It identifies the main process and sums the memory usage of all its child processes
-    to provide a total memory footprint for the app.
-
-    """
-    try:
-        # Get the current process based on its process ID
-        current_process = psutil.Process(os.getpid())
-
-        # Start with the current process's memory
-        total_mem = current_process.memory_info().rss
-
-        # Include memory of all child processes. This is crucial for servers like Gunicorn
-        # where the main process spawns multiple workers.
-        children = current_process.children(recursive=True)
-        for child in children:
-            total_mem += child.memory_info().rss
-
-        # Convert from bytes to megabytes
-        mem_mb = total_mem / (1024 * 1024)
-        return f"{mem_mb:.2f} MB CH:{len(children)}"
-    except psutil.NoSuchProcess:
-        # Process may have been terminated between calls
-        return "Process not found"
-    except Exception as e:
-        # General exception handling
-        return f"Error: {e}"
+# @app.callback(
+#     Output("memory-usage-display", "children"),
+#     Input("interval", "n_intervals")
+# )
+# def update_memory(n):
+#     """Calculates the total memory usage of the Dash application instance.
+#
+#     This function accounts for multiple worker processes, such as those managed by Gunicorn.
+#     It identifies the main process and sums the memory usage of all its child processes
+#     to provide a total memory footprint for the app.
+#
+#     """
+#     try:
+#         # Get the current process based on its process ID
+#         current_process = psutil.Process(os.getpid())
+#
+#         # Start with the current process's memory
+#         total_mem = current_process.memory_info().rss
+#
+#         # Include memory of all child processes. This is crucial for servers like Gunicorn
+#         # where the main process spawns multiple workers.
+#         children = current_process.children(recursive=True)
+#         for child in children:
+#             total_mem += child.memory_info().rss
+#
+#         # Convert from bytes to megabytes
+#         mem_mb = total_mem / (1024 * 1024)
+#         return f"{mem_mb:.2f} MB CH:{len(children)}"
+#     except psutil.NoSuchProcess:
+#         # Process may have been terminated between calls
+#         return "Process not found"
+#     except Exception as e:
+#         # General exception handling
+#         return f"Error: {e}"
 
 
 @app.callback(Output("id-page-content", "children"), Input("url", "pathname"))
@@ -310,11 +311,11 @@ def enable_submit_experiment(experiment_success, structure_success, valid_substr
     This callback is used to enable the submit button once all requirements are met
     """
     if (
-        experiment_success
-        and structure_success
-        and valid_substrate
-        and valid_product
-        and settings.is_data_modification_enabled()
+            experiment_success
+            and structure_success
+            and valid_substrate
+            and valid_product
+            and settings.is_data_modification_enabled()
     ):
         return False
     else:
@@ -338,15 +339,15 @@ def enable_submit_experiment(experiment_success, structure_success, valid_substr
     prevent_initial_call=True,
 )
 def on_submit_experiment(
-    n_clicks,
-    experiment_name,
-    experiment_date,
-    substrate,
-    product,
-    assay,
-    mutagenesis_method,
-    geometry_content_base64_encoded_string,
-    experiment_content_base64_encoded_string,
+        n_clicks,
+        experiment_name,
+        experiment_date,
+        substrate,
+        product,
+        assay,
+        mutagenesis_method,
+        geometry_content_base64_encoded_string,
+        experiment_content_base64_encoded_string,
 ):
     if n_clicks > 0 and ctx.triggered_id == "id-button-submit":
         try:
@@ -1025,13 +1026,13 @@ def on_view_all_residue(view, slider_value, selected_smiles, rowData):
     running=[(Output("id-button-run-seq-matching-exp", "disabled"), True, False)],  # requires the latest Dash 2.16
 )
 def on_load_exp_related_variants(
-    results_are_cleared,
-    n_clicks,
-    query_sequence,
-    threshold,
-    lookup_residues,
-    experiment_id,
-    # experiment_top_variants_row_data,
+        results_are_cleared,
+        n_clicks,
+        query_sequence,
+        threshold,
+        lookup_residues,
+        experiment_id,
+        # experiment_top_variants_row_data,
 ):
     if ctx.triggered_id == "id-cleared-run-exp-related-variants" and results_are_cleared:
         try:
@@ -1097,12 +1098,11 @@ def on_load_exp_related_variants(
                 )
 
             # gather the info for making this experiments reaction image for use in comparison
-            experiment = singleton_data_mgr_instance.get_experiment(experiment_id)
-            experiment_substrate = experiment.substrate
-            experiment_product = experiment.product
-            experiment_svg_src = u_reaction.create_reaction_image(experiment_substrate, experiment_product)
+            experiment_metadata = singleton_data_mgr_instance.experiments_metadata[experiment_id]
+            experiment_substrate = experiment_metadata.get(gs.cc_substrate, "")
+            experiment_product = experiment_metadata.get(gs.cc_product, "")
 
-            del experiment
+            experiment_svg_src = u_reaction.create_reaction_image(experiment_substrate, experiment_product)
 
             return (
                 exp_results_row_data,
