@@ -23,10 +23,8 @@ def test_get_label():
     assert isinstance(widgets.get_label_fixed_for_form("random_string"), dbc.Label)
 
 
-def test_get_top_variant_column_defs(experiment_ep_pcr_with_user_smiles):
-    df_filtered_with_ratio = utils.calculate_group_mean_ratios_per_smiles_and_plate(
-        experiment_ep_pcr_with_user_smiles.data_df
-    )
+def test_get_top_variant_column_defs(experiment_ep_pcr):
+    df_filtered_with_ratio = utils.calculate_group_mean_ratios_per_smiles_and_plate(experiment_ep_pcr.data_df)
     d = cd.get_top_variant_column_defs(df_filtered_with_ratio)
     assert len(d) == 6
 
@@ -39,13 +37,6 @@ def test_get_matched_sequences_column_defs():
 def test_get_matched_sequences_exp_hot_cold_data_column_defs():
     d = cd.get_matched_sequences_exp_hot_cold_data_column_defs()
     assert len(d) == 10
-
-
-# def test_get_all_experiments_column_defs(experiment_ep_pcr_with_user_smiles):
-#     #TODO
-#     df = data_mgr.get_all_lab_experiments_with_meta_data()
-#     d = components.get_all_experiments_column_defs(df)
-#     assert len(d) == 6
 
 
 def test_get_table_experiment_top_variants():
