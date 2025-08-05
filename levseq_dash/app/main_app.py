@@ -1076,9 +1076,10 @@ def on_load_exp_related_variants(
                 # does my experiments variant show up in the other experiment
                 # get the experiment core data from the db
                 match_exp = singleton_data_mgr_instance.get_experiment(mathc_exp_id)
+                match_exp_meta_data = singleton_data_mgr_instance.experiments_metadata[mathc_exp_id]
                 exp_results_row_data = u_seq_alignment.search_and_gather_variant_info_for_matching_experiment(
                     experiment=match_exp,
-                    experiment_id=mathc_exp_id,
+                    experiment_meta_data=match_exp_meta_data,
                     lookup_residues_list=lookup_residues_list,
                     seq_match_data=lab_seq_match_data[i],
                     exp_results_row_data=exp_results_row_data,

@@ -141,7 +141,7 @@ def lookup_residues_in_experiment_data(df_experiment_data, lookup_residues_list:
 
 
 def search_and_gather_variant_info_for_matching_experiment(
-    experiment, experiment_id, lookup_residues_list, seq_match_data, exp_results_row_data
+    experiment, experiment_meta_data, lookup_residues_list, seq_match_data, exp_results_row_data
 ):
     # # preprocess the data for residue extraction
     df_match_exp = experiment.exp_get_processed_core_data_for_valid_mutation_extractions()
@@ -151,7 +151,7 @@ def search_and_gather_variant_info_for_matching_experiment(
     )
 
     # add the experiment id to the data columns
-    df_exp_results[gs.cc_experiment_id] = experiment_id
+    df_exp_results[gs.cc_experiment_id] = experiment_meta_data[gs.cc_experiment_id]
 
     # convert the df do a list of records
     dict_list = df_exp_results.to_dict(orient="records")
@@ -165,7 +165,7 @@ def search_and_gather_variant_info_for_matching_experiment(
         # add the sequence alignment stats
         record.update(seq_match_data)
         # add the experiment meta data
-        record.update(experiment.exp_meta_data_to_dict())
+        record.update(experiment_meta_data)
         # add the mismatch indices and the
         record.update({gs.cc_seq_alignment_mismatches: mutation_indices})
         record.update({gs.cc_seq_alignment: parsed_alignment_string})
