@@ -1,4 +1,5 @@
 import math
+import os
 import time
 
 import dash_bootstrap_components as dbc
@@ -24,7 +25,7 @@ from levseq_dash.app.components.layout import (
 )
 from levseq_dash.app.components.widgets import get_alert
 from levseq_dash.app.config import settings
-from levseq_dash.app.data_manager.experiment import run_sanity_checks_on_experiment_file
+from levseq_dash.app.data_manager.experiment import Experiment
 from levseq_dash.app.data_manager.manager import singleton_data_mgr_instance
 from levseq_dash.app.sequence_aligner import bio_python_pairwise_aligner
 from levseq_dash.app.utils import u_protein_viewer, u_reaction, u_seq_alignment, utils
@@ -65,6 +66,39 @@ app.layout = dbc.Container(
 )
 
 
+@app.callback(Output("memory-usage-display", "children"), Input("interval", "n_intervals"))
+def update_memory(n):
+    """Calculates the total memory usage of the Dash application instance.
+
+    This function accounts for multiple worker processes, such as those managed by Gunicorn.
+    It identifies the main process and sums the memory usage of all its child processes
+    to provide a total memory footprint for the app.
+
+    """
+    try:
+        # Get the current process based on its process ID
+        current_process = psutil.Process(os.getpid())
+
+        # Start with the current process's memory
+        total_mem = current_process.memory_info().rss
+
+        # Include memory of all child processes. This is crucial for servers like Gunicorn
+        # where the main process spawns multiple workers.
+        children = current_process.children(recursive=True)
+        for child in children:
+            total_mem += child.memory_info().rss
+
+        # Convert from bytes to megabytes
+        mem_mb = total_mem / (1024 * 1024)
+        return f"{mem_mb:.2f} MB CH:{len(children)}"
+    except psutil.NoSuchProcess:
+        # Process may have been terminated between calls
+        return "Process not found"
+    except Exception as e:
+        # General exception handling
+        return f"Error: {e}"
+
+
 @app.callback(Output("id-page-content", "children"), Input("url", "pathname"))
 def route_page(pathname):
     if pathname == "/":
@@ -91,7 +125,7 @@ def route_page(pathname):
     Input("id-table-all-experiments", "columnDefs"),
 )
 def load_landing_page(temp_text):
-    list_of_all_lab_experiments_with_meta = singleton_data_mgr_instance.get_lab_experiments_with_meta_data()
+    list_of_all_lab_experiments_with_meta = singleton_data_mgr_instance.get_all_lab_experiments_with_meta_data()
 
     # all_substrate, all_product = utils.extract_all_substrate_product_smiles_from_lab_data(
     #     list_of_all_lab_experiments_with_meta
@@ -165,7 +199,7 @@ def on_upload_experiment_file(dash_upload_string_contents, filename, last_modifi
             df = utils.decode_csv_file_base64_string_to_dataframe(base64_encoded_string)
 
             # sanity check will raise exceptions if any check is not passed
-            checks_passed = run_sanity_checks_on_experiment_file(df)
+            checks_passed = Experiment.run_sanity_checks_on_experiment_file(df)
             if checks_passed:
                 rows, cols = df.shape
                 # checks have passed so we can extract this info
@@ -289,6 +323,9 @@ def enable_submit_experiment(experiment_success, structure_success, valid_substr
 
 @app.callback(
     Output("id-alert-upload", "children"),
+    # empty out the stores
+    Output("id-exp-upload-structure", "data", allow_duplicate=True),
+    Output("id-exp-upload-csv", "data", allow_duplicate=True),  # empty them out
     Input("id-button-submit", "n_clicks"),
     State("id-input-experiment-name", "value"),
     State("id-input-experiment-date", "date"),
@@ -314,7 +351,6 @@ def on_submit_experiment(
     if n_clicks > 0 and ctx.triggered_id == "id-button-submit":
         try:
             experiment_id = singleton_data_mgr_instance.add_experiment_from_ui(
-                user_id="some_user_name",
                 experiment_name=experiment_name,
                 experiment_date=experiment_date,
                 substrate=substrate,
@@ -328,14 +364,14 @@ def on_submit_experiment(
             # you can verify the information here
             # exp = data_mgr.get_experiment(index)
 
-            success = f"Experiment {experiment_id} has been added successfully!"
+            success = f"Experiment with UUID: {experiment_id} has been added successfully!"
             alert = get_alert(success, error=False)
 
         except Exception as e:
             alert = get_alert(f"Error: {e}")
 
         # return the alert message which is either success or error
-        return alert
+        return alert, None, None  # clear the data stores
 
     else:
         raise PreventUpdate
@@ -367,11 +403,11 @@ def on_load_matching_sequences(results_are_cleared, n_clicks, query_sequence, th
                 start_time = time.time()
 
             # get all the lab sequences
-            all_lab_sequences = singleton_data_mgr_instance.get_lab_sequences()
+            all_lab_sequences = singleton_data_mgr_instance.get_all_lab_sequences()
 
             if settings.is_sequence_alignment_profiling_enabled():
                 utils.log_with_context(
-                    f"[PROFILING] on_load_matching_sequences: get_lab_sequences() {time.time() - start_time} s",
+                    f"[PROFILING] on_load_matching_sequences: get_all_lab_sequences() {time.time() - start_time} s",
                     log_flag=settings.is_sequence_alignment_profiling_enabled(),
                 )
                 start_time = time.time()
@@ -404,6 +440,7 @@ def on_load_matching_sequences(results_are_cleared, n_clicks, query_sequence, th
 
                 # get the experiment core data for the db
                 exp = singleton_data_mgr_instance.get_experiment(exp_id)
+                experiment_meta_data = singleton_data_mgr_instance.experiments_metadata[exp_id]
 
                 # extract the top N (hot) and bottom N (cold) fitness values of this experiment
                 hot_cold_spots_merged_df, hot_cold_residue_per_smiles = exp.exp_hot_cold_spots(int(n_top_hot_cold))
@@ -411,7 +448,7 @@ def on_load_matching_sequences(results_are_cleared, n_clicks, query_sequence, th
                 # add the experiment id to this data
                 hot_cold_spots_merged_df[gs.cc_experiment_id] = exp_id
                 # add the experiment name to the data
-                hot_cold_spots_merged_df[gs.c_experiment_name] = exp.experiment_name
+                hot_cold_spots_merged_df[gs.c_experiment_name] = experiment_meta_data[gs.c_experiment_name]
 
                 # concatenate this info with the rest of the hot and cold spot data
                 hot_cold_row_data = pd.concat([hot_cold_row_data, hot_cold_spots_merged_df], ignore_index=True)
@@ -420,9 +457,12 @@ def on_load_matching_sequences(results_are_cleared, n_clicks, query_sequence, th
                 seq_match_row_data = u_seq_alignment.gather_seq_alignment_data_per_smiles(
                     df_hot_cold_residue_per_smiles=hot_cold_residue_per_smiles,
                     seq_match_data=lab_seq_match_data[i],
-                    exp_meta_data=exp.exp_meta_data_to_dict(),
+                    exp_meta_data=experiment_meta_data,
                     seq_match_row_data=seq_match_row_data,
                 )
+
+                del exp
+                del hot_cold_spots_merged_df
 
             if settings.is_sequence_alignment_profiling_enabled():
                 utils.log_with_context(
@@ -511,9 +551,11 @@ def display_selected_matching_sequences(selected_rows):
 
         # get the experiment info from the db
         exp = singleton_data_mgr_instance.get_experiment(experiment_id)
-        geometry_file = exp.geometry_file_path
+        geometry_file = exp.geometry_base64_bytes
 
         svg_src_image = u_reaction.create_reaction_image(substrate, product)
+        # set the informative text
+        del exp
 
         # if there is no geometry for the file ignore it
         if geometry_file:
@@ -679,10 +721,14 @@ def redirect_to_experiment_page(n_clicks):
 def on_load_experiment_page(pathname, experiment_id):
     if pathname == gs.nav_experiment_path:
         exp = singleton_data_mgr_instance.get_experiment(experiment_id)
+        exp_meta_data = singleton_data_mgr_instance.experiments_metadata[experiment_id]
+        experiment_name = exp_meta_data.get("experiment_name", "")
+        parent_sequence = exp_meta_data.get("parent_sequence", "")
+        substrate = exp_meta_data.get("substrate", "")
+        product = exp_meta_data.get("product", "")
 
         # viewer data
-        # TODO : this needs to be moved out of here so it can pickup the file format
-        pdb_cif = u_protein_viewer.get_geometry_for_viewer(exp)
+        pdb_cif = molstar_helper.parse_molecule(exp.geometry_base64_bytes, fmt="cif")
 
         # load the dropdown for the plots with default values
         default_plate = exp.plates[0]
@@ -714,29 +760,14 @@ def on_load_experiment_page(pathname, experiment_id):
         # set up the slider
         # get the max value of the ratio column, round up
         max_value = np.ceil(df_filtered_with_ratio["ratio"].max())
-        # generate the slider marks based on the max value
-        # make sure the value is an int
-        # slider_marks = utils.generate_slider_marks_dict(int(max_value))
-        # slider_value = [0.5, max_value]
 
-        # heatmap_df = exp.data_df[[gs.c_smiles, gs.c_plate, gs.c_well, gs.c_alignment_count,
-        #                          gs.c_alignment_probability, gs.c_fitness_value]]
-        # heatmap_json = heatmap_df.to_json(date_format='iso', orient='records')
-        # Convert to JSON
-        # json_data = json.dumps(exp.exp_to_dict(), indent=4)
-        # json_data = json.dumps(exp, cls=CustomEncoder, indent=4)
-
-        # exp_dict = json.loads(exp_json)
-        # exp = Experiment.exp_from_dict(exp_dict)
-        substrate = exp.substrate
-        product = exp.product
         svg_src_image = u_reaction.create_reaction_image(substrate, product)
 
         return (
             # -------------------------------
             # Tab name
             # -------------------------------
-            f"Experiment #{experiment_id}:  {exp.experiment_name}",
+            f"Experiment #{experiment_id}:  {experiment_name}",
             # -------------------------------
             # Top variant table
             # -------------------------------
@@ -749,16 +780,16 @@ def on_load_experiment_page(pathname, experiment_id):
             # -------------------------------
             # Meta data
             # -------------------------------
-            exp.experiment_name,
-            exp.parent_sequence,
-            exp.mutagenesis_method,
-            exp.experiment_date,
-            exp.upload_time_stamp,
-            exp.plates_count,
+            experiment_name,
+            parent_sequence,
+            exp_meta_data.get("mutagenesis_method", ""),
+            exp_meta_data.get("experiment_date", ""),
+            exp_meta_data.get("upload_time_stamp", ""),
+            exp_meta_data.get("plates_count", 0),
             unique_smiles_in_data,
-            exp.substrate,
-            exp.product,
-            exp.assay,
+            substrate,
+            product,
+            exp_meta_data.get("assay", ""),
             # -------------------------------
             # heatmap dropdowns and figure
             # -------------------------------
@@ -787,7 +818,7 @@ def on_load_experiment_page(pathname, experiment_id):
             # -------------------------------
             # related sequences
             # --------------------------------
-            exp.parent_sequence,
+            parent_sequence,
             # -------------------------------
             # reaction
             # --------------------------------
@@ -1014,10 +1045,10 @@ def on_load_exp_related_variants(
                 start_time = time.time()
 
             # get all the lab sequences
-            all_lab_sequences = singleton_data_mgr_instance.get_lab_sequences()
+            all_lab_sequences = singleton_data_mgr_instance.get_all_lab_sequences()
 
             if settings.is_sequence_alignment_profiling_enabled():
-                print(f"[PROFILING] on_load_exp_related_variants: get_lab_sequences() {time.time() - start_time} s")
+                print(f"[PROFILING] on_load_exp_related_variants: get_all_lab_sequences() {time.time() - start_time} s")
                 start_time = time.time()
 
             # get the alignment and the base score
@@ -1053,6 +1084,8 @@ def on_load_exp_related_variants(
                     exp_results_row_data=exp_results_row_data,
                 )
 
+                del match_exp
+
             if settings.is_sequence_alignment_profiling_enabled():
                 print(f"[PROFILING] on_load_exp_related_variants: finding residues {time.time() - start_time} s")
 
@@ -1067,6 +1100,8 @@ def on_load_exp_related_variants(
             experiment_substrate = experiment.substrate
             experiment_product = experiment.product
             experiment_svg_src = u_reaction.create_reaction_image(experiment_substrate, experiment_product)
+
+            del experiment
 
             return (
                 exp_results_row_data,
@@ -1150,12 +1185,11 @@ def display_selected_exp_related_variants(selected_rows, experiment_id):
         selected_product = f"{selected_rows[0][gs.cc_product]}"
 
         # get the experiment info from the db
-        # TODO: need to add a function to only get the geometry file not the whole experiment
         selected_experiment = singleton_data_mgr_instance.get_experiment(selected_experiment_id)
-        selected_experiment_geometry_file = selected_experiment.geometry_file_path
+        selected_experiment_geometry_file = selected_experiment.geometry_base64_bytes
 
         experiment = singleton_data_mgr_instance.get_experiment(experiment_id)
-        experiment_geometry_file = experiment.geometry_file_path
+        experiment_geometry_file = experiment.geometry_base64_bytes
 
         # if there is no geometry for the file ignore it
         if selected_experiment_geometry_file and experiment_geometry_file:
