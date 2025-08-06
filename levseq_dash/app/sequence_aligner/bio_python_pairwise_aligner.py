@@ -127,66 +127,35 @@ def get_alignments(query_sequence, threshold, targets: dict):
 
     # ---------------------
     results = []
-    if settings.is_parallel_sequence_alignment_enabled():
-        # create and configure the process pool
-        with ProcessPoolExecutor() as executor:
-            # use below for debugging purposes
-            utils.log_with_context(
-                f"[ProcessPoolExecutor] Starting with  default# Workers: {executor._max_workers}",
-                log_flag=settings.is_pairwise_aligner_logging_enabled(),
+    # create and configure the process pool
+    with ProcessPoolExecutor() as executor:
+        # use below for debugging purposes
+        utils.log_with_context(
+            f"[ProcessPoolExecutor] Starting with  default# Workers: {executor._max_workers}",
+            log_flag=settings.is_pairwise_aligner_logging_enabled(),
+        )
+
+        # The Future object allows the running asynchronous task to be queried, canceled,
+        # and for the results to be retrieved later once the task is done.
+        futures = [
+            # issue tasks to the process pool
+            executor.submit(
+                parallel_function_align_target,  # function to be executed in parallel
+                target_exp_id,
+                target_exp_sequence,
+                query_sequence,
+                base_score,
+                threshold,
+                aligner,
             )
+            for target_exp_id, target_exp_sequence in targets.items()
+        ]
+        for future in futures:
+            results.extend(future.result())
 
-            # The Future object allows the running asynchronous task to be queried, canceled,
-            # and for the results to be retrieved later once the task is done.
-            futures = [
-                # issue tasks to the process pool
-                executor.submit(
-                    parallel_function_align_target,  # function to be executed in parallel
-                    target_exp_id,
-                    target_exp_sequence,
-                    query_sequence,
-                    base_score,
-                    threshold,
-                    aligner,
-                )
-                for target_exp_id, target_exp_sequence in targets.items()
-            ]
-            for future in futures:
-                results.extend(future.result())
-
-            utils.log_with_context(
-                f"[ProcessPoolExecutor] Done with all tasks", log_flag=settings.is_pairwise_aligner_logging_enabled()
-            )
-    else:
-        # keep the sequential way as backup
-        for target_exp_id, target_exp_sequence in targets.items():
-            alignments = aligner.align(target_exp_sequence, query_sequence)
-            for i, alignment in enumerate(alignments):
-                # extract the stats
-                # https://biopython.org/docs/dev/Tutorial/chapter_align.html#subsec-slicing-indexing-alignment
-                # https://biopython.org/docs/dev/Tutorial/chapter_align.html#counting-identities-mismatches-and-gaps
-                counts = alignment.counts()
-
-                # convert the alignment object result into a string
-                alignment_str = alignment.__str__()
-
-                # normalize the score by the base score
-                norm_score_ratio = round(alignment.score / base_score, 4)
-
-                # only return the alignments that score above a threshold
-                if norm_score_ratio >= threshold:
-                    results.append(
-                        {
-                            "experiment_id": target_exp_id,
-                            "sequence": target_exp_sequence,
-                            "sequence_alignment": alignment_str,
-                            "alignment_score": alignment.score,
-                            "norm_score": norm_score_ratio,
-                            "identities": counts.identities,
-                            "mismatches": counts.mismatches,
-                            "gaps": counts.gaps,
-                        }
-                    )
+        utils.log_with_context(
+            f"[ProcessPoolExecutor] Done with all tasks", log_flag=settings.is_pairwise_aligner_logging_enabled()
+        )
 
     # for sanity’s sake let's make sure its sorted
     results = sorted(results, key=lambda x: x["norm_score"], reverse=True)
