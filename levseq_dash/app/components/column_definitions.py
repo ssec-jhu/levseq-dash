@@ -19,8 +19,9 @@ def get_experiment_id(record):
             "field": gs.cc_experiment_id,
             "headerName": gs.header_experiment_id,
             "filter": "agNumberColumnFilter",
+            # show the first 5 characters of the prefix plus the first 5 of the uuid
             "valueFormatter": {
-                "function": "params.value.slice(0, 8)"  # shows first 8 chars
+                "function": "params.value.slice(0, 11)"  # shows first 11 chars
             },
             "tooltipField": "experiment_id",  # show full UUID on hover
         }

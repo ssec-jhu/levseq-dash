@@ -15,7 +15,6 @@ from levseq_dash.app.data_manager.experiment import Experiment, MutagenesisMetho
 from levseq_dash.app.utils import utils
 from levseq_dash.app.utils.utils import log_with_context
 
-
 # from levseq_dash.app.wsexec import Query
 
 
@@ -35,48 +34,14 @@ class DataManager:
             self.experiments_metadata = {}
             # Cache for loaded experiment objects (UUID -> Experiment object)
             # self.experiments_cache = {}
+            self.five_letter_id_prefix = settings.get_five_letter_id_prefix()
 
-            # look for DATA_PATH in case data is mounted from elsewhere
-            env_data_path = os.getenv("DATA_PATH")
-            log_with_context(f"[LOG] os.getenv: {env_data_path}", log_flag=settings.is_data_manager_logging_enabled())
-
-            if env_data_path is None:
-                # if no path is provided, read from the path in config file
-                disk_settings = settings.get_disk_settings()
-                raw_path = disk_settings.get("data_path")
-                self.data_path = (settings.package_root / raw_path).resolve() if raw_path else None
-                log_with_context(
-                    f"[LOG] Using config file data_path: {self.data_path}",
-                    log_flag=settings.is_data_manager_logging_enabled(),
-                )
-            else:
-                self.data_path = Path(env_data_path).resolve()
-                log_with_context(
-                    f"[LOG] Using env DATA_PATH for data path: {self.data_path}",
-                    log_flag=settings.is_data_manager_logging_enabled(),
-                )
-
-            if not self.data_path or not self.data_path.exists():
-                log_with_context(
-                    f"[LOG] Data path not found: {self.data_path}", log_flag=settings.is_data_manager_logging_enabled()
-                )
-                raise FileNotFoundError()
+            self._setup_data_path()
 
             # read the assay file and set up the assay list
-            if settings.assay_file_path.exists():
-                assays = pd.read_csv(settings.assay_file_path, encoding="utf-8", usecols=["Technique"])
-                self.assay_list = assays["Technique"].tolist()
-                log_with_context(
-                    f"[LOG] Read assay file at: {settings.assay_file_path} with size {len(self.assay_list)}",
-                    log_flag=settings.is_data_manager_logging_enabled(),
-                )
+            self._load_assay_list()
 
-            # Load experiment metadata index from UUID-based files
             self._load_all_experiments_metadata_into_memory()
-            # self._export_experiment_data_with_uuid(data_directory=self.data_path, output_directory=self.data_path)
-
-        else:
-            raise Exception(gs.error_app_mode)
 
     # -----------------------
     #       ADD DATA
@@ -103,13 +68,15 @@ class DataManager:
             pass
 
         elif self.use_db_web_service == AppMode.disk.value:
-            # Generate UUID for the experiment
-            experiment_uuid = str(uuid.uuid4())
-
             if experiment_content_base64_string:
+                # Generate a UUID for the experiment
+                experiment_uuid = self.generate_experiment_id(id_prefix=settings.get_five_letter_id_prefix())
+
                 # calculate a checksum for the CSV file
                 experiment_bytes = base64.b64decode(experiment_content_base64_string)
                 csv_checksum = utils.calculate_file_checksum(experiment_bytes)
+
+                # assign a timestamp for the upload
                 upload_time_stamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
                 # convert to dataframe for processing
@@ -136,6 +103,7 @@ class DataManager:
                 }
 
                 # Save metadata as a JSON file
+                self._create_experiment_directory(experiment_uuid)
                 json_file_path, csv_file_path, cif_file_path = self._generate_file_paths_for_experiment(experiment_uuid)
 
                 with open(json_file_path, "w", encoding="utf-8") as json_file:
@@ -288,29 +256,53 @@ class DataManager:
         """
         assay_list = []
         if self.use_db_web_service == AppMode.db.value:
-            # this works
-            # cols, rows = Query("get_assays", [])
-            # assay_list = [sublist[1] for sublist in rows]
             pass
 
-            # df = pd.DataFrame(rows)
-            # # cols, rows = Query("get_test_queries", [eid, uid, gid])  # type:ignore
-            # cols, rows = Query("get_usernames", [])  # type:ignore
-            # df_user = pd.DataFrame(data=rows, columns=cols)  # type:ignore
-            # cols, rows = Query("get_mutagenesis_methods", [])  # type:ignore
-            # cols_1, rows_1 = Query("get_experiments_u", [4])  # type:ignore
-            # df = pd.DataFrame(rows_1)
-            # eid = 102
-            # gid = 2
-            # cols, rows = Query("get_test_queries", [eid, 4, gid])  # type:ignore
-            # # cols, rows = Query("get_user_info", [uid])  # type:ignore
-            #
-            # cols, rows = Query("get_variant_sequences", [1, gid])  # type:ignore
         elif self.use_db_web_service == AppMode.disk.value:
             assay_list = self.assay_list
         else:
             raise Exception(gs.error_app_mode)
         return assay_list
+
+    # ----------------------------
+    #    PRIVATE METHODS
+    # ---------------------------
+    def _setup_data_path(self):
+        # look for DATA_PATH in case data is mounted from elsewhere
+        env_data_path = os.getenv("DATA_PATH")
+        log_with_context(f"[LOG] os.getenv: {env_data_path}", log_flag=settings.is_data_manager_logging_enabled())
+
+        if env_data_path is None:
+            # if no path is provided, read from the path in config file
+            disk_settings = settings.get_disk_settings()
+            raw_path = disk_settings.get("data_path")
+            # TODO: this should not be from the package root
+            self.data_path = (settings.package_root / raw_path).resolve() if raw_path else None
+            log_with_context(
+                f"[LOG] Using config file data_path: {self.data_path}",
+                log_flag=settings.is_data_manager_logging_enabled(),
+            )
+        else:
+            self.data_path = Path(env_data_path).resolve()
+            log_with_context(
+                f"[LOG] Using env DATA_PATH for data path: {self.data_path}",
+                log_flag=settings.is_data_manager_logging_enabled(),
+            )
+
+        if not self.data_path or not self.data_path.exists():
+            log_with_context(
+                f"[LOG] Data path not found: {self.data_path}", log_flag=settings.is_data_manager_logging_enabled()
+            )
+            raise FileNotFoundError()
+
+    def _load_assay_list(self):
+        if settings.assay_file_path.exists():
+            assays = pd.read_csv(settings.assay_file_path, encoding="utf-8", usecols=["Technique"])
+            self.assay_list = assays["Technique"].tolist()
+            log_with_context(
+                f"[LOG] Read assay file at: {settings.assay_file_path} with size {len(self.assay_list)}",
+                log_flag=settings.is_data_manager_logging_enabled(),
+            )
 
     def _load_all_experiments_metadata_into_memory(self):
         """
@@ -319,9 +311,15 @@ class DataManager:
         It assumes the file structure is as follows:
 
         /self.data_path/
-        ├── {uuid}.json           Metadata file for experiment with UUID
-        ├── {uuid}.csv            Experiment data in CSV format
-        └── {uuid}.cif            Geometry file for experiment
+        ├── {uuid}/
+        │   ├── {uuid}.json           Metadata file for experiment with UUID
+        │   ├── {uuid}.csv            Experiment data in CSV format
+        │   └── {uuid}.cif            Geometry file for experiment
+        ├── {uuid}/
+        │   ├── {uuid}.json
+        │   ├── {uuid}.csv
+        │   └── {uuid}.cif
+        └── ...
         """
 
         if self.use_db_web_service == AppMode.db.value:
@@ -332,8 +330,8 @@ class DataManager:
             log_flag=settings.is_data_manager_logging_enabled(),
         )
 
-        # Find all JSON metadata files in the data directory
-        json_files = list(self.data_path.glob("*.json"))
+        # Find all JSON metadata files recursively in the data directory and subdirectories
+        json_files = list(self.data_path.rglob("*.json"))
 
         for json_file in json_files:
             try:
@@ -364,19 +362,40 @@ class DataManager:
                     log_flag=settings.is_data_manager_logging_enabled(),
                 )
 
-    def _generate_file_paths_for_experiment(self, experiment_uuid):
+        log_with_context(
+            f"[LOG] Successfully loaded {len(self.experiments_metadata)} experiments into memory",
+            log_flag=settings.is_data_manager_logging_enabled(),
+        )
+
+    def _create_experiment_directory(self, experiment_uuid: str) -> Path:
+        """
+        Create a directory for the experiment based on its UUID.
+        This is used to store experiment files like JSON, CSV, and CIF.
+        """
+        experiment_dir = self.data_path / experiment_uuid
+        experiment_dir.mkdir(parents=True, exist_ok=True)
+        return experiment_dir
+
+    def _generate_file_paths_for_experiment(self, experiment_uuid: str):
         """
         Generate file paths for experiments based on UUIDs.
-        This function is a placeholder for future implementations.
+        Function does not check if the paths exist or not, it just generates the paths.
         """
         # This function can be used to generate file paths for experiments
         # based on UUIDs, if needed in the future.
 
-        metadata_file_path = self.data_path / f"{experiment_uuid}.json"
-        csv_file_path = self.data_path / f"{experiment_uuid}.csv"
-        cif_file_path = self.data_path / f"{experiment_uuid}.cif"
+        metadata_file_path = self.data_path / experiment_uuid / f"{experiment_uuid}.json"
+        csv_file_path = self.data_path / experiment_uuid / f"{experiment_uuid}.csv"
+        cif_file_path = self.data_path / experiment_uuid / f"{experiment_uuid}.cif"
 
         return metadata_file_path, csv_file_path, cif_file_path
+
+    @staticmethod
+    def generate_experiment_id(id_prefix: str) -> str:
+        # Generate a UUID for the experiment
+        generated_uuid = str(uuid.uuid4())
+        # Return a string with the prefix and UUID
+        return f"{id_prefix}-{generated_uuid}"
 
 
 # Python will only run module-level code once per process, no matter how often Dash reloads pages or triggers callbacks
