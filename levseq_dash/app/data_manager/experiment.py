@@ -28,8 +28,7 @@ class Experiment:
             or not os.path.exists(geometry_file_path)
         ):
             raise ValueError(
-                "Experiment data file path, geometry file path, and metadata "
-                "must be provided in order to load an Experiment object."
+                "Experiment data file path, geometry file path must be provided in order to load an Experiment object."
             )
 
         # read the input data
