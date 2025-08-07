@@ -55,13 +55,24 @@ def setup_aligner_blastp():
     return aligner
 
 
+def inject_aligner():
+    """
+    Injects the aligner into the threading local storage.
+    This allows the aligner to be used in a thread-safe manner.
+    """
+    global aligner
+    aligner = setup_aligner_blastp()
+
+
 # Helper function for alignment
-def parallel_function_align_target(target_exp_id, target_exp_sequence, query_sequence, base_score, threshold, aligner):
+def parallel_function_align_target(target_exp_id, target_exp_sequence, query_sequence, base_score, threshold):
     # "Move the aligner creation inside the worker function, so it is not pickled or shared"
     # but testing and experiencing shows that it makes it slower AND is pickled anyway
     # keeping notes here that I tried to move aligner creation inside the worker
     # function, but it only made the code slower
     # aligner = setup_aligner_blastp()
+
+    aligner = globals().get("aligner", None)
 
     alignments = aligner.align(target_exp_sequence, query_sequence)
     results = []
@@ -128,7 +139,7 @@ def get_alignments(query_sequence, threshold, targets: dict):
     # ---------------------
     results = []
     # create and configure the process pool
-    with ProcessPoolExecutor() as executor:
+    with ProcessPoolExecutor(initializer=inject_aligner, max_workers=None) as executor:
         # use below for debugging purposes
         utils.log_with_context(
             f"[ProcessPoolExecutor] Starting with  default# Workers: {executor._max_workers}",
@@ -146,7 +157,6 @@ def get_alignments(query_sequence, threshold, targets: dict):
                 query_sequence,
                 base_score,
                 threshold,
-                aligner,
             )
             for target_exp_id, target_exp_sequence in targets.items()
         ]
