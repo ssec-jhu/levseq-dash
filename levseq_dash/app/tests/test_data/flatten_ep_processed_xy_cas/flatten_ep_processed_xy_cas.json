@@ -1,0 +1,13 @@
+{
+    "experiment_id": "flatten_ep_processed_xy_cas",
+    "experiment_name": "flatten_ep_processed_xy_cas",
+    "experiment_date": "2021-02-23",
+    "substrate": "CC(C)CC1=CC=C(C=C1)C(C)C(=O)O.C1=CC=C(C=C1)C=O",
+    "product": "C1=CC=C(C=C1)C=O",
+    "assay": "LC-MS",
+    "mutagenesis_method": "Error-prone PCR (epPCR)",
+    "parent_sequence": "MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVEDILDLWYGLQGSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTLCKPLDRQWLNYMYEIGLRHHRTKKGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAIWSYPYAKTGEWLE",
+    "plates_count": 10,
+    "csv_checksum": "0dfebcafdfb913437103106425975b13bf7fd6ee56801699b694f47726b8db8a",
+    "upload_time_stamp": "2025-08-04 14:35:42"
+}
