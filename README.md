@@ -23,6 +23,7 @@ See more about the experiment file structure here [TBD]
 
 ## Quick start Playground Mode [with Docker - recommended]:
   This mode is the **fastest way** to run the app. The repo already comes with a curated dataset.
+  Data modification is disabled in this mode, so you cannot upload your own data.
   * Download & install Docker - see [Docker install docs](https://docs.docker.com/get-docker/).
   * Get the code: ``git clone https://github.com/ssec-jhu/levseq-dash.git``
   * cd into repo directory: ``cd levseq-dash``
@@ -30,13 +31,21 @@ See more about the experiment file structure here [TBD]
   * Run the image: ``docker run -p 8060:8050 levseq-dash-playground``
   * App will be running at: ``http://0.0.0.0:8060``
 
-## Quick start using your own dataset [with Docker]:
+## Setting up your own instance with your own dataset [with Docker]:
 Use this mode if you want to provide a path to a folder located on your host machine.
 Docker will require the path to mount. 
-* [TBD]: describe file structure
-* Build & Run the docker image: 
-  * ``docker build . -t levseq-dash-with-my-data --no-cache``
-  * ``docker run -p 8060:8050 -e DATA_PATH=/path/to/my/data -v /path/to/my/data:/path/to/my/data levseq-dash-with-my-data``
+  * Download & install Docker - see [Docker install docs](https://docs.docker.com/get-docker/).
+  * Get the code: ``git clone https://github.com/ssec-jhu/levseq-dash.git``
+  * cd into repo directory: ``cd levseq-dash``
+  * In `app/config/config.yaml`, set `enable_data_modification` to true to be able to upload data in your local storage.
+  * In `app/config/config.yaml`, set `five_letter_id_prefix` to a unique 5 letter prefix for your dataset.  This prefix will be 
+  used to generate unique IDs for your sequences.
+  * Build & Run the docker image: ``docker build . -t levseq-dash --no-cache``
+  * Run the image:
+    * If you do not set ``DATA_PATH``, the app will use ``/app/data/DEDB`` inside the container. Mount your host data to that location: 
+      * ``docker run -p 8060:8050 -v /path/to/my/data:/app/data/DEDB levseq-dash``
+    * If you want to use a different path, set the ``DATA_PATH`` environment variable: 
+      * ``docker run -p 8060:8050 -e DATA_PATH=/my-data -v /path/to/my/data:/my-data levseq-dash``
 * App will be running at: ``http://0.0.0.0:8060``
 
 ## Building and Development [locally]
