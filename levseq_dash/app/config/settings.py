@@ -97,7 +97,8 @@ def get_five_letter_id_prefix():
         id_prefix = id_prefix.strip()
         if len(id_prefix) != 5:
             raise ValueError(
-                f"Five letter ID prefix must be exactly 5 characters long, got {len(id_prefix)} characters: '{id_prefix}'"
+                f"Five letter ID prefix must be exactly 5 characters long, "
+                f"got {len(id_prefix)} characters: '{id_prefix}'"
             )
 
         if not id_prefix.isalpha():
