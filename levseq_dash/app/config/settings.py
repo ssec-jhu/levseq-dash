@@ -88,17 +88,19 @@ def get_five_letter_id_prefix():
     config = load_config()
     id_prefix = config.get("five_letter_id_prefix", "")
 
-    # Validate the ID prefix
-    if not id_prefix or id_prefix.strip() == "":
-        raise ValueError("User must set a 5 letter ID prefix in config.yaml under 'five_letter_id_prefix'")
+    # If data modification is enabled, we require a valid ID prefix
+    if is_data_modification_enabled():
+        # Validate the ID prefix
+        if not id_prefix or id_prefix.strip() == "":
+            raise ValueError("User must set a 5 letter ID prefix in config.yaml under 'five_letter_id_prefix'")
 
-    id_prefix = id_prefix.strip()
-    if len(id_prefix) != 5:
-        raise ValueError(
-            f"Five letter ID prefix must be exactly 5 characters long, got {len(id_prefix)} characters: '{id_prefix}'"
-        )
+        id_prefix = id_prefix.strip()
+        if len(id_prefix) != 5:
+            raise ValueError(
+                f"Five letter ID prefix must be exactly 5 characters long, got {len(id_prefix)} characters: '{id_prefix}'"
+            )
 
-    if not id_prefix.isalpha():
-        raise ValueError(f"Five letter ID prefix must contain only letters, got: '{id_prefix}'")
+        if not id_prefix.isalpha():
+            raise ValueError(f"Five letter ID prefix must contain only letters, got: '{id_prefix}'")
 
     return id_prefix.upper()  # Return uppercase for consistency
