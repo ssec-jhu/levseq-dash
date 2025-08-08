@@ -9,7 +9,7 @@ num_samples = 2  # change this if more data is added
 
 
 def test_db_load_examples(dbmanager_read_all_from_file):
-    assert len(dbmanager_read_all_from_file.experiments_metadata) == num_samples
+    assert len(dbmanager_read_all_from_file.get_experiment_metadata()) == num_samples
 
 
 @pytest.mark.parametrize(

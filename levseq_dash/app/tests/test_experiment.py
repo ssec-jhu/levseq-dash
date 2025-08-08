@@ -64,7 +64,9 @@ def test_experiment_loaded_metadata(
 ):
     """Test experiment assay by accessing metadata via DataManager"""
     exp_id = experiment_ep_pcr_metadata["experiment_id"]
-    assert dbmanager_read_all_from_file.experiments_metadata[exp_id][attribute] == experiment_ep_pcr_metadata[attribute]
+    assert (
+        dbmanager_read_all_from_file.get_experiment_metadata(exp_id)[attribute] == experiment_ep_pcr_metadata[attribute]
+    )
 
 
 def test_experiment_ep_pcr_unique_smiles(experiment_ep_pcr):

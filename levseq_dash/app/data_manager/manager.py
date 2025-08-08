@@ -7,6 +7,7 @@ from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
+from cachetools import LRUCache
 
 from levseq_dash.app import global_strings as gs
 from levseq_dash.app.config import settings
@@ -28,15 +29,18 @@ class DataManager:
             # connect_to_db( host, port, username, password)
         elif settings.is_disk_mode():
             self.use_db_web_service = AppMode.disk.value
-            log_with_context(f"---------DISK MODE ---------------", log_flag=settings.is_data_manager_logging_enabled())
+
+            # Set up the data path
+            self._setup_data_path()
 
             # Store experiment metadata index (UUID -> metadata dict)
-            self.experiments_metadata = {}
+            self._experiments_metadata = {}
+
             # Cache for loaded experiment objects (UUID -> Experiment object)
             # self.experiments_cache = {}
-            self.five_letter_id_prefix = settings.get_five_letter_id_prefix()
+            self._experiments_core_data_cache = LRUCache(maxsize=20)
 
-            self._setup_data_path()
+            self.five_letter_id_prefix = settings.get_five_letter_id_prefix()
 
             # read the assay file and set up the assay list
             self._load_assay_list()
@@ -120,7 +124,7 @@ class DataManager:
                         f.write(decoded_text)
 
                 # add the newly added experiment to the metadata list
-                self.experiments_metadata[experiment_uuid] = metadata
+                self._experiments_metadata[experiment_uuid] = metadata
 
         else:
             raise Exception(gs.error_app_mode)
@@ -143,7 +147,7 @@ class DataManager:
         if self.use_db_web_service == AppMode.db.value:
             pass
         elif self.use_db_web_service == AppMode.disk.value:
-            if experiment_uuid in self.experiments_metadata:
+            if experiment_uuid in self._experiments_metadata:
                 # Delete files from disk
                 json_file, csv_file_path, cif_file_path = self._generate_file_paths_for_experiment(experiment_uuid)
 
@@ -152,11 +156,11 @@ class DataManager:
                         file_path.unlink()
 
                 # Remove from memory
-                del self.experiments_metadata[experiment_uuid]
+                del self._experiments_metadata[experiment_uuid]
 
-                # # Remove from cache if it exists
-                # if experiment_uuid in self.experiments_cache:
-                #     del self.experiments_cache[experiment_uuid]
+                # Remove from cache if it exists
+                if experiment_uuid in self._experiments_core_data_cache:
+                    del self._experiments_core_data_cache[experiment_uuid]
 
                 success = True
         else:
@@ -183,7 +187,7 @@ class DataManager:
             pass
         elif self.use_db_web_service == AppMode.disk.value:
             # get the metadata for all the experiments
-            data_list_of_dict = list(self.experiments_metadata.values())
+            data_list_of_dict = list(self._experiments_metadata.values())
         else:
             raise Exception(gs.error_app_mode)
         return data_list_of_dict
@@ -202,7 +206,7 @@ class DataManager:
         elif self.use_db_web_service == AppMode.disk.value:
             # dictionary of "experiment UUID" and "experiment sequence" pairs
             # the key of the dictionary is the experiment UUID
-            for experiment_uuid, metadata in self.experiments_metadata.items():
+            for experiment_uuid, metadata in self._experiments_metadata.items():
                 seq_data.update({experiment_uuid: metadata.get("parent_sequence", "")})
         else:
             raise Exception(gs.error_app_mode)
@@ -211,9 +215,16 @@ class DataManager:
     # ---------------------------
     #    DATA RETRIEVAL: PER EXPERIMENT
     # ---------------------------
+    def get_experiment_metadata(self, experiment_uuid: str) -> dict | None:
+        """
+        Returns metadata for the given experiment UUID.
+        """
+        return self._experiments_metadata.get(experiment_uuid, None)
+
     def get_experiment(self, experiment_uuid: str) -> Experiment | None:
         """
-        Lazy load experiment from disk if not in cache
+        returns Experiment object for the given experiment UUID
+        which contains the structure and the experiment data.
         """
         exp = None
         if self.use_db_web_service == AppMode.db.value:
@@ -227,17 +238,16 @@ class DataManager:
         elif self.use_db_web_service == AppMode.disk.value:
             try:
                 # Check cache first
-                # if experiment_uuid in self.experiments_cache:
-                #     return self.experiments_cache[experiment_uuid]
+                if experiment_uuid in self._experiments_core_data_cache:
+                    return self._experiments_core_data_cache[experiment_uuid]
 
                 # Load from disk
                 # exp = self._load_experiment_from_disk(experiment_uuid)
                 _, csv_file_path, cif_file_path = self._generate_file_paths_for_experiment(experiment_uuid)
                 exp = Experiment(experiment_data_file_path=csv_file_path, geometry_file_path=cif_file_path)
-
-                # if exp:
-                #     # Cache the loaded experiment
-                #     self.experiments_cache[experiment_uuid] = exp
+                # Cache the loaded experiment
+                if exp:
+                    self._experiments_core_data_cache[experiment_uuid] = exp
 
             except Exception as e:
                 raise Exception(f"[LOG] Error loading experiment {experiment_uuid} from disk: {e}")
@@ -269,31 +279,45 @@ class DataManager:
     # ---------------------------
     def _setup_data_path(self):
         # look for DATA_PATH in case data is mounted from elsewhere
-        env_data_path = os.getenv("DATA_PATH")
-        log_with_context(f"[LOG] os.getenv: {env_data_path}", log_flag=settings.is_data_manager_logging_enabled())
 
-        if env_data_path is None:
-            # if no path is provided, read from the path in config file
-            disk_settings = settings.get_disk_settings()
-            raw_path = disk_settings.get("data_path")
-            # TODO: this should not be from the package root
-            self.data_path = (settings.package_root / raw_path).resolve() if raw_path else None
+        self.data_path = Path(os.environ.get("DATA_PATH", "data/DEDB")).resolve()
+
+        log_with_context(
+            f"[LOG] Using data path: {self.data_path}",
+            log_flag=settings.is_data_manager_logging_enabled(),
+        )
+
+        if not self.data_path.exists():
             log_with_context(
-                f"[LOG] Using config file data_path: {self.data_path}",
+                f"[LOG] Data path not found: {self.data_path}",
                 log_flag=settings.is_data_manager_logging_enabled(),
             )
-        else:
-            self.data_path = Path(env_data_path).resolve()
-            log_with_context(
-                f"[LOG] Using env DATA_PATH for data path: {self.data_path}",
-                log_flag=settings.is_data_manager_logging_enabled(),
-            )
+            raise FileNotFoundError(f"Data directory not found at {self.data_path}")
+        # #env_data_path = os.getenv("DATA_PATH")
+        # log_with_context(f"[LOG] os.getenv: {env_data_path}", log_flag=settings.is_data_manager_logging_enabled())
 
-        if not self.data_path or not self.data_path.exists():
-            log_with_context(
-                f"[LOG] Data path not found: {self.data_path}", log_flag=settings.is_data_manager_logging_enabled()
-            )
-            raise FileNotFoundError()
+        # if env_data_path is None:
+        #     # if no path is provided, read from the path in config file
+        #     disk_settings = settings.get_disk_settings()
+        #     raw_path = disk_settings.get("data_path")
+        #     # TODO: this should not be from the package root
+        #     self.data_path = (settings.package_root / raw_path).resolve() if raw_path else None
+        #     log_with_context(
+        #         f"[LOG] Using config file data_path: {self.data_path}",
+        #         log_flag=settings.is_data_manager_logging_enabled(),
+        #     )
+        # else:
+        #     self.data_path = Path(env_data_path).resolve()
+        #     log_with_context(
+        #         f"[LOG] Using env DATA_PATH for data path: {self.data_path}",
+        #         log_flag=settings.is_data_manager_logging_enabled(),
+        #     )
+
+        # if not self.data_path or not self.data_path.exists():
+        #     log_with_context(
+        #         f"[LOG] Data path not found: {self.data_path}", log_flag=settings.is_data_manager_logging_enabled()
+        #     )
+        #     raise FileNotFoundError()
 
     def _load_assay_list(self):
         if settings.assay_file_path.exists():
@@ -354,7 +378,7 @@ class DataManager:
                     metadata = json.load(f)
 
                 # add the metadata to memory
-                self.experiments_metadata[experiment_uuid] = metadata
+                self._experiments_metadata[experiment_uuid] = metadata
 
             except Exception as e:
                 log_with_context(
@@ -363,7 +387,7 @@ class DataManager:
                 )
 
         log_with_context(
-            f"[LOG] Successfully loaded {len(self.experiments_metadata)} experiments into memory",
+            f"[LOG] Successfully loaded {len(self._experiments_metadata)} experiments into memory",
             log_flag=settings.is_data_manager_logging_enabled(),
         )
 

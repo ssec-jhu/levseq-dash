@@ -441,7 +441,7 @@ def on_load_matching_sequences(results_are_cleared, n_clicks, query_sequence, th
 
                 # get the experiment core data for the db
                 exp = singleton_data_mgr_instance.get_experiment(exp_id)
-                experiment_meta_data = singleton_data_mgr_instance.experiments_metadata[exp_id]
+                experiment_meta_data = singleton_data_mgr_instance.get_experiment_metadata(exp_id)
 
                 # extract the top N (hot) and bottom N (cold) fitness values of this experiment
                 hot_cold_spots_merged_df, hot_cold_residue_per_smiles = exp.exp_hot_cold_spots(int(n_top_hot_cold))
@@ -722,7 +722,7 @@ def redirect_to_experiment_page(n_clicks):
 def on_load_experiment_page(pathname, experiment_id):
     if pathname == gs.nav_experiment_path:
         exp = singleton_data_mgr_instance.get_experiment(experiment_id)
-        exp_meta_data = singleton_data_mgr_instance.experiments_metadata[experiment_id]
+        exp_meta_data = singleton_data_mgr_instance.get_experiment_metadata(experiment_id)
         experiment_name = exp_meta_data.get("experiment_name", "")
         parent_sequence = exp_meta_data.get("parent_sequence", "")
         substrate = exp_meta_data.get("substrate", "")
@@ -1077,7 +1077,7 @@ def on_load_exp_related_variants(
                 # does my experiments variant show up in the other experiment
                 # get the experiment core data from the db
                 match_exp = singleton_data_mgr_instance.get_experiment(mathc_exp_id)
-                match_exp_meta_data = singleton_data_mgr_instance.experiments_metadata[mathc_exp_id]
+                match_exp_meta_data = singleton_data_mgr_instance.get_experiment_metadata(mathc_exp_id)
                 exp_results_row_data = u_seq_alignment.search_and_gather_variant_info_for_matching_experiment(
                     experiment=match_exp,
                     experiment_meta_data=match_exp_meta_data,
@@ -1098,7 +1098,7 @@ def on_load_exp_related_variants(
                 )
 
             # gather the info for making this experiments reaction image for use in comparison
-            experiment_metadata = singleton_data_mgr_instance.experiments_metadata[experiment_id]
+            experiment_metadata = singleton_data_mgr_instance.get_experiment_metadata(experiment_id)
             experiment_substrate = experiment_metadata.get(gs.cc_substrate, "")
             experiment_product = experiment_metadata.get(gs.cc_product, "")
 
