@@ -19,7 +19,7 @@ disk:
 
   # in playground mode uploading new experiments or
   # deleting current experiments is disabled
-  enable_data_modification: false
+  enable_data_modification: true
 
 # use these settings for db
 db:

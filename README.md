@@ -36,7 +36,7 @@ Docker will require the path to mount.
 * [TBD]: describe file structure
 * Build & Run the docker image: 
   * ``docker build . -t levseq-dash-with-my-data --no-cache``
-  * ``docker run -p 8060:8050 -e DATA_PATH=/path/to/my/data -v /path/to/my/data:/path/to/my/data levseq-dash-with-my-data``
+  * ``docker run -p 8060:8050 -e DATA_PATH=/my-data -v /Users/arianemora/Documents/code/levseq-dash/DEDB:/my-data levseq-dash-with-my-data ``
 * App will be running at: ``http://0.0.0.0:8060``
 
 ## Building and Development [locally]
