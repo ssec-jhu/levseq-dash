@@ -68,10 +68,13 @@ def create_reaction_image(substrate_smiles: str, product_smiles: str):
         image
 
     """
-    # verify the smiles string
-    if is_valid_smiles(substrate_smiles) is None:
+    # verification for the smiles strings is removed
+    # data that comes into the app and is uploaded will go through smiles verification
+    # we have exceptions in the initial public data that have no substrates and thus are left as empty strings.
+    # but we still need to show the reaction image without a substrate
+    if substrate_smiles is None:
         raise ValueError(f"Smiles String is not valid for creating an image: {substrate_smiles}")
-    if is_valid_smiles(product_smiles) is None:
+    if product_smiles is None:
         raise ValueError(f"Smiles String is not valid for creating an image: {product_smiles}")
 
     rxn_smarts = f"{substrate_smiles}>>{product_smiles}"
