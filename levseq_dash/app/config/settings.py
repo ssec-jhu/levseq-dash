@@ -70,11 +70,3 @@ def is_data_manager_logging_enabled():
 def is_pairwise_aligner_logging_enabled():
     log_settings = get_logging_settings()
     return log_settings.get("pairwise_aligner", False)
-
-
-def is_parallel_sequence_alignment_enabled():
-    """
-    Returns whether parallel sequence alignment is enabled based on the config.
-    """
-    config = load_config()
-    return config.get("parallel_sequence_alignment", False)

@@ -28,8 +28,6 @@ db:
     port: 8051
     session_key: "\xd6\x70\x04\xab\xd2\x08\x42\xe1\xa3\x5d\xfe\x1c\xce\x78\xd4\x7a"  # uuid.uuid4().hex
 
-# set to true to enable or disable parallel sequence alignment
-parallel_sequence_alignment: false  # or false
 
 logging:
   # set to true to enable profiling for performance testing
