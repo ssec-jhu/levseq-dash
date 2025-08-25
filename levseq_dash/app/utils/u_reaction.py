@@ -17,10 +17,8 @@ def is_valid_smiles(smiles):
     if isinstance(smiles, str):
         # remove spaces if any
         smiles = smiles.replace(" ", "")
-
-    if smiles == "":
-        # Chem.MolFromSmiles accepts this as a mol! so putting in a check here
-        return None
+    else:
+        smiles = ""
 
     # MolFromSmiles will sanitize and canonicalize the molecule , defaults to True.
     # example here: https://www.rdkit.org/docs/GettingStartedInPython.html
@@ -74,6 +72,11 @@ def create_reaction_image(substrate_smiles: str, product_smiles: str):
     if is_valid_smiles(product_smiles) is None:
         raise ValueError(f"Smiles String is not valid for creating an image: {product_smiles}")
 
+    # Enable for now it to pass without a vaid smiles ToDo: think of a beter way of handling this!
+    if not isinstance(substrate_smiles, str):
+        substrate_smiles = ''
+    if not isinstance(product_smiles, str):
+        product_smiles = ''
     rxn_smarts = f"{substrate_smiles}>>{product_smiles}"
     rxn = rdChemReactions.ReactionFromSmarts(rxn_smarts, useSmiles=True)
 
