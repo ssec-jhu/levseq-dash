@@ -385,7 +385,10 @@ class DataManager:
             experiment_id = row["experiment_id"]
             experiment_name = row["experiment_name"]
             experiment_date = row["experiment_date"]
-            experiment_substrate = row["substrate_smiles"]
+            sub_string = str(row["substrate_smiles"])
+            experiment_substrate = (
+                sub_string if sub_string and sub_string.lower() not in ["nan", "none", "null"] else ""
+            )
             experiment_product = row["product_smiles"]
             assay = row["assay_technique"]
             exp_file_path = experiment_dir / f"{experiment_id}.csv"
