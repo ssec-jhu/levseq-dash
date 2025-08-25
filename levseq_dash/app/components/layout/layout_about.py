@@ -17,13 +17,13 @@ def get_layout():
             html.Div(
                 [
                     html.P(
-                        "The Directed Evolution Database (DEDB) Dashboard is a specialized visualization tool for "
+                        "The Enzyme Engineering Database (EnzEngDB) Dashboard is a specialized visualization tool for "
                         "analyzing directed evolution experiments in protein engineering. "
                         "This dashboard enables researchers to "
                         "explore sequence-function relationships, identify beneficial and detrimental "
                         "mutations, and make data-driven decisions for protein design."
                     ),
-                    html.P("DEDB Dashboard was designed with three core principles in mind:", className="mb-3"),
+                    html.P("EnzEngDB Dashboard was designed with three core principles in mind:", className="mb-3"),
                     html.Ol(
                         [
                             html.Li(
@@ -419,7 +419,7 @@ def get_layout():
             html.Hr(),
             html.Div(
                 [
-                    "The source code for the DEDB Dashboard is open-source and available on ",
+                    "The source code for the EnzEngDB Dashboard is open-source and available on ",
                     html.A("GitHub", href="https://github.com/ssec-jhu/levseq-dash", target="_blank"),
                     html.P(
                         "If you encounter a bug, would like to request a feature, or wish to contribute, "
@@ -432,7 +432,7 @@ def get_layout():
             html.Hr(),
             html.Div(
                 [
-                    "If you use the DEDB Dashboard in your research, please cite both the paper and the software:",
+                    "If you use the EnzEngDB Dashboard in your research, please cite both the paper and the software:",
                     html.Ul(
                         [
                             html.Li("Paper Citation: [TBD]"),

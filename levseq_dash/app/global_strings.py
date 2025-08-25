@@ -1,15 +1,15 @@
 # -----------------------------
 # General App Strings
 # -----------------------------
-web_title = "Directed Evolution Database"
+web_title = "Enzyme Engineering Database"
 nav_lab = "Home"
 nav_upload = "Upload Your Experiment"
 nav_explore = "Explore the Database"
 nav_find_seq = "Find Similar Sequences"
-nav_about = "About DEDB Dashboard"
+nav_about = "About EnzEngDB Dashboard"
 
-welcome = "Welcome to the DEDB Dashboard!"
-welcome_text = "a visualization tool for analyzing directed evolution experiments in protein engineering"
+welcome = "Welcome to the EnzEngDB Dashboard!"
+welcome_text = "a visualization tool for analyzing enzyme engineering experiments"
 
 
 small_text_upload = "submit your sequence-function data"
