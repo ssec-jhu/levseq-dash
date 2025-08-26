@@ -19,6 +19,11 @@ def get_experiment_id(record):
             "field": gs.cc_experiment_id,
             "headerName": gs.header_experiment_id,
             "filter": "agNumberColumnFilter",
+            # show the first 5 characters of the prefix plus the first 5 of the uuid
+            "valueFormatter": {
+                "function": "params.value.slice(0, 11)"  # shows first 11 chars
+            },
+            "tooltipField": "experiment_id",  # show full UUID on hover
         }
     ]
     if record:
@@ -275,9 +280,9 @@ def get_all_experiments_column_defs():
         + get_experiment_name({"flex": 4})
         + get_experiment_meta_smiles({"flex": 6}, {"flex": 5})
         + get_experiment_meta(
-            {"flex": 3},
-            {"flex": 3},
-            {"flex": 3},
+            {"flex": 3},  # experiment_date
+            {"flex": 3, "initialSort": "desc"},  # sort by upload_time_stamp
+            {"flex": 3},  # assay
             {"flex": 3},  # mutagenesis method
             {"flex": 2},
         )
