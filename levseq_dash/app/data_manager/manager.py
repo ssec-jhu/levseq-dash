@@ -96,24 +96,6 @@ class DataManager:
         n = -1
         if self.use_db_web_service == AppMode.db.value:
             pass
-            # assay_index = assay.index(assay)
-            # uid = 1
-            # eid = Query(
-            #     "init_load",
-            #     [
-            #         1,  # flask.session["uid"],
-            #         "testing_upload_experiment",  # experimentName,
-            #         experiment_date,  # experimentDate,
-            #         4,
-            #         assay_index,
-            #         1,  # ,mutagenesis_method,
-            #         "395683-37-1",  # substrate,  # cas_substrate,
-            #         "345905-97-7",  # product,  # cas_product,
-            #     ],
-            # )  # type:ignore
-            #
-            # cb_csv = Query("load_file", [uid, eid, "test_csv.csv", experiment_content_base64_string])
-            # cb_cif = Query("load_file", [uid, eid, "test_cif.cif", geometry_content])
         elif self.use_db_web_service == AppMode.disk.value:
             exp = Experiment(
                 experiment_csv_data_base64_string=experiment_content_base64_string,
@@ -154,48 +136,9 @@ class DataManager:
         return success
 
     # ---------------------------
-    #    DATA RETRIEVAL: USER
+    #    DATA RETRIEVAL: ALL
     # ---------------------------
-    def get_user_id(username: str) -> int:
-        """
-        Returns
-        -------
-            The unique user ID for the user
-        """
-        return 0
-
-    def get_all_users(self):
-        """
-        Retrieve a list of all user IDs in this lab.
-
-        Returns
-        -------
-        | user_id | username|
-
-        """
-        return None
-
-    # ---------------------------
-    #    DATA RETRIEVAL: ACROSS ALL EXPERIMENTS
-    # ---------------------------
-    # def get_lab_experiments(self):
-    #     """
-    #     Returns list of all experiments in the lab
-    #     -------
-    #     | experiment_id |
-    #
-    #     """
-    #     # TODO:
-    #     #  get_lab_experiments() may be obsolete as I use the one that also has the meta data below
-    #     experiments = []
-    #     if self.use_db_web_service == AppMode.db.value:
-    #         pass
-    #     else:
-    #         experiments = self.experiments_dict.keys()
-    #
-    #     return experiments
-
-    def get_lab_experiments_with_meta_data(self):
+    def get_all_lab_experiments_with_meta_data(self):
         """
         Returns
         -------
@@ -225,7 +168,7 @@ class DataManager:
             raise Exception(gs.error_app_mode)
         return data_list_of_dict
 
-    def get_lab_sequences(self):
+    def get_all_lab_sequences(self):
         """
         Returns
         -------
@@ -273,12 +216,6 @@ class DataManager:
             raise Exception(gs.error_app_mode)
         return exp
 
-    def get_experiment_all(self, experiment_id: int):
-        """
-        Returns ALL 17 columns for download
-        """
-        return None
-
     # ---------------------------
     #    DATA RETRIEVAL: MISC
     # ---------------------------
@@ -290,30 +227,17 @@ class DataManager:
         """
         assay_list = []
         if self.use_db_web_service == AppMode.db.value:
-            # this works
-            # cols, rows = Query("get_assays", [])
-            # assay_list = [sublist[1] for sublist in rows]
             pass
 
-            # df = pd.DataFrame(rows)
-            # # cols, rows = Query("get_test_queries", [eid, uid, gid])  # type:ignore
-            # cols, rows = Query("get_usernames", [])  # type:ignore
-            # df_user = pd.DataFrame(data=rows, columns=cols)  # type:ignore
-            # cols, rows = Query("get_mutagenesis_methods", [])  # type:ignore
-            # cols_1, rows_1 = Query("get_experiments_u", [4])  # type:ignore
-            # df = pd.DataFrame(rows_1)
-            # eid = 102
-            # gid = 2
-            # cols, rows = Query("get_test_queries", [eid, 4, gid])  # type:ignore
-            # # cols, rows = Query("get_user_info", [uid])  # type:ignore
-            #
-            # cols, rows = Query("get_variant_sequences", [1, gid])  # type:ignore
         elif self.use_db_web_service == AppMode.disk.value:
             assay_list = self.assay_list
         else:
             raise Exception(gs.error_app_mode)
         return assay_list
 
+    # ----------------------------
+    #    PRIVATE METHODS
+    # ---------------------------
     def _load_test_experiment_data(self, data_directory: Path):
         """
         This method is only used for loading from disk for test purposes.

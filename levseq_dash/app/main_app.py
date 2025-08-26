@@ -91,7 +91,7 @@ def route_page(pathname):
     Input("id-table-all-experiments", "columnDefs"),
 )
 def load_landing_page(temp_text):
-    list_of_all_lab_experiments_with_meta = singleton_data_mgr_instance.get_lab_experiments_with_meta_data()
+    list_of_all_lab_experiments_with_meta = singleton_data_mgr_instance.get_all_lab_experiments_with_meta_data()
 
     # all_substrate, all_product = utils.extract_all_substrate_product_smiles_from_lab_data(
     #     list_of_all_lab_experiments_with_meta
@@ -367,11 +367,11 @@ def on_load_matching_sequences(results_are_cleared, n_clicks, query_sequence, th
                 start_time = time.time()
 
             # get all the lab sequences
-            all_lab_sequences = singleton_data_mgr_instance.get_lab_sequences()
+            all_lab_sequences = singleton_data_mgr_instance.get_all_lab_sequences()
 
             if settings.is_sequence_alignment_profiling_enabled():
                 utils.log_with_context(
-                    f"[PROFILING] on_load_matching_sequences: get_lab_sequences() {time.time() - start_time} s",
+                    f"[PROFILING] on_load_matching_sequences: get_all_lab_sequences() {time.time() - start_time} s",
                     log_flag=settings.is_sequence_alignment_profiling_enabled(),
                 )
                 start_time = time.time()
@@ -1014,10 +1014,10 @@ def on_load_exp_related_variants(
                 start_time = time.time()
 
             # get all the lab sequences
-            all_lab_sequences = singleton_data_mgr_instance.get_lab_sequences()
+            all_lab_sequences = singleton_data_mgr_instance.get_all_lab_sequences()
 
             if settings.is_sequence_alignment_profiling_enabled():
-                print(f"[PROFILING] on_load_exp_related_variants: get_lab_sequences() {time.time() - start_time} s")
+                print(f"[PROFILING] on_load_exp_related_variants: get_all_lab_sequences() {time.time() - start_time} s")
                 start_time = time.time()
 
             # get the alignment and the base score
