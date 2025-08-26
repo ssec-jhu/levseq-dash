@@ -24,7 +24,7 @@ from levseq_dash.app.components.layout import (
 )
 from levseq_dash.app.components.widgets import get_alert
 from levseq_dash.app.config import settings
-from levseq_dash.app.data_manager.experiment import run_sanity_checks_on_experiment_file
+from levseq_dash.app.data_manager.experiment import Experiment
 from levseq_dash.app.data_manager.manager import singleton_data_mgr_instance
 from levseq_dash.app.sequence_aligner import bio_python_pairwise_aligner
 from levseq_dash.app.utils import u_protein_viewer, u_reaction, u_seq_alignment, utils
@@ -165,7 +165,7 @@ def on_upload_experiment_file(dash_upload_string_contents, filename, last_modifi
             df = utils.decode_csv_file_base64_string_to_dataframe(base64_encoded_string)
 
             # sanity check will raise exceptions if any check is not passed
-            checks_passed = run_sanity_checks_on_experiment_file(df)
+            checks_passed = Experiment.run_sanity_checks_on_experiment_file(df)
             if checks_passed:
                 rows, cols = df.shape
                 # checks have passed so we can extract this info
@@ -719,15 +719,6 @@ def on_load_experiment_page(pathname, experiment_id):
         # slider_marks = utils.generate_slider_marks_dict(int(max_value))
         # slider_value = [0.5, max_value]
 
-        # heatmap_df = exp.data_df[[gs.c_smiles, gs.c_plate, gs.c_well, gs.c_alignment_count,
-        #                          gs.c_alignment_probability, gs.c_fitness_value]]
-        # heatmap_json = heatmap_df.to_json(date_format='iso', orient='records')
-        # Convert to JSON
-        # json_data = json.dumps(exp.exp_to_dict(), indent=4)
-        # json_data = json.dumps(exp, cls=CustomEncoder, indent=4)
-
-        # exp_dict = json.loads(exp_json)
-        # exp = Experiment.exp_from_dict(exp_dict)
         substrate = exp.substrate
         product = exp.product
         svg_src_image = u_reaction.create_reaction_image(substrate, product)

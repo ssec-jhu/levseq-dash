@@ -47,7 +47,7 @@ class Experiment:
         # check that the df is not empty, check for missing columns, check for presence of '#PARENT#' and in combos,
         # check all the smiles strings are valid
         self.data_df = pd.DataFrame()
-        if run_sanity_checks_on_experiment_file(input_df):
+        if self.run_sanity_checks_on_experiment_file(input_df):
             self.data_df = input_df[gs.experiment_core_data_list].copy()
 
         # ------------------
@@ -99,7 +99,7 @@ class Experiment:
         # internal calculations
         # --------------------
         self.unique_smiles_in_data = list(self.data_df[gs.c_smiles].unique()) if not self.data_df.empty else []
-        self.plates = list(self.data_df[gs.c_plate].unique()) if not self.data_df.empty else []
+        self.plates = self.extract_plates_list(self.data_df)
         self.plates_count = len(self.plates)
 
         # sanity check already checks that such a row exists
@@ -111,30 +111,6 @@ class Experiment:
             self.geometry_file_format = self.geometry_file_path.suffix
         else:
             self.geometry_file_format = ""
-
-    def exp_to_dict(self):
-        """
-        Utility function to convert the data in the experiment object into a dictionary of records
-        """
-        # TODO: clean up this function if it end up not being used with JSON
-        result = {}
-        for attr, value in self.__dict__.items():
-            if isinstance(value, pd.DataFrame):
-                result[attr] = value.to_dict()  # Convert DataFrame to a dictionary
-            elif isinstance(value, Path):
-                result[attr] = str(value)  # Convert Path to string
-            else:
-                result[attr] = value  # Keep other types as is
-        return result
-
-    def exp_core_data_to_dict(self):
-        """
-        Utility function to convert the core stat data in the experiment object into a dictionary of records
-        """
-        # TODO: clean up this function if it end up not being used with JSON
-        if not self.data_df.empty:
-            return self.data_df.to_dict("records")
-        raise Exception("Experiment data is empty!")
 
     def exp_meta_data_to_dict(self):
         """
@@ -279,56 +255,48 @@ class Experiment:
         else:
             raise Exception("Experiment data is empty!")
 
+    @staticmethod
+    def extract_plates_list(df):
+        return list(df[gs.c_plate].unique()) if not df.empty else []
 
-def run_sanity_checks_on_experiment_file(df: pd.DataFrame):
-    # check that the df is not empty
-    if df.empty:
-        raise Exception("Experiment file has no data.")
+    @staticmethod
+    def extract_parent_sequence(df):
+        return df[df[gs.c_substitutions] == gs.hashtag_parent][gs.c_aa_sequence].iloc[0]
 
-    # check for missing columns
-    df_columns_set = set(df.columns)
-    column_names_set = set(gs.experiment_core_data_list)
-    missing_columns = list(column_names_set - df_columns_set)
+    @staticmethod
+    def run_sanity_checks_on_experiment_file(df: pd.DataFrame):
+        # check that the df is not empty
+        if df.empty:
+            raise Exception("Experiment file has no data.")
 
-    if len(missing_columns) != 0:
-        raise ValueError(f"Experiment file is missing required columns: {', '.join(missing_columns)}")
+        # check for missing columns
+        df_columns_set = set(df.columns)
+        column_names_set = set(gs.experiment_core_data_list)
+        missing_columns = list(column_names_set - df_columns_set)
 
-    # check for presence of '#PARENT#' in 'amino_acid_substitutions' column
-    if gs.hashtag_parent not in df[gs.c_substitutions].values:
-        raise ValueError(f"Experiment file does not contain any '#PARENT#' entry in the {gs.c_substitutions} column.")
+        if len(missing_columns) != 0:
+            raise ValueError(f"Experiment file is missing required columns: {', '.join(missing_columns)}")
 
-    # check all the smiles strings are valid in the file
-    invalid_smiles_rows = df[df[gs.c_smiles].apply(u_reaction.is_valid_smiles).isnull()]
+        # check for presence of '#PARENT#' in 'amino_acid_substitutions' column
+        if gs.hashtag_parent not in df[gs.c_substitutions].values:
+            raise ValueError(
+                f"Experiment file does not contain any '#PARENT#' entry in the {gs.c_substitutions} column."
+            )
 
-    if not invalid_smiles_rows.empty:
-        invalid_indices = invalid_smiles_rows.index.tolist()
-        raise ValueError(f"Experiment file has invalid SMILES found at rows: {invalid_indices}")
+        # check all the smiles strings are valid in the file
+        invalid_smiles_rows = df[df[gs.c_smiles].apply(u_reaction.is_valid_smiles).isnull()]
 
-    # # Relaxing parent-smiles combo requirement
-    # # check any smiles-plate column combo has a #PARENT# in its gs.c_substitution column
-    # for (s, p), group in df.groupby([gs.c_smiles, gs.c_plate]):
-    #     if "#PARENT#" not in group[gs.c_substitutions].values:
-    #         raise ValueError(
-    #             f"Experiment file has missing '#PARENT#' in combo: {gs.c_smiles}='{s}' and {gs.c_plate}='{p}'"
-    #         )
+        if not invalid_smiles_rows.empty:
+            invalid_indices = invalid_smiles_rows.index.tolist()
+            raise ValueError(f"Experiment file has invalid SMILES found at rows: {invalid_indices}")
 
-    # you passed all checks
-    return True
+        # # Relaxing parent-smiles combo requirement
+        # # check any smiles-plate column combo has a #PARENT# in its gs.c_substitution column
+        # for (s, p), group in df.groupby([gs.c_smiles, gs.c_plate]):
+        #     if "#PARENT#" not in group[gs.c_substitutions].values:
+        #         raise ValueError(
+        #             f"Experiment file has missing '#PARENT#' in combo: {gs.c_smiles}='{s}' and {gs.c_plate}='{p}'"
+        #         )
 
-
-# # def read_structure_file(file_path):
-#     # Check if the file exists
-#     if not os.path.exists(file_path):
-#         raise FileNotFoundError(f"The file {file_path} does not exist.")
-#
-#     # Open the file in binary mode and read the content
-#     with open(file_path, "rb") as structure_file:
-#         file_content = structure_file.read()
-#
-#     # Convert content to base64 string
-#     base64_string = base64.b64encode(file_content).decode("utf-8")
-#
-#     # Convert content to base64 bytes
-#     base64_bytes = base64.b64encode(file_content)
-#
-#     return base64_string, base64_bytes
+        # you passed all checks
+        return True

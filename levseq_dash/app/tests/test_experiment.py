@@ -162,28 +162,6 @@ def test_experiment_ep_pcr_product(experiment_ep_pcr_with_user_smiles):
     assert experiment_ep_pcr_with_user_smiles.product == "C1=CC=C2C(=C1)C=CC=C2"
 
 
-def test_exp_to_dict_data_shape(experiment_ep_pcr_with_user_smiles):
-    d = experiment_ep_pcr_with_user_smiles.exp_to_dict()
-    df = pd.DataFrame(d["data_df"])
-    assert df.shape[0] == 1920
-    assert df.shape[1] == 8
-
-
-def test_exp_to_dict_plates_count(experiment_ep_pcr_with_user_smiles):
-    d = experiment_ep_pcr_with_user_smiles.exp_to_dict()
-    assert d["plates_count"] == 10
-
-
-def test_exp_to_dict_substrate_smiles(experiment_ep_pcr_with_user_smiles):
-    d = experiment_ep_pcr_with_user_smiles.exp_to_dict()
-    assert d[gs.cc_substrate] == "CC(C)(C)C(=O)O[NH3+].CCC#CCCOCC.O=S(=O)([O-])C(F)(F)F"
-
-
-def test_exp_to_dict_assay(experiment_ep_pcr_with_user_smiles):
-    d = experiment_ep_pcr_with_user_smiles.exp_to_dict()
-    assert d["assay"] == "UV-Vis Spectroscopy"
-
-
 def test_exp_meta_data_plates_count(experiment_ep_pcr_with_user_smiles):
     d = experiment_ep_pcr_with_user_smiles.exp_meta_data_to_dict()
     assert d["plates_count"] == 10
@@ -202,44 +180,6 @@ def test_exp_meta_data_assay(experiment_ep_pcr_with_user_smiles):
 def test_exp_meta_data_length(experiment_ep_pcr_with_user_smiles):
     d = experiment_ep_pcr_with_user_smiles.exp_meta_data_to_dict()
     assert len(d) == 12
-
-
-def test_exp_core_data_to_dict(experiment_ep_pcr_with_user_smiles):
-    d = experiment_ep_pcr_with_user_smiles.exp_core_data_to_dict()
-    df = pd.DataFrame.from_dict(d)
-    assert df.shape[0] == 1920
-    assert df.shape[1] == 8
-
-
-@pytest.mark.parametrize(
-    "index, key, value",
-    [
-        (0, gs.c_aa_sequence, "#N.A.#"),
-        (0, gs.c_alignment_count, 0),
-        (0, gs.c_alignment_probability, 0.0),
-        (0, gs.c_substitutions, "#N.A.#"),
-        (0, gs.c_smiles, "CC(C)CC1=CC=C(C=C1)C(C)C(=O)O"),
-        (94, gs.c_fitness_value, 1917633.707),
-        (0, gs.c_plate, "20240422-ParLQ-ep1-300-1"),
-        (0, gs.c_well, "A1"),
-        (
-            36,
-            "aa_sequence",
-            "MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVEDILDLWYGLQGSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTLCKPLDRQWL"
-            "NYMYEIGLRHHRTKKGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAIWSYPYAKTGEWLE",
-        ),
-        (51, gs.c_alignment_count, 29),
-        (61, gs.c_alignment_probability, 0.0),
-        (69, gs.c_substitutions, "#PARENT#"),
-        (99, gs.c_smiles, "C1=CC=C(C=C1)C=O"),
-        (99, gs.c_fitness_value, 1244116.159),
-        (42, gs.c_plate, "20240422-ParLQ-ep1-300-1"),
-        (0, gs.c_well, "A1"),
-    ],
-)
-def test_exp_core_data_to_dict_2(experiment_ep_pcr_with_user_smiles, index, key, value):
-    d = experiment_ep_pcr_with_user_smiles.exp_core_data_to_dict()
-    assert d[index][key] == value
 
 
 def test_exp_hot_cold_spots_structure(experiment_ep_pcr):
