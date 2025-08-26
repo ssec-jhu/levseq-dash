@@ -23,6 +23,7 @@ class DataManager:
             # connect_to_db( host, port, username, password)
         elif settings.is_disk_mode():
             self.use_db_web_service = AppMode.disk.value
+
             log_with_context(f"---------DISK MODE ---------------", log_flag=settings.is_data_manager_logging_enabled())
             # create a default empty dictionary of experiments
             self.experiments_dict = defaultdict(Experiment)
@@ -54,13 +55,7 @@ class DataManager:
                 raise FileNotFoundError()
 
             # read the assay file and set up the assay list
-            if settings.assay_file_path.exists():
-                assays = pd.read_csv(settings.assay_file_path, encoding="utf-8", usecols=["Technique"])
-                self.assay_list = assays["Technique"].tolist()
-                log_with_context(
-                    f"[LOG] Read assay file at: {settings.assay_file_path} with size {len(self.assay_list)}",
-                    log_flag=settings.is_data_manager_logging_enabled(),
-                )
+            self._load_assay_list()
 
             # use this flag for debugging multiple files.
             # This will load all csv files in test/data
@@ -96,6 +91,7 @@ class DataManager:
         n = -1
         if self.use_db_web_service == AppMode.db.value:
             pass
+
         elif self.use_db_web_service == AppMode.disk.value:
             exp = Experiment(
                 experiment_csv_data_base64_string=experiment_content_base64_string,
@@ -133,6 +129,7 @@ class DataManager:
             success = True
         else:
             raise Exception(gs.error_app_mode)
+
         return success
 
     # ---------------------------
@@ -238,6 +235,15 @@ class DataManager:
     # ----------------------------
     #    PRIVATE METHODS
     # ---------------------------
+    def _load_assay_list(self):
+        if settings.assay_file_path.exists():
+            assays = pd.read_csv(settings.assay_file_path, encoding="utf-8", usecols=["Technique"])
+            self.assay_list = assays["Technique"].tolist()
+            log_with_context(
+                f"[LOG] Read assay file at: {settings.assay_file_path} with size {len(self.assay_list)}",
+                log_flag=settings.is_data_manager_logging_enabled(),
+            )
+
     def _load_test_experiment_data(self, data_directory: Path):
         """
         This method is only used for loading from disk for test purposes.
@@ -254,7 +260,7 @@ class DataManager:
         └── structures/               Folder containing molecular geometry files (CIF format)
             ├── geometry_0.cif        3D structure associated with experiment_0
             └── geometry_1.cif        3D structure associated with experiment_1
-            └── ...
+        └── ...
 
         ----------------------------
         meta_data.csv Description
