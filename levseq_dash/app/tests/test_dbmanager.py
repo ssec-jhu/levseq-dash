@@ -59,8 +59,8 @@ def test_db_delete(dbmanager_read_all_from_file, index):
     assert len(dbmanager_read_all_from_file.experiments_dict) == num_samples - 1
 
 
-def test_db_get_lab_experiments_with_meta_data_general(dbmanager_read_all_from_file):
-    data_list_of_dict = dbmanager_read_all_from_file.get_lab_experiments_with_meta_data()
+def test_db_get_all_lab_experiments_with_meta_data_general(dbmanager_read_all_from_file):
+    data_list_of_dict = dbmanager_read_all_from_file.get_all_lab_experiments_with_meta_data()
     assert len(data_list_of_dict) == num_samples
     df = pd.DataFrame.from_records(data_list_of_dict)
     assert df.shape[0] == num_samples
@@ -78,8 +78,8 @@ def test_db_get_lab_experiments_with_meta_data_general(dbmanager_read_all_from_f
         (5, "mod test 4 v2 ep (SSM)", 6, 1),
     ],
 )
-def test_db_get_lab_experiments_with_meta_data_data(dbmanager_read_all_from_file, index, name, n_plates, n_unique):
-    list_of_all_lab_experiments_with_meta = dbmanager_read_all_from_file.get_lab_experiments_with_meta_data()
+def test_db_get_all_lab_experiments_with_meta_data_data(dbmanager_read_all_from_file, index, name, n_plates, n_unique):
+    list_of_all_lab_experiments_with_meta = dbmanager_read_all_from_file.get_all_lab_experiments_with_meta_data()
     sorted_list = sorted(list_of_all_lab_experiments_with_meta, key=lambda x: x[gs.c_experiment_name])
     assert sorted_list[index][gs.c_experiment_name] == name
     assert sorted_list[index]["plates_count"] == n_plates
@@ -94,7 +94,7 @@ def test_extract_all_substrate_product_smiles_from_lab_data(dbmanager_read_all_f
     """
     This test is similar to below but will test the substrates
     """
-    list_of_all_lab_experiments_with_meta = dbmanager_read_all_from_file.get_lab_experiments_with_meta_data()
+    list_of_all_lab_experiments_with_meta = dbmanager_read_all_from_file.get_all_lab_experiments_with_meta_data()
 
     all_smiles = utils.extract_all_substrate_product_smiles_from_lab_data(list_of_all_lab_experiments_with_meta)
     assert len(all_smiles) != 0
@@ -106,8 +106,8 @@ def test_extract_all_substrate_product_smiles_from_lab_data(dbmanager_read_all_f
     assert (all_smiles.find(c) != -1 for c in products)
 
 
-def test_get_lab_sequences(dbmanager_read_all_from_file):
-    list_of_sequences = dbmanager_read_all_from_file.get_lab_sequences()
+def test_get_all_lab_sequences(dbmanager_read_all_from_file):
+    list_of_sequences = dbmanager_read_all_from_file.get_all_lab_sequences()
     assert len(list_of_sequences) != 0
 
 
