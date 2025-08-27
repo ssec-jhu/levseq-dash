@@ -70,19 +70,19 @@ def mock_load_config_from_disk(mocker, test_data_path):
     return mock
 
 
-@pytest.fixture
-def mock_load_config_from_disk_dedb_data(mocker, package_root):
-    """
-    Fixture to mock a response for load config from disk
-    """
-    data_path = package_root / "app" / "data" / "DEDB"
-    mock = mocker.patch(load_config_mock_string)
-    mock.return_value = {
-        "deployment-mode": "local-instance",
-        "storage-mode": "disk",
-        "disk": {"local-data-path": data_path},
-    }
-    return mock
+# @pytest.fixture
+# def mock_load_config_from_disk_dedb_data(mocker, package_root):
+#     """
+#     Fixture to mock a response for load config from disk
+#     """
+#     data_path = package_root / "app" / "data" / "DEDB"
+#     mock = mocker.patch(load_config_mock_string)
+#     mock.return_value = {
+#         "deployment-mode": "local-instance",
+#         "storage-mode": "disk",
+#         "disk": {"local-data-path": data_path},
+#     }
+#     return mock
 
 
 @pytest.fixture
@@ -136,13 +136,6 @@ def mock_load_using_existing_env_data_path(mock_load_config_from_disk, monkeypat
 
 @pytest.fixture
 def dbmanager_read_all_from_file(mock_load_config_from_disk):
-    from levseq_dash.app.data_manager.manager import DataManager
-
-    return DataManager()
-
-
-@pytest.fixture
-def dbmanager_read_all_dedb_data(mock_load_config_from_disk_dedb_data):
     from levseq_dash.app.data_manager.manager import DataManager
 
     return DataManager()
@@ -305,28 +298,28 @@ def seq_align_per_smiles_data():
         "plates": ["20241201-SSM-P1", "20241201SSM-P2", "20241201SSM-P3", "20241201SSM-P4"],
         "plates_count": 4,
         "parent_sequence": "MTPSDISGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLAGGWAASNEHLIYYGSNPDTG"
-        "APIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRHHRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLA"
-        "KKGGSPEDIEGMYNAWLKSVVLQVAIWSHPYTKENDR",
+                           "APIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRHHRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLA"
+                           "KKGGSPEDIEGMYNAWLKSVVLQVAIWSHPYTKENDR",
         "geometry_file_format": ".cif",
     }
     seq_data = {
         gs.cc_experiment_id: 1,
         "sequence": "MTPSDISGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLAGGWAASNEHLIYYGSNPDTGAPIKEYLERVR"
-        "ARIGAWVLDTTCRDYNREWLDYQYEVGLRHHRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVV"
-        "LQVAIWSHPYTKENDR",
+                    "ARIGAWVLDTTCRDYNREWLDYQYEVGLRHHRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVV"
+                    "LQVAIWSHPYTKENDR",
         "sequence_alignment": "target            0 MTPSDISGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLAG\n"
-        "                  0 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
-        "query             0 MTPSDISGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLAG\n"
-        "\n"
-        "target           60 GWAASNEHLIYYGSNPDTGAPIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRH\n"
-        "                 60 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
-        "query            60 GWAASNEHLIYYGSNPDTGAPIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRH\n\n"
-        "target          120 HRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVVL\n"
-        "                120 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
-        "query           120 HRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVVL\n"
-        "\n"
-        "target          180 QVAIWSHPYTKENDR 195\n                180 ||||||||||||||| 195\n"
-        "query           180 QVAIWSHPYTKENDR 195\n",
+                              "                  0 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+                              "query             0 MTPSDISGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLAG\n"
+                              "\n"
+                              "target           60 GWAASNEHLIYYGSNPDTGAPIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRH\n"
+                              "                 60 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+                              "query            60 GWAASNEHLIYYGSNPDTGAPIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRH\n\n"
+                              "target          120 HRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVVL\n"
+                              "                120 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+                              "query           120 HRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVVL\n"
+                              "\n"
+                              "target          180 QVAIWSHPYTKENDR 195\n                180 ||||||||||||||| 195\n"
+                              "query           180 QVAIWSHPYTKENDR 195\n",
         "alignment_score": 1040.0,
         "norm_score": 1.0,
         "identities": 195,
@@ -342,19 +335,19 @@ def seq_align_data():
     return {
         gs.cc_experiment_id: 1,
         "sequence": "MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVEDILDLWYGLQGSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTL"
-        "CKPLDRQWLNYMYEIGLRHHRTKKGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAIWSYPYAKTGEWLE",
+                    "CKPLDRQWLNYMYEIGLRHHRTKKGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAIWSYPYAKTGEWLE",
         "sequence_alignment": "target            0 MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVEDILDLWYGLQ\n"
-        "                  0 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
-        "query             0 MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVEDILDLWYGLQ\n"
-        "\n"
-        "target           60 GSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTLCKPLDRQWLNYMYEIGLRHHRTK\n"
-        "                 60 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
-        "query            60 GSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTLCKPLDRQWLNYMYEIGLRHHRTK\n\n"
-        "target          120 KGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAI\n"
-        "                120 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
-        "query           120 KGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAI\n\n"
-        "target          180 WSYPYAKTGEWLE 193\n                180 ||||||||||||| 193\n"
-        "query           180 WSYPYAKTGEWLE 193\n",
+                              "                  0 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+                              "query             0 MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVEDILDLWYGLQ\n"
+                              "\n"
+                              "target           60 GSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTLCKPLDRQWLNYMYEIGLRHHRTK\n"
+                              "                 60 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+                              "query            60 GSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTLCKPLDRQWLNYMYEIGLRHHRTK\n\n"
+                              "target          120 KGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAI\n"
+                              "                120 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+                              "query           120 KGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAI\n\n"
+                              "target          180 WSYPYAKTGEWLE 193\n                180 ||||||||||||| 193\n"
+                              "query           180 WSYPYAKTGEWLE 193\n",
         "alignment_score": 1053.0,
         "norm_score": 1.0,
         "identities": 193,
