@@ -20,7 +20,7 @@ def run_callback_route_page(pathname):
 @pytest.mark.parametrize(
     "pathname", ["/", gs.nav_experiment_path, gs.nav_upload_path, gs.nav_find_seq_path, "any-other-random-string"]
 )
-def test_callback_route_page(pathname,mock_load_config_from_disk):
+def test_callback_route_page(pathname, mock_load_config_from_disk):
     ctx = copy_context()
     output = ctx.run(run_callback_route_page, pathname)
     assert isinstance(output, html.Div)
