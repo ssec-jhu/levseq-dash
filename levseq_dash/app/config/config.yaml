@@ -1,34 +1,60 @@
-app-mode: "disk"
-#app-mode: "db"
+# ------------------------------------------------------------
+# Deployment mode:
+# determines how the application is deployed
+# options: "public-playground" or "local-instance"
+# ------------------------------------------------------------
+# "public-playground" mode:
+  # - No external storage mount required
+  # - Uses internal container paths (data bundled with container)
+  # - Data modification is disabled for safety
+  # - Suitable for demos and read-only exploration
+  # - Default for public website should be public-playground
+# "local-instance" mode:
+  # - Requires external storage mount via Docker volumes
+  # - Data MUST be mounted to /data in container
+  # - User is responsible for providing persistent storage
+deployment_mode: "local-instance" # Default for public website should be public-playground
+
+# ------------------------------------------------------------
+# Storage mode:
+# determines how data is stored and accessed
+# options: "disk" or "db" (database mode not yet implemented)
+# ------------------------------------------------------------
+storage-mode: "disk"
 
 
+# ------------------------------------------------------------
+# settings for storage-mode = disk
+#------------------------------------------------------------
 disk:
-  # ---------------------------------
-  # VALUES BELOW ONLY USED FOR app-mode: "disk"
-  # ---------------------------------
+  # 5-letter code required for application functionality
+  # MUST be exactly 5 letters - set this value in your deployment
+  five_letter_id_prefix: "MYLAB" # Default for public website should be empty
 
-  # use this for loading from disk
-  # these files MUST be embedded in the repo for the docker file to work
-  # define from package root (levseq_dash) here, don't put a '/' at the beginning
+  # For deployment_mode=local-instance ONLY:
+  # Set local_data_path to run with your path of choosing
+  # This path will be used when DATA_PATH environment variable is not set
+  # This MUST be an absolute path on your local filesystem
+  # or a relative path from the project root/app directory
+  # Example: data in the app directory -> local_data_path: "data/DEDB"
+  # Example data path for Mac desktop -> local_data_path: "/Users/username/Desktop/MyData"
+  local_data_path: "/Users/Fatemeh/Desktop/DEDB_144"  # TODO: this should be removed for release
+  # local_data_path: ""
 
-  # ----- use this for loading the test-data in dev mode
-  #data_path: "app/tests/test_data/data"
-
-  # ----- use this for loading the playground-mode data
-  data_path: "app/data/DEDB"
-
-  # in playground mode uploading new experiments or
+  # in public-playground mode uploading new experiments or
   # deleting current experiments is disabled
   enable_data_modification: false
 
-# use these settings for db
+# ------------------------------------------------------------
+# settings for storage-mode = db         NOT IMPLEMENTED
+#------------------------------------------------------------
 db:
-  db-service:
-    host: "http://hplc-pc.che.caltech.edu"
-    port: 8051
-    session_key: "\xd6\x70\x04\xab\xd2\x08\x42\xe1\xa3\x5d\xfe\x1c\xce\x78\xd4\x7a"  # uuid.uuid4().hex
+  host: ""
+  port: ""
 
-
+# ------------------------------------------------------------
+# Logging and profiling settings
+# ------------------------------------------------------------
 logging:
   # set to true to enable profiling for performance testing
   # default for production should be false
@@ -36,6 +62,6 @@ logging:
 
   pairwise_aligner: false  # or false
 
-  # set to true to enable profiling for reading data in playground mode
+  # set to true to enable profiling for reading data in public-playground mode
   # default for production should be false
   data_manager: false
