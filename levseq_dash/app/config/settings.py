@@ -13,9 +13,14 @@ assay_file_name = "assay_measure_list.csv"
 assay_file_path = assay_directory / assay_file_name
 
 
-class AppMode(Enum):
-    db = "db"
+class StorageMode(Enum):
+    db = "db"  # not implemeted
     disk = "disk"
+
+
+class DeploymentMode(Enum):
+    public_playground = "public-playground"
+    local_instance = "local-instance"
 
 
 def load_config():
@@ -24,17 +29,41 @@ def load_config():
     return config_file
 
 
-def get_app_mode():
+def get_storage_mode():
     config = load_config()
-    return config.get("app-mode", "disk")
+    return config.get("storage-mode", "disk")
 
 
 def is_disk_mode():
-    return get_app_mode() == AppMode.disk.value
+    return get_storage_mode() == StorageMode.disk.value
 
 
 def is_db_mode():
-    return get_app_mode() == AppMode.db.value
+    return get_storage_mode() == StorageMode.db.value
+
+
+def get_deployment_mode():
+    config = load_config()
+    # default to "public-playground" if not set
+    return config.get("deployment_mode", "public-playground")
+
+
+def is_public_playground_mode():
+    return get_deployment_mode() == DeploymentMode.public_playground.value
+
+
+def is_local_instance_mode():
+    return get_deployment_mode() == DeploymentMode.local_instance.value
+
+
+def get_local_instance_mode_data_path():
+    """
+    Get the local development path for local-instance mode from disk settings.
+    Returns None if not set or empty string.
+    """
+    disk_settings = get_disk_settings()
+    data_path = disk_settings.get("local_data_path", "")
+    return data_path.strip() if data_path and data_path.strip() else None
 
 
 def get_disk_settings():
@@ -54,7 +83,9 @@ def get_logging_settings():
 
 def is_data_modification_enabled():
     disk_settings = get_disk_settings()
-    return disk_settings.get("enable_data_modification", False)
+    modification_enabled = disk_settings.get("enable_data_modification", False)
+
+    return modification_enabled
 
 
 def is_sequence_alignment_profiling_enabled():

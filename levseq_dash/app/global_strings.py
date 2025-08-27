@@ -152,8 +152,8 @@ header_aa_sequence = "Parent Amino Acid Sequence"
 # -----------------------------
 #   Error messages
 # -----------------------------
-error_app_mode = "Incorrect app mode in config file. Use 'disk' or 'db'"
-error_wrong_mode = "This function should only be used in the 'disk' app-mode. Change the settings in the config file.'"
+error_data_mode = "Incorrect data mode in config file. Use 'disk' or 'db'"
+error_wrong_mode = "This function should only be used in the 'disk' data-mode. Change the settings in the config file."
 
 # -----------------------------
 # -----------------------------
