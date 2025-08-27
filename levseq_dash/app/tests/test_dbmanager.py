@@ -150,7 +150,7 @@ def test_load_config_invalid(mock_load_config_invalid):
         DataManager()
 
 
-def test_load_config_app_mode_error(mock_load_config_app_mode_error):
+def test_load_config_app_mode_error(mock_load_config_storage_mode_error):
     from levseq_dash.app.data_manager.manager import DataManager
 
     with pytest.raises(Exception):

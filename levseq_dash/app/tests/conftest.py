@@ -63,8 +63,9 @@ def mock_load_config_from_disk(mocker, test_data_path):
     mock = mocker.patch(load_config_mock_string)
     data_path = test_data_path / "data"
     mock.return_value = {
-        "app-mode": "disk",
-        "disk": {"data_path": data_path},
+        "deployment-mode": "local-instance",
+        "storage-mode": "disk",
+        "disk": {"local-data-path": data_path},
     }
     return mock
 
@@ -77,8 +78,9 @@ def mock_load_config_from_disk_dedb_data(mocker, package_root):
     data_path = package_root / "app" / "data" / "DEDB"
     mock = mocker.patch(load_config_mock_string)
     mock.return_value = {
-        "app-mode": "disk",
-        "disk": {"data_path": data_path},
+        "deployment-mode": "local-instance",
+        "storage-mode": "disk",
+        "disk": {"local-data-path": data_path},
     }
     return mock
 
@@ -89,7 +91,7 @@ def mock_load_config_use_web(mocker):
     Fixture to mock a response
     """
     mock = mocker.patch(load_config_mock_string)
-    mock.return_value = {"app-mode": "db"}
+    mock.return_value = {"deployment-mode": "local-instance", "storage-mode": "db"}
     return mock
 
 
@@ -100,22 +102,24 @@ def mock_load_config_invalid(mocker):
     """
     mock = mocker.patch(load_config_mock_string)
     mock.return_value = {
-        "app-mode": "disk",
-        "disk": {"data_path": "non/existent/path"},
+        "deployment-mode": "local-instance",
+        "storage-mode": "disk",
+        "disk": {"local-data-path": "non/existent/path"},
     }
     return mock
 
 
 @pytest.fixture
-def mock_load_config_app_mode_error(mocker):
+def mock_load_config_storage_mode_error(mocker):
     """
-    Fixture to mock a config file in an invalid app-mode
+    Fixture to mock a config file in an invalid data-mode
     """
     mock = mocker.patch(load_config_mock_string)
     mock.return_value = {
-        "app-mode": "invalid_string",
+        "deployment-mode": "local-instance",
+        "storage-mode": "invalid_string",
         # path is not important here
-        "disk": {"data_path": "non/existent/path"},
+        "disk": {"local-data-path": "non/existent/path"},
     }
     return mock
 

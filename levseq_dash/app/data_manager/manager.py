@@ -10,7 +10,6 @@ from levseq_dash.app.config.settings import StorageMode
 from levseq_dash.app.data_manager.experiment import Experiment, MutagenesisMethod
 from levseq_dash.app.utils.utils import log_with_context
 
-
 # from levseq_dash.app.wsexec import Query
 
 
@@ -48,17 +47,17 @@ class DataManager:
     # -----------------------
 
     def add_experiment_from_ui(
-            self,
-            user_id,
-            experiment_name,
-            experiment_date,
-            substrate,
-            product,
-            assay,
-            mutagenesis_method: MutagenesisMethod,  # epPCR or SSM
-            experiment_content_base64_string,
-            geometry_content_base64_string,
-            # parent_sequence=None,  # processed
+        self,
+        user_id,
+        experiment_name,
+        experiment_date,
+        substrate,
+        product,
+        assay,
+        mutagenesis_method: MutagenesisMethod,  # epPCR or SSM
+        experiment_content_base64_string,
+        geometry_content_base64_string,
+        # parent_sequence=None,  # processed
     ) -> int:
         """
         Returns
@@ -213,9 +212,7 @@ class DataManager:
     #    PRIVATE METHODS
     # ---------------------------
     def _setup_data_path(self):
-        """
-
-        """
+        """ """
         if settings.is_local_instance_mode():
             # local-instance mode: Use DATA_PATH if set, otherwise fall back to local dev path
             data_path_str = os.environ.get("DATA_PATH", settings.get_local_instance_mode_data_path())
@@ -232,7 +229,7 @@ class DataManager:
                     "Options:\n"
                     "1. Set DATA_PATH environment variable: "
                     " docker run -e DATA_PATH=/data -v /host/path:/data  <image-name>\n"
-                    "2. Set local_data_path in config.yaml\n"
+                    "2. Set local-data-path in config.yaml\n"
                 )
         else:
             # Playground mode: Use DATA_PATH if provided, otherwise default

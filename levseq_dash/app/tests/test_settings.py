@@ -24,40 +24,41 @@ def test_assay_paths():
 
 def test_app_mode_enum():
     """Test AppMode enum values"""
-    assert settings.AppMode.db.value == "db"
-    assert settings.AppMode.disk.value == "disk"
+    assert settings.StorageMode.db.value == "db"
+    assert settings.StorageMode.disk.value == "disk"
 
 
-def test_get_app_mode(mocker):
-    """Test get_app_mode with different configurations"""
+def test_get_storage_mode(mocker):
+    """Test get_storage_mode with different configurations"""
     # Test default value
     mock_load_config = mocker.patch("levseq_dash.app.config.settings.load_config")
 
+    # default value should be disk
     mock_load_config.return_value = {}
-    assert settings.get_app_mode() == "disk"
+    assert settings.get_storage_mode() == "disk"
 
     # Test explicit mode
-    mock_load_config.return_value = {"app-mode": "db"}
-    assert settings.get_app_mode() == "db"
+    mock_load_config.return_value = {"storage-mode": "db"}
+    assert settings.get_storage_mode() == "db"
 
 
-@mock.patch("levseq_dash.app.config.settings.get_app_mode")
-def test_is_disk_mode(mock_get_app_mode):
+@mock.patch("levseq_dash.app.config.settings.get_storage_mode")
+def test_is_disk_mode(mock_get_storage_mode):
     """Test is_disk_mode function"""
-    mock_get_app_mode.return_value = "disk"
+    mock_get_storage_mode.return_value = "disk"
     assert settings.is_disk_mode() is True
 
-    mock_get_app_mode.return_value = "db"
+    mock_get_storage_mode.return_value = "db"
     assert settings.is_disk_mode() is False
 
 
-@mock.patch("levseq_dash.app.config.settings.get_app_mode")
-def test_is_db_mode(mock_get_app_mode):
+@mock.patch("levseq_dash.app.config.settings.get_storage_mode")
+def test_is_db_mode(mock_get_storage_mode):
     """Test is_db_mode function"""
-    mock_get_app_mode.return_value = "db"
+    mock_get_storage_mode.return_value = "db"
     assert settings.is_db_mode() is True
 
-    mock_get_app_mode.return_value = "disk"
+    mock_get_storage_mode.return_value = "disk"
     assert settings.is_db_mode() is False
 
 
@@ -86,10 +87,10 @@ def test_get_db_settings(mock_load_config):
 @mock.patch("levseq_dash.app.config.settings.get_disk_settings")
 def test_is_data_modification_enabled(mock_get_disk_settings):
     """Test is_data_modification_enabled function"""
-    mock_get_disk_settings.return_value = {"enable_data_modification": True}
+    mock_get_disk_settings.return_value = {"enable-data-modification": True}
     assert settings.is_data_modification_enabled() is True
 
-    mock_get_disk_settings.return_value = {"enable_data_modification": False}
+    mock_get_disk_settings.return_value = {"enable-data-modification": False}
     assert settings.is_data_modification_enabled() is False
 
     mock_get_disk_settings.return_value = {}
@@ -100,4 +101,5 @@ def test_load_config():
     """Test load_config function with actual config file"""
     config = settings.load_config()
     assert isinstance(config, dict)
-    assert "app-mode" in config
+    assert "storage-mode" in config
+    assert "deployment-mode" in config

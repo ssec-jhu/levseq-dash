@@ -13,7 +13,7 @@
   # - Requires external storage mount via Docker volumes
   # - Data MUST be mounted to /data in container
   # - User is responsible for providing persistent storage
-deployment_mode: "local-instance" # Default for public website should be public-playground
+deployment-mode: "local-instance" # Default for public website should be public-playground
 
 # ------------------------------------------------------------
 # Storage mode:
@@ -29,21 +29,21 @@ storage-mode: "disk"
 disk:
   # 5-letter code required for application functionality
   # MUST be exactly 5 letters - set this value in your deployment
-  five_letter_id_prefix: "MYLAB" # Default for public website should be empty
+  five-letter-id-prefix: "MYLAB" # Default for public website should be empty
 
-  # For deployment_mode=local-instance ONLY:
-  # Set local_data_path to run with your path of choosing
+  # For deployment-mode=local-instance ONLY:
+  # Set local-data-path to run with your path of choosing
   # This path will be used when DATA_PATH environment variable is not set
   # This MUST be an absolute path on your local filesystem
   # or a relative path from the project root/app directory
-  # Example: data in the app directory -> local_data_path: "data/DEDB"
-  # Example data path for Mac desktop -> local_data_path: "/Users/username/Desktop/MyData"
-  local_data_path: "/Users/Fatemeh/Desktop/DEDB_144"  # TODO: this should be removed for release
-  # local_data_path: ""
+  # Example: data in the app directory -> local-data-path: "data/DEDB"
+  # Example data path for Mac desktop -> local-data-path: "/Users/username/Desktop/MyData"
+  local-data-path: "/Users/Fatemeh/Desktop/DEDB_144"  # TODO: this should be removed for release
+  # local-data-path: ""
 
   # in public-playground mode uploading new experiments or
   # deleting current experiments is disabled
-  enable_data_modification: false
+  enable-data-modification: false
 
 # ------------------------------------------------------------
 # settings for storage-mode = db         NOT IMPLEMENTED
@@ -58,10 +58,10 @@ db:
 logging:
   # set to true to enable profiling for performance testing
   # default for production should be false
-  sequence_alignment_profiling: false  # or false
+  sequence-alignment-profiling: false  # or false
 
-  pairwise_aligner: false  # or false
+  pairwise-aligner: false  # or false
 
   # set to true to enable profiling for reading data in public-playground mode
   # default for production should be false
-  data_manager: false
+  data-manager: false

@@ -45,7 +45,7 @@ def is_db_mode():
 def get_deployment_mode():
     config = load_config()
     # default to "public-playground" if not set
-    return config.get("deployment_mode", "public-playground")
+    return config.get("deployment-mode", "public-playground")
 
 
 def is_public_playground_mode():
@@ -62,8 +62,8 @@ def get_local_instance_mode_data_path():
     Returns None if not set or empty string.
     """
     disk_settings = get_disk_settings()
-    data_path = disk_settings.get("local_data_path", "")
-    return data_path.strip() if data_path and data_path.strip() else None
+    data_path = disk_settings.get("local-data-path", "")
+    return data_path
 
 
 def get_disk_settings():
@@ -83,21 +83,21 @@ def get_logging_settings():
 
 def is_data_modification_enabled():
     disk_settings = get_disk_settings()
-    modification_enabled = disk_settings.get("enable_data_modification", False)
+    modification_enabled = disk_settings.get("enable-data-modification", False)
 
     return modification_enabled
 
 
 def is_sequence_alignment_profiling_enabled():
     log_settings = get_logging_settings()
-    return log_settings.get("sequence_alignment_profiling", False)
+    return log_settings.get("sequence-alignment-profiling", False)
 
 
 def is_data_manager_logging_enabled():
     log_settings = get_logging_settings()
-    return log_settings.get("data_manager", False)
+    return log_settings.get("data-manager", False)
 
 
 def is_pairwise_aligner_logging_enabled():
     log_settings = get_logging_settings()
-    return log_settings.get("pairwise_aligner", False)
+    return log_settings.get("pairwise-aligner", False)
