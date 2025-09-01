@@ -101,3 +101,30 @@ def is_data_manager_logging_enabled():
 def is_pairwise_aligner_logging_enabled():
     log_settings = get_logging_settings()
     return log_settings.get("pairwise-aligner", False)
+
+
+def get_five_letter_id_prefix():
+    """
+    Returns the 5-letter ID prefix from config.
+    Raises an exception if the ID prefix is empty or not exactly 5 letters.
+    """
+    config = load_config()
+    id_prefix = config.get("five_letter_id_prefix", "")
+
+    # If data modification is enabled, we require a valid ID prefix
+    if is_data_modification_enabled():
+        # Validate the ID prefix
+        if not id_prefix or id_prefix.strip() == "":
+            raise ValueError("User must set a 5 letter ID prefix in config.yaml under 'five_letter_id_prefix'")
+
+        id_prefix = id_prefix.strip()
+        if len(id_prefix) != 5:
+            raise ValueError(
+                f"Five letter ID prefix must be exactly 5 characters long, "
+                f"got {len(id_prefix)} characters: '{id_prefix}'"
+            )
+
+        if not id_prefix.isalpha():
+            raise ValueError(f"Five letter ID prefix must contain only letters, got: '{id_prefix}'")
+
+    return id_prefix.upper()  # Return uppercase for consistency

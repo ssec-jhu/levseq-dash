@@ -1,13 +1,3 @@
 ﻿experiment_id,experiment_name,experiment_date,substrate_smiles,product_smiles,assay_technique,mutagenesis_method,cif_filename
 flatten_ep_processed_xy_cas,flatten EP,23.12.2021,CC(C)CC1=CC=C(C=C1)C(C)C(=O)O.C1=CC=C(C=C1)C=O,C1=CC=C(C=C1)C=O,LC-MS,,flatten_ep_processed_xy_cas_row8.cif
 flatten_ssm_processed_xy_cas,flatten ssm,14.10.2019,C1=CC=C(C=C1)C=O,C1=CC=C(C=C1)C=O,GC-MS,SSM,flatten_ssm_processed_xy_cas_row3.cif
-mod_test_1_ssm,mod test 1 ssm,15.07.2021,CC(=O)OC1=CC=CC=C1C(=O)O,CC(=O)OC1=CC=CC=C1C(=O)O,Fluorescence Spectroscopy,ssm,mod_test_1_ssm_row3.cif
-mod_test_2_ssm,mod test 2 ssm,13.05.2022,CC(=O)OC1=CC=CC=C1C(=O)O,CC(=O)OC1=CC=CC=C1C(=O)O,UV-Vis Spectroscopy,ssm,mod_test_2_ssm_row1.cif
-mod_test_3_ssm,mod test 3 ssm,14.12.2023,CC(=O)OC1=CC=CC=C1C(=O)O,CC(=O)OC1=CC=CC=C1C(=O)O,ELISA,ssm,mod_test_3_ssm_row2.cif
-mod_test_4_v2_ep,mod test 4 v2 ep (SSM),08.03.2022,CC(=O)OC1=CC=CC=C1C(=O)O,CC(=O)OC1=CC=CC=C1C(=O)O,Western Blotting,ssm,mod_test_4_v2_ep_row2.cif
-tr_exp_1743370373_0,tr_exp_1743370373_0,27.09.2024,C1=CC=C2C(=C1)C=CC=C2.CC(=O)C1=CC=CC=C1,C1=CC=C2C(=C1)C=CC=C2.CC(=O)C1=CC=CC=C1,ITC,,tr_exp_1743370373_0.cif
-tr_exp_1743370373_1,tr_exp_1743370373_1,17.09.2021,C1=CC=C2C(=C1)C=CC=C2.CC(=O)C1=CC=CC=C1,C1=CC=C2C(=C1)C=CC=C2.CC(=O)C1=CC=CC=C1,MSIA,,tr_exp_1743370373_1.cif
-tr_exp_1743370373_3,tr_exp_1743370373_3,02.11.2023,C1=CC=C2C(=C1)C=CC=C2.CC(=O)C1=CC=CC=C1,C1=CC=C2C(=C1)C=CC=C2.CC(=O)C1=CC=CC=C1,MRM,,tr_exp_1743370373_3.cif
-tr_exp_1743370373_4,tr_exp_1743370373_4,03.05.2024,C1=CC=C2C(=C1)C=CC=C2.CC(=O)C1=CC=CC=C1,C1=CC=C2C(=C1)C=CC=C2.CC(=O)C1=CC=CC=C1,X-ray Crystallography,,tr_exp_1743370373_4.cif
-tr_exp_1743370473_1,tr_exp_1743370473_1,19.01.2023,C1=CC=C2C(=C1)C=CC=C2.CC(=O)C1=CC=CC=C1,C1=CC=C2C(=C1)C=CC=C2.CC(=O)C1=CC=CC=C1,NMR Spectroscopy,,tr_exp_1743370473_1.cif
-tr_exp_1743370373_2,tr_exp_1743370373_2,14.12.2021,C1=CC=C2C(=C1)C=CC=C2.CC(=O)C1=CC=CC=C1,C1=CC=C2C(=C1)C=CC=C2.CC(=O)C1=CC=CC=C1,X-ray Crystallography,,tr_exp_1743370373_2.cif

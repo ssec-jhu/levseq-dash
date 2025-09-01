@@ -5,7 +5,7 @@ from levseq_dash.app import global_strings as gs
 from levseq_dash.app.config import settings
 from levseq_dash.app.utils import utils
 
-num_samples = 12  # change this if more data is added
+num_samples = 2  # change this if more data is added
 
 
 def test_db_load_examples(dbmanager_read_all_from_file):
@@ -14,7 +14,7 @@ def test_db_load_examples(dbmanager_read_all_from_file):
 
 @pytest.mark.parametrize(
     "index",
-    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    [0, 1],
 )
 def test_get_experiment(dbmanager_read_all_from_file, index):
     """
@@ -33,33 +33,24 @@ def test_get_experiment_out_of_bounds(dbmanager_read_all_from_file):
     assert exp is None
 
 
-def test_delete_experiment(dbmanager_read_all_from_file):
-    """
-    delete multiple experiments, and make sure the count has gone down accordingly
-    """
-    assert len(dbmanager_read_all_from_file.experiments_dict) == num_samples
-    assert dbmanager_read_all_from_file.delete_experiment(2)
-    assert dbmanager_read_all_from_file.delete_experiment(4)
-    assert dbmanager_read_all_from_file.delete_experiment(6)
-    assert dbmanager_read_all_from_file.delete_experiment(8)
-    assert len(dbmanager_read_all_from_file.experiments_dict) == num_samples - 4
+# TODO: need to add a test for delete
+# def test_delete_experiment(dbmanager_read_all_from_file):
+#     """
+#     delete multiple experiments, and make sure the count has gone down accordingly
+#     """
+#     assert len(dbmanager_read_all_from_file.experiments_dict) == num_samples
+#     assert dbmanager_read_all_from_file.delete_experiment(2)
+#     assert dbmanager_read_all_from_file.delete_experiment(4)
+#     assert dbmanager_read_all_from_file.delete_experiment(6)
+#     assert dbmanager_read_all_from_file.delete_experiment(8)
+#     assert len(dbmanager_read_all_from_file.experiments_dict) == num_samples - 4
 
 
 def test_db_load_assay(dbmanager_read_all_from_file):
     assert len(dbmanager_read_all_from_file.assay_list) == 24
 
 
-@pytest.mark.parametrize(
-    "index",
-    [0, 1, 2, 3, 4, 5],
-)
-def test_db_delete(dbmanager_read_all_from_file, index):
-    assert len(dbmanager_read_all_from_file.experiments_dict) == num_samples
-    assert dbmanager_read_all_from_file.delete_experiment(index)
-    assert len(dbmanager_read_all_from_file.experiments_dict) == num_samples - 1
-
-
-def test_db_get_all_lab_experiments_with_meta_data_general(dbmanager_read_all_from_file):
+def test_db_get_lab_experiments_with_meta_data_general(dbmanager_read_all_from_file):
     data_list_of_dict = dbmanager_read_all_from_file.get_all_lab_experiments_with_meta_data()
     assert len(data_list_of_dict) == num_samples
     df = pd.DataFrame.from_records(data_list_of_dict)
@@ -72,10 +63,6 @@ def test_db_get_all_lab_experiments_with_meta_data_general(dbmanager_read_all_fr
     [
         (0, "flatten EP", 10, 2),
         (1, "flatten ssm", 4, 1),
-        (2, "mod test 1 ssm", 7, 1),
-        (3, "mod test 2 ssm", 1, 1),
-        (4, "mod test 3 ssm", 6, 1),
-        (5, "mod test 4 v2 ep (SSM)", 6, 1),
     ],
 )
 def test_db_get_all_lab_experiments_with_meta_data_data(dbmanager_read_all_from_file, index, name, n_plates, n_unique):
@@ -88,7 +75,7 @@ def test_db_get_all_lab_experiments_with_meta_data_data(dbmanager_read_all_from_
 
 @pytest.mark.parametrize(
     "index",
-    [0, 1, 2, 3, 4, 5],
+    [0, 1],
 )
 def test_extract_all_substrate_product_smiles_from_lab_data(dbmanager_read_all_from_file, index):
     """

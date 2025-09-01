@@ -27,9 +27,9 @@ storage-mode: "disk"
 # settings for storage-mode = disk
 #------------------------------------------------------------
 disk:
-  # 5-letter code required for application functionality
-  # MUST be exactly 5 letters - set this value in your deployment
-  five-letter-id-prefix: "MYLAB" # Default for public website should be empty
+# 5-letter code required for application functionality
+# MUST be exactly 5 letters - set this value in your deployment
+  five-letter-id-prefix: "" # Default for public website should be empty
 
   # For deployment-mode=local-instance ONLY:
   # Set local-data-path to run with your path of choosing
