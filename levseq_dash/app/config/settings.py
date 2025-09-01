@@ -45,7 +45,8 @@ def is_db_mode():
 def get_deployment_mode():
     config = load_config()
     # default to "public-playground" if not set
-    return config.get("deployment-mode", "public-playground")
+    # I am intentionally not setting a default, so we don't accidentally check in a local instance mode
+    return config.get("deployment-mode", "")
 
 
 def is_public_playground_mode():
@@ -109,13 +110,13 @@ def get_five_letter_id_prefix():
     Raises an exception if the ID prefix is empty or not exactly 5 letters.
     """
     config = load_config()
-    id_prefix = config.get("five_letter_id_prefix", "")
+    id_prefix = config.get("five-letter-id-prefix", "")
 
     # If data modification is enabled, we require a valid ID prefix
     if is_data_modification_enabled():
         # Validate the ID prefix
         if not id_prefix or id_prefix.strip() == "":
-            raise ValueError("User must set a 5 letter ID prefix in config.yaml under 'five_letter_id_prefix'")
+            raise ValueError("User must set a 5 letter ID prefix in config.yaml under 'five-letter-id-prefix'")
 
         id_prefix = id_prefix.strip()
         if len(id_prefix) != 5:

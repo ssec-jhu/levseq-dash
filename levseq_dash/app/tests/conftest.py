@@ -70,6 +70,34 @@ def mock_load_config_from_disk(mocker, test_data_path):
     return mock
 
 
+@pytest.fixture
+def mock_load_config(mocker):
+    """Fixture for mocking load_config"""
+    mock = mocker.patch("levseq_dash.app.config.settings.load_config")
+    return mock
+
+
+@pytest.fixture
+def mock_get_logging_settings(mocker):
+    """Fixture for mocking get_logging_settings"""
+    mock = mocker.patch("levseq_dash.app.config.settings.get_logging_settings")
+    return mock
+
+
+@pytest.fixture
+def mock_get_deployment_mode(mocker):
+    """Fixture for mocking get_logging_settings"""
+    mock = mocker.patch("levseq_dash.app.config.settings.get_deployment_mode")
+    return mock
+
+
+@pytest.fixture
+def mock_is_data_modification_enabled(mocker):
+    """Fixture for mocking get_logging_settings"""
+    mock = mocker.patch("levseq_dash.app.config.settings.is_data_modification_enabled")
+    return mock
+
+
 # @pytest.fixture
 # def mock_load_config_from_disk_dedb_data(mocker, package_root):
 #     """

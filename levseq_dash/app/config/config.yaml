@@ -13,7 +13,7 @@
   # - Requires external storage mount via Docker volumes
   # - Data MUST be mounted to /data in container
   # - User is responsible for providing persistent storage
-deployment-mode: "local-instance" # Default for public website should be public-playground
+deployment-mode: "public-playground" # Default for public website should be public-playground
 
 # ------------------------------------------------------------
 # Storage mode:
