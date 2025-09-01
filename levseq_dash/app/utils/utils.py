@@ -1,4 +1,5 @@
 import base64
+import hashlib
 import inspect
 import io
 import os
@@ -254,3 +255,21 @@ def log_with_context(msg, log_flag):
     func_name = caller_frame.f_code.co_name if caller_frame else "<unknown>"
 
     print(f"[PID:{pid}][TID:{tid}][{tname}][FUNC:{func_name}] {msg}")
+
+
+def calculate_file_checksum(file_bytes) -> str:
+    """Calculate SHA256 checksum of a file."""
+
+    if file_bytes is None:
+        raise ValueError("file_bytes cannot be None")
+
+    if not isinstance(file_bytes, bytes):
+        raise TypeError("file_bytes must be of type bytes")
+
+    if len(file_bytes) == 0:
+        raise ValueError("file_bytes cannot be empty")
+
+    sha256 = hashlib.sha256()
+    sha256.update(file_bytes)
+
+    return sha256.hexdigest()
