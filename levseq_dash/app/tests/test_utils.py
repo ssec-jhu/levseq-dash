@@ -7,6 +7,7 @@ import pandas as pd
 import pytest
 
 from levseq_dash.app import global_strings as gs
+from levseq_dash.app.components import column_definitions as cd
 from levseq_dash.app.components.widgets import DownloadType
 from levseq_dash.app.utils import utils
 
