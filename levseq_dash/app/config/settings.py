@@ -1,3 +1,4 @@
+import os
 from enum import Enum
 from pathlib import Path
 
@@ -106,19 +107,31 @@ def is_pairwise_aligner_logging_enabled():
 
 def get_five_letter_id_prefix():
     """
-    Returns the 5-letter ID prefix from config.
-    Raises an exception if the ID prefix is empty or not exactly 5 letters.
+    Returns the 5-letter ID prefix from environment variable or config.
+    Environment variable FIVE_LETTER_ID_PREFIX takes precedence over config file.
+    Raises an exception if the ID prefix is empty or not exactly 5 letters when data modification is enabled.
     """
-    config = load_config()
-    id_prefix = config.get("five-letter-id-prefix", "")
-
     # If data modification is enabled, we require a valid ID prefix
+    id_prefix = ""
     if is_data_modification_enabled():
+        # Check environment variable first (takes precedence)
+        id_prefix = os.environ.get("FIVE_LETTER_ID_PREFIX", "")
+
+        # If not in environment, check config file
+        if not id_prefix:
+            config = load_config()
+            id_prefix = config.get("five-letter-id-prefix", "")
+
         # Validate the ID prefix
         if not id_prefix or id_prefix.strip() == "":
-            raise ValueError("User must set a 5 letter ID prefix in config.yaml under 'five-letter-id-prefix'")
+            raise ValueError(
+                "User must set a 5 letter ID prefix in config.yaml under 'five-letter-id-prefix' "
+                "or environment variable 'FIVE_LETTER_ID_PREFIX'"
+            )
 
-        id_prefix = id_prefix.strip()
+        # not going to be graceful about spaces around it!
+        # id_prefix = id_prefix.strip()
+
         if len(id_prefix) != 5:
             raise ValueError(
                 f"Five letter ID prefix must be exactly 5 characters long, "

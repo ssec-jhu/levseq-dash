@@ -2,7 +2,6 @@ from pathlib import Path
 from unittest import mock
 
 import pytest
-import yaml
 
 from levseq_dash.app.config import settings
 
@@ -148,8 +147,8 @@ def test_valid_prefix_with_whitespace_trimming(mock_load_config, mock_is_data_mo
     mock_is_data_modification_enabled.return_value = True
     mock_load_config.return_value = {"five-letter-id-prefix": "  hello  "}
 
-    result = settings.get_five_letter_id_prefix()
-    assert result == "HELLO"
+    with pytest.raises(ValueError):
+        settings.get_five_letter_id_prefix()
 
 
 def test_raises_error_when_prefix_missing_and_modification_enabled(mock_load_config, mock_is_data_modification_enabled):
@@ -259,3 +258,50 @@ def test_is_pairwise_aligner_logging_enabled(mock_get_logging_settings):
 
     mock_get_logging_settings.return_value = {}
     assert settings.is_pairwise_aligner_logging_enabled() is False
+
+
+@mock.patch.dict("os.environ", {"FIVE_LETTER_ID_PREFIX": "MYLAB"})
+def test_environment_variable_takes_precedence_over_config(mock_load_config, mock_is_data_modification_enabled):
+    """Test that environment variable takes precedence over config file"""
+    mock_is_data_modification_enabled.return_value = True
+    mock_load_config.return_value = {"five-letter-id-prefix": "ABCD"}
+
+    result = settings.get_five_letter_id_prefix()
+    assert result == "MYLAB"
+
+
+@mock.patch.dict("os.environ", {}, clear=True)  # Clear environment variables
+def test_falls_back_to_config_when_no_env_var(mock_load_config, mock_is_data_modification_enabled):
+    """Test that config file is used when no environment variable is set"""
+    mock_is_data_modification_enabled.return_value = True
+    mock_load_config.return_value = {"five-letter-id-prefix": "CFGID"}
+
+    result = settings.get_five_letter_id_prefix()
+    assert result == "CFGID"
+
+
+@mock.patch.dict("os.environ", {"FIVE_LETTER_ID_PREFIX": "ENVID"})
+def test_environment_variable_when_data_modification_disabled(mock_is_data_modification_enabled):
+    """Test that environment variable is not used even when data modification is disabled"""
+    mock_is_data_modification_enabled.return_value = False
+
+    result = settings.get_five_letter_id_prefix()
+    assert result == ""
+
+
+@mock.patch.dict("os.environ", {"FIVE_LETTER_ID_PREFIX": "  envid  "})
+def test_environment_variable_whitespace_trimming(mock_is_data_modification_enabled):
+    """Test that whitespace is trimmed from environment variable"""
+    mock_is_data_modification_enabled.return_value = True
+
+    with pytest.raises(ValueError):
+        settings.get_five_letter_id_prefix()
+
+
+@mock.patch.dict("os.environ", {"FIVE_LETTER_ID_PREFIX": "abc"})
+def test_environment_variable_validation_error(mock_is_data_modification_enabled):
+    """Test that environment variable is validated when data modification is enabled"""
+    mock_is_data_modification_enabled.return_value = True
+
+    with pytest.raises(ValueError):
+        settings.get_five_letter_id_prefix()
