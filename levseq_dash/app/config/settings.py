@@ -103,9 +103,9 @@ def get_data_path():
                 raise ValueError(
                     "local-instance MODE ERROR: No storage path configured!\n"
                     "Options:\n"
-                    "1. Set DATA_PATH environment variable: "
+                    "1. Using Docker? Set DATA_PATH environment variable: "
                     " docker run -e DATA_PATH=/data -v /host/path:/data  <image-name>\n"
-                    "2. Set local-data-path in config.yaml\n"
+                    "2. OR set local-data-path in config.yaml\n"
                 )
 
         else:  # playground mode
@@ -150,8 +150,8 @@ def get_five_letter_id_prefix():
 
         # If not in environment, check config file
         if not id_prefix:
-            config = load_config()
-            id_prefix = config.get("five-letter-id-prefix", "")
+            settings = get_disk_settings()
+            id_prefix = settings.get("five-letter-id-prefix", "")
 
         # Validate the ID prefix
         if not id_prefix or id_prefix.strip() == "":

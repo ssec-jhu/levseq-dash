@@ -67,7 +67,7 @@ class DataManager:
         elif self.use_db_web_service == "disk":
             if experiment_content_base64_string:
                 # Generate a UUID for the experiment
-                experiment_uuid = self.generate_experiment_id(id_prefix=settings.get_five_letter_id_prefix())
+                experiment_uuid = self.generate_experiment_id(id_prefix=self.five_letter_id_prefix)
 
                 # calculate a checksum for the CSV file
                 experiment_bytes = base64.b64decode(experiment_content_base64_string)
