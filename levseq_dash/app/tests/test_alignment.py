@@ -154,15 +154,17 @@ def test_search_for_variants_in_experiment_data(residue_list, count, experiment_
         (["42", "90", "173", "123"], 58),
     ],
 )
-def test_search_and_gather_variant_info_for_matching_experiment(residue_list, count, experiment_ep_pcr, seq_align_data):
+def test_search_and_gather_variant_info_for_matching_experiment(
+    residue_list, count, experiment_ep_pcr, experiment_ep_pcr_metadata, seq_align_data
+):
     exp_results_row_data = list(dict())
     exp_results_row_data = u_seq_alignment.search_and_gather_variant_info_for_matching_experiment(
         experiment_ep_pcr,
-        1,  # this can be anything for this test
+        experiment_ep_pcr_metadata,
         residue_list,
         seq_align_data,
         exp_results_row_data,
     )
     assert len(exp_results_row_data) == count
     if count != 0:
-        assert len(exp_results_row_data[0]) == 28
+        assert len(exp_results_row_data[0]) == 26
