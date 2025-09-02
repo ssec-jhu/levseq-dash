@@ -38,7 +38,7 @@ disk:
   # or a relative path from the project root/app directory
   # Example: data in the app directory -> local-data-path: "data/DEDB"
   # Example data path for Mac desktop -> local-data-path: "/Users/username/Desktop/MyData"
-  local-data-path: "/Users/Fatemeh/Desktop/DEDB_144"  # TODO: this should be removed for release
+  local-data-path: ""  #this should be empty for release
   # local-data-path: ""
 
   # in public-playground mode uploading new experiments or
