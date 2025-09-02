@@ -39,7 +39,6 @@ disk:
   # Example: data in the app directory -> local-data-path: "data/DEDB"
   # Example data path for Mac desktop -> local-data-path: "/Users/username/Desktop/MyData"
   local-data-path: ""  #this should be empty for release
-  # local-data-path: ""
 
   # in public-playground mode uploading new experiments or
   # deleting current experiments is disabled
