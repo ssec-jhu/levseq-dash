@@ -80,6 +80,12 @@ def mock_load_config(mocker):
 
 
 @pytest.fixture
+def mock_get_disk_settings(mocker):
+    mock = mocker.patch("levseq_dash.app.config.settings.get_disk_settings")
+    return mock
+
+
+@pytest.fixture
 def mock_get_logging_settings(mocker):
     """Fixture for mocking get_logging_settings"""
     mock = mocker.patch("levseq_dash.app.config.settings.get_logging_settings")

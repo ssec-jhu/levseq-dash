@@ -98,8 +98,6 @@ def test_get_lab_sequences(dbmanager_read_all_from_file):
     assert len(list_of_sequences) != 0
 
 
-
-
 def test_load_config():
     """
     Config file that is distributed must have the app mode set

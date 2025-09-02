@@ -124,28 +124,28 @@ def test_returns_empty_string_when_no_prefix_configured_and_modification_disable
     assert result == ""
 
 
-def test_valid_prefix_when_data_modification_enabled(mock_load_config, mock_is_data_modification_enabled):
+def test_valid_prefix_when_data_modification_enabled(mock_get_disk_settings, mock_is_data_modification_enabled):
     """Test that function returns uppercase prefix when data modification is enabled and prefix is valid"""
     mock_is_data_modification_enabled.return_value = True
-    mock_load_config.return_value = {"five-letter-id-prefix": "hello"}
+    mock_get_disk_settings.return_value = {"five-letter-id-prefix": "hello"}
 
     result = settings.get_five_letter_id_prefix()
     assert result == "HELLO"
 
 
-def test_valid_prefix_mixed_case_conversion(mock_load_config, mock_is_data_modification_enabled):
+def test_valid_prefix_mixed_case_conversion(mock_get_disk_settings, mock_is_data_modification_enabled):
     """Test that function converts mixed case prefix to uppercase"""
     mock_is_data_modification_enabled.return_value = True
-    mock_load_config.return_value = {"five-letter-id-prefix": "TeSt1"}
+    mock_get_disk_settings.return_value = {"five-letter-id-prefix": "TeSt1"}
 
     with pytest.raises(ValueError):
         settings.get_five_letter_id_prefix()
 
 
-def test_valid_prefix_with_whitespace_trimming(mock_load_config, mock_is_data_modification_enabled):
+def test_valid_prefix_with_whitespace_trimming(mock_get_disk_settings, mock_is_data_modification_enabled):
     """Test that function trims whitespace from prefix"""
     mock_is_data_modification_enabled.return_value = True
-    mock_load_config.return_value = {"five-letter-id-prefix": "  hello  "}
+    mock_get_disk_settings.return_value = {"five-letter-id-prefix": "  hello  "}
 
     with pytest.raises(ValueError):
         settings.get_five_letter_id_prefix()
@@ -271,10 +271,10 @@ def test_environment_variable_takes_precedence_over_config(mock_load_config, moc
 
 
 @mock.patch.dict("os.environ", {}, clear=True)  # Clear environment variables
-def test_falls_back_to_config_when_no_env_var(mock_load_config, mock_is_data_modification_enabled):
+def test_falls_back_to_config_when_no_env_var(mock_get_disk_settings, mock_is_data_modification_enabled):
     """Test that config file is used when no environment variable is set"""
     mock_is_data_modification_enabled.return_value = True
-    mock_load_config.return_value = {"five-letter-id-prefix": "CFGID"}
+    mock_get_disk_settings.return_value = {"five-letter-id-prefix": "CFGID"}
 
     result = settings.get_five_letter_id_prefix()
     assert result == "CFGID"

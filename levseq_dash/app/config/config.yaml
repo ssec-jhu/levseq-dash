@@ -27,8 +27,8 @@ storage-mode: "disk"
 # settings for storage-mode = disk
 #------------------------------------------------------------
 disk:
-# 5-letter code required for application functionality
-# MUST be exactly 5 letters - set this value in your deployment
+  # 5-letter code required for application functionality
+  # MUST be exactly 5 letters - set this value in your deployment
   five-letter-id-prefix: "" # Default for public website should be empty
 
   # For deployment-mode=local-instance ONLY:
