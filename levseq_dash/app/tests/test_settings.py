@@ -305,3 +305,89 @@ def test_environment_variable_validation_error(mock_is_data_modification_enabled
 
     with pytest.raises(ValueError):
         settings.get_five_letter_id_prefix()
+
+
+# Tests for get_data_path function
+@mock.patch.dict("os.environ", {"DATA_PATH": "/custom/data/path"})
+def test_get_data_path_with_env_variable():
+    """Test that DATA_PATH environment variable takes precedence"""
+    result = settings.get_data_path()
+    expected_path = Path("/custom/data/path").resolve()
+    assert result == expected_path
+
+
+@mock.patch.dict("os.environ", {}, clear=True)  # Clear environment variables
+def test_get_data_path_playground_mode_default(mock_is_local_instance_mode):
+    """Test that playground mode uses app/data/DEDB as default"""
+    mock_is_local_instance_mode.return_value = False
+
+    result = settings.get_data_path()
+    expected_path = (settings.package_app_path / "data" / "DEDB").resolve()
+    assert result == expected_path
+
+
+@mock.patch.dict("os.environ", {}, clear=True)
+def test_get_data_path_local_instance_absolute_path(get_local_instance_mode_data_path, mock_is_local_instance_mode):
+    """Test local instance mode with absolute path"""
+    mock_is_local_instance_mode.return_value = True
+    get_local_instance_mode_data_path.return_value = "/absolute/path/to/data"
+
+    result = settings.get_data_path()
+    expected_path = Path("/absolute/path/to/data").resolve()
+    assert result == expected_path
+
+
+@mock.patch.dict("os.environ", {}, clear=True)
+def test_get_data_path_local_instance_relative_path(get_local_instance_mode_data_path, mock_is_local_instance_mode):
+    """Test local instance mode with relative path"""
+    mock_is_local_instance_mode.return_value = True
+    get_local_instance_mode_data_path.return_value = "data/custom"
+
+    result = settings.get_data_path()
+    expected_path = (settings.package_app_path / "data/custom").resolve()
+    assert result == expected_path
+
+
+@mock.patch.dict("os.environ", {}, clear=True)
+def test_get_data_path_local_instance_no_path_configured(
+    get_local_instance_mode_data_path, mock_is_local_instance_mode
+):
+    """Test local instance mode with no path configured raises error"""
+    mock_is_local_instance_mode.return_value = True
+    get_local_instance_mode_data_path.return_value = ""
+
+    with pytest.raises(ValueError):
+        settings.get_data_path()
+
+
+@mock.patch.dict("os.environ", {}, clear=True)
+def test_get_data_path_local_instance_none_path_configured(
+    get_local_instance_mode_data_path, mock_is_local_instance_mode
+):
+    """Test local instance mode with None path configured raises error"""
+    mock_is_local_instance_mode.return_value = True
+    get_local_instance_mode_data_path.return_value = None
+
+    with pytest.raises(ValueError, match="local-instance MODE ERROR"):
+        settings.get_data_path()
+
+
+@mock.patch.dict("os.environ", {"DATA_PATH": "/env/override"})
+def test_get_data_path_env_overrides_local_instance(get_local_instance_mode_data_path, mock_is_local_instance_mode):
+    """Test that DATA_PATH environment variable overrides local instance config"""
+    mock_is_local_instance_mode.return_value = True
+    get_local_instance_mode_data_path.return_value = "/config/path"
+
+    result = settings.get_data_path()
+    expected_path = Path("/env/override").resolve()
+    assert result == expected_path
+
+
+@mock.patch.dict("os.environ", {"DATA_PATH": "/env/override"})
+def test_get_data_path_env_overrides_playground(mock_is_local_instance_mode):
+    """Test that DATA_PATH environment variable overrides playground mode default"""
+    mock_is_local_instance_mode.return_value = False
+
+    result = settings.get_data_path()
+    expected_path = Path("/env/override").resolve()
+    assert result == expected_path
