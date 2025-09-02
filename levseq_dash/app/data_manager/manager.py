@@ -213,27 +213,8 @@ class DataManager:
     # ---------------------------
     def _setup_data_path(self):
         """ """
-        if settings.is_local_instance_mode():
-            # local-instance mode: Use DATA_PATH if set, otherwise fall back to local dev path
-            data_path_str = os.environ.get("DATA_PATH", settings.get_local_instance_mode_data_path())
-            if data_path_str:
-                data_path = Path(data_path_str)
-                if data_path.is_absolute():
-                    self.data_path = data_path.resolve()
-                else:
-                    # For relative paths, resolve from the app directory
-                    self.data_path = (Path("app") / data_path).resolve()
-            else:
-                raise ValueError(
-                    "local-instance MODE ERROR: No storage path configured!\n"
-                    "Options:\n"
-                    "1. Set DATA_PATH environment variable: "
-                    " docker run -e DATA_PATH=/data -v /host/path:/data  <image-name>\n"
-                    "2. Set local-data-path in config.yaml\n"
-                )
-        else:
-            # Playground mode: Use DATA_PATH if provided, otherwise default
-            self.data_path = Path(os.environ.get("DATA_PATH", "data/DEDB")).resolve()
+
+        self.data_path = settings.get_data_path()
 
         log_with_context(
             f"[LOG] Using path: {self.data_path})",

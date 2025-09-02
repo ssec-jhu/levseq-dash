@@ -83,6 +83,37 @@ def get_logging_settings():
     return config.get("logging", {})
 
 
+def get_data_path():
+    data_path = None
+    data_path_env = os.environ.get("DATA_PATH")
+    if data_path_env:
+        data_path = Path(data_path_env).resolve()
+    else:
+        # Default to the bundled data in the app directory
+        if is_local_instance_mode():
+            data_path_str = get_local_instance_mode_data_path()
+            if data_path_str:
+                data_path = Path(data_path_str)
+                if data_path.is_absolute():
+                    data_path = data_path.resolve()
+                else:
+                    # For relative paths, resolve from the app directory
+                    data_path = (package_app_path / data_path).resolve()
+            else:
+                raise ValueError(
+                    "local-instance MODE ERROR: No storage path configured!\n"
+                    "Options:\n"
+                    "1. Set DATA_PATH environment variable: "
+                    " docker run -e DATA_PATH=/data -v /host/path:/data  <image-name>\n"
+                    "2. Set local-data-path in config.yaml\n"
+                )
+
+        else:  # playground mode
+            data_path = (package_app_path / "data" / "DEDB").resolve()
+
+    return data_path
+
+
 def is_data_modification_enabled():
     disk_settings = get_disk_settings()
     modification_enabled = disk_settings.get("enable-data-modification", False)
