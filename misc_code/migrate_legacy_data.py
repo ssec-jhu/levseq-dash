@@ -7,10 +7,10 @@ import pandas as pd
 
 from levseq_dash.app.data_manager.experiment import Experiment
 from levseq_dash.app.data_manager.manager import DataManager
-from levseq_dash.app.utils import utils, u_reaction
+from levseq_dash.app.utils import u_reaction, utils
 
 
-def migrate_legacy_data_to_uuid_structure(data_path: Path, id_prefix) -> dict:
+def migrate_legacy_data_to_uuid_structure(data_path: Path, id_prefix) -> None:
     meta_data_file = data_path / "meta_data.csv"
     experiments_dir = data_path / "experiments"
     structures_dir = data_path / "structures"
@@ -25,36 +25,44 @@ def migrate_legacy_data_to_uuid_structure(data_path: Path, id_prefix) -> dict:
     # Read metadata CSV
     df_metadata = pd.read_csv(meta_data_file)
 
+    total_experiments = len(df_metadata)
+    successful_migrations = 0
+    failed_migrations = 0
+
+    print(f"Starting migration of {total_experiments} experiments...")
+
     # Process each experiment
-    for _, row in df_metadata.iterrows():
+    for index, row in df_metadata.iterrows():
+        experiment_id = None
         try:
             # Extract data from CSV row
 
             # experiment name
-            experiment_name = row['experiment_name']
+            experiment_name = row["experiment_name"]
 
             # experiment date
-            experiment_date = pd.to_datetime(row['experiment_date']).strftime("%Y-%m-%d")
+            experiment_date = pd.to_datetime(row["experiment_date"]).strftime("%Y-%m-%d")
 
             # smiles strings
-            substrate_smiles = row['substrate_smiles']
-            product_smiles = row['product_smiles']
-            # validate smiles
-            if not u_reaction.is_valid_smiles(substrate_smiles):
+            substrate_smiles = str(row["substrate_smiles"]).strip()
+            product_smiles = str(row["product_smiles"]).strip()
+
+            # validate smiles (skip validation for empty strings)
+            if substrate_smiles and not u_reaction.is_valid_smiles(substrate_smiles):
                 raise ValueError(f"Invalid substrate SMILES: {substrate_smiles}")
-            if not u_reaction.is_valid_smiles(product_smiles):
+            if product_smiles and not u_reaction.is_valid_smiles(product_smiles):
                 raise ValueError(f"Invalid product SMILES: {product_smiles}")
 
-            assay_technique = row['assay_technique']
+            assay_technique = row["assay_technique"]
 
             # Find CIF structure file
-            cif_filename = row['cif_filename']
+            cif_filename = row["cif_filename"]
             exp_cif_file = structures_dir / cif_filename
             if not exp_cif_file.exists():
                 raise ValueError(f"CIF structure file not found: {exp_cif_file}")
 
             # Find experiment CSV file
-            experiment_id = row['experiment_id']
+            experiment_id = row["experiment_id"]
             exp_csv_file = experiments_dir / f"{experiment_id}.csv"
             if not exp_csv_file.exists():
                 raise ValueError(f"Experiment CSV file not found: {exp_csv_file}")
@@ -66,7 +74,7 @@ def migrate_legacy_data_to_uuid_structure(data_path: Path, id_prefix) -> dict:
                 raise ValueError(f"Experiment CSV file failed sanity check: {exp_csv_file}")
 
             # checksum calculation
-            with open(exp_csv_file, 'rb') as f:
+            with open(exp_csv_file, "rb") as f:
                 csv_bytes = f.read()
                 csv_checksum = utils.calculate_file_checksum(csv_bytes)
 
@@ -75,7 +83,7 @@ def migrate_legacy_data_to_uuid_structure(data_path: Path, id_prefix) -> dict:
             parent_sequence = Experiment.extract_parent_sequence(df)
 
             # Create metadata dictionary
-            upload_time_stamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            upload_time_stamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
             # Generate new UUID
             experiment_uuid = DataManager.generate_experiment_id(id_prefix)
@@ -107,13 +115,31 @@ def migrate_legacy_data_to_uuid_structure(data_path: Path, id_prefix) -> dict:
             with open(json_file_path, "w", encoding="utf-8") as json_file:
                 json.dump(metadata, json_file, indent=4)
 
-            # Copy experiment CSV data
+            # Copy experiment CSV data (mimicking file upload process)
             shutil.copy(exp_csv_file, csv_file_path)
             shutil.copy(exp_cif_file, cif_file_path)
 
+            # Verify files were copied successfully
+            if not csv_file_path.exists() or csv_file_path.stat().st_size == 0:
+                raise ValueError(f"Failed to copy CSV file to {csv_file_path}")
+            if not cif_file_path.exists() or cif_file_path.stat().st_size == 0:
+                raise ValueError(f"Failed to copy CIF file to {cif_file_path}")
+
+            print(f"Successfully migrated experiment {experiment_id} -> {experiment_uuid}")
+            successful_migrations += 1
+
         except Exception as e:
-            print(f"Error migrating experiment {experiment_id}: {e}")
+            exp_ref = experiment_id if experiment_id else f"row {index}"
+            print(f"Error migrating experiment {exp_ref}: {e}")
+            failed_migrations += 1
             continue
+
+    # Print migration summary
+    print(f"\nMigration Summary:")
+    print(f"Total experiments: {total_experiments}")
+    print(f"Successful migrations: {successful_migrations}")
+    print(f"Failed migrations: {failed_migrations}")
+    print(f"Success rate: {(successful_migrations / total_experiments) * 100:.1f}%")
 
 
 # Example usage for migration:
@@ -121,7 +147,6 @@ def migrate_legacy_data_to_uuid_structure(data_path: Path, id_prefix) -> dict:
 #
 
 
-migrate_legacy_data_to_uuid_structure(data_path=Path("/app/data/DEDB").resolve(),
-                                      id_prefix="MYLAB")
+migrate_legacy_data_to_uuid_structure(data_path=Path("../levseq_dash/app/data/DEDB"), id_prefix="MYLAB")
 
 print(f"Migration completed.")
