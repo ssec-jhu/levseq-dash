@@ -322,7 +322,7 @@ def test_get_data_path_playground_mode_default(mock_is_local_instance_mode):
     mock_is_local_instance_mode.return_value = False
 
     result = settings.get_data_path()
-    expected_path = (settings.package_app_path / "data" / "DEDB").resolve()
+    expected_path = (settings.package_app_path / "data").resolve()
     assert result == expected_path
 
 
