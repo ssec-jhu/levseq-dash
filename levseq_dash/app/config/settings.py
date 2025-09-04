@@ -109,7 +109,7 @@ def get_data_path():
                 )
 
         else:  # playground mode
-            data_path = (package_app_path / "data" / "DEDB").resolve()
+            data_path = (package_app_path / "data").resolve()
 
     return data_path
 

@@ -36,7 +36,7 @@ disk:
   # This path will be used when DATA_PATH environment variable is not set
   # This MUST be an absolute path on your local filesystem
   # or a relative path from the project root/app directory
-  # Example: data in the app directory -> local-data-path: "data/DEDB"
+  # Example: data in the app directory -> local-data-path: "data"
   # Example data path for Mac desktop -> local-data-path: "/Users/username/Desktop/MyData"
   local-data-path: ""  #this should be empty for release
 
