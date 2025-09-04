@@ -66,18 +66,22 @@ class DataManager:
 
         elif self.use_db_web_service == "disk":
             if experiment_content_base64_string:
+                # Duplicate data check has already passed in upload by check_for_duplicate_experiment
+                # Sanity check has already passed in upload by run_sanity_checks_on_experiment_file
+
                 # Generate a UUID for the experiment
                 experiment_uuid = self.generate_experiment_id(id_prefix=self.five_letter_id_prefix)
-
-                # calculate a checksum for the CSV file
-                experiment_bytes = base64.b64decode(experiment_content_base64_string)
-                csv_checksum = utils.calculate_file_checksum(experiment_bytes)
 
                 # assign a timestamp for the upload
                 upload_time_stamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
                 # convert to dataframe for processing
-                df = utils.decode_csv_file_base64_string_to_dataframe(experiment_content_base64_string)
+                df, experiment_bytes = utils.decode_csv_file_base64_string_to_dataframe(
+                    experiment_content_base64_string
+                )
+
+                # calculate a checksum for the CSV file
+                csv_checksum = utils.calculate_file_checksum(experiment_bytes)
 
                 # calculate the number of plates in the experiment
                 plates_count = len(Experiment.extract_plates_list(df))
@@ -123,6 +127,18 @@ class DataManager:
             raise Exception(gs.error_data_mode)
 
         return experiment_uuid
+
+    def check_for_duplicate_experiment(self, new_csv_checksum: str):
+        for experiment_uuid, metadata in self._experiments_metadata.items():
+            existing_checksum = metadata.get("csv_checksum", "")
+            if existing_checksum == new_csv_checksum:
+                existing_name = metadata.get("experiment_name", "Unknown")
+                raise ValueError(
+                    f"DUPLICATE experiment data detected! "
+                    f"An experiment with identical CSV data already exists with UUID: {experiment_uuid}"
+                    f" and Name: {existing_name}."
+                )
+        return False
 
     # ---------------------------
     #    Delete

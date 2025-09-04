@@ -110,6 +110,7 @@ def decode_csv_file_base64_string_to_dataframe(base64_encoded_string):
     to process the uploaded csv file into a dataframe
     """
     df = pd.DataFrame()
+    base64_encoded_bytes = bytes()
     if base64_encoded_string:
         # base64.b64decode() function converts the base64 encoded string back
         # into its original binary data which is bytes.
@@ -131,7 +132,7 @@ def decode_csv_file_base64_string_to_dataframe(base64_encoded_string):
             # df = pd.DataFrame()
             raise Exception("The content is not a valid UTF-8 string.")
 
-    return df
+    return df, base64_encoded_bytes
 
 
 def calculate_group_mean_ratios_per_smiles_and_plate(df):

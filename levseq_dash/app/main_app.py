@@ -197,7 +197,12 @@ def on_upload_experiment_file(dash_upload_string_contents, filename, last_modifi
             base64_encoded_string = utils.decode_dash_upload_data_to_base64_encoded_string(dash_upload_string_contents)
 
             # convert the bytes string into a data frame
-            df = utils.decode_csv_file_base64_string_to_dataframe(base64_encoded_string)
+            df, csv_file_bytes = utils.decode_csv_file_base64_string_to_dataframe(base64_encoded_string)
+
+            # check if this experiment already exists in the db
+            # this will raise an exception if a duplicate is found
+            csv_checksum = utils.calculate_file_checksum(csv_file_bytes)
+            singleton_data_mgr_instance.check_for_duplicate_experiment(csv_checksum)
 
             # sanity check will raise exceptions if any check is not passed
             checks_passed = Experiment.run_sanity_checks_on_experiment_file(df)

@@ -68,7 +68,7 @@ def test_decode_csv_file_base64_string_to_dataframe():
     csv_bytes = csv_content.encode("utf-8")  # Convert string to bytes
     csv_base64 = base64.b64encode(csv_bytes).decode("utf-8")  # Encode to Base64 string
 
-    df = utils.decode_csv_file_base64_string_to_dataframe(csv_base64)
+    df, returned_bytes = utils.decode_csv_file_base64_string_to_dataframe(csv_base64)
 
     assert isinstance(df, pd.DataFrame)  # Ensure result is a DataFrame
     assert df.shape == (2, 2)  # 2 rows, 2 columns
@@ -76,15 +76,23 @@ def test_decode_csv_file_base64_string_to_dataframe():
     assert df.iloc[0]["col_A"] == "Levseq"  # Correct data
     assert df.iloc[1]["col_B"] == 2025  # Correct data
 
+    # Test the returned bytes
+    assert isinstance(returned_bytes, bytes)
+    assert returned_bytes == csv_bytes  # Should match original bytes
+
 
 def test_decode_csv_file_base64_string_to_dataframe_empty():
     # empty csv -> empty bytes
     empty_base64 = base64.b64encode(b"").decode("utf-8")
 
-    df = utils.decode_csv_file_base64_string_to_dataframe(empty_base64)
+    df, returned_bytes = utils.decode_csv_file_base64_string_to_dataframe(empty_base64)
 
     assert isinstance(df, pd.DataFrame)
     assert df.empty  # Ensure the DataFrame is empty
+
+    # Test the returned bytes
+    assert isinstance(returned_bytes, bytes)
+    assert returned_bytes == b""  # Should be empty bytes
 
 
 def test_decode_csv_file_base64_string_to_dataframe_invalid():
@@ -108,10 +116,14 @@ def test_decode_dash_upload_data_to_base64_encoded_string_empty():
 
     upload_str = "data:text/csv;base64,QSxCLEMsRCxFLEYKMSwyLDMsNCw1LDYKNyw4LDksMTAsMTEsMTIK"
     result = utils.decode_dash_upload_data_to_base64_encoded_string(upload_str)
-    df = utils.decode_csv_file_base64_string_to_dataframe(result)
+    df, returned_bytes = utils.decode_csv_file_base64_string_to_dataframe(result)
     assert not df.empty
     assert df.shape[0] == 2
     assert df.shape[1] == 6
+
+    # Test the returned bytes
+    assert isinstance(returned_bytes, bytes)
+    assert len(returned_bytes) > 0  # Should have some content
 
 
 # @pytest.mark.parametrize(
