@@ -203,12 +203,23 @@ class Experiment:
                 f"Experiment file does not contain any '#PARENT#' entry in the {gs.c_substitutions} column."
             )
 
-        # check all the smiles strings are valid in the file
-        invalid_smiles_rows = df[df[gs.c_smiles].apply(u_reaction.is_valid_smiles).isnull()]
-
-        if not invalid_smiles_rows.empty:
-            invalid_indices = invalid_smiles_rows.index.tolist()
-            raise ValueError(f"Experiment file has invalid SMILES found at rows: {invalid_indices}")
+        # each row of the csv file must be checked for valid smiles string
+        # I want to notify the user which row has an error so they can fix their experiment file
+        for index, row in df.iterrows():
+            try:
+                smiles_string = str(row[gs.c_smiles])
+                if (
+                    not smiles_string
+                    or pd.isna(smiles_string)
+                    or pd.isnull(smiles_string)
+                    or smiles_string.strip() == ""
+                ):
+                    raise ValueError(f"Invalid SMILES string at row {index}. Value is null, NaN, or empty.")
+                valid = u_reaction.is_valid_smiles(smiles_string)
+                if not valid:
+                    raise ValueError(f"Invalid SMILES string at row {index}. SMILES is:'{smiles_string}'")
+            except Exception as e:
+                raise Exception(e)
 
         # # Relaxing parent-smiles combo requirement
         # # check any smiles-plate column combo has a #PARENT# in its gs.c_substitution column

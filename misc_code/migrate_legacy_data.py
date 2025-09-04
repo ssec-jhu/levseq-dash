@@ -10,10 +10,10 @@ from levseq_dash.app.data_manager.manager import DataManager
 from levseq_dash.app.utils import u_reaction, utils
 
 
-def migrate_legacy_data_to_uuid_structure(data_path: Path, id_prefix) -> None:
-    meta_data_file = data_path / "meta_data.csv"
-    experiments_dir = data_path / "experiments"
-    structures_dir = data_path / "structures"
+def migrate_legacy_data_to_uuid_structure(input_data_path: Path, output_data_path, id_prefix) -> None:
+    meta_data_file = input_data_path / "meta_data.csv"
+    experiments_dir = input_data_path / "experiments"
+    structures_dir = input_data_path / "structures"
 
     if not meta_data_file.exists():
         raise FileNotFoundError(f"meta_data.csv not found at {meta_data_file}")
@@ -35,7 +35,7 @@ def migrate_legacy_data_to_uuid_structure(data_path: Path, id_prefix) -> None:
     for index, row in df_metadata.iterrows():
         experiment_id = None
         try:
-            # Extract data from CSV row
+            experiment_id = row["experiment_id"]
 
             # experiment name
             experiment_name = row["experiment_name"]
@@ -47,10 +47,20 @@ def migrate_legacy_data_to_uuid_structure(data_path: Path, id_prefix) -> None:
             substrate_smiles = str(row["substrate_smiles"]).strip()
             product_smiles = str(row["product_smiles"]).strip()
 
-            # validate smiles (skip validation for empty strings)
+            # Handle common invalid values for substrate (substrate can be empty)
+            if substrate_smiles.lower() in ["nan", "none", "null", ""]:
+                substrate_smiles = ""
+
+            # Handle common invalid values for product (product must not be empty)
+            if product_smiles.lower() in ["nan", "none", "null", ""]:
+                raise ValueError(f"Product SMILES cannot be empty or invalid: {row['product_smiles']}")
+
+            # validate smiles (skip validation for empty substrate, but product must be valid)
             if substrate_smiles and not u_reaction.is_valid_smiles(substrate_smiles):
                 raise ValueError(f"Invalid substrate SMILES: {substrate_smiles}")
-            if product_smiles and not u_reaction.is_valid_smiles(product_smiles):
+            if not product_smiles:
+                raise ValueError("Product SMILES is required and cannot be empty")
+            if not u_reaction.is_valid_smiles(product_smiles):
                 raise ValueError(f"Invalid product SMILES: {product_smiles}")
 
             assay_technique = row["assay_technique"]
@@ -59,10 +69,10 @@ def migrate_legacy_data_to_uuid_structure(data_path: Path, id_prefix) -> None:
             cif_filename = row["cif_filename"]
             exp_cif_file = structures_dir / cif_filename
             if not exp_cif_file.exists():
-                raise ValueError(f"CIF structure file not found: {exp_cif_file}")
+                raise ValueError(f"CIF structure file for not found: {exp_cif_file}")
 
             # Find experiment CSV file
-            experiment_id = row["experiment_id"]
+
             exp_csv_file = experiments_dir / f"{experiment_id}.csv"
             if not exp_csv_file.exists():
                 raise ValueError(f"Experiment CSV file not found: {exp_csv_file}")
@@ -103,7 +113,7 @@ def migrate_legacy_data_to_uuid_structure(data_path: Path, id_prefix) -> None:
             }
 
             # Create UUID-based directory structure
-            experiment_dir = data_path / experiment_uuid
+            experiment_dir = output_data_path / experiment_uuid
             experiment_dir.mkdir(parents=True, exist_ok=True)
 
             # Generate file paths
@@ -125,7 +135,7 @@ def migrate_legacy_data_to_uuid_structure(data_path: Path, id_prefix) -> None:
             if not cif_file_path.exists() or cif_file_path.stat().st_size == 0:
                 raise ValueError(f"Failed to copy CIF file to {cif_file_path}")
 
-            print(f"Successfully migrated experiment {experiment_id} -> {experiment_uuid}")
+            # print(f"Successfully migrated experiment {experiment_id} -> {experiment_uuid}")
             successful_migrations += 1
 
         except Exception as e:
@@ -147,6 +157,10 @@ def migrate_legacy_data_to_uuid_structure(data_path: Path, id_prefix) -> None:
 #
 
 
-migrate_legacy_data_to_uuid_structure(data_path=Path("../levseq_dash/app/data/DEDB"), id_prefix="MYLAB")
+migrate_legacy_data_to_uuid_structure(
+    input_data_path=Path("/Users/Fatemeh/Desktop/DEDB_144"),
+    output_data_path=Path("../levseq_dash/app/data/DEDB"),
+    id_prefix="MYLAB",
+)
 
 print(f"Migration completed.")
