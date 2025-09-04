@@ -39,6 +39,7 @@ def migrate_legacy_data_to_uuid_structure(input_data_path: Path, output_data_pat
 
             # experiment name
             experiment_name = row["experiment_name"]
+            experiment_name = experiment_name.replace(".csv", "").strip()
 
             # experiment date
             experiment_date = pd.to_datetime(row["experiment_date"]).strftime("%Y-%m-%d")
@@ -159,7 +160,7 @@ def migrate_legacy_data_to_uuid_structure(input_data_path: Path, output_data_pat
 
 migrate_legacy_data_to_uuid_structure(
     input_data_path=Path("/Users/Fatemeh/Desktop/DEDB_144"),
-    output_data_path=Path("../levseq_dash/app/data/DEDB"),
+    output_data_path=Path("../levseq_dash/app/data"),
     id_prefix="MYLAB",
 )
 
