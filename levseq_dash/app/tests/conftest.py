@@ -20,38 +20,41 @@ def test_data_path(package_root):
 
 
 @pytest.fixture(scope="session")
-def path_data_experiments(test_data_path):
-    return test_data_path / "data" / "experiments"
+def path_exp_ep_data(test_data_path):
+    return [
+        test_data_path / "flatten_ep_processed_xy_cas" / "flatten_ep_processed_xy_cas.csv",
+        test_data_path / "flatten_ep_processed_xy_cas" / "flatten_ep_processed_xy_cas.cif",
+        test_data_path / "flatten_ep_processed_xy_cas" / "flatten_ep_processed_xy_cas.json",
+    ]
 
 
 @pytest.fixture(scope="session")
-def path_data_structures(test_data_path):
-    return test_data_path / "data" / "structures"
+def experiment_ep_pcr_metadata(path_exp_ep_data):
+    """Load experiment metadata from JSON file"""
+    import json
+
+    with open(path_exp_ep_data[2], "r") as f:
+        metadata_dict = json.load(f)
+    return metadata_dict
 
 
 @pytest.fixture(scope="session")
-def path_exp_ep_data(path_data_experiments):
-    return path_data_experiments / "flatten_ep_processed_xy_cas.csv"
+def path_exp_ssm_data(test_data_path):
+    return [
+        test_data_path / "data" / "flatten_ssm_processed_xy_cas" / "flatten_ssm_processed_xy_cas.csv",
+        test_data_path / "data" / "flatten_ssm_processed_xy_cas" / "flatten_ssm_processed_xy_cas.cif",
+        test_data_path / "data" / "flatten_ssm_processed_xy_cas" / "flatten_ssm_processed_xy_cas.json",
+    ]
 
 
 @pytest.fixture(scope="session")
-def path_exp_ep_cif(path_data_structures):
-    return path_data_structures / "flatten_ep_processed_xy_cas_row8.cif"
+def experiment_ssm_metadata(path_exp_ep_data):
+    """Load experiment metadata from JSON file"""
+    import json
 
-
-@pytest.fixture(scope="session")
-def path_exp_ssm_data(path_data_experiments):
-    return path_data_experiments / "flatten_ssm_processed_xy_cas.csv"
-
-
-@pytest.fixture(scope="session")
-def path_exp_ssm_cif(path_data_structures):
-    return path_data_structures / "flatten_ssm_processed_xy_cas_row3.cif"
-
-
-@pytest.fixture(scope="session")
-def path_cif_bytes_string_file_sample(test_data_path):
-    return test_data_path / "data" / "cif_bytes_string_sample.txt"
+    with open(path_exp_ep_data[2], "r") as f:
+        metadata_dict = json.load(f)
+    return metadata_dict
 
 
 @pytest.fixture
@@ -61,11 +64,10 @@ def mock_load_config_from_disk(mocker, test_data_path):
     """
     # data_path = test_data_path / "data"
     mock = mocker.patch(load_config_mock_string)
-    data_path = test_data_path / "data"
     mock.return_value = {
         "deployment-mode": "local-instance",
         "storage-mode": "disk",
-        "disk": {"local-data-path": data_path},
+        "disk": {"local-data-path": test_data_path},
     }
     return mock
 
@@ -74,6 +76,12 @@ def mock_load_config_from_disk(mocker, test_data_path):
 def mock_load_config(mocker):
     """Fixture for mocking load_config"""
     mock = mocker.patch("levseq_dash.app.config.settings.load_config")
+    return mock
+
+
+@pytest.fixture
+def mock_get_disk_settings(mocker):
+    mock = mocker.patch("levseq_dash.app.config.settings.get_disk_settings")
     return mock
 
 
@@ -105,16 +113,6 @@ def mock_is_local_instance_mode(mocker):
 @pytest.fixture
 def get_local_instance_mode_data_path(mocker):
     mock = mocker.patch("levseq_dash.app.config.settings.get_local_instance_mode_data_path")
-    return mock
-
-
-@pytest.fixture
-def mock_load_config_use_web(mocker):
-    """
-    Fixture to mock a response
-    """
-    mock = mocker.patch(load_config_mock_string)
-    mock.return_value = {"deployment-mode": "local-instance", "storage-mode": "db"}
     return mock
 
 
@@ -172,49 +170,24 @@ def assay_list(test_data_path):
 
 
 @pytest.fixture(scope="session")
-def experiment_empty():
-    return Experiment()
-
-
-@pytest.fixture(scope="session")
-def experiment_ep_pcr(assay_list, path_exp_ep_data, path_exp_ep_cif):
+def experiment_ep_pcr(path_exp_ep_data):
+    """Create experiment using new ExperimentMetadata pattern"""
     experiment_ep_example = Experiment(
-        experiment_data_file_path=path_exp_ep_data,
-        experiment_name="ep_file",
-        experiment_date="TBD",
-        mutagenesis_method=MutagenesisMethod.epPCR,
-        geometry_file_path=path_exp_ep_cif,
-        assay=assay_list[2],
+        experiment_data_file_path=path_exp_ep_data[0],
+        geometry_file_path=path_exp_ep_data[1],
     )
     return experiment_ep_example
 
 
 @pytest.fixture(scope="session")
-def experiment_ssm(assay_list, path_exp_ssm_data, path_exp_ssm_cif):
+def experiment_ssm(
+    path_exp_ssm_data,
+):
     experiment_ssm_example = Experiment(
-        experiment_data_file_path=path_exp_ssm_data,
-        experiment_name="ssm_file",
-        experiment_date="TBD",
-        mutagenesis_method="SSM",
-        geometry_file_path=path_exp_ssm_cif,
-        assay=assay_list[1],
+        experiment_data_file_path=path_exp_ssm_data[0],
+        geometry_file_path=path_exp_ssm_data[1],
     )
     return experiment_ssm_example
-
-
-@pytest.fixture(scope="session")
-def experiment_ep_pcr_with_user_smiles(assay_list, path_exp_ep_data, path_exp_ep_cif):
-    return Experiment(
-        experiment_data_file_path=path_exp_ep_data,
-        experiment_name="ep_file",
-        experiment_date="TBD",
-        # these are RANDOM for test only
-        substrate="CC(C)(C)C(=O)O[NH3+].CCC#CCCOCC.O=S(=O)([O-])C(F)(F)F",
-        product="C1=CC=C2C(=C1)C=CC=C2",
-        mutagenesis_method=MutagenesisMethod.epPCR,
-        geometry_file_path=path_exp_ep_cif,
-        assay=assay_list[3],
-    )
 
 
 @pytest.fixture(scope="session")

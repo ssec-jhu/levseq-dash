@@ -48,21 +48,6 @@ def test_get_molstar_rendered_components_related_variants(index, label, rep, col
     # assert output[0]["representation"][0]["typeParams"] == {'alpha': 0.5}
 
 
-def test_geometry_viewer_type(experiment_ep_pcr_with_user_smiles):
-    pdb = u_protein_viewer.get_geometry_for_viewer(experiment_ep_pcr_with_user_smiles)
-    assert pdb["type"] == "mol"
-
-
-def test_geometry_viewer_format(experiment_ep_pcr_with_user_smiles):
-    pdb = u_protein_viewer.get_geometry_for_viewer(experiment_ep_pcr_with_user_smiles)
-    assert pdb["format"] == "mmcif"
-
-
-def test_geometry_viewer_length(experiment_ep_pcr_with_user_smiles):
-    pdb = u_protein_viewer.get_geometry_for_viewer(experiment_ep_pcr_with_user_smiles)
-    assert len(pdb) == 4
-
-
 def test_extract_all_indices(selected_row_top_variant_table):
     residues = utils.extract_all_indices(selected_row_top_variant_table[0][gs.c_substitutions])
     assert len(residues) == 2

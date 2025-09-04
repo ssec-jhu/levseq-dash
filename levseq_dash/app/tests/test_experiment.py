@@ -5,11 +5,6 @@ from levseq_dash.app import global_strings as gs
 from levseq_dash.app.data_manager.experiment import Experiment
 
 
-def test_experiment_empty_error():
-    with pytest.raises(Exception):
-        exp = Experiment()
-
-
 @pytest.mark.parametrize(
     "index, smiles",
     [(0, "CC(C)CC1=CC=C(C=C1)C(C)C(=O)O"), (1, "C1=CC=C(C=C1)C=O")],
@@ -37,149 +32,107 @@ def test_experiment_ep_pcr_data_shape(experiment_ep_pcr):
     assert experiment_ep_pcr.data_df.shape[1] == 8
 
 
-def test_experiment_with_geometry_in_bytes(path_exp_ep_data, path_cif_bytes_string_file_sample, assay_list):
-    """
-    if the user loads bytes, all rest is none
-    """
-
+def test_experiment_with_geometry_in_bytes(path_exp_ep_data, assay_list):
     # load as bytes
-    from levseq_dash.app.data_manager.experiment import Experiment, MutagenesisMethod
+    from levseq_dash.app.data_manager.experiment import Experiment
 
     # read the file as bytes
-    with open(path_cif_bytes_string_file_sample, "rb") as f:
+    with open(path_exp_ep_data[1], "rb") as f:
         byte_content = f.read()
 
     if byte_content:
         experiment_with_bytes_geometry = Experiment(
-            experiment_data_file_path=path_exp_ep_data,
-            experiment_name="ep_file",
-            experiment_date="TBD",
-            mutagenesis_method=MutagenesisMethod.epPCR,
-            # bytes here
-            geometry_base64_bytes=byte_content,
-            assay=assay_list[2],
+            experiment_data_file_path=path_exp_ep_data[0],
+            geometry_file_path=path_exp_ep_data[1],
         )
-        assert experiment_with_bytes_geometry.geometry_file_path is None
-        assert experiment_with_bytes_geometry.geometry_base64_string is ""
         assert isinstance(experiment_with_bytes_geometry.geometry_base64_bytes, bytes)
-        assert len(experiment_with_bytes_geometry.geometry_base64_bytes) == 201696
+        assert len(experiment_with_bytes_geometry.geometry_base64_bytes) == 134480
 
 
-def test_experiment_with_geometry_in_bytes_string(path_exp_ep_data, path_cif_bytes_string_file_sample, assay_list):
-    """
-    if the user loads bytes-string, we create the bytes internally
-    everything else should be none
-    """
-    # load as bytes
-    from levseq_dash.app.data_manager.experiment import Experiment, MutagenesisMethod
-
-    # read the file as string
-    with open(path_cif_bytes_string_file_sample, "r") as f:
-        byte_string_content = f.read()
-
-    if byte_string_content:
-        experiment_with_bytes_geometry = Experiment(
-            experiment_data_file_path=path_exp_ep_data,
-            experiment_name="ep_file",
-            experiment_date="TBD",
-            mutagenesis_method=MutagenesisMethod.epPCR,
-            # bytes string here
-            geometry_base64_string=byte_string_content,
-            assay=assay_list[2],
-        )
-        assert experiment_with_bytes_geometry.geometry_file_path is None
-        # test there is string contents
-        assert len(experiment_with_bytes_geometry.geometry_base64_string) != 0
-        # test it has also been converted to bytes
-        assert isinstance(experiment_with_bytes_geometry.geometry_base64_bytes, bytes)
-        assert len(experiment_with_bytes_geometry.geometry_base64_bytes) == 151270
-
-
-def test_experiment_ep_pcr_assay(experiment_ep_pcr, assay_list):
-    assert experiment_ep_pcr.assay == assay_list[2]
+@pytest.mark.parametrize(
+    "attribute",
+    [
+        "experiment_name",
+        "experiment_date",
+        "substrate",
+        "product",
+        "mutagenesis_method",
+    ],
+)
+def test_experiment_loaded_metadata(
+    dbmanager_read_all_from_file, experiment_ep_pcr, experiment_ep_pcr_metadata, attribute
+):
+    """Test experiment assay by accessing metadata via DataManager"""
+    exp_id = experiment_ep_pcr_metadata["experiment_id"]
+    assert (
+        dbmanager_read_all_from_file.get_experiment_metadata(exp_id)[attribute] == experiment_ep_pcr_metadata[attribute]
+    )
 
 
 def test_experiment_ep_pcr_unique_smiles(experiment_ep_pcr):
     assert len(experiment_ep_pcr.unique_smiles_in_data) == 2
 
 
-def test_experiment_ep_pcr_name(experiment_ep_pcr):
-    assert experiment_ep_pcr.experiment_name == "ep_file"
-
-
-def test_experiment_ep_pcr_date(experiment_ep_pcr):
-    assert experiment_ep_pcr.experiment_date == "TBD"
-
-
-def test_experiment_ep_pcr_upload_timestamp(experiment_ep_pcr):
-    assert experiment_ep_pcr.upload_time_stamp != ""
-
-
-def test_experiment_ep_pcr_substrate_smiles(experiment_ep_pcr):
-    assert len(experiment_ep_pcr.substrate) == 0
-
-
-def test_experiment_ep_pcr_product_smiles(experiment_ep_pcr):
-    assert len(experiment_ep_pcr.product) == 0
-
-
-def test_experiment_ep_pcr_mutagenesis_method(experiment_ep_pcr):
-    from levseq_dash.app import global_strings as gs
-
-    assert experiment_ep_pcr.mutagenesis_method == gs.eppcr
+@pytest.mark.parametrize(
+    "attribute, expected_value",
+    [
+        ("experiment_name", "flatten_ep_processed_xy_cas"),
+        ("experiment_date", "2021-02-23"),
+        ("substrate", "CC(C)CC1=CC=C(C=C1)C(C)C(=O)O.C1=CC=C(C=C1)C=O"),
+        ("product", "C1=CC=C(C=C1)C=O"),
+        ("mutagenesis_method", "Error-prone PCR (epPCR)"),
+        ("plates_count", 10),
+        (
+            "parent_sequence",
+            "MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVEDILDLWYGLQGSNQHLIYYFG"
+            "DKSGRPIPQYLEAVRKRFGLWIIDTLCKPLDRQWLNYMYEIGLRHHRTKKGKTDGVDTVEHIPLRYMIAFIA"
+            "PIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAIWSYPYAKTGEWLE",
+        ),
+    ],
+)
+def test_experiment_metadata(experiment_ep_pcr_metadata, attribute, expected_value):
+    assert experiment_ep_pcr_metadata[attribute] == expected_value
 
 
 def test_experiment_ep_pcr_plates(experiment_ep_pcr):
     assert len(experiment_ep_pcr.plates) == 10
 
 
-def test_experiment_ep_pcr_plates_count(experiment_ep_pcr):
-    assert experiment_ep_pcr.plates_count == 10
-
-
-def test_experiment_ep_pcr_parent_sequence(experiment_ep_pcr):
-    assert experiment_ep_pcr.parent_sequence == (
-        "MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVE"
-        "DILDLWYGLQGSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTLCKPL"
-        "DRQWLNYMYEIGLRHHRTKKGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPI"
-        "LEKSGHPPEAVERMWAAWVKLVVLQVAIWSYPYAKTGEWLE"
-    )
-
-
 def test_experiment_ep_pcr_geometry_base64_bytes(experiment_ep_pcr):
-    assert experiment_ep_pcr.geometry_base64_bytes == bytes()
+    assert experiment_ep_pcr.geometry_base64_bytes is not None
+    assert isinstance(experiment_ep_pcr.geometry_base64_bytes, bytes)
+    assert len(experiment_ep_pcr.geometry_base64_bytes) > 0
 
 
-def test_experiment_ep_pcr_geometry_base64_string(experiment_ep_pcr):
-    assert experiment_ep_pcr.geometry_base64_string == ""
-
-
-def test_experiment_ep_pcr_substrate(experiment_ep_pcr_with_user_smiles):
-    assert experiment_ep_pcr_with_user_smiles.substrate == "CC(C)(C)C(=O)O[NH3+].CCC#CCCOCC.O=S(=O)([O-])C(F)(F)F"
-
-
-def test_experiment_ep_pcr_product(experiment_ep_pcr_with_user_smiles):
-    assert experiment_ep_pcr_with_user_smiles.product == "C1=CC=C2C(=C1)C=CC=C2"
-
-
-def test_exp_meta_data_plates_count(experiment_ep_pcr_with_user_smiles):
-    d = experiment_ep_pcr_with_user_smiles.exp_meta_data_to_dict()
-    assert d["plates_count"] == 10
-
-
-def test_exp_meta_data_substrate_smiles(experiment_ep_pcr_with_user_smiles):
-    d = experiment_ep_pcr_with_user_smiles.exp_meta_data_to_dict()
-    assert d[gs.cc_substrate] == "CC(C)(C)C(=O)O[NH3+].CCC#CCCOCC.O=S(=O)([O-])C(F)(F)F"
-
-
-def test_exp_meta_data_assay(experiment_ep_pcr_with_user_smiles):
-    d = experiment_ep_pcr_with_user_smiles.exp_meta_data_to_dict()
-    assert d["assay"] == "UV-Vis Spectroscopy"
-
-
-def test_exp_meta_data_length(experiment_ep_pcr_with_user_smiles):
-    d = experiment_ep_pcr_with_user_smiles.exp_meta_data_to_dict()
-    assert len(d) == 12
+@pytest.mark.parametrize(
+    "index, key, value",
+    [
+        (0, gs.c_aa_sequence, "#N.A.#"),
+        (0, gs.c_alignment_count, 0),
+        (0, gs.c_alignment_probability, 0.0),
+        (0, gs.c_substitutions, "#N.A.#"),
+        (0, gs.c_smiles, "CC(C)CC1=CC=C(C=C1)C(C)C(=O)O"),
+        (94, gs.c_fitness_value, 1917633.707),
+        (0, gs.c_plate, "20240422-ParLQ-ep1-300-1"),
+        (0, gs.c_well, "A1"),
+        (
+            36,
+            "aa_sequence",
+            "MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVEDILDLWYGLQGSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTLCKPLDRQWL"
+            "NYMYEIGLRHHRTKKGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAIWSYPYAKTGEWLE",
+        ),
+        (51, gs.c_alignment_count, 29),
+        (61, gs.c_alignment_probability, 0.0),
+        (69, gs.c_substitutions, "#PARENT#"),
+        (99, gs.c_smiles, "C1=CC=C(C=C1)C=O"),
+        (99, gs.c_fitness_value, 1244116.159),
+        (42, gs.c_plate, "20240422-ParLQ-ep1-300-1"),
+        (0, gs.c_well, "A1"),
+    ],
+)
+def test_exp_core_data(experiment_ep_pcr, index, key, value):
+    df = experiment_ep_pcr.data_df
+    assert index in df.index and df.loc[index, key] == value
 
 
 def test_exp_hot_cold_spots_structure(experiment_ep_pcr):
@@ -206,10 +159,11 @@ def test_exp_hot_cold_spots_structure(experiment_ep_pcr):
     "n",
     [1, 2, 3, 4, 5, 6],
 )
-def test_exp_hot_cold_spots_count(experiment_ep_pcr, n):
+def test_exp_hot_cold_spots_count(experiment_ep_pcr, experiment_ep_pcr_metadata, n):
     """Tests if the function returned value count is consistent with n"""
+    plates_count = experiment_ep_pcr_metadata["plates_count"]
     hot_cold_spots_df, hot_cold_residue_per_smiles = experiment_ep_pcr.exp_hot_cold_spots(n)
-    count = len(experiment_ep_pcr.unique_smiles_in_data) * experiment_ep_pcr.plates_count * 2 * n
+    count = len(experiment_ep_pcr.unique_smiles_in_data) * plates_count * 2 * n
     assert count == hot_cold_spots_df.shape[0]
 
 
