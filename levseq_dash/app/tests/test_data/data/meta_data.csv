@@ -1,3 +1,0 @@
-﻿experiment_id,experiment_name,experiment_date,substrate_smiles,product_smiles,assay_technique,mutagenesis_method,cif_filename
-flatten_ep_processed_xy_cas,flatten EP,23.12.2021,CC(C)CC1=CC=C(C=C1)C(C)C(=O)O.C1=CC=C(C=C1)C=O,C1=CC=C(C=C1)C=O,LC-MS,,flatten_ep_processed_xy_cas_row8.cif
-flatten_ssm_processed_xy_cas,flatten ssm,14.10.2019,C1=CC=C(C=C1)C=O,C1=CC=C(C=C1)C=O,GC-MS,SSM,flatten_ssm_processed_xy_cas_row3.cif
