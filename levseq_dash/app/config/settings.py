@@ -58,16 +58,6 @@ def is_local_instance_mode():
     return get_deployment_mode() == DeploymentMode.local_instance.value
 
 
-def get_local_instance_mode_data_path():
-    """
-    Get the local development path for local-instance mode from disk settings.
-    Returns None if not set or empty string.
-    """
-    disk_settings = get_disk_settings()
-    data_path = disk_settings.get("local-data-path", "")
-    return data_path
-
-
 def get_disk_settings():
     config = load_config()
     return config.get("disk", {})
@@ -84,16 +74,15 @@ def get_logging_settings():
 
 
 def get_data_path():
-    data_path = None
-    data_path_env = os.environ.get("DATA_PATH")
-    if data_path_env:
-        data_path = Path(data_path_env).resolve()
-    else:
-        # Default to the bundled data in the app directory
-        if is_local_instance_mode():
-            data_path_str = get_local_instance_mode_data_path()
-            if data_path_str:
-                data_path = Path(data_path_str)
+    if is_local_instance_mode():
+        data_path_env = os.environ.get("DATA_PATH")
+        if data_path_env:
+            data_path = Path(data_path_env).resolve()
+        else:
+            disk_settings = get_disk_settings()
+            data_path = disk_settings.get("local-data-path", "")
+            if data_path:
+                data_path = Path(data_path)
                 if data_path.is_absolute():
                     data_path = data_path.resolve()
                 else:
@@ -107,9 +96,8 @@ def get_data_path():
                     " docker run -e DATA_PATH=/data -v /host/path:/data  <image-name>\n"
                     "2. OR set local-data-path in config.yaml\n"
                 )
-
-        else:  # playground mode
-            data_path = (package_app_path / "data").resolve()
+    else:  # playground mode
+        data_path = (package_app_path / "data").resolve()
 
     return data_path
 
@@ -142,9 +130,10 @@ def get_five_letter_id_prefix():
     Environment variable FIVE_LETTER_ID_PREFIX takes precedence over config file.
     Raises an exception if the ID prefix is empty or not exactly 5 letters when data modification is enabled.
     """
+
     # If data modification is enabled, we require a valid ID prefix
     id_prefix = ""
-    if is_data_modification_enabled():
+    if is_data_modification_enabled() and is_data_modification_enabled():
         # Check environment variable first (takes precedence)
         id_prefix = os.environ.get("FIVE_LETTER_ID_PREFIX", "")
 
@@ -156,8 +145,9 @@ def get_five_letter_id_prefix():
         # Validate the ID prefix
         if not id_prefix or id_prefix.strip() == "":
             raise ValueError(
-                "User must set a 5 letter ID prefix in config.yaml under 'five-letter-id-prefix' "
-                "or environment variable 'FIVE_LETTER_ID_PREFIX'"
+                "local-instance mode with data modification enabled requires a 5-letter ID prefix. "
+                "Set this in config.yaml under 'five-letter-id-prefix' or "
+                "use environment variable 'FIVE_LETTER_ID_PREFIX'"
             )
 
         # not going to be graceful about spaces around it!

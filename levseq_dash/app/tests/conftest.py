@@ -111,12 +111,6 @@ def mock_is_local_instance_mode(mocker):
 
 
 @pytest.fixture
-def get_local_instance_mode_data_path(mocker):
-    mock = mocker.patch("levseq_dash.app.config.settings.get_local_instance_mode_data_path")
-    return mock
-
-
-@pytest.fixture
 def mock_load_config_invalid(mocker):
     """
     Fixture to mock a config file in disk mode with an invalid path
