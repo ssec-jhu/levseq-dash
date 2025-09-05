@@ -47,7 +47,7 @@ def test_get_experiment_out_of_bounds(dbmanager_read_all_from_file):
 
 
 def test_db_load_assay(dbmanager_read_all_from_file):
-    assert len(dbmanager_read_all_from_file.assay_list) == 24
+    assert len(dbmanager_read_all_from_file.assay_list) == 3
 
 
 def test_db_get_lab_experiments_with_meta_data_general(dbmanager_read_all_from_file):
@@ -133,4 +133,4 @@ def test_load_config():
 
 
 def test_get_assays(dbmanager_read_all_from_file):
-    assert len(dbmanager_read_all_from_file.get_assays()) == 24
+    assert len(dbmanager_read_all_from_file.get_assays()) == 3

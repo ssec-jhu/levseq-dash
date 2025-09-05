@@ -419,7 +419,7 @@ class DataManager:
                 )
 
             # In public-playground mode, local-data-path should be empty
-            if settings.get_data_path():
+            if settings.get_disk_settings().get("local-data-path", ""):
                 raise ValueError(
                     "CONFIGURATION ERROR: public-playground mode should not have local-data-path set. "
                     "Set 'local-data-path: \"\"' in config.yaml for public-playground mode."
