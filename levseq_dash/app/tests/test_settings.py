@@ -18,7 +18,7 @@ def test_assay_paths():
     """Test assay path configurations"""
     assert isinstance(settings.assay_directory, Path)
     assert isinstance(settings.assay_file_path, Path)
-    assert settings.assay_file_name == "assay_measure_list.csv"
+    assert settings.assay_file_name == "assay_list.csv"
 
 
 def test_app_mode_enum():

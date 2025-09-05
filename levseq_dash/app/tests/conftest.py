@@ -4,7 +4,7 @@ import pandas as pd
 import pytest
 
 from levseq_dash.app import global_strings as gs
-from levseq_dash.app.data_manager.experiment import Experiment, MutagenesisMethod
+from levseq_dash.app.data_manager.experiment import Experiment
 
 load_config_mock_string = "levseq_dash.app.config.settings.load_config"
 
@@ -157,13 +157,6 @@ def dbmanager_read_all_from_file(mock_load_config_from_disk):
 
 
 @pytest.fixture(scope="session")
-def assay_list(test_data_path):
-    path_assay = test_data_path / "assay" / "assay_measure_list.csv"
-    test_assay_list = (pd.read_csv(path_assay, encoding="utf-8", usecols=["Technique"]))["Technique"].tolist()
-    return test_assay_list
-
-
-@pytest.fixture(scope="session")
 def experiment_ep_pcr(path_exp_ep_data):
     """Create experiment using new ExperimentMetadata pattern"""
     experiment_ep_example = Experiment(
@@ -175,7 +168,7 @@ def experiment_ep_pcr(path_exp_ep_data):
 
 @pytest.fixture(scope="session")
 def experiment_ssm(
-    path_exp_ssm_data,
+        path_exp_ssm_data,
 ):
     experiment_ssm_example = Experiment(
         experiment_data_file_path=path_exp_ssm_data[0],
@@ -288,28 +281,28 @@ def seq_align_per_smiles_data():
         "plates": ["20241201-SSM-P1", "20241201SSM-P2", "20241201SSM-P3", "20241201SSM-P4"],
         "plates_count": 4,
         "parent_sequence": "MTPSDISGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLAGGWAASNEHLIYYGSNPDTG"
-        "APIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRHHRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLA"
-        "KKGGSPEDIEGMYNAWLKSVVLQVAIWSHPYTKENDR",
+                           "APIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRHHRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLA"
+                           "KKGGSPEDIEGMYNAWLKSVVLQVAIWSHPYTKENDR",
         "geometry_file_format": ".cif",
     }
     seq_data = {
         gs.cc_experiment_id: 1,
         "sequence": "MTPSDISGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLAGGWAASNEHLIYYGSNPDTGAPIKEYLERVR"
-        "ARIGAWVLDTTCRDYNREWLDYQYEVGLRHHRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVV"
-        "LQVAIWSHPYTKENDR",
+                    "ARIGAWVLDTTCRDYNREWLDYQYEVGLRHHRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVV"
+                    "LQVAIWSHPYTKENDR",
         "sequence_alignment": "target            0 MTPSDISGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLAG\n"
-        "                  0 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
-        "query             0 MTPSDISGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLAG\n"
-        "\n"
-        "target           60 GWAASNEHLIYYGSNPDTGAPIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRH\n"
-        "                 60 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
-        "query            60 GWAASNEHLIYYGSNPDTGAPIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRH\n\n"
-        "target          120 HRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVVL\n"
-        "                120 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
-        "query           120 HRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVVL\n"
-        "\n"
-        "target          180 QVAIWSHPYTKENDR 195\n                180 ||||||||||||||| 195\n"
-        "query           180 QVAIWSHPYTKENDR 195\n",
+                              "                  0 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+                              "query             0 MTPSDISGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLAG\n"
+                              "\n"
+                              "target           60 GWAASNEHLIYYGSNPDTGAPIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRH\n"
+                              "                 60 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+                              "query            60 GWAASNEHLIYYGSNPDTGAPIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRH\n\n"
+                              "target          120 HRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVVL\n"
+                              "                120 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+                              "query           120 HRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVVL\n"
+                              "\n"
+                              "target          180 QVAIWSHPYTKENDR 195\n                180 ||||||||||||||| 195\n"
+                              "query           180 QVAIWSHPYTKENDR 195\n",
         "alignment_score": 1040.0,
         "norm_score": 1.0,
         "identities": 195,
@@ -325,19 +318,19 @@ def seq_align_data():
     return {
         gs.cc_experiment_id: 1,
         "sequence": "MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVEDILDLWYGLQGSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTL"
-        "CKPLDRQWLNYMYEIGLRHHRTKKGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAIWSYPYAKTGEWLE",
+                    "CKPLDRQWLNYMYEIGLRHHRTKKGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAIWSYPYAKTGEWLE",
         "sequence_alignment": "target            0 MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVEDILDLWYGLQ\n"
-        "                  0 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
-        "query             0 MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVEDILDLWYGLQ\n"
-        "\n"
-        "target           60 GSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTLCKPLDRQWLNYMYEIGLRHHRTK\n"
-        "                 60 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
-        "query            60 GSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTLCKPLDRQWLNYMYEIGLRHHRTK\n\n"
-        "target          120 KGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAI\n"
-        "                120 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
-        "query           120 KGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAI\n\n"
-        "target          180 WSYPYAKTGEWLE 193\n                180 ||||||||||||| 193\n"
-        "query           180 WSYPYAKTGEWLE 193\n",
+                              "                  0 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+                              "query             0 MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVEDILDLWYGLQ\n"
+                              "\n"
+                              "target           60 GSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTLCKPLDRQWLNYMYEIGLRHHRTK\n"
+                              "                 60 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+                              "query            60 GSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTLCKPLDRQWLNYMYEIGLRHHRTK\n\n"
+                              "target          120 KGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAI\n"
+                              "                120 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"
+                              "query           120 KGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAI\n\n"
+                              "target          180 WSYPYAKTGEWLE 193\n                180 ||||||||||||| 193\n"
+                              "query           180 WSYPYAKTGEWLE 193\n",
         "alignment_score": 1053.0,
         "norm_score": 1.0,
         "identities": 193,

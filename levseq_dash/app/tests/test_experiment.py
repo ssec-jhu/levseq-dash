@@ -32,7 +32,7 @@ def test_experiment_ep_pcr_data_shape(experiment_ep_pcr):
     assert experiment_ep_pcr.data_df.shape[1] == 8
 
 
-def test_experiment_with_geometry_in_bytes(path_exp_ep_data, assay_list):
+def test_experiment_with_geometry_in_bytes(path_exp_ep_data):
     # load as bytes
     from levseq_dash.app.data_manager.experiment import Experiment
 
