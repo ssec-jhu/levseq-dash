@@ -276,12 +276,12 @@ def get_all_experiments_column_defs():
 
     column_def = (
         get_checkbox()
-        + get_experiment_id({"width": 120})
-        + get_experiment_name({"flex": 4})
-        + get_experiment_meta_smiles({"flex": 6}, {"flex": 5})
+        + get_experiment_id({"width": 130})
+        + get_experiment_name({"flex": 6})
+        + get_experiment_meta_smiles({"flex": 5}, {"flex": 5})
         + get_experiment_meta(
             {"flex": 3},  # experiment_date
-            {"flex": 3, "initialSort": "desc"},  # sort by upload_time_stamp
+            {"flex": 4, "initialSort": "desc"},  # sort by upload_time_stamp
             {"flex": 3},  # assay
             {"flex": 3},  # mutagenesis method
             {"flex": 2},
@@ -299,7 +299,7 @@ def get_matched_sequences_column_defs():
         # if you want to pin any of the columns, here's how you do it
         # get_experiment_id({"width": 120, "pinned": "left"})
         # + get_smiles({"width": 150, "pinned": "left"})
-        get_experiment_id({"width": 120})
+        get_experiment_id({"width": 130})
         + get_smiles({"width": 200})
         + get_experiment_name({"width": 250})
         + get_alignment_scores()
@@ -337,7 +337,7 @@ def get_matched_sequences_exp_hot_cold_data_column_defs():
     """
     Returns column definitions for the matched sequences experiment data
     """
-    column_def = get_experiment_id({"width": 120, "pinned": "left"})
+    column_def = get_experiment_id({"width": 130, "pinned": "left"})
     column_def += get_experiment_name({"width": 250})
     column_def += [
         {
@@ -372,7 +372,7 @@ def get_an_experiments_matched_sequences_column_defs():
     column_def = (
         # It doesn't make sense to sort by experiment ID but keeping commented for PI if of interest
         # get_experiment_id({"width": 120, "pinned": "left", "initialSort": "desc"})
-        get_experiment_id({"width": 120, "pinned": "left"})
+        get_experiment_id({"width": 130, "pinned": "left"})
         + get_experiment_name({"width": 250})
         + get_alignment_scores()
     )
