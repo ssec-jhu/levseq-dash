@@ -1,0 +1,13 @@
+{
+    "experiment_id": "LLMDB-cf8cf885-aeb3-4c66-a831-48fd5e95d6b9",
+    "experiment_name": "Selective Functionalization of Aliphatic Amines via Myoglobin-catalyzed Carbene N-H Insertion",
+    "experiment_date": "2020-01-02",
+    "substrate": "CCOC(=O)C=[N+]=[N-].NCc1ccccc1",
+    "product": "CCOC(=O)CN(CC(=O)OCC)Cc1ccccc1.CCOC(=O)CNCc1ccccc1",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "VLSEGEWQLVLHVWAKVEADVAGHGQDILIRLFKSHPETLEKFDRFKHLKTEAEMKASEDLKKHGVTVLTALGAILKKKGHHEAELKPLAQSHATKHKIPIKYLEFISEAIIHVLHSRHPGDFGADAQGAMNKALELFRKDIAAKYKELGY",
+    "plates_count": 1,
+    "csv_checksum": "f273c5086416f4466c69bd979d281db52b17238ff3a1b1b520437b9dd903b194",
+    "upload_time_stamp": "2025-09-08 13:53:59"
+}

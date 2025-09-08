@@ -1,0 +1,13 @@
+{
+    "experiment_id": "ARNLD-2911f574-5f05-4d46-976b-a97a3a5d3099",
+    "experiment_name": "Biocatalytic Carbene Transfer Using Diazirines",
+    "experiment_date": "2022-05-13",
+    "substrate": "c1ccc(C2N=N2)cc1.C=CC(=O)OCc1ccccc1",
+    "product": "O=C(OCc1ccccc1)[C@H]1C[C@H]1c1ccccc1",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MTPSDIPGYDYGRVEKSPITDLEFDLLKKTVMLGEKDVMYLKKACDVLKDQVDEILDLLVGWVASNEHLIYYFSNPDTGEPIKEYLERVRARFGAWILDTTCRDYNREWLDYQYEVGLRHHRSKKGVTDGVRTVPHIPLRYLIAQIYPITATIKPFLAKKGGSPEDIEGMYNAWFKSVVLQVAIWSHPYTKENDW",
+    "plates_count": 1,
+    "csv_checksum": "7c62ffd383169f8f03111b4ea353e912dd38a90b0b95dc5f2d7fd0f8f31c42b8",
+    "upload_time_stamp": "2025-09-08 13:53:58"
+}

@@ -1,0 +1,13 @@
+{
+    "experiment_id": "LLMDB-832674e1-b023-400e-be91-f3272de95aa0",
+    "experiment_name": "Stereospecific radical coupling with a non-natural photodecarboxylase",
+    "experiment_date": "2024-10-09",
+    "substrate": "C1(=CC=CC=C1)/C=C/C=O.C1(=CC=CC=C1)C(C(=O)O)C",
+    "product": "C1(=CC=CC=C1)C(CC=O)C(C)C1=CC=CC=C1",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MTDLKASSLRALKLMDLSTLNGDYTDEKVIALCHQAKTPVGNTAAISIYPRSIPIARKTLKEQGTPEIRIATVTNFPHGNDDIDIALAETRAAIAYGADEVDVVFPYRALMAGNEQVGFDLVKACKEACAAANVLLKVIIESGELKDEALIRKASEISIKAGADFIKTSTGLVAVNATPESARIMMEVIRDMGVEKSVGFKVTGGARTAEDAQKYLAIADELFGADWADARHYRFGASGLLASLLKALGHGDGKSASSYLEHHHHHH",
+    "plates_count": 1,
+    "csv_checksum": "b1d01173e814b0cfe30a1b4622262fa61cd456e54d6d5b3c2816258cd4598129",
+    "upload_time_stamp": "2025-09-08 13:53:59"
+}

@@ -1,0 +1,13 @@
+{
+    "experiment_id": "LLMDB-099b309b-101b-41ce-9a4c-bf4324eef6ad",
+    "experiment_name": "Diverse Engineered Heme Proteins Enable Stereodivergent Cyclopropanation of Unactivated Alkenes",
+    "experiment_date": "2018-02-21",
+    "substrate": "CCOC(=O)C=[N+]=[N-].C=CCCc1ccccc1",
+    "product": "CCOC(=O)C1CC1CCc2ccccc2",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MTPSDIPGYDYGRVEKSPITDLEFDLLKKTVMLGEKDVMYLKKACDVLKDQVDEILDLWYGWVASNEHLIYYFSNPDTGEPIKEYLERVRARFGAWILDTTCRDYNREWLDYQYEVGLRHHRSKKGVTDGVRTVPHIPLRYLIAFIYPITATIKPFLAKKGGSPEDIEGMYNAWFKSVVLQVAIWSHPYTKENDWLEHHHHHH*",
+    "plates_count": 1,
+    "csv_checksum": "bb2c112a99b9f0310db909697f9c2b54fadb9f4063123767a97e3c443957fa0c",
+    "upload_time_stamp": "2025-09-08 13:53:58"
+}

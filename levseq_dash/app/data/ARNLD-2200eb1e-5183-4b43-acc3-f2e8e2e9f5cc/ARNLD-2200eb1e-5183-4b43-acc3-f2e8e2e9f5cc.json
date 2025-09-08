@@ -1,0 +1,13 @@
+{
+    "experiment_id": "ARNLD-2200eb1e-5183-4b43-acc3-f2e8e2e9f5cc",
+    "experiment_name": "Stereospecific Enzymatic Conversion of Boronic Acids to Amines",
+    "experiment_date": "2024-07-03",
+    "substrate": "CC1(C)OB(c2ccc(Cl)cc2)OC1(C)C.Cl.NO",
+    "product": "Nc1ccc(Cl)cc1",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MTPSDIPGYDYGRVEKSPITDLEFDLLKKTVMLGEKDVVYLKKACDVLKDQVDEILDLAGGWVASNEHLIYYFSNPDTGEPIKEYLERVRARFGAWILDTTCRDYNREWLDYQYEVGLRHHRPKRGVTDGVRTVPHIPLRYLIAFIYLNTATIKPFLAKKGGSPEDIEGMYNAWFKSVVLQVAIWSHPYTKENDW",
+    "plates_count": 1,
+    "csv_checksum": "fa1303b4939a318dedc6d21df8c7e7e069f9b5cfcfdf3c169bc9909f1d556d30",
+    "upload_time_stamp": "2025-09-08 13:53:58"
+}

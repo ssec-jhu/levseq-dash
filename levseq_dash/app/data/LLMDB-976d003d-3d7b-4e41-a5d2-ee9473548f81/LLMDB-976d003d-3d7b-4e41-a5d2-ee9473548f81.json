@@ -1,0 +1,13 @@
+{
+    "experiment_id": "LLMDB-976d003d-3d7b-4e41-a5d2-ee9473548f81",
+    "experiment_name": "Dehaloperoxidase Catalyzed Stereoselective Synthesis of Cyclopropanol Esters",
+    "experiment_date": "2022-12-21",
+    "substrate": "C(=C)C1=CC=CC=C1.[N+](=[N-])=CC(=O)OCC",
+    "product": "C1(=CC=CC=C1)[C@H]1[C@@H](C1)C(=O)OCC",
+    "assay": "Ionization Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "GFKQDIATIRGDLRTYAQDIFLAFLNKYPDERRYFKNYVGKSDQELKSMAKFGDHTEKVFNLMMEVADRATDCVPLASDANTLVQMKQHSSLTTGNFEKLFVALVEYMRASGQSFDSQSWDRFGKNLVSALSSAGMK",
+    "plates_count": 1,
+    "csv_checksum": "f6d133eacc4906afd0c895e4aaaa0b06d4fcaefcae3bfe187915200299b00a99",
+    "upload_time_stamp": "2025-09-08 13:53:58"
+}

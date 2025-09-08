@@ -1,0 +1,13 @@
+{
+    "experiment_id": "LLMDB-3272e8d3-d40b-4f62-86e9-892e144c0f09",
+    "experiment_name": "Myoglobin-Catalyzed Olefination of Aldehydes",
+    "experiment_date": "2016-12-02",
+    "substrate": "CCOC(=O)C=[N+]=[N-].O=Cc1ccccc1",
+    "product": "CCOC(=O)/C=C/c1ccccc1",
+    "assay": "Ionization Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "VLSEGEWQLVLHVWAKVEADVAGHGQDILIRLFKSHPETLEKFDRFKHLKTEAEMKASEDLKKHGVTVLTALGAILKKKGHHEAELKPLAQSHATKHKIPIKYLEFISEAIIHVLHSRHPGDFGADAQGAMNKALELFRKDIAAKYKELGY",
+    "plates_count": 1,
+    "csv_checksum": "907073e250fc4900b302df1310aee9f0095a84d54e85087702cca4cece854218",
+    "upload_time_stamp": "2025-09-08 13:53:59"
+}

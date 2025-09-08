@@ -1,0 +1,13 @@
+{
+    "experiment_id": "ARNLD-faed16dc-6ba5-4356-8126-ebfe7bb0a392",
+    "experiment_name": "Biocatalytic Synthesis of \u03b1\u2011Amino Esters via Nitrene C\u2212H Insertion",
+    "experiment_date": "2024-09-27",
+    "substrate": "O=S(=O)([O-])C(F)(F)F.CC(C)(C)C(=O)O[NH3+].CCOC(=O)Cc1ccc(OC)cc1",
+    "product": "CCOC(=O)[C@H](N)c1ccc(OC)cc1",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MTPSDIPGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLAGGGVASNEHLIYYFSNPDTGEPIKEYGERVRARAGAWVLDTTCRDYNREWLDYQYEVGLRHHRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPLLAKKEGSPEDIEGMYNAWLKSVVLQVAIWSHPYTKENDW",
+    "plates_count": 1,
+    "csv_checksum": "5d57bd46d3e903726913543674030a6e8aaf1b4319bafdc57d86308172cf0e60",
+    "upload_time_stamp": "2025-09-08 13:53:58"
+}

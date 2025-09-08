@@ -1,0 +1,13 @@
+{
+    "experiment_id": "LLMDB-00da655b-0691-4368-938d-a7b73e79f3b2",
+    "experiment_name": "Enantioselective Synthesis of Chiral Amines via Biocatalytic Carbene N-H Insertions",
+    "experiment_date": "2020-02-10",
+    "substrate": "NC1=CC=CC=C1.[N+](=[N-])=C(C(=O)OCC1=CC=C(C=C1)C(C)C)C",
+    "product": "N[C@@H](CC1=CC=CC=C1)C(=O)OCC1=CC=C(C=C1)C(C)C",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MVLSEGEWQLVLHVWAKVEADVAGHGQDILIRLFKSHPETLEKVDRFKHLKTEAEMKASEDLKKHGVTFLTALGAILKKKGHHEAELKPLAQSHATKHKIPIKYLEFISEAIIHVLHSRHPGNFGADAQGAMNKALELFRKDIAAKYKELGYQG",
+    "plates_count": 1,
+    "csv_checksum": "7aad0c9a017ece48d37212c23d9262916378ec6110b795e0b03b21db0c04e31f",
+    "upload_time_stamp": "2025-09-08 13:53:58"
+}

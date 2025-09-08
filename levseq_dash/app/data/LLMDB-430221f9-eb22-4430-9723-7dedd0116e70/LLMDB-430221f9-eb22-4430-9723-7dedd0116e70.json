@@ -1,0 +1,13 @@
+{
+    "experiment_id": "LLMDB-430221f9-eb22-4430-9723-7dedd0116e70",
+    "experiment_name": "Gram-Scale Synthesis of Chiral Cyclopropane-Containing Drugs and Drug Precursors with Engineered Myoglobin Catalysts Featuring Complementary Stereoselectivity",
+    "experiment_date": "2016-12-23",
+    "substrate": "C(=C)C1=CC=CC=C1.[N+](=[N-])=CC(=O)OCC",
+    "product": "CCOC(=O)[C@H]1[C@@H](C1)C2=CC=CC=C2",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MVLSEGEWQLVLHVWAKVEADVAGHGQDILIRLFKSHPETLEKFDRFKHLKTEAEMKASEDLKKVGVTVLTALGAILKKKGHHEAELKPLAQSHATKHKIPIKYLEFISEAIIHVLHSRHPGNFGADAQGAMNKALELFRKDIAAKYKELGYQG",
+    "plates_count": 1,
+    "csv_checksum": "310ecf3846b8b94744267bf4093eb89636ff0f0dc83ca4dd8fa17756f30ee752",
+    "upload_time_stamp": "2025-09-08 13:53:59"
+}

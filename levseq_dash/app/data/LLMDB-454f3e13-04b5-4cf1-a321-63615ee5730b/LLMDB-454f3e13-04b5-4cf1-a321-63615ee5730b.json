@@ -1,0 +1,13 @@
+{
+    "experiment_id": "LLMDB-454f3e13-04b5-4cf1-a321-63615ee5730b",
+    "experiment_name": "Cofactor Binding Dynamics Influence the Catalytic Activity and Selectivity of an Artificial Metalloenzyme",
+    "experiment_date": "2020-09-18",
+    "substrate": "CC(C(=O)C=1SC=CN1)=C.CC=1NC2=CC=CC=C2C1",
+    "product": "CC(C(=O)C=1SC=CN1)CC1=C(NC2=CC=CC=C12)C",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MGAEIPKEMLRAQTNVILLNVLKQGDNYVYGIIKQVKEASNGEMELNEATLYTIFDRLEQDGIISSYWGDESQGGRRKYYRLTEIGHENMRLAFESWSRVDKIIENLEANKKSEAIKSRGGSGGWSHPQFEK*",
+    "plates_count": 1,
+    "csv_checksum": "5bf5b261a8ea267e16e8024b3bf3b28d960111577170f8d19565445e36fd573d",
+    "upload_time_stamp": "2025-09-08 13:53:58"
+}

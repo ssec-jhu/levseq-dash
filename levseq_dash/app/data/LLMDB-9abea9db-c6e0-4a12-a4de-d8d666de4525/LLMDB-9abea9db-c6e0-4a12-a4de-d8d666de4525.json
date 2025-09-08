@@ -1,0 +1,13 @@
+{
+    "experiment_id": "LLMDB-9abea9db-c6e0-4a12-a4de-d8d666de4525",
+    "experiment_name": "An Artificial Heme Enzyme for Cyclopropanation Reactions",
+    "experiment_date": "2018-05-29",
+    "substrate": "CCOC(=O)C=[N+]=[N-].COc1ccccc1C=C",
+    "product": "CCOC(=O)C1CC1c2ccc(OC)cc2",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MGAEIPKEMLRAQTNVILLNVLKQGDNYVYGIIKQVKEASNGEMELNEATLYTIFDRLEQDGIISSYWGDESQGGRRKYYRLTEIGHENMRLAFESWSRVDKIIENLEANKKSEAIKSRGGSGGWSHPQFEK*",
+    "plates_count": 1,
+    "csv_checksum": "d7bec9c0db66aafe6e2a6db39b4041f7faf366fe8334fad95ac64d2fdfcf948a",
+    "upload_time_stamp": "2025-09-08 13:53:58"
+}
