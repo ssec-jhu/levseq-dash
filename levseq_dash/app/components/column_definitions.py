@@ -18,7 +18,7 @@ def get_experiment_id(record):
         {
             "field": gs.cc_experiment_id,
             "headerName": gs.header_experiment_id,
-            "filter": "agNumberColumnFilter",
+            # "filter": "agNumberColumnFilter",
             # show the first 5 characters of the prefix plus the first 5 of the uuid
             "valueFormatter": {
                 "function": "params.value.slice(0, 11)"  # shows first 11 chars
@@ -257,13 +257,13 @@ def get_top_variant_column_defs(df):
     Returns column definitions and setup for dash ag grid table per experiment
     """
     column_def = (
-        get_smiles({"flex": 2})
-        + get_plate_well({"flex": 2})
-        + get_substitutions({"flex": 3})
-        + get_fitness_ratio(
-            {"flex": 2},
-            {"flex": 2, "cellStyle": {"styleConditions": vis.data_bars_group_mean_colorscale(df)}},
-        )
+            get_smiles({"flex": 2})
+            + get_plate_well({"flex": 2})
+            + get_substitutions({"flex": 3})
+            + get_fitness_ratio(
+        {"flex": 2},
+        {"flex": 2, "cellStyle": {"styleConditions": vis.data_bars_group_mean_colorscale(df)}},
+    )
     )
 
     return column_def
@@ -275,17 +275,17 @@ def get_all_experiments_column_defs():
     """
 
     column_def = (
-        get_checkbox()
-        + get_experiment_id({"width": 130})
-        + get_experiment_name({"flex": 6})
-        + get_experiment_meta_smiles({"flex": 5}, {"flex": 5})
-        + get_experiment_meta(
-            {"flex": 3},  # experiment_date
-            {"flex": 4, "initialSort": "desc"},  # sort by upload_time_stamp
-            {"flex": 3},  # assay
-            {"flex": 3},  # mutagenesis method
-            {"flex": 2},
-        )
+            get_checkbox()
+            + get_experiment_id({"width": 130})
+            + get_experiment_name({"flex": 6})
+            + get_experiment_meta_smiles({"flex": 5}, {"flex": 5})
+            + get_experiment_meta(
+        {"flex": 3},  # experiment_date
+        {"flex": 4, "initialSort": "desc"},  # sort by upload_time_stamp
+        {"flex": 3},  # assay
+        {"flex": 3},  # mutagenesis method
+        {"flex": 2},
+    )
     )
 
     return column_def
@@ -299,22 +299,22 @@ def get_matched_sequences_column_defs():
         # if you want to pin any of the columns, here's how you do it
         # get_experiment_id({"width": 120, "pinned": "left"})
         # + get_smiles({"width": 150, "pinned": "left"})
-        get_experiment_id({"width": 130})
-        + get_smiles({"width": 200})
-        + get_experiment_name({"width": 250})
-        + get_alignment_scores()
-        + get_experiment_meta_smiles({"width": 200}, {"width": 200})
-        + get_experiment_meta(
-            {"width": 120},
-            {"width": 120},
-            {"width": 130},
-            {
-                "width": 130,  # mutagenesis method
-                "valueFormatter": {"function": "shortenMutagenesisMethod(params.value)"},
-            },
-            {"width": 90},
-        )
-        + get_alignment_stats()
+            get_experiment_id({"width": 130})
+            + get_smiles({"width": 200})
+            + get_experiment_name({"width": 250})
+            + get_alignment_scores()
+            + get_experiment_meta_smiles({"width": 200}, {"width": 200})
+            + get_experiment_meta(
+        {"width": 120},
+        {"width": 120},
+        {"width": 130},
+        {
+            "width": 130,  # mutagenesis method
+            "valueFormatter": {"function": "shortenMutagenesisMethod(params.value)"},
+        },
+        {"width": 90},
+    )
+            + get_alignment_stats()
     )
     column_def += [
         {
@@ -348,10 +348,10 @@ def get_matched_sequences_exp_hot_cold_data_column_defs():
         },
     ]
     column_def += (
-        get_smiles({"flex": 2})
-        + get_plate_well({"flex": 2})
-        + get_substitutions({"flex": 3})
-        + get_fitness_ratio({"flex": 2}, {"flex": 2})
+            get_smiles({"flex": 2})
+            + get_plate_well({"flex": 2})
+            + get_substitutions({"flex": 3})
+            + get_fitness_ratio({"flex": 2}, {"flex": 2})
     )
     column_def += [
         {
@@ -372,28 +372,28 @@ def get_an_experiments_matched_sequences_column_defs():
     column_def = (
         # It doesn't make sense to sort by experiment ID but keeping commented for PI if of interest
         # get_experiment_id({"width": 120, "pinned": "left", "initialSort": "desc"})
-        get_experiment_id({"width": 130, "pinned": "left"})
-        + get_experiment_name({"width": 250})
-        + get_alignment_scores()
+            get_experiment_id({"width": 130, "pinned": "left"})
+            + get_experiment_name({"width": 250})
+            + get_alignment_scores()
     )
     column_def += (
-        get_smiles({"width": 150})
-        + get_substitutions({"width": 200})
-        + get_plate_well({"width": 130})
-        + get_fitness_ratio({"width": 130}, {"width": 130})
-        + get_experiment_meta_smiles({"width": 150}, {"width": 150})
-        + get_experiment_meta(
-            {"width": 120},
-            {"width": 120},
-            {"width": 130},
-            {
-                "width": 130,  # mutagenesis method
-                "valueFormatter": {"function": "shortenMutagenesisMethod(params.value)"},
-            },
-            {"width": 90},
-        )
-        + get_alignment_stats()
-        + get_alignment_string()
+            get_smiles({"width": 150})
+            + get_substitutions({"width": 200})
+            + get_plate_well({"width": 130})
+            + get_fitness_ratio({"width": 130}, {"width": 130})
+            + get_experiment_meta_smiles({"width": 150}, {"width": 150})
+            + get_experiment_meta(
+        {"width": 120},
+        {"width": 120},
+        {"width": 130},
+        {
+            "width": 130,  # mutagenesis method
+            "valueFormatter": {"function": "shortenMutagenesisMethod(params.value)"},
+        },
+        {"width": 90},
+    )
+            + get_alignment_stats()
+            + get_alignment_string()
     )
 
     return column_def
