@@ -4,7 +4,7 @@ import pandas as pd
 import pytest
 
 from levseq_dash.app import global_strings as gs
-from levseq_dash.app.data_manager.experiment import Experiment
+from levseq_dash.app.data_manager.experiment import Experiment, MutagenesisMethod
 
 load_config_mock_string = "levseq_dash.app.config.settings.load_config"
 
@@ -274,7 +274,7 @@ def seq_align_per_smiles_data():
         "experiment_date": "01-01-2025",
         "upload_time_stamp": "2025-04-04 19:36:26",
         "assay": "NMR Spectroscopy",
-        "mutagenesis_method": "Site saturation mutagenesis (SSM)",
+        "mutagenesis_method": MutagenesisMethod.SSM.value,
         gs.cc_substrate: "C1=CC=C(C=C1)C=O, CC(C)CC1=CC=C(C=C1)C(C)C(=O)O",
         gs.cc_product: "C1=CC=C(C=C1)C=O",
         "unique_smiles_in_data": ["C1=CC=C(C=C1)C=O"],

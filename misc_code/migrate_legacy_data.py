@@ -10,8 +10,10 @@ from levseq_dash.app.data_manager.manager import DataManager
 from levseq_dash.app.utils import u_reaction, utils
 
 
-def migrate_legacy_data_to_uuid_structure(input_data_path: Path, output_data_path, id_prefix) -> None:
-    meta_data_file = input_data_path / "meta_data.csv"
+def migrate_legacy_data_to_uuid_structure(
+    input_data_path: Path, output_data_path, meta_data_file_name, id_prefix
+) -> None:
+    meta_data_file = input_data_path / meta_data_file_name
     experiments_dir = input_data_path / "experiments"
     structures_dir = input_data_path / "structures"
 
@@ -106,7 +108,7 @@ def migrate_legacy_data_to_uuid_structure(input_data_path: Path, output_data_pat
                 "substrate": substrate_smiles,
                 "product": product_smiles,
                 "assay": assay_technique,
-                "mutagenesis_method": "Error-prone PCR (epPCR)",  # Default for legacy data
+                "mutagenesis_method": "Across Sequence",  # Default for legacy data
                 "parent_sequence": parent_sequence,
                 "plates_count": plates_count,
                 "csv_checksum": csv_checksum,
@@ -159,9 +161,17 @@ def migrate_legacy_data_to_uuid_structure(input_data_path: Path, output_data_pat
 
 
 migrate_legacy_data_to_uuid_structure(
-    input_data_path=Path("/Users/Fatemeh/Desktop/DEDB_144"),
+    input_data_path=Path("/Users/Fatemeh/Desktop/DEDB_V5"),
     output_data_path=Path("../levseq_dash/app/data"),
-    id_prefix="MYLAB",
+    meta_data_file_name="meta_data.csv",
+    id_prefix="ARNLD",
+)
+
+migrate_legacy_data_to_uuid_structure(
+    input_data_path=Path("/Users/Fatemeh/Desktop/DEDB_V5"),
+    output_data_path=Path("../levseq_dash/app/data"),
+    meta_data_file_name="meta_data_LLM.csv",
+    id_prefix="LLMDB",
 )
 
 print(f"Migration completed.")

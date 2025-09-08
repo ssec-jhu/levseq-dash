@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 
 from levseq_dash.app import global_strings as gs
-from levseq_dash.app.data_manager.experiment import Experiment
+from levseq_dash.app.data_manager.experiment import MutagenesisMethod
 
 
 @pytest.mark.parametrize(
@@ -80,7 +80,7 @@ def test_experiment_ep_pcr_unique_smiles(experiment_ep_pcr):
         ("experiment_date", "2021-02-23"),
         ("substrate", "CC(C)CC1=CC=C(C=C1)C(C)C(=O)O.C1=CC=C(C=C1)C=O"),
         ("product", "C1=CC=C(C=C1)C=O"),
-        ("mutagenesis_method", "Error-prone PCR (epPCR)"),
+        ("mutagenesis_method", MutagenesisMethod.epPCR.value),
         ("plates_count", 10),
         (
             "parent_sequence",

@@ -5,7 +5,7 @@
     "substrate": "C1=CC=C(C=C1)C=O",
     "product": "C1=CC=C(C=C1)C=O",
     "assay": "GC-MS",
-    "mutagenesis_method": "Site saturation mutagenesis (SSM)",
+    "mutagenesis_method": "Site Specific",
     "parent_sequence": "MTPSDISGYDYGRVEKSPITDLEFDLLKKTVMLGEEDVMYLKKAADVLKDQVDEILDLAGGWAASNEHLIYYGSNPDTGAPIKEYLERVRARIGAWVLDTTCRDYNREWLDYQYEVGLRHHRSKKGVTDGVRTVPNTPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWLKSVVLQVAIWSHPYTKENDR",
     "plates_count": 4,
     "csv_checksum": "15b608bcdcfbcfd03bcb76b78a97be36d66ae0d3b90e81c102f288a5074e0360",
