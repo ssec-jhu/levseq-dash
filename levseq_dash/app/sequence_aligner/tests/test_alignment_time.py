@@ -88,7 +88,7 @@ def test_target_sequence_test_data(
 ):
     # get the alignment and the base score while timing the call
     start_time = time.time()
-    lab_seq_match_data, base_score = bio_python_pairwise_aligner.get_alignments(
+    lab_seq_match_data, base_score, _ = bio_python_pairwise_aligner.get_alignments(
         query_sequence=query_seq, threshold=float(0.8), targets=target_sequence_dictionary
     )
     end_time = time.time()

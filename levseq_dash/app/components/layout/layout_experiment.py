@@ -675,6 +675,10 @@ def get_tab_experiment_related_variants():
                 },
             ),
             html.Div(
+                id="id-summary-exp-related-variants",
+                className="d-flex justify-content-center",
+            ),
+            html.Div(
                 id="id-alert-exp-related-variants",
                 className="d-flex justify-content-center",
             ),

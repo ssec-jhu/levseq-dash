@@ -334,6 +334,10 @@ def get_layout():
                 ],
             ),
             html.Div(
+                id="id-summary-seq-alignment",
+                className="d-flex justify-content-center",
+            ),
+            html.Div(
                 id="id-alert-seq-alignment",
                 className="d-flex justify-content-center",
             ),

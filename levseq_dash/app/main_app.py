@@ -350,6 +350,7 @@ def on_submit_experiment(
     Output("id-div-matched-sequences-info", "children"),
     Output("id-div-seq-alignment-results", "style"),
     Output("id-cleared-run-seq-matching", "data"),  # flag
+    Output("id-summary-seq-alignment", "children"),  # warning if any
     Output("id-alert-seq-alignment", "children"),  # alert
     Input("id-cleared-run-seq-matching", "data"),  # flag
     State("id-button-run-seq-matching", "n_clicks"),  # keep the button so "loading" works
@@ -377,7 +378,7 @@ def on_load_matching_sequences(results_are_cleared, n_clicks, query_sequence, th
                 start_time = time.time()
 
             # get the alignment and the base score
-            lab_seq_match_data, base_score = bio_python_pairwise_aligner.get_alignments(
+            lab_seq_match_data, base_score, warning_info = bio_python_pairwise_aligner.get_alignments(
                 query_sequence=query_sequence, threshold=float(threshold), targets=all_lab_sequences
             )
 
@@ -431,19 +432,26 @@ def on_load_matching_sequences(results_are_cleared, n_clicks, query_sequence, th
                 )
 
             info = f"# Matched Sequences: {n_matches}"
+
+            if len(warning_info) != 0:
+                warning = get_alert(warning_info, error=False, is_markdown=True)
+            else:
+                warning = no_update
+
             return (
                 seq_match_row_data,  # the results in records format for ag-grid table: id-table-matched-sequences
                 hot_cold_row_data.to_dict("records"),  # table: id-table-matched-sequences-exp-hot-cold-data
                 info,
                 vis.display_block,  # set the visibility on
                 False,  # make sure cleared is set to False
+                warning,  # warning if any
                 no_update,  # alert
             )
         except Exception as e:
             # put the exception message in an alert box
             # alert_message = exceptions.alert_message_from_exception(e)
             alert = get_alert(f"Error: {e}")
-            return no_update, no_update, no_update, no_update, False, alert
+            return no_update, no_update, no_update, no_update, False, no_update, alert
     else:
         raise PreventUpdate
 
@@ -968,6 +976,7 @@ def on_view_all_residue(view, slider_value, selected_smiles, rowData):
     Output("id-exp-related-variants-product", "children"),
     Output("id-div-exp-related-variants", "style"),
     Output("id-cleared-run-exp-related-variants", "data"),  # reset the flag
+    Output("id-summary-exp-related-variants", "children"),
     Output("id-alert-exp-related-variants", "children"),  # alert
     # --------------
     # Inputs
@@ -1012,7 +1021,7 @@ def on_load_exp_related_variants(
                 start_time = time.time()
 
             # get the alignment and the base score
-            lab_seq_match_data, base_score = bio_python_pairwise_aligner.get_alignments(
+            lab_seq_match_data, base_score, warning_info = bio_python_pairwise_aligner.get_alignments(
                 query_sequence=query_sequence, threshold=float(threshold), targets=all_lab_sequences
             )
 
@@ -1059,6 +1068,11 @@ def on_load_exp_related_variants(
             experiment_product = experiment.product
             experiment_svg_src = u_reaction.create_reaction_image(experiment_substrate, experiment_product)
 
+            if len(warning_info) != 0:
+                warning = get_alert(warning_info, error=False, is_markdown=True)
+            else:
+                warning = no_update
+
             return (
                 exp_results_row_data,
                 experiment_id,
@@ -1067,12 +1081,13 @@ def on_load_exp_related_variants(
                 experiment_product,
                 vis.display_block,  # set the visibility on
                 False,  # make sure cleared is set to False
+                warning,
                 no_update,  # no alert
             )
 
         except Exception as e:
             alert = get_alert(f"Error: {e}")
-            return no_update, no_update, no_update, no_update, no_update, no_update, False, alert
+            return no_update, no_update, no_update, no_update, no_update, no_update, False, no_update, alert
     else:
         raise PreventUpdate
 

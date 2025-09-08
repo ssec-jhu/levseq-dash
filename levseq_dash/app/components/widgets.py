@@ -489,14 +489,21 @@ def generate_label_with_info(label, id_info):
     )
 
 
-def get_alert(alert_message, error=True):
+def get_alert(alert_message, error=True, is_markdown=False):
     if error:
         class_name = "p-3 user-alert-error"
     else:
         class_name = "p-3 user-alert"
 
+    # If markdown is enabled, use dcc.Markdown to render the content
+    if is_markdown:
+        children = dcc.Markdown(alert_message, dangerously_allow_html=True)
+        class_name = "p-3 user-alert"
+    else:
+        children = alert_message
+
     return dbc.Alert(
-        children=alert_message,
+        children=children,
         is_open=True,
         dismissable=True,
         className=class_name,

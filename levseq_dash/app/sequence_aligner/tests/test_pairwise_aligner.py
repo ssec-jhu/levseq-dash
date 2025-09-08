@@ -16,14 +16,14 @@ from levseq_dash.app.sequence_aligner.bio_python_pairwise_aligner import get_ali
 )
 def test_get_alignments(index, identities, mismatches, gaps, target_sequences):
     query_sequence = target_sequences["seq_base"]
-    results, base_score = get_alignments(query_sequence, 0, target_sequences)
+    results, base_score, _ = get_alignments(query_sequence, 0, target_sequences)
     assert results[index]["identities"] == identities
     assert results[index]["mismatches"] == mismatches
     assert results[index]["gaps"] == gaps
 
 
 def test_get_alignments_short():
-    results, base_score = get_alignments("AACTT", 0, {"target": "AATT"})
+    results, base_score, _ = get_alignments("AACTT", 0, {"target": "AATT"})
     assert base_score == 27
     assert results[0]["identities"] == 4
     assert results[0]["mismatches"] == 0

@@ -1,4 +1,4 @@
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 from Bio.Align import PairwiseAligner, substitution_matrices
 
@@ -138,6 +138,8 @@ def get_alignments(query_sequence, threshold, targets: dict):
 
     # ---------------------
     results = []
+    warning_info = ""
+    failed_targets = []  # Track failed targets for markdown formatting
     # create and configure the process pool
     with ProcessPoolExecutor(initializer=inject_aligner, max_workers=None) as executor:
         # use below for debugging purposes
@@ -148,8 +150,9 @@ def get_alignments(query_sequence, threshold, targets: dict):
 
         # The Future object allows the running asynchronous task to be queried, canceled,
         # and for the results to be retrieved later once the task is done.
-        futures = [
-            # issue tasks to the process pool
+        # Alternative implementation using as_completed for better exception handling
+        # and optional timeout support
+        futures_to_targets = {
             executor.submit(
                 parallel_function_align_target,  # function to be executed in parallel
                 target_exp_id,
@@ -157,16 +160,41 @@ def get_alignments(query_sequence, threshold, targets: dict):
                 query_sequence,
                 base_score,
                 threshold,
-            )
+            ): target_exp_id
             for target_exp_id, target_exp_sequence in targets.items()
-        ]
-        for future in futures:
-            results.extend(future.result())
+        }
+
+        # Process futures with exception handling
+        successful_results = 0
+        failed_results = 0
+
+        # timeout_seconds = 300  # 5 minutes per alignment
+        for future in as_completed(futures_to_targets):  # Add timeout=timeout_seconds if needed
+            target_id = futures_to_targets[future]
+            try:
+                result = future.result()
+                results.extend(result)
+                successful_results += 1
+            except Exception as e:
+                failed_results += 1
+                # Log the exception but continue processing other futures
+                failed_targets.append(f"{target_id[:10]}: {str(e)}")
+
+        # Log summary of processing results
+        total_targets = len(futures_to_targets)
+
+        # Format warning_info as markdown with bullets
+        warning_info = f"**Alignment Summary:** **{successful_results}/{total_targets}** alignments succeeded."
+        if failed_results > 0:
+            warning_info += f" **{failed_results}** sequences skipped due to errors:\n"
+            for failed_target in failed_targets:
+                warning_info += f"  - {failed_target}\n"
 
         utils.log_with_context(
-            f"[ProcessPoolExecutor] Done with all tasks", log_flag=settings.is_pairwise_aligner_logging_enabled()
+            f"[ProcessPoolExecutor] {warning_info}\n[ProcessPoolExecutor] Done with all tasks",
+            log_flag=settings.is_pairwise_aligner_logging_enabled(),
         )
 
     # for sanity’s sake let's make sure its sorted
     results = sorted(results, key=lambda x: x["norm_score"], reverse=True)
-    return results, base_score
+    return results, base_score, warning_info
