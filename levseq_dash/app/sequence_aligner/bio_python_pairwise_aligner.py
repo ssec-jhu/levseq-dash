@@ -55,6 +55,21 @@ def setup_aligner_blastp():
     return aligner
 
 
+def sanitize_protein_sequence(sequence: str) -> str:
+    """
+    Sanitize protein sequence for BioPython pairwise alignment.
+    """
+    if not sequence or not isinstance(sequence, str):
+        raise ValueError("Sequence must be a non-empty string.")
+
+    # Remove whitespace, newlines and other spaces
+    # str.maketrans(x, y, z) x and y not used here, z is for removal
+    translation_table = str.maketrans("", "", " \t\n\r\f\v")
+    sequence_sanitized = sequence.translate(translation_table)
+
+    return sequence_sanitized
+
+
 def inject_aligner():
     """
     Injects the aligner into the threading local storage.
@@ -116,11 +131,20 @@ def get_alignments(query_sequence, threshold, targets: dict):
     if len(targets) == 0:
         raise Exception("Target sequences is empty.")
 
+    # Sanitize the query sequence
+    query_sequence_sanitized = sanitize_protein_sequence(query_sequence)
+
+    # Sanitize all target sequences
+    sanitized_targets = {}
+    for target_id, target_sequence in targets.items():
+        sanitized_target = sanitize_protein_sequence(target_sequence)
+        sanitized_targets[target_id] = sanitized_target
+
     # init the aligner with the scoring paradigm of interest
     aligner = setup_aligner_blastp()
 
     # I create a base score for the query sequence itself to normalize the other scores by this number
-    alignments = aligner.align(query_sequence, query_sequence)
+    alignments = aligner.align(query_sequence_sanitized, query_sequence_sanitized)
     base_score = alignments[0].score
 
     if base_score == 0:
@@ -157,11 +181,11 @@ def get_alignments(query_sequence, threshold, targets: dict):
                 parallel_function_align_target,  # function to be executed in parallel
                 target_exp_id,
                 target_exp_sequence,
-                query_sequence,
+                query_sequence_sanitized,
                 base_score,
                 threshold,
             ): target_exp_id
-            for target_exp_id, target_exp_sequence in targets.items()
+            for target_exp_id, target_exp_sequence in sanitized_targets.items()
         }
 
         # Process futures with exception handling
