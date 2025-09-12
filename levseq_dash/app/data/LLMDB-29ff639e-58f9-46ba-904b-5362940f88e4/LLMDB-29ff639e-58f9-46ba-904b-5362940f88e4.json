@@ -1,0 +1,13 @@
+{
+    "experiment_id": "LLMDB-29ff639e-58f9-46ba-904b-5362940f88e4",
+    "experiment_name": "Unlocking Asymmetric Michael Additions in an Archetypical Class I Aldolase by Directed Evolution",
+    "experiment_date": "2021-10-15",
+    "substrate": "C1(=CC=CC=C1)/C=C/C=O.[N+](=O)([O-])C",
+    "product": "[N+](=O)([O-])CC(CC=O)C1=CC=CC=C1",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MTDLKASSLRALKLMDLTTLNDDDTDEKVIALCHQAKTPVGNTAAICIYPRFIPIARKTLKEQGTPEIRIATVTNFPHGNDDIEIALAETRAAIAYGADEVDVVFPYRALMAGNEQVGFDLVKACKEACAAANVLLKVIIETGELKDEALIRKASEISIKAGADFIKTSTGKVAVNATPESARIMMEVIRDMGVEKTVGFKPAGGVRTAEDAQKYLAIADELFGADWADARHYRFGASSLLASLLKALGHGDGKSASSYLEHHHHHH",
+    "plates_count": 1,
+    "csv_checksum": "dfd1382abfc9b4e33c3e488403001ddf76867f6dba76292f8422e8e75e548b55",
+    "upload_time_stamp": "2025-09-08 13:53:59"
+}

@@ -1,0 +1,13 @@
+{
+    "experiment_id": "LLMDB-4cac15ca-9bc6-4ecb-9281-4b32fc37d3ca",
+    "experiment_name": "An artificial nickel chlorinase based on the biotin-streptavidin technology",
+    "experiment_date": "2024-01-22",
+    "substrate": "C1CCCCC1",
+    "product": "ClC1CCCCC1",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MASMTGGQQMGRDQAGITGTWYNQLGSTFIVTAGADGALTGTYESAVGNAESRYVLTGRYDSAPATDGSGTALGWTVAWKNNYRNAHSATTWSGQYVGGAEARINTQWLLTSGTTEANAWKSTLVGHDTFTKVKPSAASIDAAKKAGVNNGNPLDAVQQ",
+    "plates_count": 1,
+    "csv_checksum": "6f0b2d9e91bc2800151246200366bc53d94fd7961065cdfa4037725191847b43",
+    "upload_time_stamp": "2025-09-08 13:53:58"
+}

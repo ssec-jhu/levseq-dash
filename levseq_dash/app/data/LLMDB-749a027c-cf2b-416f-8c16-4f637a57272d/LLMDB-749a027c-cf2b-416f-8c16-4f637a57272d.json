@@ -1,0 +1,13 @@
+{
+    "experiment_id": "LLMDB-749a027c-cf2b-416f-8c16-4f637a57272d",
+    "experiment_name": "Enantiodivergent Radical Alkylation by Synergistic Lewis-Acid-Enzyme and Photoredox Catalysis",
+    "experiment_date": "2025-04-24",
+    "substrate": "C(C)(C)N1C(=NC=C1)C(CC1=CC=CC=C1)=O.ClCC(=O)C1=CC=CC=C1",
+    "product": "C(C)(C)N1C(=NC=C1)C(C(CC(=O)C1=CC=CC=C1)C1=CC=CC=C1)=O",
+    "assay": "Ionization Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MKEGTGMVVRSSEITPERISNMRGGKGEVEMAHLLSKEAMHNKARLFARMKLPPGSSVGLHKHEGEFEIYYILLGEGVFHDNGKDVPIKAGDVCFTDSGESHSIENTGNTDLEFLAVIILL",
+    "plates_count": 1,
+    "csv_checksum": "4c250c99a2ee8f95ab664163cb76d6e2f8af234b5b4b52ad7f0235f667f6c08a",
+    "upload_time_stamp": "2025-09-08 13:53:58"
+}

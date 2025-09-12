@@ -1,0 +1,13 @@
+{
+    "experiment_id": "LLMDB-7bbec775-88cc-4fa4-8d77-9b0a9da72aa9",
+    "experiment_name": "An Enzymatic Platform for the Highly Enantioselective and Stereodivergent Construction of Cyclopropyl-\u03b4-lactones",
+    "experiment_date": "2020-11-23",
+    "substrate": "[N-]=[N+]=CC(=O)OCC\\C=C\\c1ccccc1",
+    "product": "O=C1OCC[C@H]2[C@@H]1[C@@H]2c3ccccc3",
+    "assay": "Ionization Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "VLSEGEWQLVLHVWAKVEADVAGHGQEVLIRLFKGHPETLEKFDKFKHLKSEDEMKASEDLKKHGATVLTALGGILKKKGHHEAEIKPLAQSHATKHKIPIKYLEFISEAIIHVLHSRHPGDFGADAQGAMNKALELFRKDIAAKYKELGYQG",
+    "plates_count": 1,
+    "csv_checksum": "0722059c77f45821dbfe4ebfcb2bd1fc720f911bca385a7d1f52fe5e5e545418",
+    "upload_time_stamp": "2025-09-08 13:53:58"
+}

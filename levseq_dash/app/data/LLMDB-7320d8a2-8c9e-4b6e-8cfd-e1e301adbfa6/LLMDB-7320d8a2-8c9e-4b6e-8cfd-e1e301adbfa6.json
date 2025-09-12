@@ -1,0 +1,13 @@
+{
+    "experiment_id": "LLMDB-7320d8a2-8c9e-4b6e-8cfd-e1e301adbfa6",
+    "experiment_name": "Library design and screening protocol for artificial metalloenzymes based on the biotin-streptavidin technology",
+    "experiment_date": "2016-03-31",
+    "substrate": "C1Cc2ccccc2C(=N1)c3ccccc3",
+    "product": "C1Cc2ccccc2C(N1)c3ccccc3",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MASMTGGQQMGRDQAGITGTWYNQLGSTFIVTAGADGALTGTYESAVGNAESRYVLTGRYDSAPATDGSGTALGWTVAWKNNYRNAHSATTWSGQYVGGAEARINTQWLLTSGTTEANAWASTLVGHDTFTKVKPSAASIDAAKKAGVNNGNPLDAVQQ",
+    "plates_count": 1,
+    "csv_checksum": "bb3048e693a2647aa046553d4364843c70c8a9383c023af058ccc9c18e5de88e",
+    "upload_time_stamp": "2025-09-08 13:53:59"
+}

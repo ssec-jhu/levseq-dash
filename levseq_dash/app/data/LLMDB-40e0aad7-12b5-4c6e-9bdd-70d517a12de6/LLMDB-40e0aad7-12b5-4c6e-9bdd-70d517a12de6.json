@@ -1,0 +1,13 @@
+{
+    "experiment_id": "LLMDB-40e0aad7-12b5-4c6e-9bdd-70d517a12de6",
+    "experiment_name": "Design and Evolution of an Artificial Friedel-Crafts Alkylation Enzyme Featuring an Organoboronic Acid Residue",
+    "experiment_date": "2024-08-27",
+    "substrate": "CN1C=CC2=CC=CC=C12.OC1=C(C=CC=C1)C(\\C=C\\C)=O",
+    "product": "OC1=C(C=CC=C1)C(CC(C)C1=CN(C2=CC=CC=C12)C)=O",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MAEIPKEMLRAQTNAILLNVLKQGDNYVYGIIKQVKEASNGEMELNEATLYTIFKRLEKDGIISSYWGDESQGGRRKYYRLTEIGHEAMRLGFESWSRVDKIIENLEANKKSEAIKSRWSHPQFEK",
+    "plates_count": 1,
+    "csv_checksum": "ff6262e85fc64116a54ed4cf2823cc4999ed8dfb66d803e36261e07c1fb069c4",
+    "upload_time_stamp": "2025-09-08 13:53:58"
+}

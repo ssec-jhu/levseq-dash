@@ -1,0 +1,13 @@
+{
+    "experiment_id": "LLMDB-548fe0a5-50c8-4862-aed5-e83b4d555f3d",
+    "experiment_name": "Emergence of a catalytic tetrad during evolution of a highly active artificial aldolase",
+    "experiment_date": "2017-01-01",
+    "substrate": "",
+    "product": "CN(C)CCN(C)c1ccc2cc(C=O)ccc2c1.CC(C)=O",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MPRYLKGWLEDVVQLSLRRPSVHASRQRPIISLNERILEFNKRNITAIIAYYLRKSPSGLDVERDPIEYAKYMEPYAVGLSIKTEEKYFDGSYEMLRKIASSVSIPILMNDFIVKESQIDDAYNLGADTVLLIVEILTERELESLLEYARGYGMEPLILINDENDLDIALRIGARFITIYSMNFETGEINKENQRKLISMIPSNVVKVPLLDFFEPNEIEELRKLGVNAFMISSSLMRNPEKIKELIEGSLEHHHHHH",
+    "plates_count": 1,
+    "csv_checksum": "344d83c658924944e9319d4c3c84b539e91a0cc1b9ef10d78e55aeddd0db72a9",
+    "upload_time_stamp": "2025-09-08 13:53:58"
+}
