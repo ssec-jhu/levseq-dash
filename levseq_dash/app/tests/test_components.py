@@ -16,10 +16,17 @@ from levseq_dash.app.components.layout import (
     layout_matching_sequences,
     layout_upload,
 )
+from levseq_dash.app.utils import utils
 
 
 def test_get_label():
     assert isinstance(widgets.get_label_fixed_for_form("random_string"), dbc.Label)
+
+
+def test_get_top_variant_column_defs(experiment_ep_pcr):
+    df_filtered_with_ratio = utils.calculate_group_mean_ratios_per_smiles_and_plate(experiment_ep_pcr.data_df)
+    d = cd.get_top_variant_column_defs(df_filtered_with_ratio)
+    assert len(d) == 6
 
 
 def test_get_matched_sequences_column_defs():

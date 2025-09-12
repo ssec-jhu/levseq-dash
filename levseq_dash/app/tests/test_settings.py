@@ -18,7 +18,7 @@ def test_assay_paths():
     """Test assay path configurations"""
     assert isinstance(settings.assay_directory, Path)
     assert isinstance(settings.assay_file_path, Path)
-    assert settings.assay_file_name == "assay_measure_list.csv"
+    assert settings.assay_file_name == "assay_list.csv"
 
 
 def test_app_mode_enum():
@@ -124,28 +124,28 @@ def test_returns_empty_string_when_no_prefix_configured_and_modification_disable
     assert result == ""
 
 
-def test_valid_prefix_when_data_modification_enabled(mock_load_config, mock_is_data_modification_enabled):
+def test_valid_prefix_when_data_modification_enabled(mock_get_disk_settings, mock_is_data_modification_enabled):
     """Test that function returns uppercase prefix when data modification is enabled and prefix is valid"""
     mock_is_data_modification_enabled.return_value = True
-    mock_load_config.return_value = {"five-letter-id-prefix": "hello"}
+    mock_get_disk_settings.return_value = {"five-letter-id-prefix": "hello"}
 
     result = settings.get_five_letter_id_prefix()
     assert result == "HELLO"
 
 
-def test_valid_prefix_mixed_case_conversion(mock_load_config, mock_is_data_modification_enabled):
+def test_valid_prefix_mixed_case_conversion(mock_get_disk_settings, mock_is_data_modification_enabled):
     """Test that function converts mixed case prefix to uppercase"""
     mock_is_data_modification_enabled.return_value = True
-    mock_load_config.return_value = {"five-letter-id-prefix": "TeSt1"}
+    mock_get_disk_settings.return_value = {"five-letter-id-prefix": "TeSt1"}
 
     with pytest.raises(ValueError):
         settings.get_five_letter_id_prefix()
 
 
-def test_valid_prefix_with_whitespace_trimming(mock_load_config, mock_is_data_modification_enabled):
+def test_valid_prefix_with_whitespace_trimming(mock_get_disk_settings, mock_is_data_modification_enabled):
     """Test that function trims whitespace from prefix"""
     mock_is_data_modification_enabled.return_value = True
-    mock_load_config.return_value = {"five-letter-id-prefix": "  hello  "}
+    mock_get_disk_settings.return_value = {"five-letter-id-prefix": "  hello  "}
 
     with pytest.raises(ValueError):
         settings.get_five_letter_id_prefix()
@@ -200,19 +200,6 @@ def test_is_local_instance_mode(mock_get_deployment_mode):
 
     mock_get_deployment_mode.return_value = "public-playground"
     assert settings.is_local_instance_mode() is False
-
-
-@mock.patch("levseq_dash.app.config.settings.get_disk_settings")
-def test_get_local_instance_mode_data_path(mock_get_disk_settings):
-    """Test get_local_instance_mode_data_path function"""
-    mock_get_disk_settings.return_value = {"local-data-path": "/path/to/data"}
-    assert settings.get_local_instance_mode_data_path() == "/path/to/data"
-
-    mock_get_disk_settings.return_value = {"local-data-path": ""}
-    assert settings.get_local_instance_mode_data_path() == ""
-
-    mock_get_disk_settings.return_value = {}
-    assert settings.get_local_instance_mode_data_path() == ""
 
 
 def test_get_logging_settings(mock_load_config):
@@ -271,10 +258,10 @@ def test_environment_variable_takes_precedence_over_config(mock_load_config, moc
 
 
 @mock.patch.dict("os.environ", {}, clear=True)  # Clear environment variables
-def test_falls_back_to_config_when_no_env_var(mock_load_config, mock_is_data_modification_enabled):
+def test_falls_back_to_config_when_no_env_var(mock_get_disk_settings, mock_is_data_modification_enabled):
     """Test that config file is used when no environment variable is set"""
     mock_is_data_modification_enabled.return_value = True
-    mock_load_config.return_value = {"five-letter-id-prefix": "CFGID"}
+    mock_get_disk_settings.return_value = {"five-letter-id-prefix": "CFGID"}
 
     result = settings.get_five_letter_id_prefix()
     assert result == "CFGID"
@@ -309,7 +296,7 @@ def test_environment_variable_validation_error(mock_is_data_modification_enabled
 
 # Tests for get_data_path function
 @mock.patch.dict("os.environ", {"DATA_PATH": "/custom/data/path"})
-def test_get_data_path_with_env_variable():
+def test_get_data_path_with_env_variable(mock_is_local_instance_mode):
     """Test that DATA_PATH environment variable takes precedence"""
     result = settings.get_data_path()
     expected_path = Path("/custom/data/path").resolve()
@@ -322,15 +309,15 @@ def test_get_data_path_playground_mode_default(mock_is_local_instance_mode):
     mock_is_local_instance_mode.return_value = False
 
     result = settings.get_data_path()
-    expected_path = (settings.package_app_path / "data" / "DEDB").resolve()
+    expected_path = (settings.package_app_path / "data").resolve()
     assert result == expected_path
 
 
 @mock.patch.dict("os.environ", {}, clear=True)
-def test_get_data_path_local_instance_absolute_path(get_local_instance_mode_data_path, mock_is_local_instance_mode):
+def test_get_data_path_local_instance_absolute_path(mock_is_local_instance_mode, mock_get_disk_settings):
     """Test local instance mode with absolute path"""
     mock_is_local_instance_mode.return_value = True
-    get_local_instance_mode_data_path.return_value = "/absolute/path/to/data"
+    mock_get_disk_settings.return_value = {"local-data-path": "/absolute/path/to/data"}
 
     result = settings.get_data_path()
     expected_path = Path("/absolute/path/to/data").resolve()
@@ -338,10 +325,10 @@ def test_get_data_path_local_instance_absolute_path(get_local_instance_mode_data
 
 
 @mock.patch.dict("os.environ", {}, clear=True)
-def test_get_data_path_local_instance_relative_path(get_local_instance_mode_data_path, mock_is_local_instance_mode):
+def test_get_data_path_local_instance_relative_path(mock_is_local_instance_mode, mock_get_disk_settings):
     """Test local instance mode with relative path"""
     mock_is_local_instance_mode.return_value = True
-    get_local_instance_mode_data_path.return_value = "data/custom"
+    mock_get_disk_settings.return_value = {"local-data-path": "data/custom"}
 
     result = settings.get_data_path()
     expected_path = (settings.package_app_path / "data/custom").resolve()
@@ -349,34 +336,30 @@ def test_get_data_path_local_instance_relative_path(get_local_instance_mode_data
 
 
 @mock.patch.dict("os.environ", {}, clear=True)
-def test_get_data_path_local_instance_no_path_configured(
-    get_local_instance_mode_data_path, mock_is_local_instance_mode
-):
+def test_get_data_path_local_instance_no_path_configured(mock_is_local_instance_mode, mock_get_disk_settings):
     """Test local instance mode with no path configured raises error"""
     mock_is_local_instance_mode.return_value = True
-    get_local_instance_mode_data_path.return_value = ""
+    mock_get_disk_settings.return_value = {"local-data-path": ""}
 
     with pytest.raises(ValueError):
         settings.get_data_path()
 
 
 @mock.patch.dict("os.environ", {}, clear=True)
-def test_get_data_path_local_instance_none_path_configured(
-    get_local_instance_mode_data_path, mock_is_local_instance_mode
-):
-    """Test local instance mode with None path configured raises error"""
+def test_get_data_path_local_instance_none_path_configured(mock_is_local_instance_mode, mock_get_disk_settings):
+    """Test local instance mode with missing key configured raises error"""
     mock_is_local_instance_mode.return_value = True
-    get_local_instance_mode_data_path.return_value = None
+    mock_get_disk_settings.return_value = {}  # No local-data-path key
 
     with pytest.raises(ValueError, match="local-instance MODE ERROR"):
         settings.get_data_path()
 
 
 @mock.patch.dict("os.environ", {"DATA_PATH": "/env/override"})
-def test_get_data_path_env_overrides_local_instance(get_local_instance_mode_data_path, mock_is_local_instance_mode):
+def test_get_data_path_env_overrides_local_instance(mock_is_local_instance_mode, mock_get_disk_settings):
     """Test that DATA_PATH environment variable overrides local instance config"""
     mock_is_local_instance_mode.return_value = True
-    get_local_instance_mode_data_path.return_value = "/config/path"
+    mock_get_disk_settings.return_value = {"local-data-path": "/config/path"}
 
     result = settings.get_data_path()
     expected_path = Path("/env/override").resolve()
@@ -389,5 +372,5 @@ def test_get_data_path_env_overrides_playground(mock_is_local_instance_mode):
     mock_is_local_instance_mode.return_value = False
 
     result = settings.get_data_path()
-    expected_path = Path("/env/override").resolve()
+    expected_path = (settings.package_app_path / "data").resolve()
     assert result == expected_path

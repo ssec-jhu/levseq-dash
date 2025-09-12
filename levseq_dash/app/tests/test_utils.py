@@ -9,6 +9,7 @@ import pytest
 from levseq_dash.app import global_strings as gs
 from levseq_dash.app.components import column_definitions as cd
 from levseq_dash.app.components.widgets import DownloadType
+from levseq_dash.app.data_manager.base import BaseDataManager
 from levseq_dash.app.utils import utils
 
 
@@ -68,7 +69,7 @@ def test_decode_csv_file_base64_string_to_dataframe():
     csv_bytes = csv_content.encode("utf-8")  # Convert string to bytes
     csv_base64 = base64.b64encode(csv_bytes).decode("utf-8")  # Encode to Base64 string
 
-    df = utils.decode_csv_file_base64_string_to_dataframe(csv_base64)
+    df, returned_bytes = utils.decode_csv_file_base64_string_to_dataframe(csv_base64)
 
     assert isinstance(df, pd.DataFrame)  # Ensure result is a DataFrame
     assert df.shape == (2, 2)  # 2 rows, 2 columns
@@ -76,15 +77,23 @@ def test_decode_csv_file_base64_string_to_dataframe():
     assert df.iloc[0]["col_A"] == "Levseq"  # Correct data
     assert df.iloc[1]["col_B"] == 2025  # Correct data
 
+    # Test the returned bytes
+    assert isinstance(returned_bytes, bytes)
+    assert returned_bytes == csv_bytes  # Should match original bytes
+
 
 def test_decode_csv_file_base64_string_to_dataframe_empty():
     # empty csv -> empty bytes
     empty_base64 = base64.b64encode(b"").decode("utf-8")
 
-    df = utils.decode_csv_file_base64_string_to_dataframe(empty_base64)
+    df, returned_bytes = utils.decode_csv_file_base64_string_to_dataframe(empty_base64)
 
     assert isinstance(df, pd.DataFrame)
     assert df.empty  # Ensure the DataFrame is empty
+
+    # Test the returned bytes
+    assert isinstance(returned_bytes, bytes)
+    assert returned_bytes == b""  # Should be empty bytes
 
 
 def test_decode_csv_file_base64_string_to_dataframe_invalid():
@@ -108,10 +117,14 @@ def test_decode_dash_upload_data_to_base64_encoded_string_empty():
 
     upload_str = "data:text/csv;base64,QSxCLEMsRCxFLEYKMSwyLDMsNCw1LDYKNyw4LDksMTAsMTEsMTIK"
     result = utils.decode_dash_upload_data_to_base64_encoded_string(upload_str)
-    df = utils.decode_csv_file_base64_string_to_dataframe(result)
+    df, returned_bytes = utils.decode_csv_file_base64_string_to_dataframe(result)
     assert not df.empty
     assert df.shape[0] == 2
     assert df.shape[1] == 6
+
+    # Test the returned bytes
+    assert isinstance(returned_bytes, bytes)
+    assert len(returned_bytes) > 0  # Should have some content
 
 
 # @pytest.mark.parametrize(
@@ -318,7 +331,7 @@ def test_log_format(mock_thread, mock_tid, mock_pid, mock_print):
 def test_valid_checksum():
     """Test checksum calculation with valid bytes"""
     test_bytes = b"Hello, World!"
-    result = utils.calculate_file_checksum(test_bytes)
+    result = BaseDataManager.calculate_file_checksum(test_bytes)
 
     # Calculate expected checksum manually
     expected = hashlib.sha256(test_bytes).hexdigest()
@@ -330,25 +343,25 @@ def test_valid_checksum():
 def test_empty_bytes_raises_error():
     """Test that empty bytes raises ValueError"""
     with pytest.raises(ValueError):
-        utils.calculate_file_checksum(b"")
+        BaseDataManager.calculate_file_checksum(b"")
 
 
 def test_none_bytes_raises_error():
     """Test that None bytes raises ValueError"""
     with pytest.raises(ValueError):
-        utils.calculate_file_checksum(None)
+        BaseDataManager.calculate_file_checksum(None)
 
 
 def test_wrong_type_raises_error():
     """Test that non-bytes input raises TypeError"""
     with pytest.raises(TypeError):
-        utils.calculate_file_checksum("not bytes")
+        BaseDataManager.calculate_file_checksum("not bytes")
 
     with pytest.raises(TypeError):
-        utils.calculate_file_checksum(123)
+        BaseDataManager.calculate_file_checksum(123)
 
     with pytest.raises(TypeError):
-        utils.calculate_file_checksum(["not", "bytes"])
+        BaseDataManager.calculate_file_checksum(["not", "bytes"])
 
 
 def test_different_inputs_different_checksums():
@@ -356,8 +369,8 @@ def test_different_inputs_different_checksums():
     bytes1 = b"content1"
     bytes2 = b"content2"
 
-    checksum1 = utils.calculate_file_checksum(bytes1)
-    checksum2 = utils.calculate_file_checksum(bytes2)
+    checksum1 = BaseDataManager.calculate_file_checksum(bytes1)
+    checksum2 = BaseDataManager.calculate_file_checksum(bytes2)
 
     assert checksum1 != checksum2
 
@@ -366,8 +379,8 @@ def test_same_input_same_checksum():
     """Test that same input always produces same checksum"""
     test_bytes = b"consistent content"
 
-    checksum1 = utils.calculate_file_checksum(test_bytes)
-    checksum2 = utils.calculate_file_checksum(test_bytes)
+    checksum1 = BaseDataManager.calculate_file_checksum(test_bytes)
+    checksum2 = BaseDataManager.calculate_file_checksum(test_bytes)
 
     assert checksum1 == checksum2
 
@@ -382,7 +395,7 @@ def test_same_input_same_checksum():
 )
 def test_checksum_length_consistency(test_input, expected_length):
     """Test that checksum always has consistent length regardless of input"""
-    result = utils.calculate_file_checksum(test_input)
+    result = BaseDataManager.calculate_file_checksum(test_input)
     assert len(result) == expected_length
 
 
@@ -390,6 +403,6 @@ def test_known_checksum_value():
     """Test against a known SHA256 value"""
     # "hello" in SHA256 is a well-known value
     test_bytes = b"hello"
-    result = utils.calculate_file_checksum(test_bytes)
+    result = BaseDataManager.calculate_file_checksum(test_bytes)
     expected = "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"
     assert result == expected
