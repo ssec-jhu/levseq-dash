@@ -57,6 +57,7 @@ def get_layout():
                                                             ],
                                                             id="id-button-download-all-experiments",
                                                             n_clicks=0,
+                                                            disabled=True,
                                                             # me-2 will add a little space between the buttons
                                                             className="col-4 shadow-sm me-2",
                                                         ),
