@@ -49,7 +49,7 @@ top_card_body = "text-primary-emphasis"
 experiment_info = {"fontWeight": "bold", "marginRight": "15px"}
 
 # level_4_titles = {"color": "var(--cal-tech-color-2)"}
-main_page_class = "p-4"  # this will align all titles and location the pages in the same location
+main_page_class = "p-1"  # this will align all titles and location the pages in the same location
 
 # --------------------
 #   Icons
