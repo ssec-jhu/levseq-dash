@@ -1,5 +1,6 @@
 import os
 from enum import StrEnum
+from pathlib import Path
 
 import pandas as pd
 
@@ -21,12 +22,7 @@ class Experiment:
         # ----------------------------
         # process the core data first
         # ----------------------------
-        if (
-            experiment_data_file_path is None
-            or geometry_file_path is None
-            or not os.path.exists(experiment_data_file_path)
-            or not os.path.exists(geometry_file_path)
-        ):
+        if not Path(experiment_data_file_path).is_file() or not Path(geometry_file_path).is_file():
             raise ValueError(
                 "Experiment data file path, geometry file path must be provided in order to load an Experiment object."
             )

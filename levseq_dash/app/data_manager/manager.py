@@ -71,10 +71,12 @@ def create_data_manager() -> BaseDataManager:
         from levseq_dash.app.data_manager.disk_manager import DiskDataManager
 
         return DiskDataManager()
-    elif storage_mode == "db":
-        from levseq_dash.app.data_manager.db_manager import DatabaseDataManager
-
-        return DatabaseDataManager()
+    # Other modes are not yet implemented
+    # You can implement the required data manager class in the future and add it here like this
+    # as shown in the "db" example below
+    # elif storage_mode == "db":
+    # from levseq_dash.app.data_manager.db_manager import DatabaseDataManager
+    # return DatabaseDataManager()
     else:
         raise ValueError(
             "CONFIGURATION ERROR: deployment-mode must be either 'public-playground' or 'local-instance'. "

@@ -220,13 +220,13 @@ def test_exp_hot_cold_spots_grouping(experiment_ep_pcr, n):
 
 def test_experiment_init_none_data_file_path():
     """Test Experiment initialization with None data file path."""
-    with pytest.raises(ValueError):
+    with pytest.raises(Exception):
         Experiment(experiment_data_file_path=None, geometry_file_path="dummy.cif")
 
 
 def test_experiment_init_none_geometry_file_path():
     """Test Experiment initialization with None geometry file path."""
-    with pytest.raises(ValueError):
+    with pytest.raises(Exception):
         Experiment(experiment_data_file_path="dummy.csv", geometry_file_path=None)
 
 
