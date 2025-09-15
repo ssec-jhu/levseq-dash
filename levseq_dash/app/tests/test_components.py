@@ -330,22 +330,6 @@ def test_get_radio_items_download_options():
     assert tooltip_2.target == f"{radio_id}_2"
 
 
-def test_get_button_download():
-    button_id = "test-button-id"
-    components = widgets.get_button_download(button_id)
-
-    # Check the Button component
-    button = components[0]
-    assert isinstance(button, dbc.Button)
-    assert button.id == button_id
-    assert button.n_clicks == 0
-
-    # Check the Tooltip component
-    tooltip = components[1]
-    assert tooltip.target == button_id
-    assert tooltip.children == gs.help_download
-
-
 def test_about_page_layout():
     """Test if the about page layout is correctly generated."""
     assert isinstance(layout_about.get_layout(), html.Div)

@@ -394,27 +394,16 @@ def get_radio_items_download_options(radio_id):
     ]
 
 
-def get_button_download(button_id):
-    return [
-        dbc.Button(
-            children=[
-                html.Span(
-                    [
-                        html.Span(vis.get_icon(vis.icon_download)),
-                        html.Span(
-                            [gs.download_results],
-                            style={"marginLeft": "12px"},
-                        ),
-                    ]
-                )
-            ],
-            id=button_id,
-            n_clicks=0,
-            size="md",
-            class_name="d-grid gap-2 col-12 btn-primary",
-        ),
-        get_tooltip(button_id, gs.help_download, "top"),
-    ]
+def get_download_text_icon_combo(text_string):
+    return html.Span(
+        [
+            html.Span(vis.get_icon(vis.icon_download)),
+            html.Span(
+                [text_string],
+                style={"marginLeft": "12px"},
+            ),
+        ]
+    )
 
 
 def get_download_radio_combo(button_id, radio_id):
@@ -428,17 +417,7 @@ def get_download_radio_combo(button_id, radio_id):
             # removing it makes the buttons big
             html.Span(
                 dbc.Button(
-                    children=[
-                        html.Span(
-                            [
-                                html.Span(vis.get_icon(vis.icon_download)),
-                                html.Span(
-                                    [gs.download_results],
-                                    style={"marginLeft": "12px"},
-                                ),
-                            ]
-                        )
-                    ],
+                    children=[get_download_text_icon_combo(gs.download_results)],
                     id=button_id,
                     n_clicks=0,
                     size="sm",
