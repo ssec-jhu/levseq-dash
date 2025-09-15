@@ -1,8 +1,9 @@
 import dash_bootstrap_components as dbc
-from dash import html
+from dash import dcc, html
 
 from levseq_dash.app import global_strings as gs
 from levseq_dash.app.components import vis, widgets
+from levseq_dash.app.components.widgets import get_download_text_icon_combo
 
 
 # -------------------------------------------------------
@@ -46,27 +47,40 @@ def get_layout():
                                                 width=1,
                                             ),
                                             dbc.Col(
-                                                dbc.Button(
-                                                    children=html.Span(
-                                                        [
-                                                            html.Span(gs.go_to),
-                                                            html.Span(
-                                                                vis.get_icon(vis.icon_go_to_next),
-                                                                style={"marginLeft": "8px"},
+                                                html.Div(
+                                                    [
+                                                        dbc.Button(
+                                                            children=[
+                                                                get_download_text_icon_combo(
+                                                                    "Download Selected Experiment(s)"
+                                                                )
+                                                            ],
+                                                            id="id-button-download-all-experiments",
+                                                            n_clicks=0,
+                                                            # me-2 will add a little space between the buttons
+                                                            className="col-4 shadow-sm me-2",
+                                                        ),
+                                                        dbc.Button(
+                                                            children=html.Span(
+                                                                [
+                                                                    html.Span(gs.go_to),
+                                                                    html.Span(
+                                                                        vis.get_icon(vis.icon_go_to_next),
+                                                                        style={"marginLeft": "8px"},
+                                                                    ),
+                                                                ]
                                                             ),
-                                                        ]
-                                                    ),
-                                                    id="id-button-goto-experiment",
-                                                    n_clicks=0,
-                                                    disabled=True,
-                                                    # size="lg",
-                                                    className="shadow-sm",
+                                                            id="id-button-goto-experiment",
+                                                            n_clicks=0,
+                                                            disabled=True,
+                                                            className="col-4 shadow-sm",
+                                                        ),
+                                                    ],
+                                                    className="d-flex justify-content-center",
                                                 ),
-                                                # width="auto",
-                                                # className="text-end",
-                                                # button fills the space
-                                                className="d-grid gap-2 mx-auto col-5",
+                                                width=10,
                                             ),
+                                            dbc.Col(width=1),  # Empty column for balance
                                         ],
                                         className="mb-1",
                                     ),
@@ -85,6 +99,8 @@ def get_layout():
                 ],
                 className="mb-4",
             ),
+            # Download component for ZIP files
+            dcc.Download(id="id-download-all-experiments-zip"),
         ],
         className=vis.main_page_class,
     )
