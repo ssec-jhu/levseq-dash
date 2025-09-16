@@ -135,6 +135,8 @@ def decode_csv_file_base64_string_to_dataframe(base64_encoded_string):
 
 
 def calculate_group_mean_ratios_per_smiles_and_plate(df):
+    # Check if there is no parent, if not, we don't normalize and just return the raw data.
+    # Otherwise normalize
     # df = df.loc[:, ["smiles", gs.c_plate, "well", "amino_acid_substitutions", "fitness_value"]]
     group_cols = [gs.c_smiles, gs.c_plate]
     value_col = gs.c_fitness_value

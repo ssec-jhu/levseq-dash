@@ -92,11 +92,28 @@ def create_reaction_image(substrate_smiles: str, product_smiles: str):
     # This number may need to change in the future
     ideal_final_width = 1000
     w = int(ideal_final_width / (rxn.GetNumReactantTemplates() + rxn.GetNumProductTemplates() + 1))
+    d2d = Draw.MolDraw2DSVG(1000, 200)
 
-    # this option produces a svg image
-    svg_img = Draw.ReactionToImage(rxn, subImgSize=(w, 200), useSVG=True)
+    # Assign labels - probably could do this better ... but will have to do for now (toDo: fix)
+    r_counter = 1
+    for mol in list(rxn.GetReactants()):
+        for atom in mol.GetAtoms():
+            if atom.GetSymbol() == "*":
+                atom.SetProp("atomLabel", f"R{r_counter}")
+                atom.SetProp("molFileAlias", f"R{r_counter}")
+                r_counter += 1
+    r_counter = 1
+    for mol in list(rxn.GetProducts()):
+        for atom in mol.GetAtoms():
+            if atom.GetSymbol() == "*":
+                atom.SetProp("atomLabel", f"R{r_counter}")
+                atom.SetProp("molFileAlias", f"R{r_counter}")
+                r_counter += 1
+                
+    d2d.DrawReaction(rxn)
+    d2d.FinishDrawing()
+    svg_img = d2d.GetDrawingText()
     svg_src = convert_svg_img_to_src(svg_img)
-
     return svg_src
 
 
