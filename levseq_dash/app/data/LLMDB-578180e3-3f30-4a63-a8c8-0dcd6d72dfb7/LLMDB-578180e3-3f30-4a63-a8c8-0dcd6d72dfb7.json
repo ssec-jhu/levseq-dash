@@ -1,0 +1,13 @@
+{
+    "experiment_id": "LLMDB-578180e3-3f30-4a63-a8c8-0dcd6d72dfb7",
+    "experiment_name": "Fast Knoevenagel Condensations Catalyzed by an Artificial Schiff-Base-Forming Enzyme",
+    "experiment_date": "2016-05-19",
+    "substrate": "C(#N)CC(=O)OCC.CN(C1=CC=C(C=O)C=C1)C",
+    "product": "C(#N)/C(/C(=O)OCC)=C\\C=C\\C1=CC=C(C=C1)N(C)C",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MPRYLKGWLEDVVQLSLRRPSVHASRQRPIISLNERILEFNKRNITAIIAYYTRKSPSGLDVERDPIEYAKYMERYAVGLSIKTEEKYFNGSYEMLRKIASSVSIPILMNDFIVKESQIDDAYNLGADTVLLIVNILTERELESLLEYARSYGMEPLILINDENDLDIALRIGARFIVIFSMNFETGEINKENQRKLISMIPSNVVKVAKLDISERNEIEELRKLGVNAFLISSSLMRNPEKIKELIEGSLEHHHHHH",
+    "plates_count": 1,
+    "csv_checksum": "3fefc092a5ca175e9e87ff2ecd5a7e7c114ee7f48382b9e7b878c5f1a2b28a49",
+    "upload_time_stamp": "2025-09-08 13:53:59"
+}

@@ -26,8 +26,8 @@ smiles_input_placeholder = "Must enter a valid SMILES string"
 assay = "Assay"
 tech = "Mutagenesis Method"
 
-eppcr = "Error-prone PCR (epPCR)"
-ssm = "Site saturation mutagenesis (SSM)"
+eppcr = "Across Sequence"
+ssm = "Site Specific"
 
 experiment_name_placeholder = "Enter a name for your experiment."
 

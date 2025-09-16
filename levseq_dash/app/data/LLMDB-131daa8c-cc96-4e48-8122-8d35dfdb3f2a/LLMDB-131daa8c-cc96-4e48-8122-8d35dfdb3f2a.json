@@ -1,0 +1,13 @@
+{
+    "experiment_id": "LLMDB-131daa8c-cc96-4e48-8122-8d35dfdb3f2a",
+    "experiment_name": "Catalytic promiscuity enabled by photoredox catalysis in nicotinamide-dependent oxidoreductases",
+    "experiment_date": "2018-11-06",
+    "substrate": "C(C)(=O)OC1(C(C2=CC=CC=C2CC1)=O)C",
+    "product": "C[C@@H]1C(C2=CC=CC=C2CC1)=O",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MAEEVSNKQVILKNYVTGYPKESDMEIKNVTIKLKVPEGSNDVVVKNLYLSCDPYMRSRMRKIEGSYVESFAPGSPITGYGVAKVLESGDPKFQKGDLVWGMTGWEEYSIITPTQTLFKIHDKDVPLSYYTGILGMPGMTAYAGFHEVCSPKKGETVFVSAASGAVGQLVGQFAKMLGCYVVGSAGSKEKVDLLKSKFGFDEAFNYKEEQDLSAALKRYFPDGIDIYFENVGGKMLDAVLVNMKLYGRIAVCGMISQYNLEQTEGVHNLFCLITKRIRMEGFLVFDYYHLYPKYLEMVIPQIKAGKVVYVEDVAHGLESAPTALVGLFSGRNIGKQVVMVSRELEHHHHHH",
+    "plates_count": 1,
+    "csv_checksum": "6046145733148c43e61f0bbb5a146ac3c182a437f6a377fc896c8bf4f3b18d27",
+    "upload_time_stamp": "2025-09-08 13:53:58"
+}

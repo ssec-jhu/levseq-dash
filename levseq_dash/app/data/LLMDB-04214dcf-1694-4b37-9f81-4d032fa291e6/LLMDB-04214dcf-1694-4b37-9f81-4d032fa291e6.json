@@ -1,0 +1,13 @@
+{
+    "experiment_id": "LLMDB-04214dcf-1694-4b37-9f81-4d032fa291e6",
+    "experiment_name": "Anion-\u03c0 Enzymes",
+    "experiment_date": "2016-05-23",
+    "substrate": "[O-][N+](=O)\\C=C\\c1ccccc1.COc1ccc(OC(=S)CC=O)cc1",
+    "product": "COc1ccc(OC(=S)C(C=O)C(C[N+]([O-])=O)c2ccccc2)cc1",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MASMTGGQQMGRDQAGITGTWYNQLGSTFIVTAGADGALTGTYESAVGNAESRYVLTGRYDSAPATDGSGTALGWTVAWKNNYRNAHSATTWSGQYVGGAEARINTQWLLTSGTTEANAWKSTLVGHDTFTKVKPSAASIDAAKKAGVNNGNPLDAVQQ",
+    "plates_count": 1,
+    "csv_checksum": "bc0e71754e1de319ead7a9bbe8f3ffe434a701f5456b4587160e273fc77b2865",
+    "upload_time_stamp": "2025-09-08 13:53:58"
+}

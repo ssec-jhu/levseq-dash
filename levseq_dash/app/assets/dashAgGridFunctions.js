@@ -2,10 +2,10 @@ var dagfuncs = window.dashAgGridFunctions = window.dashAgGridFunctions || {};
 
 dagfuncs.shortenMutagenesisMethod = function(params) {
 
-  if (params === 'Site saturation mutagenesis (SSM)') {
-    return 'SSM';
-  } else if (params === 'Error-prone PCR (epPCR)') {
-    return 'epPCR';
+  if (params === 'Site Specific') {
+    return 'Site';
+  } else if (params === 'Across Sequence') {
+    return 'Sequence';
   } else
     return params;
 };

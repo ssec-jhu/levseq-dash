@@ -110,6 +110,7 @@ def decode_csv_file_base64_string_to_dataframe(base64_encoded_string):
     to process the uploaded csv file into a dataframe
     """
     df = pd.DataFrame()
+    base64_encoded_bytes = bytes()
     if base64_encoded_string:
         # base64.b64decode() function converts the base64 encoded string back
         # into its original binary data which is bytes.
@@ -131,7 +132,7 @@ def decode_csv_file_base64_string_to_dataframe(base64_encoded_string):
             # df = pd.DataFrame()
             raise Exception("The content is not a valid UTF-8 string.")
 
-    return df
+    return df, base64_encoded_bytes
 
 
 def calculate_group_mean_ratios_per_smiles_and_plate(df):
@@ -255,21 +256,3 @@ def log_with_context(msg, log_flag):
     func_name = caller_frame.f_code.co_name if caller_frame else "<unknown>"
 
     print(f"[PID:{pid}][TID:{tid}][{tname}][FUNC:{func_name}] {msg}")
-
-
-def calculate_file_checksum(file_bytes) -> str:
-    """Calculate SHA256 checksum of a file."""
-
-    if file_bytes is None:
-        raise ValueError("file_bytes cannot be None")
-
-    if not isinstance(file_bytes, bytes):
-        raise TypeError("file_bytes must be of type bytes")
-
-    if len(file_bytes) == 0:
-        raise ValueError("file_bytes cannot be empty")
-
-    sha256 = hashlib.sha256()
-    sha256.update(file_bytes)
-
-    return sha256.hexdigest()

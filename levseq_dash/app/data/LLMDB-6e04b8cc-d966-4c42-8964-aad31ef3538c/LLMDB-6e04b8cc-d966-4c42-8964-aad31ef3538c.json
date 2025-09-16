@@ -1,0 +1,13 @@
+{
+    "experiment_id": "LLMDB-6e04b8cc-d966-4c42-8964-aad31ef3538c",
+    "experiment_name": "Stereodivergent Intramolecular Cyclopropanation Enabled by Engineered Carbene Transferases",
+    "experiment_date": "2019-12-06",
+    "substrate": "[N+](=[N-])=CC(=O)OCC=CC1=CC=CC=C1",
+    "product": "C1(=CC=CC=C1)[C@@H]1[C@H]2COC([C@@H]12)=O",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "VLSEGEWQLVLHVWAKVEADVAGHGQEVLIRLFKGHPETLEKFDKFKHLKSEDEMKASEDLKKHGATVLTALGGILKKKGHHEAEIKPLAQSHATKHKIPIKYLEFISEAIIHVLHSRHPGDFGADAQGAMNKALELFRKDIAAKYKELGYQG",
+    "plates_count": 1,
+    "csv_checksum": "ffb943a69e4f9f0a001653deacc52dfb63746fba3cf6f3e91629d124399a859c",
+    "upload_time_stamp": "2025-09-08 13:53:59"
+}

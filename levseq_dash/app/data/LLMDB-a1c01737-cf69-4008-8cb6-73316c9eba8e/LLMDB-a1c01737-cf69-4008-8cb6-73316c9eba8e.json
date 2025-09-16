@@ -1,0 +1,13 @@
+{
+    "experiment_id": "LLMDB-a1c01737-cf69-4008-8cb6-73316c9eba8e",
+    "experiment_name": "Enantioselective Aminohydroxylation of Styrenyl Olefins Catalyzed by an Engineered Hemoprotein",
+    "experiment_date": "2019-01-25",
+    "substrate": "COc1ccc(C=C)cc1.O[S](=O)(=O)C(F)(F)F.CC(C)(C)C(=O)ON",
+    "product": "COc1ccc(cc1)C(O)CN",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "TESGTAAQDPEALAAEIGPVKQVSLGEQIDAALAQQGEQLFNTYCTACHRLDERFIGPALRDVTKRRGPVYIMNVMLNPNGMIQRHPVMKQLVQEYGTMMTDMALSEEQARAILEYLRQVAENQLEHHHHHH*",
+    "plates_count": 1,
+    "csv_checksum": "e1fc9a5a182f7c6320eba9d87ec8e636e6980989bba0f0e82c7a2338569ac60d",
+    "upload_time_stamp": "2025-09-08 13:53:58"
+}

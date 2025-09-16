@@ -1,0 +1,13 @@
+{
+    "experiment_id": "LLMDB-43df5d87-7a22-4655-ba8c-5778e6ed2c90",
+    "experiment_name": "Abiotic reduction of ketones with silanes catalysed by carbonic anhydrase through an enzymatic zinc hydride",
+    "experiment_date": "2021-01-04",
+    "substrate": "C1(=CC=CC=C1)[SiH3].C1(=CC=CC=C1)C(C)=O",
+    "product": "C1(=CC=CC=C1)[C@H](C)O",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MKSSHHHHHHENLYFQSNAMSHHWGYGKHNGPEHWHKDFPIAKGERQSPVDIDTHTAKYDPSLKPLSVSYDQATSLRILNNGHAFNVEFDDSQDKAVLKGGPLDGTYRLIQFHFHWGSLDGQGSEHTVDKKKYAAELHLVHWNTKYGDFGKAVQQPDGLAVLGIFLKVGSAKPGLQKVVDVLDSIKTKGKSADFTNFDPRGLLPESLDYWTYPGSLTTPPLLECVTWIVLKEPISVSSEQVLKFRKLNFNGEGEPEELMVDNWRPAQPLKNRQIKASFK*",
+    "plates_count": 1,
+    "csv_checksum": "a6b3f69bf7022699892620903949838cdbfb509f34b525b8ed33b10dccf3da24",
+    "upload_time_stamp": "2025-09-08 13:53:58"
+}

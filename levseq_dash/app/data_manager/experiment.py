@@ -1,6 +1,4 @@
-import base64
 import os
-from datetime import datetime
 from enum import StrEnum
 from pathlib import Path
 
@@ -18,118 +16,36 @@ class MutagenesisMethod(StrEnum):
 class Experiment:
     def __init__(
         self,
-        experiment_data_file_path=None,
-        experiment_csv_data_base64_string=None,
-        experiment_name=None,
-        experiment_date=None,
-        upload_time_stamp=None,
-        substrate=None,
-        product=None,
-        assay=None,
-        mutagenesis_method=None,
-        geometry_file_path=None,
-        geometry_base64_string=None,
-        geometry_base64_bytes=None,
+        experiment_data_file_path,
+        geometry_file_path,
     ):
         # ----------------------------
         # process the core data first
         # ----------------------------
+        if not Path(experiment_data_file_path).is_file() or not Path(geometry_file_path).is_file():
+            raise ValueError(
+                "Experiment data file path, geometry file path must be provided in order to load an Experiment object."
+            )
 
-        # read th input data
-        input_df = pd.DataFrame()
-        if experiment_data_file_path and os.path.isfile(experiment_data_file_path):
-            input_df = pd.read_csv(experiment_data_file_path)
-        elif experiment_csv_data_base64_string:
-            input_df = utils.decode_csv_file_base64_string_to_dataframe(experiment_csv_data_base64_string)
+        # read the input data
+        try:
+            # read CSV file with only the required columns
+            self.data_df = pd.read_csv(experiment_data_file_path, usecols=gs.experiment_core_data_list)
+            if self.data_df.empty:
+                raise ValueError("Experiment data file is empty.")
 
-        # run all the sanity checks on this file
-        # sanity checks will raise Exceptions
-        # check that the df is not empty, check for missing columns, check for presence of '#PARENT#' and in combos,
-        # check all the smiles strings are valid
-        self.data_df = pd.DataFrame()
-        if self.run_sanity_checks_on_experiment_file(input_df):
-            self.data_df = input_df[gs.experiment_core_data_list].copy()
+            # read the cif file as bytes
+            with open(geometry_file_path, "rb") as f:
+                self.geometry_base64_bytes = f.read()
+                if len(self.geometry_base64_bytes) == 0:
+                    raise ValueError("Geometry file is empty.")
 
-        # ------------------
-        # process meta data
-        # ------------------
-        self.experiment_name = experiment_name if experiment_name else ""
-        self.experiment_date = experiment_date if experiment_date else ""
-        self.upload_time_stamp = (
-            upload_time_stamp if upload_time_stamp else datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        )
-        self.assay = assay if assay else ""
-        self.mutagenesis_method = mutagenesis_method if mutagenesis_method else ""
-        self.substrate = substrate if substrate else ""
-        self.product = product if product else ""
+            # internal calculations that are metadata but are not stored with the files
+            self.unique_smiles_in_data = list(self.data_df[gs.c_smiles].unique())
+            self.plates = self.extract_plates_list(self.data_df)
 
-        # can be separate
-        # keep the list as a comma delimited string
-        # if substrate is None:
-        #     self.substrate = []  # ", ".join(self.unique_smiles_in_data)
-        # else:
-        #     self.substrate = ", ".join(substrate)
-        #
-        # if product is None:
-        #     self.product = []
-        # else:
-        #     self.product = ", ".join(product)
-
-        # ------------------
-        # process geometry data
-        # ------------------
-        # if a path is provided, then we won't bother with the others
-        if geometry_file_path and os.path.isfile(geometry_file_path):
-            self.geometry_file_path = geometry_file_path
-        else:
-            self.geometry_file_path = None  # Path()
-
-        if geometry_base64_string:
-            self.geometry_base64_string = geometry_base64_string
-            self.geometry_base64_bytes = base64.b64decode(geometry_base64_string)
-        else:
-            # TODO: below should be None, check throughout code later
-            self.geometry_base64_string = ""
-            self.geometry_base64_bytes = bytes()
-
-        if geometry_base64_bytes:
-            self.geometry_base64_bytes = geometry_base64_bytes
-
-        # --------------------
-        # internal calculations
-        # --------------------
-        self.unique_smiles_in_data = list(self.data_df[gs.c_smiles].unique()) if not self.data_df.empty else []
-        self.plates = self.extract_plates_list(self.data_df)
-        self.plates_count = len(self.plates)
-
-        # sanity check already checks that such a row exists
-        self.parent_sequence = (
-            self.data_df[self.data_df[gs.c_substitutions] == gs.hashtag_parent][gs.c_aa_sequence].iloc
-        )[0]
-
-        if self.geometry_file_path:
-            self.geometry_file_format = self.geometry_file_path.suffix
-        else:
-            self.geometry_file_format = ""
-
-    def exp_meta_data_to_dict(self):
-        """
-        This extracts a bit more than metadata. It extracts all attributes.
-        This is easier to do as it is dynamic with any changes in attributes.
-        """
-        result = {}
-        for attr, value in self.__dict__.items():
-            if (
-                isinstance(value, pd.DataFrame)
-                or isinstance(value, Path)
-                or isinstance(value, bytes)
-                or attr == "geometry_base64_string"
-                or attr == "experiment_csv_data_base64_string"
-            ):
-                pass
-            else:
-                result[attr] = value  # Keep other types as is
-        return result
+        except Exception as e:
+            raise Exception(f"Error loading experiment data file: {e}")
 
     def exp_get_processed_core_data_for_valid_mutation_extractions(self):
         """
@@ -283,12 +199,15 @@ class Experiment:
                 f"Experiment file does not contain any '#PARENT#' entry in the {gs.c_substitutions} column."
             )
 
-        # check all the smiles strings are valid in the file
-        invalid_smiles_rows = df[df[gs.c_smiles].apply(u_reaction.is_valid_smiles).isnull()]
-
-        if not invalid_smiles_rows.empty:
-            invalid_indices = invalid_smiles_rows.index.tolist()
-            raise ValueError(f"Experiment file has invalid SMILES found at rows: {invalid_indices}")
+        # each row of the csv file must be checked for valid smiles string
+        # I want to notify the user which row has an error, so they can fix their experiment file
+        for index, row in df.iterrows():
+            smiles_string = str(row[gs.c_smiles])
+            if not smiles_string or pd.isnull(smiles_string) or smiles_string.strip() == "":
+                raise ValueError(f"Invalid SMILES string at row {index}. Value is null, NaN, or empty.")
+            valid = u_reaction.is_valid_smiles(smiles_string)
+            if not valid:
+                raise ValueError(f"Invalid SMILES string at row {index}. SMILES is:'{smiles_string}'")
 
         # # Relaxing parent-smiles combo requirement
         # # check any smiles-plate column combo has a #PARENT# in its gs.c_substitution column
