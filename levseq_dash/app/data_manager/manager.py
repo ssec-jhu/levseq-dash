@@ -292,7 +292,7 @@ class DataManager:
         data_directory = self.data_path
         experiment_dir = data_directory / "experiments"
         structures_dir = data_directory / "structures"
-        meta_data_file = data_directory / "meta_data.csv"
+        meta_data_file = data_directory / "meta_data.xlsx"
 
         # validate required directories
         for directory in [data_directory, experiment_dir, structures_dir]:
@@ -305,7 +305,7 @@ class DataManager:
         )
 
         # read the file and iterate through metadata rows
-        metadata_df = pd.read_csv(meta_data_file)
+        metadata_df = pd.read_excel(meta_data_file)
         for idx, row in metadata_df.iterrows():
             experiment_id = row["experiment_id"]
             experiment_name = row["experiment_name"]
