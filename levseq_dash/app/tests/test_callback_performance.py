@@ -1,10 +1,14 @@
+import os
 import time
 from contextvars import copy_context
 
 from dash._callback_context import context_value
 from dash._utils import AttributeDict
+from tox import pytest
 
 from levseq_dash.app import global_strings as gs
+
+IN_GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
 
 
 def run_callback_on_load_experiment_page(pathname, experiment_id):
@@ -19,6 +23,7 @@ def run_callback_on_load_experiment_page(pathname, experiment_id):
     return result
 
 
+@pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping test on Github")
 def test_callback_on_load_experiment_page_random_experiment(mocker, path_exp_ep_data, tmp_path):
     from levseq_dash.app.tests.conftest import load_config_mock_string
     from levseq_dash.app.tests.mutation_simulator import generate_temp_test_experiment_files
@@ -38,6 +43,7 @@ def test_callback_on_load_experiment_page_random_experiment(mocker, path_exp_ep_
     TIME_RESULTS.append((f"RND {len(result[1])} rows", execution_time))
 
 
+@pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping test on Github")
 def test_callback_on_load_experiment_page_big_experiment(mocker, disk_manager_from_app_data):
     # Mock the singleton instance to use our test data manager
     mocker.patch("levseq_dash.app.main_app.singleton_data_mgr_instance", disk_manager_from_app_data)
@@ -57,6 +63,7 @@ def test_callback_on_load_experiment_page_big_experiment(mocker, disk_manager_fr
 TIME_RESULTS = []
 
 
+@pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping test on Github")
 def test_print_timing_summary():
     """Print a summary of all timing results from the performance tests."""
     print("\n\n" + "=" * 50)
