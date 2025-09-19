@@ -147,7 +147,7 @@ def translate_dna_to_protein(dna_sequence):
     protein = []
     for i in range(0, len(dna_sequence), 3):
         if i + 3 <= len(dna_sequence):
-            codon = dna_sequence[i : i + 3]
+            codon = dna_sequence[i: i + 3]
             amino_acid = CODON_TABLE.get(codon, "X")  # 'X' for unknown codons
             protein.append(amino_acid)
 
