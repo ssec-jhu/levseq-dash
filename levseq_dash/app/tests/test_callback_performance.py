@@ -2,9 +2,9 @@ import os
 import time
 from contextvars import copy_context
 
+import pytest
 from dash._callback_context import context_value
 from dash._utils import AttributeDict
-import pytest
 
 from levseq_dash.app import global_strings as gs
 
