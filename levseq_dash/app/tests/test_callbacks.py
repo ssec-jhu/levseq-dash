@@ -27,18 +27,18 @@ def test_callback_route_page(pathname, mock_load_config_from_test_data_path):
 
 
 # ------------------------------------------------
-def run_callback_update_landing_page_buttons(selected_rows):
-    from levseq_dash.app.main_app import update_landing_page_buttons
+def run_callback_update_explore_page_buttons(selected_rows):
+    from levseq_dash.app.main_app import update_explore_page_buttons
 
     # input trigger to the function
     context_value.set(AttributeDict(**{"triggered_inputs": [{"prop_id": "id-table-all-experiments.selectedRows"}]}))
-    return update_landing_page_buttons(selected_rows=selected_rows)
+    return update_explore_page_buttons(selected_rows=selected_rows)
 
 
 def test_callback_update_landing_page_buttons(mock_load_config_from_test_data_path):
     selected_rows = [{"experiment_id": 2}]
     ctx = copy_context()
-    output = ctx.run(run_callback_update_landing_page_buttons, selected_rows)
+    output = ctx.run(run_callback_update_explore_page_buttons, selected_rows)
     assert len(output) == 3
     assert output[0] == 2
     assert output[1] is False
@@ -48,7 +48,7 @@ def test_callback_update_landing_page_buttons(mock_load_config_from_test_data_pa
 def test_callback_update_landing_page_buttons_multiple_selection(mock_load_config_from_test_data_path):
     selected_rows = [{"experiment_id": 2}, {"experiment_id": 4}]
     ctx = copy_context()
-    output = ctx.run(run_callback_update_landing_page_buttons, selected_rows)
+    output = ctx.run(run_callback_update_explore_page_buttons, selected_rows)
     assert len(output) == 3
     assert output[0] == no_update
     assert output[1] is False
@@ -59,7 +59,7 @@ def test_callback_update_landing_page_buttons_no_row(mock_load_config_from_test_
     # no selected rows raises PreventUpdate
     ctx = copy_context()
     with pytest.raises(CallbackException):
-        ctx.run(run_callback_update_landing_page_buttons, None)
+        ctx.run(run_callback_update_explore_page_buttons, None)
 
 
 # ------------------------------------------------
