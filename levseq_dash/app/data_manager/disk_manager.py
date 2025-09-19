@@ -1,7 +1,9 @@
 import base64
 import datetime
+import io
 import json
 import os
+import zipfile
 from datetime import datetime
 from pathlib import Path
 
@@ -224,6 +226,30 @@ class DiskDataManager(BaseDataManager):
         except Exception as e:
             raise Exception(f"Error loading experiment {experiment_uuid} from disk: {e}")
 
+    def get_experiment_file_content(self, experiment_uuid: str) -> dict[str, bytes]:
+        """
+        Get experiment files content as bytes for a specific experiment.
+        This is the implementation for a local file storage retriever.
+        """
+        files_content = {}
+        if experiment_uuid not in self._experiments_metadata:
+            return files_content
+
+        try:
+            json_path, csv_path, cif_path = self._generate_file_paths_for_experiment(experiment_uuid)
+
+            if json_path.exists():
+                files_content["json"] = json_path.read_bytes()
+            if csv_path.exists():
+                files_content["csv"] = csv_path.read_bytes()
+            if cif_path.exists():
+                files_content["cif"] = cif_path.read_bytes()
+
+        except Exception as e:
+            raise Exception(f"Error reading files for experiment: {experiment_uuid}: {e}")
+
+        return files_content
+
     # ---------------------------
     #    DATA RETRIEVAL: MISC
     # ---------------------------
@@ -235,6 +261,47 @@ class DiskDataManager(BaseDataManager):
             list: List of assay names.
         """
         return self.assay_list
+
+    def get_experiments_zipped(self, experiments_to_zip: list[dict[str]]) -> bytes | None:
+        if not experiments_to_zip or len(experiments_to_zip) == 0:
+            return None
+
+        zip_buffer = io.BytesIO()
+
+        with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as zipf:
+            # Add metadata CSV to root of zip
+
+            # metadata_df = pd.DataFrame(experiments_to_zip)
+            # csv_content = metadata_df.to_csv(index=False)
+            # zipf.writestr(f"EnzEngDB_Experiments.csv", csv_content)
+            csv_header = ",".join(experiments_to_zip[0].keys())
+            csv_rows = "\n".join(",".join(str(value) for value in row.values()) for row in experiments_to_zip)
+            zipf.writestr(f"EnzEngDB_Experiments.csv", f"{csv_header}\n{csv_rows}")
+
+            # Add experiment files directly from disk
+            for exp_data in experiments_to_zip:
+                experiment_id = exp_data.get("experiment_id")
+                if experiment_id:
+                    try:
+                        # get the file contents, bytes,...
+                        file_contents = self.get_experiment_file_content(experiment_id)
+
+                        # Add files to ZIP using content-based approach
+                        if "json" in file_contents:
+                            zipf.writestr(f"experiments/{experiment_id}/{experiment_id}.json", file_contents["json"])
+                        if "csv" in file_contents:
+                            zipf.writestr(f"experiments/{experiment_id}/{experiment_id}.csv", file_contents["csv"])
+                        if "cif" in file_contents:
+                            zipf.writestr(f"experiments/{experiment_id}/{experiment_id}.cif", file_contents["cif"])
+
+                    except Exception as e:
+                        raise Exception(f"Error adding files for experiment {experiment_id}: {e}")
+
+        # Get the ZIP data from memory buffer
+        zip_data = zip_buffer.getvalue()
+        zip_buffer.close()
+
+        return zip_data
 
     # ----------------------------
     #    PRIVATE METHODS

@@ -262,6 +262,20 @@ class BaseDataManager(ABC):
         pass
 
     @abstractmethod
+    def get_experiment_file_content(self, experiment_uuid: str) -> Dict[str, bytes]:
+        """
+        Get experiment files content as bytes for a specific experiment.
+
+        Args:
+            experiment_uuid (str): The unique identifier of the experiment
+
+        Returns:
+            Dict[str, bytes]: A dictionary with file types ('json', 'csv', 'cif') as keys
+                              and file content as bytes as values. Returns an empty dictionary if files are not found.
+        """
+        pass
+
+    @abstractmethod
     def get_assays(self) -> List[str]:
         """
         Get list of available assays.
@@ -275,6 +289,32 @@ class BaseDataManager(ABC):
         Example:
             assays = manager.get_assays()
             # Returns: ["FACS", "Growth", "Spectrophotometry", ...]
+        """
+        pass
+
+    @abstractmethod
+    def get_experiments_zipped(self, experiments_to_zip: List[Dict[str, Any]]) -> Optional[bytes]:
+        """
+        Create a ZIP archive containing experiment data and metadata.
+
+        Takes a list of experiment metadata dictionaries and creates a ZIP file
+        containing all experiment files (JSON metadata, CSV data, CIF structure files)
+        organized in a structured format along with a summary CSV file.
+
+        Args:
+            experiments_to_zip (List[Dict[str, Any]]): List of experiment metadata
+                                                           dictionaries to include in the ZIP
+
+        Returns:
+            Optional[bytes]: ZIP file data as bytes if successful, None if no experiments
+                           provided or if creation fails
+
+        Note:
+            The ZIP structure should be:
+            - EnzEngDB_Experiments_{timestamp}.csv (summary metadata file)
+            - experiments/{experiment_id}/{experiment_id}.json
+            - experiments/{experiment_id}/{experiment_id}.csv
+            - experiments/{experiment_id}/{experiment_id}.cif
         """
         pass
 
