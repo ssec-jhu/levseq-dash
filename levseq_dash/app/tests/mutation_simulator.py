@@ -147,7 +147,7 @@ def translate_dna_to_protein(dna_sequence):
     protein = []
     for i in range(0, len(dna_sequence), 3):
         if i + 3 <= len(dna_sequence):
-            codon = dna_sequence[i: i + 3]
+            codon = dna_sequence[i : i + 3]
             amino_acid = CODON_TABLE.get(codon, "X")  # 'X' for unknown codons
             protein.append(amino_acid)
 
@@ -255,9 +255,9 @@ def generate_dataset(parent_dna, num_plates, cas_numbers, fitness_min, fitness_m
             # Generate alignment probability
             alignment_probability = random.uniform(0.7, 1.0)
 
-            # Generate coordinates
-            x_coordinate = random.uniform(0, 100)
-            y_coordinate = random.uniform(0, 100)
+            # # Generate coordinates
+            # x_coordinate = random.uniform(0, 100)
+            # y_coordinate = random.uniform(0, 100)
 
             # Create ID
             id_value = f"{plate_name}-{well}"
@@ -295,7 +295,7 @@ def generate_dataset(parent_dna, num_plates, cas_numbers, fitness_min, fitness_m
                 row = {
                     "id": id_value,
                     "barcode_plate": barcode_plate,
-                    "cas_number": cas_number,
+                    "smiles_string": cas_number,
                     "plate": plate_name,
                     "well": well,
                     "alignment_count": alignment_count,
@@ -304,8 +304,8 @@ def generate_dataset(parent_dna, num_plates, cas_numbers, fitness_min, fitness_m
                     "alignment_probability": round(alignment_probability, 4),
                     "nt_sequence": mutated_dna,
                     "aa_sequence": mutated_protein,
-                    "x_coordinate": round(x_coordinate, 4),
-                    "y_coordinate": round(y_coordinate, 4),
+                    # "x_coordinate": round(x_coordinate, 4),
+                    # "y_coordinate": round(y_coordinate, 4),
                     "fitness_value": round(fitness_value, 2),
                 }
 
@@ -320,6 +320,18 @@ def validate_dna_sequence(sequence):
     """Validate that a string is a valid DNA sequence"""
     valid_nucleotides = set(NUCLEOTIDES)
     return all(nucleotide in valid_nucleotides for nucleotide in sequence.upper())
+
+
+def create_experiment_test_file(cas_input, num_plates, parents_per_plate):
+    if parents_per_plate < 0 or parents_per_plate > 96:
+        raise ValueError
+    parent_dna = generate_random_dna(300)
+    fitness_min = 500
+    fitness_max = 1000
+
+    df = generate_dataset(parent_dna, num_plates, cas_input, fitness_min, fitness_max, parents_per_plate)
+
+    return df
 
 
 def main():
