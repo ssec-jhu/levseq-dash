@@ -39,7 +39,7 @@ def test_callback_update_landing_page_buttons(mock_load_config_from_test_data_pa
     selected_rows = [{"experiment_id": 2}]
     ctx = copy_context()
     output = ctx.run(run_callback_update_explore_page_buttons, selected_rows)
-    assert len(output) == 3
+    assert len(output) == 4
     assert output[0] == 2
     assert output[1] is False
     assert output[2] is False
@@ -49,20 +49,16 @@ def test_callback_update_landing_page_buttons_multiple_selection(mock_load_confi
     selected_rows = [{"experiment_id": 2}, {"experiment_id": 4}]
     ctx = copy_context()
     output = ctx.run(run_callback_update_explore_page_buttons, selected_rows)
-    assert len(output) == 3
+    assert len(output) == 4
     assert output[0] == no_update
     assert output[1] is False
     assert output[2] is True
-
 
 def test_callback_update_landing_page_buttons_no_row(mock_load_config_from_test_data_path):
     # no selected rows raises PreventUpdate
     ctx = copy_context()
     with pytest.raises(CallbackException):
         ctx.run(run_callback_update_explore_page_buttons, None)
-
-
-# ------------------------------------------------
 
 
 def run_callback_enable_submit_experiment(experiment, structure):
@@ -74,17 +70,3 @@ def run_callback_enable_submit_experiment(experiment, structure):
         experiment_success=experiment,  # any strings
         structure_success=structure,
     )
-
-
-# def test_callback_enable_submit_experiment_valid():
-#     ctx = copy_context()
-#     output = ctx.run(run_callback_enable_submit_experiment, "experiment-string", "structure-string")
-#     assert output is False
-
-
-# def test_callback_enable_submit_experiment_invalid():
-#     ctx = copy_context()
-#     output = ctx.run(run_callback_enable_submit_experiment, None, "structure-string")
-#     assert output is True
-
-# ------------------------------------------------
