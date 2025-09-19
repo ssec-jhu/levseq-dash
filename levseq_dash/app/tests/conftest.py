@@ -58,7 +58,7 @@ def experiment_ssm_metadata(path_exp_ep_data):
 
 
 @pytest.fixture
-def mock_load_config_from_disk(mocker, test_data_path):
+def mock_load_config_from_test_data_path(mocker, test_data_path):
     """
     Fixture to mock a response for load config from disk
     """
@@ -70,6 +70,29 @@ def mock_load_config_from_disk(mocker, test_data_path):
         "disk": {"local-data-path": test_data_path},
     }
     return mock
+
+
+@pytest.fixture
+def mock_load_config_from_app_data_path(mocker):
+    """
+    Fixture to mock a response for load config from disk
+    """
+    # data_path = test_data_path / "data"
+    mock = mocker.patch(load_config_mock_string)
+    mock.return_value = {
+        "deployment-mode": "local-instance",
+        "storage-mode": "disk",
+        "disk": {"local-data-path": "data"},
+        # "logging":{"data-manager": "true"}
+    }
+    return mock
+
+
+@pytest.fixture(scope="function")
+def disk_manager_from_app_data(mock_load_config_from_app_data_path):
+    from levseq_dash.app.data_manager.disk_manager import DiskDataManager
+
+    return DiskDataManager()
 
 
 @pytest.fixture
@@ -140,7 +163,7 @@ def mock_load_config_storage_mode_error(mocker):
 
 
 @pytest.fixture
-def mock_load_using_existing_env_data_path(mock_load_config_from_disk, monkeypatch, tmp_path):
+def mock_load_using_existing_env_data_path(mock_load_config_from_test_data_path, monkeypatch, tmp_path):
     """
     Fixture to mock a DATA_PATH env with a temp_path
     """
@@ -150,10 +173,10 @@ def mock_load_using_existing_env_data_path(mock_load_config_from_disk, monkeypat
 
 
 @pytest.fixture
-def dbmanager_read_all_from_file(mock_load_config_from_disk):
-    from levseq_dash.app.data_manager import manager
+def disk_manager_from_test_data(mock_load_config_from_test_data_path):
+    from levseq_dash.app.data_manager.disk_manager import DiskDataManager
 
-    return manager.singleton_data_mgr_instance
+    return DiskDataManager()
 
 
 @pytest.fixture(scope="session")

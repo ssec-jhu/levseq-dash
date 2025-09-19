@@ -336,7 +336,7 @@ def create_experiment_test_file(cas_input, num_plates, parents_per_plate):
     return df
 
 
-def generate_temp_test_experiment_files(base_csv_path, num_plates):
+def generate_temp_test_experiment_files(temp_dir, base_csv_path, num_plates):
     # Read the base CSV file
     cas_input = [
         "C1=CC=CC=C1",
@@ -348,7 +348,7 @@ def generate_temp_test_experiment_files(base_csv_path, num_plates):
     df = create_experiment_test_file(cas_input, num_plates, 5)
 
     # Create temporary directory
-    temp_dir = tempfile.mkdtemp(prefix="levseq_test_")
+    # temp_dir = tempfile.mkdtemp(prefix="levseq_test_")
 
     # Generate a unique experiment ID based on the temp directory
     experiment_id = f"MYTEST-{os.path.basename(temp_dir)}"
@@ -377,7 +377,7 @@ def generate_temp_test_experiment_files(base_csv_path, num_plates):
         else:
             raise Exception(f"Warning: {file_ext} file not found: {original_file}")
 
-    return temp_dir, csv_path, experiment_id
+    return csv_path, experiment_id
 
 
 def main():

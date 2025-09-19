@@ -20,7 +20,7 @@ def run_callback_route_page(pathname):
 @pytest.mark.parametrize(
     "pathname", ["/", gs.nav_experiment_path, gs.nav_upload_path, gs.nav_find_seq_path, "any-other-random-string"]
 )
-def test_callback_route_page(pathname, mock_load_config_from_disk):
+def test_callback_route_page(pathname, mock_load_config_from_test_data_path):
     ctx = copy_context()
     output = ctx.run(run_callback_route_page, pathname)
     assert isinstance(output, html.Div)
@@ -35,7 +35,7 @@ def run_callback_update_landing_page_buttons(selected_rows):
     return update_landing_page_buttons(selected_rows=selected_rows)
 
 
-def test_callback_update_landing_page_buttons(mock_load_config_from_disk):
+def test_callback_update_landing_page_buttons(mock_load_config_from_test_data_path):
     selected_rows = [{"experiment_id": 2}]
     ctx = copy_context()
     output = ctx.run(run_callback_update_landing_page_buttons, selected_rows)
@@ -45,7 +45,7 @@ def test_callback_update_landing_page_buttons(mock_load_config_from_disk):
     assert output[2] is False
 
 
-def test_callback_update_landing_page_buttons_multiple_selection(mock_load_config_from_disk):
+def test_callback_update_landing_page_buttons_multiple_selection(mock_load_config_from_test_data_path):
     selected_rows = [{"experiment_id": 2}, {"experiment_id": 4}]
     ctx = copy_context()
     output = ctx.run(run_callback_update_landing_page_buttons, selected_rows)
@@ -55,7 +55,7 @@ def test_callback_update_landing_page_buttons_multiple_selection(mock_load_confi
     assert output[2] is True
 
 
-def test_callback_update_landing_page_buttons_no_row(mock_load_config_from_disk):
+def test_callback_update_landing_page_buttons_no_row(mock_load_config_from_test_data_path):
     # no selected rows raises PreventUpdate
     ctx = copy_context()
     with pytest.raises(CallbackException):

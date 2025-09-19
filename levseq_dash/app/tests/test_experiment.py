@@ -60,12 +60,12 @@ def test_experiment_with_geometry_in_bytes(path_exp_ep_data):
     ],
 )
 def test_experiment_loaded_metadata(
-    dbmanager_read_all_from_file, experiment_ep_pcr, experiment_ep_pcr_metadata, attribute
+    disk_manager_from_test_data, experiment_ep_pcr, experiment_ep_pcr_metadata, attribute
 ):
     """Test experiment assay by accessing metadata via DataManager"""
     exp_id = experiment_ep_pcr_metadata["experiment_id"]
     assert (
-        dbmanager_read_all_from_file.get_experiment_metadata(exp_id)[attribute] == experiment_ep_pcr_metadata[attribute]
+        disk_manager_from_test_data.get_experiment_metadata(exp_id)[attribute] == experiment_ep_pcr_metadata[attribute]
     )
 
 
