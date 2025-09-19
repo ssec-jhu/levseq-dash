@@ -336,7 +336,7 @@ def create_experiment_test_file(cas_input, num_plates, parents_per_plate):
     return df
 
 
-def generate_temp_test_experiment_files(base_csv_path):
+def generate_temp_test_experiment_files(base_csv_path, num_plates):
     # Read the base CSV file
     cas_input = [
         "C1=CC=CC=C1",
@@ -345,7 +345,7 @@ def generate_temp_test_experiment_files(base_csv_path):
         "[*:1]C(N[C@@H](C(O)=O)[*:3])=O.N[C@@H](C([*:2])=O)[*:4]",
         "C1=CC=CC=C1.O=C(O)C(F)(F)F",
     ]
-    df = create_experiment_test_file(cas_input, 1000, 5)
+    df = create_experiment_test_file(cas_input, num_plates, 5)
 
     # Create temporary directory
     temp_dir = tempfile.mkdtemp(prefix="levseq_test_")
