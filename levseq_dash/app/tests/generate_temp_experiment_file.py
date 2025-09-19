@@ -47,6 +47,3 @@ def generate_large_test_csv(base_csv_path):
             raise Exception(f"Warning: {file_ext} file not found: {original_file}")
 
     return temp_dir, csv_path, experiment_id
-
-
-
