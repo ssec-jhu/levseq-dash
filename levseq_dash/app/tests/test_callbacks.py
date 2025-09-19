@@ -41,8 +41,9 @@ def test_callback_update_landing_page_buttons(mock_load_config_from_test_data_pa
     output = ctx.run(run_callback_update_explore_page_buttons, selected_rows)
     assert len(output) == 4
     assert output[0] == 2
-    assert output[1] is False
+    assert output[1] is True
     assert output[2] is False
+    assert output[3] is False
 
 
 def test_callback_update_landing_page_buttons_multiple_selection(mock_load_config_from_test_data_path):
@@ -51,8 +52,9 @@ def test_callback_update_landing_page_buttons_multiple_selection(mock_load_confi
     output = ctx.run(run_callback_update_explore_page_buttons, selected_rows)
     assert len(output) == 4
     assert output[0] == no_update
-    assert output[1] is False
+    assert output[1] is True
     assert output[2] is True
+    assert output[3] is False
 
 def test_callback_update_landing_page_buttons_no_row(mock_load_config_from_test_data_path):
     # no selected rows raises PreventUpdate
