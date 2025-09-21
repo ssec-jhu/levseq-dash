@@ -348,11 +348,11 @@ def enable_submit_experiment(experiment_success, structure_success, valid_substr
     This callback is used to enable the submit button once all requirements are met
     """
     if (
-        experiment_success
-        and structure_success
-        and valid_substrate
-        and valid_product
-        and settings.is_data_modification_enabled()
+            experiment_success
+            and structure_success
+            and valid_substrate
+            and valid_product
+            and settings.is_data_modification_enabled()
     ):
         return False
     else:
@@ -376,15 +376,15 @@ def enable_submit_experiment(experiment_success, structure_success, valid_substr
     prevent_initial_call=True,
 )
 def on_submit_experiment(
-    n_clicks,
-    experiment_name,
-    experiment_date,
-    substrate,
-    product,
-    assay,
-    mutagenesis_method,
-    geometry_content_base64_encoded_string,
-    experiment_content_base64_encoded_string,
+        n_clicks,
+        experiment_name,
+        experiment_date,
+        substrate,
+        product,
+        assay,
+        mutagenesis_method,
+        geometry_content_base64_encoded_string,
+        experiment_content_base64_encoded_string,
 ):
     if n_clicks > 0 and ctx.triggered_id == "id-button-submit":
         try:
@@ -795,6 +795,12 @@ def on_load_experiment_page(pathname, experiment_id):
         df_filtered_with_ratio = utils.calculate_group_mean_ratios_per_smiles_and_plate(exp.data_df)
         columnDefs_with_ratio = cd.get_top_variant_column_defs(df_filtered_with_ratio)
 
+        # drop unnecessary columns here.
+        columns_to_drop = ["min", "max", "min_group", "max_group", "mean"]
+        df_filtered_with_ratio = df_filtered_with_ratio.drop(
+            columns=[col for col in columns_to_drop if col in df_filtered_with_ratio.columns]
+        )
+
         # creat the ranking plot with default values
         # rank plot uses the ratio data to color
         fig_experiment_rank_plot = graphs.creat_rank_plot(
@@ -1072,13 +1078,13 @@ def on_view_all_residue(view, slider_value, selected_smiles, rowData):
     running=[(Output("id-button-run-seq-matching-exp", "disabled"), True, False)],  # requires the latest Dash 2.16
 )
 def on_load_exp_related_variants(
-    results_are_cleared,
-    n_clicks,
-    query_sequence,
-    threshold,
-    lookup_residues,
-    experiment_id,
-    # experiment_top_variants_row_data,
+        results_are_cleared,
+        n_clicks,
+        query_sequence,
+        threshold,
+        lookup_residues,
+        experiment_id,
+        # experiment_top_variants_row_data,
 ):
     if ctx.triggered_id == "id-cleared-run-exp-related-variants" and results_are_cleared:
         try:
