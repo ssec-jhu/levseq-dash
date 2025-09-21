@@ -11,7 +11,6 @@ nav_about = "About EnzEngDB Dashboard"
 welcome = "Welcome to the EnzEngDB Dashboard!"
 welcome_text = "a visualization tool for analyzing enzyme engineering experiments"
 
-
 small_text_upload = "submit your sequence-function data"
 small_text_find = "discover related engineered variants"
 small_text_explore = "browse curated evolution datasets"
@@ -203,7 +202,7 @@ experiment_core_data_list = [
     c_alignment_count,
     c_substitutions,
     c_alignment_probability,
-    c_aa_sequence,
+    # c_aa_sequence,
     c_fitness_value,
 ]
 
