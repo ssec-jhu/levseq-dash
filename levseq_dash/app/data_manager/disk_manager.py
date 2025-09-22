@@ -81,6 +81,7 @@ class DiskDataManager(BaseDataManager):
         plates_count = len(Experiment.extract_plates_list(df))
 
         # extract parent sequence from the CSV - sanity check already checks that such a row exists
+        # note at this point the aa_sequence column exists. We don't read this column anymore because it uses up memory
         parent_sequence = Experiment.extract_parent_sequence(df)
 
         metadata = {

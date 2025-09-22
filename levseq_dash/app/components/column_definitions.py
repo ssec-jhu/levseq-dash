@@ -355,9 +355,9 @@ def get_matched_sequences_exp_hot_cold_data_column_defs():
     )
     column_def += [
         {
-            "field": gs.c_aa_sequence,
+            "field": "parent_sequence",
             "headerName": gs.header_aa_sequence,
-            "tooltipField": gs.c_aa_sequence,
+            "tooltipField": "parent_sequence",
             "flex": 5,
             # "cellStyle": {"styleConditions": vis.data_bars_colorscale(df, gs.c_fitness_value)},
         },

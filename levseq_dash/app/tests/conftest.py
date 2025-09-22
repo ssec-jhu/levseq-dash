@@ -95,6 +95,20 @@ def disk_manager_from_app_data(mock_load_config_from_app_data_path):
     return DiskDataManager()
 
 
+@pytest.fixture(scope="function")
+def disk_manager_from_temp_data(mocker, tmp_path):
+    mock = mocker.patch(load_config_mock_string)
+    mock.return_value = {
+        "deployment-mode": "local-instance",
+        "storage-mode": "disk",
+        "disk": {"five-letter-id-prefix": "MYLAB", "enable-data-modification": True, "local-data-path": str(tmp_path)},
+    }
+
+    from levseq_dash.app.data_manager.disk_manager import DiskDataManager
+
+    return DiskDataManager()
+
+
 @pytest.fixture
 def mock_load_config(mocker):
     """Fixture for mocking load_config"""

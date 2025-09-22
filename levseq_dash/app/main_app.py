@@ -489,6 +489,9 @@ def on_load_matching_sequences(results_are_cleared, n_clicks, query_sequence, th
                 # add the experiment name to the data
                 hot_cold_spots_merged_df[gs.c_experiment_name] = experiment_meta_data[gs.c_experiment_name]
 
+                # add the parent sequence to the data
+                hot_cold_spots_merged_df["parent_sequence"] = experiment_meta_data["parent_sequence"]
+
                 # concatenate this info with the rest of the hot and cold spot data
                 hot_cold_row_data = pd.concat([hot_cold_row_data, hot_cold_spots_merged_df], ignore_index=True)
 
@@ -794,6 +797,12 @@ def on_load_experiment_page(pathname, experiment_id):
         # coloring only works if I add the column
         df_filtered_with_ratio = utils.calculate_group_mean_ratios_per_smiles_and_plate(exp.data_df)
         columnDefs_with_ratio = cd.get_top_variant_column_defs(df_filtered_with_ratio)
+
+        # drop unnecessary columns here.
+        columns_to_drop = ["min", "max", "min_group", "max_group", "mean"]
+        df_filtered_with_ratio = df_filtered_with_ratio.drop(
+            columns=[col for col in columns_to_drop if col in df_filtered_with_ratio.columns]
+        )
 
         # creat the ranking plot with default values
         # rank plot uses the ratio data to color

@@ -29,7 +29,7 @@ def test_experiment_ep_pcr_plated(experiment_ep_pcr, index, plate):
 
 def test_experiment_ep_pcr_data_shape(experiment_ep_pcr):
     assert experiment_ep_pcr.data_df.shape[0] == 1920
-    assert experiment_ep_pcr.data_df.shape[1] == 8
+    assert experiment_ep_pcr.data_df.shape[1] == 7
 
 
 def test_experiment_with_geometry_in_bytes(path_exp_ep_data):
@@ -107,7 +107,6 @@ def test_experiment_ep_pcr_geometry_base64_bytes(experiment_ep_pcr):
 @pytest.mark.parametrize(
     "index, key, value",
     [
-        (0, gs.c_aa_sequence, "#N.A.#"),
         (0, gs.c_alignment_count, 0),
         (0, gs.c_alignment_probability, 0.0),
         (0, gs.c_substitutions, "#N.A.#"),
@@ -115,12 +114,6 @@ def test_experiment_ep_pcr_geometry_base64_bytes(experiment_ep_pcr):
         (94, gs.c_fitness_value, 1917633.707),
         (0, gs.c_plate, "20240422-ParLQ-ep1-300-1"),
         (0, gs.c_well, "A1"),
-        (
-            36,
-            "aa_sequence",
-            "MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVEDILDLWYGLQGSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTLCKPLDRQWL"
-            "NYMYEIGLRHHRTKKGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAIWSYPYAKTGEWLE",
-        ),
         (51, gs.c_alignment_count, 29),
         (61, gs.c_alignment_probability, 0.0),
         (69, gs.c_substitutions, "#PARENT#"),
@@ -147,7 +140,7 @@ def test_exp_hot_cold_spots_structure(experiment_ep_pcr):
         gs.c_plate,
         gs.c_well,
         gs.c_substitutions,
-        gs.c_aa_sequence,
+        # gs.c_aa_sequence,
         gs.c_fitness_value,
         gs.cc_hot_cold_type,
         gs.cc_ratio,
@@ -183,7 +176,6 @@ def test_exp_hot_cold_spots_filtering(experiment_ep_pcr, n):
 
     # Ensure the invalid rows are removed
     assert not hot_cold_spots_df[gs.c_substitutions].str.contains(r"[#-]", na=True).any()
-    assert not hot_cold_spots_df[gs.c_aa_sequence].str.contains(r"[#-]", na=True).any()
 
 
 @pytest.mark.parametrize(
@@ -366,12 +358,24 @@ def test_run_sanity_checks_valid_data():
     assert result is True
 
 
-def test_extract_parent_sequence_success(experiment_ep_pcr):
+def test_extract_parent_sequence_success(path_exp_ep_data):
     """Test extract_parent_sequence with valid data."""
     # Use the existing fixture data which should have #PARENT# entries
-    parent_sequence = Experiment.extract_parent_sequence(experiment_ep_pcr.data_df)
+    data_df = pd.read_csv(path_exp_ep_data[0])
+    parent_sequence = Experiment.extract_parent_sequence(data_df)
+
     assert parent_sequence is not None
     assert len(parent_sequence) > 0
+
+    # compare with the JSON file content
+    import json
+
+    with open(path_exp_ep_data[2], "r") as json_file:
+        data = json.load(json_file)
+
+    # Extract parent_sequence from the JSON file
+    json_parent_sequence = data.get("parent_sequence")
+    assert json_parent_sequence == parent_sequence
 
 
 def test_extract_parent_sequence_no_parent():

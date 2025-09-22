@@ -41,7 +41,7 @@ from levseq_dash.app.utils import utils
 def test_calculate_group_mean(experiment_ep_pcr, smiles, plate, mean):
     df = utils.calculate_group_mean_ratios_per_smiles_and_plate(experiment_ep_pcr.data_df)
     # if the main core data that is kept in the user session changes column count we need to update this number
-    col_count = 14
+    col_count = 13
 
     assert df.shape[0] == 1920
     assert df.shape[1] == col_count  # added columns
