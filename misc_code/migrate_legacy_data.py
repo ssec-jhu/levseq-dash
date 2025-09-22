@@ -6,13 +6,11 @@ from pathlib import Path
 import pandas as pd
 
 from levseq_dash.app.data_manager.experiment import Experiment
-from levseq_dash.app.data_manager.manager import DataManager
+from levseq_dash.app.data_manager.manager import BaseDataManager
 from levseq_dash.app.utils import u_reaction, utils
 
 
-def migrate_legacy_data_to_uuid_structure(
-    input_data_path: Path, output_data_path, meta_data_file_name, id_prefix
-) -> None:
+def migrate_legacy_data_to_uuid_structure(input_data_path: Path, output_data_path, meta_data_file_name) -> None:
     meta_data_file = input_data_path / meta_data_file_name
     experiments_dir = input_data_path / "experiments"
     structures_dir = input_data_path / "structures"
@@ -25,7 +23,8 @@ def migrate_legacy_data_to_uuid_structure(
         raise FileNotFoundError(f"structures directory not found at {structures_dir}")
 
     # Read metadata CSV
-    df_metadata = pd.read_csv(meta_data_file)
+    # df_metadata = pd.read_csv(meta_data_file)
+    df_metadata = pd.read_excel(meta_data_file)
 
     total_experiments = len(df_metadata)
     successful_migrations = 0
@@ -38,7 +37,7 @@ def migrate_legacy_data_to_uuid_structure(
         experiment_id = None
         try:
             experiment_id = row["experiment_id"]
-
+            id_prefix = row["prefix"]
             # experiment name
             experiment_name = row["experiment_name"]
             experiment_name = experiment_name.replace(".csv", "").strip()
@@ -68,6 +67,8 @@ def migrate_legacy_data_to_uuid_structure(
 
             assay_technique = row["assay_technique"]
 
+            additional_info = row["additional_information"]
+
             # Find CIF structure file
             cif_filename = row["cif_filename"]
             exp_cif_file = structures_dir / cif_filename
@@ -89,7 +90,7 @@ def migrate_legacy_data_to_uuid_structure(
             # checksum calculation
             with open(exp_csv_file, "rb") as f:
                 csv_bytes = f.read()
-                csv_checksum = utils.calculate_file_checksum(csv_bytes)
+                csv_checksum = BaseDataManager.calculate_file_checksum(csv_bytes)
 
             # Calculate plates count and get CSV checksum
             plates_count = len(Experiment.extract_plates_list(df))
@@ -99,7 +100,7 @@ def migrate_legacy_data_to_uuid_structure(
             upload_time_stamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
             # Generate new UUID
-            experiment_uuid = DataManager.generate_experiment_id(id_prefix)
+            experiment_uuid = BaseDataManager.generate_experiment_id(id_prefix)
 
             metadata = {
                 "experiment_id": experiment_uuid,
@@ -112,6 +113,7 @@ def migrate_legacy_data_to_uuid_structure(
                 "parent_sequence": parent_sequence,
                 "plates_count": plates_count,
                 "csv_checksum": csv_checksum,
+                "additional_information": additional_info,
                 "upload_time_stamp": upload_time_stamp,
             }
 
@@ -161,17 +163,9 @@ def migrate_legacy_data_to_uuid_structure(
 
 
 migrate_legacy_data_to_uuid_structure(
-    input_data_path=Path("/Users/Fatemeh/Desktop/DEDB_V5"),
-    output_data_path=Path("../levseq_dash/app/data"),
-    meta_data_file_name="meta_data.csv",
-    id_prefix="ARNLD",
-)
-
-migrate_legacy_data_to_uuid_structure(
-    input_data_path=Path("/Users/Fatemeh/Desktop/DEDB_V5"),
-    output_data_path=Path("../levseq_dash/app/data"),
-    meta_data_file_name="meta_data_LLM.csv",
-    id_prefix="LLMDB",
+    input_data_path=Path("/Users/Fatemeh/Desktop/DEDB"),
+    output_data_path=Path("/Users/Fatemeh/Desktop/DEDB_converted"),
+    meta_data_file_name="meta_data.xlsx",
 )
 
 print(f"Migration completed.")
