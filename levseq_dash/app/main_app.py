@@ -1,4 +1,6 @@
+import base64
 import time
+from datetime import datetime
 
 import dash_bootstrap_components as dbc
 import dash_molstar
@@ -126,7 +128,7 @@ def route_page(pathname):
     Output("id-table-all-experiments", "rowData"),
     Input("id-table-all-experiments", "columnDefs"),
 )
-def load_landing_page(temp_text):
+def load_explore_page(temp_text):
     list_of_all_lab_experiments_with_meta = singleton_data_mgr_instance.get_all_lab_experiments_with_meta_data()
 
     # all_substrate, all_product = utils.extract_all_substrate_product_smiles_from_lab_data(
@@ -144,28 +146,57 @@ def load_landing_page(temp_text):
     Output("id-experiment-selected", "data"),
     Output("id-button-delete-experiment", "disabled"),
     Output("id-button-goto-experiment", "disabled"),
-    # Output("id-selected-row-info", "children"),
+    Output("id-button-download-all-experiments", "disabled"),
     Input("id-table-all-experiments", "selectedRows"),
     prevent_initial_call=True,
 )
-def update_landing_page_buttons(selected_rows):
+def update_explore_page_buttons(selected_rows):
     # Display selected row info
     if not selected_rows:
-        raise PreventUpdate
-    # TODO: clean up unnecessary code here in another PR
-    experiment_id = no_update
-    if selected_rows and len(selected_rows) == 1:
-        selected_row_info = f"Selected Row: {selected_rows[0]}"
-        experiment_id = selected_rows[0]["experiment_id"]
-    elif selected_rows and len(selected_rows) > 1:
-        selected_row_info = f"Selected {len(selected_rows)} rows."
-    else:
-        selected_row_info = "No row selected."
+        # disable all buttons
+        return no_update, True, True, True
+
+    # store the experiment id if there is exactly one selected row
+    experiment_id = selected_rows[0]["experiment_id"] if len(selected_rows) == 1 else no_update
 
     # Manage button states based on number of selected rows
-    delete_btn_disabled = len(selected_rows) == 0 if selected_rows else True
-    show_btn_disabled = not (selected_rows and len(selected_rows) == 1)
-    return experiment_id, delete_btn_disabled, show_btn_disabled  # ,selected_row_info
+    delete_btn_disabled = True  # TODO: implement delete functionality
+    go_to_experiment_btn_disabled = len(selected_rows) != 1  # enabled if there is only one selected row
+    download_btn_disabled = len(selected_rows) < 1  # enabled if there is at least one selected row
+
+    return experiment_id, delete_btn_disabled, go_to_experiment_btn_disabled, download_btn_disabled
+
+
+@app.callback(
+    Output("id-download-all-experiments-zip", "data"),
+    Input("id-button-download-all-experiments", "n_clicks"),
+    State("id-table-all-experiments", "selectedRows"),  # Get the selected rows instead of all table data
+    prevent_initial_call=True,
+    # in case the download takes time this will disable the button
+    # so multiple cliks don't happen
+    running=[(Output("id-button-download-all-experiments", "disabled"), True, False)],  # requires the latest Dash 2.16
+)
+def on_download_selected_experiments(n_clicks, selected_rows):
+    if not selected_rows:
+        raise PreventUpdate
+
+    experiments_with_meta_data_dict = selected_rows if selected_rows else []
+
+    if not experiments_with_meta_data_dict:
+        return None
+
+    zip_data = singleton_data_mgr_instance.get_experiments_zipped(experiments_with_meta_data_dict)
+
+    # timestamp the file
+    timestamp = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+    zip_filename = f"EnzEngDB_Experiments_{timestamp}.zip"
+
+    # dash dcc.Download component
+    zip_download_data = dict(
+        content=base64.b64encode(zip_data).decode(), filename=zip_filename, base64=True, type="application/zip"
+    )
+
+    return zip_download_data
 
 
 # -------------------------------

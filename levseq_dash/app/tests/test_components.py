@@ -75,7 +75,7 @@ def test_get_sidebar():
     assert isinstance(layout_bars.get_sidebar(), html.Div)
 
 
-def test_get_landing_page():
+def test_get_explore_page():
     assert isinstance(layout_landing.get_layout(), html.Div)
 
 
