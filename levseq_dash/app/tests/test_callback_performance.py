@@ -10,6 +10,8 @@ from levseq_dash.app import global_strings as gs
 
 IN_GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
 
+TIME_RESULTS = []
+
 
 def run_callback_on_load_experiment_page(pathname, experiment_id):
     from levseq_dash.app.main_app import on_load_experiment_page
@@ -23,7 +25,6 @@ def run_callback_on_load_experiment_page(pathname, experiment_id):
     return result
 
 
-@pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping test on Github")
 def test_callback_on_load_experiment_page_random_experiment(mocker, path_exp_ep_data, tmp_path):
     from levseq_dash.app.tests.conftest import load_config_mock_string
     from levseq_dash.app.tests.mutation_simulator import generate_temp_test_experiment_files
@@ -60,7 +61,6 @@ def test_callback_on_load_experiment_page_big_experiment(mocker, disk_manager_fr
     TIME_RESULTS.append((f"TEV {len(result[1])} rows", execution_time))
 
 
-@pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping test on Github")
 def test_callback_on_load_experiment_page_epdata(mocker, disk_manager_from_test_data):
     # Mock the singleton instance to use our test data manager
     mocker.patch("levseq_dash.app.main_app.singleton_data_mgr_instance", disk_manager_from_test_data)
@@ -75,9 +75,6 @@ def test_callback_on_load_experiment_page_epdata(mocker, disk_manager_from_test_
     assert result is not None
     assert len(result[1]) == 1920  # TEV has a lot of rows
     TIME_RESULTS.append((f"EPPROC {len(result[1])} rows", execution_time))
-
-
-TIME_RESULTS = []
 
 
 @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping test on Github")
