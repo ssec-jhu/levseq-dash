@@ -14,6 +14,18 @@ class MutagenesisMethod(StrEnum):
 
 
 class Experiment:
+    """
+    The `Experiment` class represents an experimental setup that processes and validates
+    data from experiment files. It handles the loading of experiment data that WAS SAVED USING THE UPLOAD,
+    geometry files, and performs various operations such as data preprocessing, validation, and analysis.
+
+    Attributes:
+        data_df (pd.DataFrame): The "only necessary columns"  from experiment data loaded from the CSV file.
+        geometry_base64_bytes (bytes): The geometry file content in base64-encoded bytes.
+        unique_smiles_in_data (list): A list of unique SMILES strings in the experiment data.
+        plates (list): A list of unique plates in the experiment data.
+    """
+
     def __init__(
         self,
         experiment_data_file_path,
@@ -30,6 +42,9 @@ class Experiment:
         # read the input data
         try:
             # read CSV file with only the required columns
+            # Note: The sequence column is not read here for optimization purposes.
+            # The parent sequence was extracted during the upload process.
+
             self.data_df = pd.read_csv(experiment_data_file_path, usecols=gs.experiment_core_data_list)
             if self.data_df.empty:
                 raise ValueError("Experiment data file is empty.")
@@ -58,25 +73,17 @@ class Experiment:
         if not self.data_df.empty:
             df = utils.calculate_group_mean_ratios_per_smiles_and_plate(self.data_df)
 
-            # truncate the columns, we only need the columns below
-            df = df[
-                [
-                    gs.c_smiles,
-                    gs.c_plate,
-                    gs.c_well,
-                    gs.c_substitutions,
-                    gs.c_aa_sequence,
-                    gs.c_fitness_value,
-                    gs.cc_ratio,
-                ]
-            ]
+            # drop some of the unused columns, we only need the columns below
+            columns_to_keep = [gs.c_smiles, gs.c_plate, gs.c_well, gs.c_substitutions, gs.c_fitness_value, gs.cc_ratio]
+            df = df.drop(columns=[col for col in df.columns if col not in columns_to_keep])
 
             # remove anything from the mutations column with # or - and drop rows where column has NaN values
             # Notes: square brackets [] mean "match either # or -"
             # na=True ensures missing values are also considered invalid
             # ~ (bitwise NOT) negates the condition
             df = df[~df[gs.c_substitutions].str.contains(r"[#-]", na=True)]
-            df = df[~df[gs.c_aa_sequence].str.contains(r"[#-]", na=True)]
+            # not loading the sequences anymore as they take up unnecessary space
+            # df = df[~df[gs.c_aa_sequence].str.contains(r"[#-]", na=True)]
             # and drop rows where column 'F' has NaN values
             df = df.dropna(subset=[gs.c_fitness_value])
 
@@ -177,10 +184,29 @@ class Experiment:
 
     @staticmethod
     def extract_parent_sequence(df):
+        """
+        Use this function only after running sanity checks on the original DataFrame where the column exists.
+        Do not use it on a DataFrame that is in memory because it may be optimized and not have the column.
+        """
         return df[df[gs.c_substitutions] == gs.hashtag_parent][gs.c_aa_sequence].iloc[0]
 
     @staticmethod
     def run_sanity_checks_on_experiment_file(df: pd.DataFrame):
+        """
+        Perform a series of sanity checks on the provided experiment DataFrame to ensure data integrity.
+
+        Args:
+            df (pd.DataFrame): The original experiment data as a pandas DataFrame.
+
+        Raises:
+            Exception: If the DataFrame is empty.
+            ValueError: If required columns are missing.
+            ValueError: If the '#PARENT#' entry is missing in the substitutions column.
+            ValueError: If any SMILES string is invalid, null, or empty.
+
+        Returns:
+            bool: True if all sanity checks pass.
+        """
         # check that the df is not empty
         if df.empty:
             raise Exception("Experiment file has no data.")

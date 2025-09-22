@@ -167,4 +167,8 @@ def test_search_and_gather_variant_info_for_matching_experiment(
     )
     assert len(exp_results_row_data) == count
     if count != 0:
-        assert len(exp_results_row_data[0]) == 26
+        assert len(exp_results_row_data[0]) == 25
+
+    # test that each result's sequence is exact the same as parent_sequence
+    for r in exp_results_row_data:
+        assert r["sequence"] == r["parent_sequence"]
