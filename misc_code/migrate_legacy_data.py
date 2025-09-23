@@ -7,7 +7,7 @@ import pandas as pd
 
 from levseq_dash.app.data_manager.experiment import Experiment
 from levseq_dash.app.data_manager.manager import BaseDataManager
-from levseq_dash.app.utils import u_reaction, utils
+from levseq_dash.app.utils import u_reaction
 
 
 def migrate_legacy_data_to_uuid_structure(input_data_path: Path, output_data_path, meta_data_file_name) -> None:
@@ -145,7 +145,7 @@ def migrate_legacy_data_to_uuid_structure(input_data_path: Path, output_data_pat
 
         except Exception as e:
             exp_ref = experiment_id if experiment_id else f"row {index}"
-            print(f"Error migrating experiment {exp_ref}: {e}")
+            print(f"Experiment {exp_ref}: {e}")
             failed_migrations += 1
             continue
 

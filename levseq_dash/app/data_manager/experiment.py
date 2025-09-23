@@ -1,4 +1,4 @@
-import os
+import re
 from enum import StrEnum
 from pathlib import Path
 
@@ -201,7 +201,7 @@ class Experiment:
         Raises:
             Exception: If the DataFrame is empty.
             ValueError: If required columns are missing.
-            ValueError: If the '#PARENT#' entry is missing in the substitutions column.
+            ValueError: If the '#PARENT#' entry is missing in the substitutions' column.
             ValueError: If any SMILES string is invalid, null, or empty.
 
         Returns:
@@ -225,6 +225,16 @@ class Experiment:
                 f"Experiment file does not contain any '#PARENT#' entry in the {gs.c_substitutions} column."
             )
 
+        # # check that parent entries don't have empty fitness values
+        # parent_rows = df[df[gs.c_substitutions] == gs.hashtag_parent]
+        # for index, row in parent_rows.iterrows():
+        #     fitness_value = row[gs.c_fitness_value]
+        #     if pd.isnull(fitness_value):
+        #         raise ValueError(
+        #             f"Parent entry ('{gs.hashtag_parent}') at row {index} has empty fitness value. "
+        #             f"Please fill the cell with 0 or an appropriate value."
+        #         )
+
         # each row of the csv file must be checked for valid smiles string
         # I want to notify the user which row has an error, so they can fix their experiment file
         for index, row in df.iterrows():
@@ -234,6 +244,34 @@ class Experiment:
             valid = u_reaction.is_valid_smiles(smiles_string)
             if not valid:
                 raise ValueError(f"Invalid SMILES string at row {index}. SMILES is:'{smiles_string}'")
+
+        # check that all wells follow standard 96-well plate format (A1-H12 or A01-H12)
+        # Pattern: ^[A-H](0?[1-9]|1[0-2])$
+        # ^ = start, [A-H] = letters A-H, (0?[1-9]|1[0-2]) = numbers 1-12 (with optional leading zero), $ = end
+        valid_well_pattern = re.compile(r"^[A-H](0?[1-9]|1[0-2])$")
+        for index, row in df.iterrows():
+            well = str(row[gs.c_well]).strip()
+
+            if not well or pd.isnull(well) or well == "":
+                raise ValueError(f"Well value at row {index} is null, NaN, or empty.")
+
+            if not valid_well_pattern.match(well):
+                raise ValueError(
+                    f"Well '{well}' at row {index} does not follow standard 96-well plate format. "
+                    f"Expected format is letter A-H followed by number 1-12."
+                )
+
+        # check for unique wells within each smiles-plate group
+        for (smiles, plate), group in df.groupby([gs.c_smiles, gs.c_plate]):
+            duplicate_wells = group.duplicated(subset=[gs.c_well], keep=False)
+            if duplicate_wells.any():
+                duplicate_rows = group[duplicate_wells]
+                duplicate_wells_list = duplicate_rows[gs.c_well].unique().tolist()
+                duplicate_indices = duplicate_rows.index.tolist()
+                raise ValueError(
+                    f"Duplicate wells in (smiles={smiles}, plate='{plate}) combo. "
+                    f"Wells {duplicate_wells_list} in rows: {duplicate_indices}. "
+                )
 
         # # Relaxing parent-smiles combo requirement
         # # check any smiles-plate column combo has a #PARENT# in its gs.c_substitution column
