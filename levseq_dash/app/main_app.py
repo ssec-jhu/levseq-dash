@@ -726,6 +726,7 @@ def redirect_to_experiment_page(n_clicks):
     Output("id-experiment-substrate", "children"),
     Output("id-experiment-product", "children"),
     Output("id-experiment-assay", "children"),
+    Output("id-experiment-additional-info", "children"),
     # -------------------------------
     # heatmap dropdowns and figure
     # -------------------------------
@@ -775,6 +776,7 @@ def on_load_experiment_page(pathname, experiment_id):
         parent_sequence = exp_meta_data.get("parent_sequence", "")
         substrate = exp_meta_data.get("substrate", "")
         product = exp_meta_data.get("product", "")
+        experiment_additional_info = exp_meta_data.get("additional_information", "")
 
         # viewer data
         pdb_cif = molstar_helper.parse_molecule(exp.geometry_base64_bytes, fmt="cif")
@@ -845,6 +847,7 @@ def on_load_experiment_page(pathname, experiment_id):
             substrate,
             product,
             exp_meta_data.get("assay", ""),
+            experiment_additional_info,
             # -------------------------------
             # heatmap dropdowns and figure
             # -------------------------------

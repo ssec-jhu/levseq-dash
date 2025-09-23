@@ -118,6 +118,9 @@ def get_tab_experiment_main():
                                                 generate_label_with_info(gs.assay, "id-experiment-assay"),
                                                 generate_label_with_info(gs.plates_count, "id-experiment-plate-count"),
                                                 generate_label_with_info(gs.smiles_file, "id-experiment-file-smiles"),
+                                                generate_label_with_info(
+                                                    gs.additional_info, "id-experiment-additional-info"
+                                                ),
                                             ],
                                             className="overflow-auto",  # enables scroll if needed
                                             style={
