@@ -167,6 +167,9 @@ def get_table_all_experiments():
             # https://ag-grid.com/javascript-data-grid/selection-overview/#cell-text-selection
             "enableCellTextSelection": True,
             "pagination": True,
+            # Compact spacing similar to ag-theme-balham
+            "rowHeight": 30,                    # Smaller rows like balham
+            "headerHeight": 30,                 # Smaller headers like balham
             # https://dash.plotly.com/dash-ag-grid/tooltips
             # If tooltipInteraction is set to True in the Grid Options, the tooltips will not
             # disappear while being hovered, and you will be able to click and select the text within the tooltip.
