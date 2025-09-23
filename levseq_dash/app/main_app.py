@@ -748,7 +748,7 @@ def redirect_to_experiment_page(n_clicks):
     # -------------------------------
     # residue highlight slider
     # --------------------------------
-    # Output("id-slider-ratio", "value"),
+    Output("id-slider-ratio", "value"),
     Output("id-slider-ratio", "max"),
     Output("id-list-smiles-residue-highlight", "options"),
     Output("id-list-smiles-residue-highlight", "value"),
@@ -815,8 +815,15 @@ def on_load_experiment_page(pathname, experiment_id):
         )
 
         # set up the slider
-        # get the max value of the ratio column, round up
-        max_value = np.ceil(df_filtered_with_ratio["ratio"].max())
+        # Fallback if no ratio column exists or values are not valid
+        ratio_max = 5.0
+        slider_default_value = [0.0, ratio_max]
+        if gs.cc_ratio in df_filtered_with_ratio.columns:
+            ratio_min = df_filtered_with_ratio[gs.cc_ratio].min()
+            ratio_max = np.ceil(df_filtered_with_ratio[gs.cc_ratio].max())
+            if ratio_max - ratio_min > 0:
+                # Use reasonable defaults that fit within the data range
+                slider_default_value = [ratio_min, ratio_max]
 
         svg_src_image = u_reaction.create_reaction_image(substrate, product)
 
@@ -869,8 +876,8 @@ def on_load_experiment_page(pathname, experiment_id):
             # -------------------------------
             # residue highlight slider
             # --------------------------------
-            # slider_value,
-            max_value,
+            slider_default_value,
+            ratio_max,
             exp.unique_smiles_in_data,  # list of smiles values
             default_smiles,  # default smiles
             # -------------------------------
@@ -1006,17 +1013,24 @@ def on_view_all_residue(view, slider_value, selected_smiles, rowData):
         if selected_smiles:
             df = pd.DataFrame(rowData)
             df_smiles = df[df[gs.c_smiles] == selected_smiles]
-            # does this smiles_string have a parent combo
-            # ratio is only calculated if a parent exists
-            # if one does not exist, then the slider is meaningless and thus disabled.
-            if gs.hashtag_parent not in df_smiles[gs.c_substitutions].values:
+
+            # Check if the filtered df_smiles has meaningful ratio values
+            #  are only meaningful if there are multiple rows and they vary
+            has_meaningful_ratios = False
+            if len(df_smiles) > 1:
+                # Check if ratio column exists and has non-null, varying values
+                if gs.cc_ratio in df_smiles.columns:
+                    ratio_values = df_smiles[gs.cc_ratio].dropna()
+                    if len(ratio_values) > 1 and ratio_values.nunique() > 1:
+                        has_meaningful_ratios = True
+
+            if not has_meaningful_ratios:
                 df_filtered = df_smiles
-                # disable the slider when no parent is present
+                # disable the slider when no meaningful ratios are present
                 slider_disabled = True
-                highlighted_residue_info += "No parent for selected SMILES; "
+                highlighted_residue_info += "No ratios for selected SMILES; "
             else:
-                # apply the slider values
-                # delta = math.fabs(slider_value[0] - slider_value[1])
+                # apply the slider values since we have meaningful ratios
                 df_filtered = df_smiles[df_smiles[gs.cc_ratio].between(slider_value[0], slider_value[1])]
 
             # after the filtering there may only be the parent left
