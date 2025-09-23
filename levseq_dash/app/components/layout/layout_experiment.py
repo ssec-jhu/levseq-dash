@@ -60,7 +60,7 @@ def get_slider_area_layout():
                     ),
                     dcc.RangeSlider(
                         id="id-slider-ratio",
-                        value=[0.5, 2.5],
+                        # value=[0.5, 2.5],
                         min=0,
                         marks=None,
                         tooltip={
