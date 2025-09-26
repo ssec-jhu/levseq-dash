@@ -20,6 +20,11 @@ def test_data_path(package_root):
 
 
 @pytest.fixture(scope="session")
+def app_data_path(package_root):
+    return package_root / "app" / "data"
+
+
+@pytest.fixture(scope="session")
 def path_exp_ep_data(test_data_path):
     return [
         test_data_path / "flatten_ep_processed_xy_cas" / "flatten_ep_processed_xy_cas.csv",
