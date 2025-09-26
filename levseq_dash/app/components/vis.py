@@ -152,13 +152,33 @@ def get_icon(icon_string, size=MEDIUM):
 
 
 def data_bars_group_mean_colorscale(
-    df, value_col=gs.cc_ratio, min_col="min_group", max_col="max_group", color_scale=px.colors.diverging.RdBu
+    df,
+    value_col=gs.cc_ratio,
+    min_col="min_group_ratio",
+    max_col="max_group_ratio",
+    color_scale=px.colors.diverging.RdBu,
 ):
     """
     Generate Dash AG Grid cell styles with a color gradient bar.
     """
 
     styles = []
+
+    # Fast early return if required columns don't exist or are entirely null
+    if value_col not in df.columns or min_col not in df.columns or max_col not in df.columns:
+        return styles
+
+    # Fast check: if the entire ratio column is null/NaN, return empty styles
+    if df[value_col].isna().all() or df[value_col].isnull().all():
+        return styles
+
+    # Also check if min/max columns are entirely null, which would make coloring meaningless
+    if df[min_col].isna().all() or df[max_col].isna().all():
+        return styles
+
+    if gs.hashtag_parent not in df[gs.c_substitutions].values:
+        return styles
+
     n_bins = 96
     color_scale = px.colors.sample_colorscale(px.colors.diverging.RdBu, [i / n_bins for i in range(n_bins)])
     color_scale.reverse()
