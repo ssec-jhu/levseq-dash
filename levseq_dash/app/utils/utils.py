@@ -152,7 +152,8 @@ def calculate_group_mean_ratios_per_smiles_and_plate(original_df):
     # if there is the word trac in the column replace with 0.001
     work_df.loc[work_df[value_col].astype(str).str.contains("trac", case=False, na=False), value_col] = 0.001
 
-    # Compute mean ONLY for rows where parent_col == parent_value, per group
+    # Compute mean ONLY for rows where parent_col == parent_value, per group and that the parent is not 0
+    # if a prent has 0 fitness value that group combo is ignored
     parent_mean = (
         work_df[(work_df[gs.c_substitutions] == "#PARENT#") & (work_df[value_col] > 0)]
         .groupby(group_cols)[value_col]
