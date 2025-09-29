@@ -801,7 +801,7 @@ def on_load_experiment_page(pathname, experiment_id):
         columnDefs_with_ratio = cd.get_top_variant_column_defs(df_filtered_with_ratio)
 
         # drop unnecessary columns here.
-        columns_to_drop = ["min", "max", "min_group", "max_group", "mean"]
+        columns_to_drop = ["min", "max", "min_group_ratio", "max_group_ratio", "mean"]
         df_filtered_with_ratio = df_filtered_with_ratio.drop(
             columns=[col for col in columns_to_drop if col in df_filtered_with_ratio.columns]
         )

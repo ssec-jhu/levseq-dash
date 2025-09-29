@@ -77,11 +77,38 @@ def test_callback_on_load_experiment_page_epdata(mocker, disk_manager_from_test_
     TIME_RESULTS.append((f"EPPROC {len(result[1])} rows", execution_time))
 
 
+def test_callback_on_load_experiment_page_on_all_real_data_files(mocker, app_data_path, disk_manager_from_app_data):
+    # Get the data path from the disk manager
+    mocker.patch("levseq_dash.app.main_app.singleton_data_mgr_instance", disk_manager_from_app_data)
+
+    failure_count = 0
+    ctx = copy_context()
+    # make a list of all the experiments in the disk manager and run the callback on each one
+
+    for exp in disk_manager_from_app_data.get_all_lab_experiments_with_meta_data():
+        experiment_id = exp["experiment_id"]
+        try:
+            start_time = time.time()
+            result = ctx.run(run_callback_on_load_experiment_page, gs.nav_experiment_path, experiment_id)
+            execution_time = time.time() - start_time
+            assert result is not None
+            assert len(result[1][0]) == 8  # Ensure there are 9 columns for the variants list
+            TIME_RESULTS.append((f"{experiment_id}, {len(result[1])} rows ", execution_time))
+        except Exception as e:
+            # if there is an exception, print it and continue with the next experiment but the test must fail
+            failure_count += 1
+            print(f"Exception at {experiment_id}: {e}")  # Debugging: Print exception details
+
+    assert failure_count == 0
+
+
 @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping test on Github")
 def test_print_timing_summary():
     """Print a summary of all timing results from the performance tests."""
     print("\n\n" + "=" * 50)
     print("PERFORMANCE TEST TIMING SUMMARY")
     print("=" * 50)
+    # sort by duration
+    TIME_RESULTS.sort(key=lambda x: x[1])
     for test_id, duration in TIME_RESULTS:
-        print(f"  {test_id}: {duration:.4f} seconds")
+        print(f"  {test_id}, {duration:.4f} seconds")
