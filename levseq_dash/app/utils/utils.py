@@ -136,26 +136,28 @@ def decode_csv_file_base64_string_to_dataframe(base64_encoded_string):
     return df, base64_encoded_bytes
 
 
-def calculate_group_mean_ratios_per_smiles_and_plate(original_df):
+def calculate_group_mean_ratios_per_smiles_and_plate(df):
     group_cols = [gs.c_smiles, gs.c_plate]
     value_col = gs.c_fitness_value
 
-    work_df = original_df.copy()
+    # Check if ratio column already exists and has values - if so, skip calculation
+    if gs.cc_ratio in df.columns and not df[gs.cc_ratio].isna().all():
+        return df
 
     # --------------------------------
     # clean up the fitness value column
     # ----------------------------------
     # if there are nans or empty values set them to be 0
     # 'coerce': then invalid parsing will be set as NaN
-    work_df[value_col] = pd.to_numeric(work_df[value_col], errors="coerce").fillna(0)
+    df[value_col] = pd.to_numeric(df[value_col], errors="coerce").fillna(0)
 
     # if there is the word trac in the column replace with 0.001
-    work_df.loc[work_df[value_col].astype(str).str.contains("trac", case=False, na=False), value_col] = 0.001
+    df.loc[df[value_col].astype(str).str.contains("trac", case=False, na=False), value_col] = 0.001
 
     # Compute mean ONLY for rows where parent_col == parent_value, per group and that the parent is not 0
     # if a prent has 0 fitness value that group combo is ignored
     parent_mean = (
-        work_df[(work_df[gs.c_substitutions] == "#PARENT#") & (work_df[value_col] > 0)]
+        df[(df[gs.c_substitutions] == "#PARENT#") & (df[value_col] > 0)]
         .groupby(group_cols)[value_col]
         .mean()
         .reset_index()
@@ -165,25 +167,25 @@ def calculate_group_mean_ratios_per_smiles_and_plate(original_df):
     # Check if the mean column is all 0, NaN, or null - if so, return early
     if len(parent_mean) == 0 or parent_mean["mean"].isna().all() or np.isclose(parent_mean["mean"], 0).all():
         # Mean column is all 0, NaN, or null, return original df with empty ratio column
-        original_df[gs.cc_ratio] = None
-        return original_df
+        df[gs.cc_ratio] = None
+        return df
 
     # Merge stats back into df
-    work_df = work_df.merge(parent_mean, on=group_cols, how="left")  # Keeps all rows, even if no mean exists
+    df = df.merge(parent_mean, on=group_cols, how="left")  # Keeps all rows, even if no mean exists
 
     # Compute fitness ratio relative to the mean
-    work_df[gs.cc_ratio] = work_df[value_col] / work_df["mean"]
+    df[gs.cc_ratio] = df[value_col] / df["mean"]
 
     group_stats_ratio = (
-        work_df.groupby(group_cols)[gs.cc_ratio].agg(min_group_ratio="min", max_group_ratio="max").reset_index()
+        df.groupby(group_cols)[gs.cc_ratio].agg(min_group_ratio="min", max_group_ratio="max").reset_index()
     )
     # each ratio value must be rounded to the nearest 0.001
-    work_df[gs.cc_ratio] = work_df[gs.cc_ratio].round(3)
+    df[gs.cc_ratio] = df[gs.cc_ratio].round(3)
 
     # merge ratio and min max of the ratio values into the data
-    work_df = work_df.merge(group_stats_ratio, on=group_cols, how="left")
+    df = df.merge(group_stats_ratio, on=group_cols, how="left")
 
-    return work_df
+    return df
 
 
 def extract_all_substrate_product_smiles_from_lab_data(list_of_all_lab_experiments_with_meta: list[{}]):
