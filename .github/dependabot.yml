@@ -16,7 +16,7 @@ updates:
           - "dash-bootstrap-components"
           - "dash_molstar"
           - "biopython"
-          - "rdkit*"
+          - "rdkit"
           - "plotly-express"
         update-types:
           - "minor"
