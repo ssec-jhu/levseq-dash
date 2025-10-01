@@ -57,6 +57,7 @@ smiles_file = "SMILES in experiment file"
 sub_smiles = "Substrate SMILES: "
 prod_smiles = "Product SMILES: "
 additional_info = "Additional Information"
+paper_doi = "DOI"
 
 # ------- card headers
 sequence = "Amino Acid Sequence"
