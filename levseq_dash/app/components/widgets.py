@@ -461,7 +461,7 @@ def generate_label_with_info(label, id_info):
     """
     return html.Div(
         [
-            html.Span(label, style=vis.experiment_info),
+            html.Span(f"{label}:", style=vis.experiment_info),
             html.Span(id=id_info),
         ],
         style={
