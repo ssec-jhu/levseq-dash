@@ -11,4 +11,4 @@ plotly-express==0.4.1
 biopython==1.85
 rdkit==2025.3.2
 pillow==11.2.1
-cachetools==5.5.2
+cachetools==6.2.0
