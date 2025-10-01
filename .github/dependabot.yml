@@ -9,6 +9,15 @@ updates:
         applies-to: version-updates
         patterns:
           - "*"
+        # # Dependabot will still raise individual pull requests for updates to these excluded dependencies.
+        exclude-patterns: 
+          - "dash"
+          - "dash-ag-grid"
+          - "dash-bootstrap-components"
+          - "dash_molstar"
+          - "biopython"
+          - "rdkit*"
+          - "plotly-express"
         update-types:
           - "minor"
           - "patch"
