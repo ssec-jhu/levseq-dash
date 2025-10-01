@@ -14,7 +14,7 @@ updates:
           - "dash"
           - "dash-ag-grid"
           - "dash-bootstrap-components"
-          - "dash_molstar"
+          - "dash-molstar"
           - "biopython"
           - "rdkit"
           - "plotly-express"
