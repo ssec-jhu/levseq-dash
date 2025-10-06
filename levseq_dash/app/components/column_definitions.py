@@ -21,7 +21,7 @@ def get_experiment_id(record):
             # "filter": "agNumberColumnFilter",
             # show the first 5 characters of the prefix plus the first 5 of the uuid
             "valueFormatter": {
-                "function": "params.value.slice(0, 11)"  # shows first 11 chars
+                "function": "params.value.slice(0, 13)"  # shows first 11 chars
             },
             "tooltipField": "experiment_id",  # show full UUID on hover
         }
@@ -87,6 +87,15 @@ def get_experiment_meta(record_1, record_2, record_3, record_4, record_5):
     if record_5:
         c[4].update(record_5)
 
+    return c
+
+
+def get_experiment_doi(record):
+    c = [
+        {"field": "doi", "headerName": "DOI", "tooltipField": "doi", "cellRenderer": "DOILink"},
+    ]
+    if record:
+        c[0].update(record)
     return c
 
 
@@ -276,8 +285,9 @@ def get_all_experiments_column_defs():
 
     column_def = (
         get_checkbox()
-        + get_experiment_id({"width": 130})
+        + get_experiment_id({"width": 170, "sort": "asc", "sortIndex": 1})
         + get_experiment_name({"flex": 10})
+        + get_experiment_doi({"flex": 4})
         + get_experiment_meta_smiles({"flex": 5}, {"flex": 5})
         + get_experiment_meta(
             {"flex": 3},  # experiment_date
@@ -299,7 +309,7 @@ def get_matched_sequences_column_defs():
         # if you want to pin any of the columns, here's how you do it
         # get_experiment_id({"width": 120, "pinned": "left"})
         # + get_smiles({"width": 150, "pinned": "left"})
-        get_experiment_id({"width": 130})
+        get_experiment_id({"width": 170})
         + get_smiles({"width": 200})
         + get_experiment_name({"width": 250})
         + get_alignment_scores()
@@ -337,7 +347,7 @@ def get_matched_sequences_exp_hot_cold_data_column_defs():
     """
     Returns column definitions for the matched sequences experiment data
     """
-    column_def = get_experiment_id({"width": 130, "pinned": "left"})
+    column_def = get_experiment_id({"width": 170, "pinned": "left"})
     column_def += get_experiment_name({"width": 250})
     column_def += [
         {
@@ -372,7 +382,7 @@ def get_an_experiments_matched_sequences_column_defs():
     column_def = (
         # It doesn't make sense to sort by experiment ID but keeping commented for PI if of interest
         # get_experiment_id({"width": 120, "pinned": "left", "initialSort": "desc"})
-        get_experiment_id({"width": 130, "pinned": "left"})
+        get_experiment_id({"width": 170, "pinned": "left"})
         + get_experiment_name({"width": 250})
         + get_alignment_scores()
     )

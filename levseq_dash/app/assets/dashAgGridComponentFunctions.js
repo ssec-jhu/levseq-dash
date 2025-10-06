@@ -207,6 +207,18 @@ dagcomponentfuncs.seqAlignmentVis = function(params) {
 };
 
 
-
+dagcomponentfuncs.DOILink = function (props) {
+    var url = "https://doi.org/" + props.value;
+    // var url = props.value;
+    return React.createElement(
+        window.dash_html_components.A,{
+            children: props.value,
+            href: url,
+            target: '_blank',
+            rel:"noopener noreferrer",
+            className: 'study-link-color'
+        }
+    );
+};
 
 

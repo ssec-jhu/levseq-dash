@@ -68,6 +68,7 @@ def migrate_legacy_data_to_uuid_structure(input_data_path: Path, output_data_pat
             assay_technique = row["assay_technique"]
 
             additional_info = row["additional_information"]
+            doi = row["doi"]
 
             # Find CIF structure file
             cif_filename = row["cif_filename"]
@@ -105,6 +106,7 @@ def migrate_legacy_data_to_uuid_structure(input_data_path: Path, output_data_pat
             metadata = {
                 "experiment_id": experiment_uuid,
                 "experiment_name": experiment_name,
+                "doi": doi,
                 "experiment_date": experiment_date,
                 "substrate": substrate_smiles,
                 "product": product_smiles,
