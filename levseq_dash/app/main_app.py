@@ -61,6 +61,8 @@ app.layout = dbc.Container(
         # stores for clearing results
         dcc.Store(id="id-cleared-run-seq-matching", data=False),
         dcc.Store(id="id-cleared-run-exp-related-variants", data=False),
+        # store for all experiments table filter persistence
+        dcc.Store(id="id-table-all-experiments-filter-store", storage_type="session"),
         dcc.Location(id="url", refresh=False),
     ],
     fluid=True,
@@ -126,9 +128,11 @@ def route_page(pathname):
 # -------------------------------
 @app.callback(
     Output("id-table-all-experiments", "rowData"),
+    Output("id-table-all-experiments", "filterModel"),
     Input("id-table-all-experiments", "columnDefs"),
+    State("id-table-all-experiments-filter-store", "data"),
 )
-def load_explore_page(temp_text):
+def load_explore_page(temp_text, filter_store):
     list_of_all_lab_experiments_with_meta = singleton_data_mgr_instance.get_all_lab_experiments_with_meta_data()
 
     # all_substrate, all_product = utils.extract_all_substrate_product_smiles_from_lab_data(
@@ -139,7 +143,20 @@ def load_explore_page(temp_text):
     # # UI will just not have an image, but won't fail
     # substrate_svg_image = u_reaction.create_mols_grid(all_substrate)
     # product_svg_image = u_reaction.create_mols_grid(all_product)
-    return list_of_all_lab_experiments_with_meta
+    return list_of_all_lab_experiments_with_meta, filter_store
+
+
+@app.callback(
+    Output("id-table-all-experiments-filter-store", "data"),
+    Input("id-table-all-experiments", "filterModel"),
+    prevent_initial_call=True,
+)
+def save_table_filter_state(filter_model):
+    """Save filter state to browser session storage only when filters change"""
+    if filter_model is None:
+        return no_update
+    else:
+        return filter_model
 
 
 @app.callback(
