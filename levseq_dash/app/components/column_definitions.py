@@ -285,7 +285,7 @@ def get_all_experiments_column_defs():
 
     column_def = (
         get_checkbox()
-        + get_experiment_id({"width": 170, "sort": "asc", "sortIndex": 1})
+        + get_experiment_id({"width": 170})
         + get_experiment_name({"flex": 10})
         + get_experiment_doi({"flex": 4})
         + get_experiment_meta_smiles({"flex": 5}, {"flex": 5})
