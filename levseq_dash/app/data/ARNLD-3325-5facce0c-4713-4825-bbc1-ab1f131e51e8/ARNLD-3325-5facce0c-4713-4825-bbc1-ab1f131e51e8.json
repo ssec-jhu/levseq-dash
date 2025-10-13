@@ -1,0 +1,15 @@
+{
+    "experiment_id": "ARNLD-3325-5facce0c-4713-4825-bbc1-ab1f131e51e8",
+    "experiment_name": "Protoglobin-Catalyzed Formation of cis-Trifluoromethyl-Substituted Cyclopropanes by Carbene Transfer",
+    "doi": "10.1002/anie.202208936",
+    "experiment_date": "2022-12-19",
+    "substrate": "[N-]=[N+]=CC(F)(F)F.C=CC(=O)OCc1ccccc1",
+    "product": "O=C(OCc1ccccc1)[C@@H]1C[C@@H]1C(F)(F)F",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MTPSDIPGYDYGRVEKSPITDLEFDLLKKTVMLGEKDVMYLKKACDVLKDQVDEILDLLQGWVASNEHLIYYFSNPDTGEPIKEYLERVRARFGAWILDTTCRDYNREWLDYQYEVGLRHHRSKKGVTDGVRTVPHIPLRYLIAFIYPITATIKPFLAKKGGSPEDIEGMYNAWFKSVVLQVAIWSHPYTKENDW",
+    "plates_count": 1,
+    "csv_checksum": "cc62f5b374bec35498a6fb75edd13a3254b612f7f36a3f6801f803a690053c7d",
+    "additional_information": "substrate_concentration: 10 mM;     activity_for_reaction_% (if applicable): 30;     reaction_smiles: O=C(OCC1=CC=CC=C1)C=C.[N-]=[N+]=CC(F)(F)F>>O=C(OCC2=CC=CC=C2)[C@@H]3C[C@@H]3C(F)(F)F",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

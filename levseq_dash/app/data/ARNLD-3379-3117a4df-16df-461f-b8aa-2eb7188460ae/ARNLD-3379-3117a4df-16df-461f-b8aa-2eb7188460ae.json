@@ -1,0 +1,15 @@
+{
+    "experiment_id": "ARNLD-3379-3117a4df-16df-461f-b8aa-2eb7188460ae",
+    "experiment_name": "The \u03b2-subunit of tryptophan synthase is a latent tyrosine synthase",
+    "doi": "10.1038/s41589-024-01619-z",
+    "experiment_date": "2024-05-14",
+    "substrate": "N[C@@H](CO)C(=O)O.Oc1ccccc1",
+    "product": "N[C@@H](Cc1ccc(O)cc1)C(=O)O",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MKGYFGPYGGQYVPEILMGALEELEAAYEGIMKDESFWKEFNDLLRDYAGRPTPLYFARRLSEKYGARVYLKREDLLHTGAHKINNAIGQVLLAKLMGKTRIIAETGAGQHGVATATAAALFGMECVIYMGEEDTIRQKLNVERMKLLGAKVVPVKSGSRTLKDAIDEALRDWITNLQTTYYVFGSVVGPHPYPIIVRNFQKVIGEETKKQIPEKEGRLPDYIVACVSGGSNAAGIFYPFIDSGVKLIGVEAGGEGLETGKHAASLLKGKIGYLHGSKTFVLQDDWGQVQVSHSVSAGLDYSGVGPEHAYWRETGKVLYDAVTDEEALDAFIELSRLEGIIPALESSHALAYLKKINIKGKVVVVNLSGRGDKDLESVLNHPYVRERIR",
+    "plates_count": 1,
+    "csv_checksum": "fdf9e7578542aba9d3ce6cb9732e2188bbe5c4132738c681968a8e42ad42542e",
+    "additional_information": "substrate_concentration: 50 mM;     reaction_smiles: OC1=CC=CC=C1.N[C@@H](CO)C(O)=O>>OC2=CC=C(C=C2)C[C@H](N)C(O)=O",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

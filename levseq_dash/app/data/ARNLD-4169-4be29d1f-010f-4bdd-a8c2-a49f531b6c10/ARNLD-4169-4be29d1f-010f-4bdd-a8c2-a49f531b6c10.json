@@ -1,0 +1,15 @@
+{
+    "experiment_id": "ARNLD-4169-4be29d1f-010f-4bdd-a8c2-a49f531b6c10",
+    "experiment_name": "Selective Enzymatic Oxidation of Silanes to Silanols",
+    "doi": "10.1002/anie.202002861",
+    "experiment_date": "2020-03-24",
+    "substrate": "O=O.C[SiH](C)c1ccccc1",
+    "product": "C[Si](C)(O)c1ccccc1",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MTIKEMPQPKTFGELKNLPLLNTDKPVQALMKIADELGEIFKFEAPGRVTRYLSSQRLIKEACDESRFDKNLSQALKFVRDFAGDGLFTSWTHEKNWKKAHNILLPSFSQQAMKGYHAMMVDIAVQLVQKWERLNADEHIEVPEDMTRLTLDTIGLCGFNYRFNSFYRDQPHPFITSMVRALDEAMNKLQRANPDDPAYDENKRQFQEDIKVMNDLVDKIIADRKASGEQSDDLLTHMLNGKDPETGEPLDDENIRYQIITFLIAGHETTSGLLSFALYFLVKNPHVLQKAAEEAARVLVDPVPSYKQVKQLKYVGMVLNEALRLWPTAPAFSLYAKEDTVLGGEYPLEKGDELMVLIPQLHRDKTIWGDDVEEFRPERFENPSAIPQHAFKPFGNGQRACIGQQFALHEATLVLGMMLKHFDFEDHTNYELDIKETLTLKPEGFVVKAKSKKIPLGGIPSPSTEQ",
+    "plates_count": 1,
+    "csv_checksum": "f95af1e03ba579fe270c90c62dde3cfa53a4465e6d364f8293aa41fe547ecb6b",
+    "additional_information": "substrate_concentration: 10 mM;     activity_for_reaction_% (if applicable): 2.1;     reaction_smiles: [H][Si](C)(C)C1=CC=CC=C1.O=O>>O[Si](C)(C)C2=CC=CC=C2",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

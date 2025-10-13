@@ -1,0 +1,15 @@
+{
+    "experiment_id": "ARNLD-7037-fcbaa1a5-18db-4e53-bb3b-86d08c9e1454",
+    "experiment_name": "Engineered Cytochrome\u00a0c-Catalyzed Lactone-Carbene B-H Insertion",
+    "doi": "10.1055/s-0037-1611662",
+    "experiment_date": "2019-01-14",
+    "substrate": "[BH3-]c1n(C)cc[n+]1C.[N-]=[N+]=C1CCOC1=O",
+    "product": "Cn1cc[n+](C)c1[BH2-]C1CCOC1=O",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MTESGTAAQDPEALAAEIGPVKQVSLGEQIDAALAQQGEQLFNTYCTACHRLDERFIGPALRDVTKRRGPVYIMNVMLNPNGMIQRHPVMKQLVQEYGTMMTDMALSEEQARAILEYLRQVAENQLE",
+    "plates_count": 1,
+    "csv_checksum": "1c5c13f20c314eec242ae5bcaebfc69abfcf0183ae166422cee8a551e667e810",
+    "additional_information": "substrate_concentration: 10 mM;     activity_for_reaction_% (if applicable): 70;     reaction_smiles: CN1C=C[N+](C)=C1[BH3-].O=C2OCCC2=[N+]=[N-]>>CN3C=C[N+](C)=C3[BH2-]C4CCOC4=O",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

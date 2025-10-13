@@ -1,0 +1,15 @@
+{
+    "experiment_id": "ARNLD-2712-73434f29-0759-481c-af2f-ce4788a90ca2",
+    "experiment_name": "Biocatalytic Synthesis of \u03b1-Amino Esters via Nitrene C-H Insertion",
+    "doi": "10.1021/jacs.4c09989",
+    "experiment_date": "2024-09-27",
+    "substrate": "O=S(=O)([O-])C(F)(F)F.CC(C)(C)C(=O)O[NH3+].CCOC(=O)Cc1ccc(F)cc1",
+    "product": "CCOC(=O)[C@@H](N)c1ccc(F)cc1",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MTPSDIPGYDYGRVEKSPITDLEFDLLKKTVMLGEKDVMYLKKACDVLKDQVDEILDLAGGWVASNEHLIYYFSNPDTGEPIKEYLERVRARFGAWILDTTCRDYNREWLDYQYEVGLRHHRSKKGVTDGVRTVPHIPLRYLIAGIYPITATIKPFLAKKGGSPEDIEGMYNAWFKSVVLQVAIWSHPYTKENDW",
+    "plates_count": 1,
+    "csv_checksum": "07d7fc803de71eee81e4afd1957055fab1e9664338a8a04295c65064829196e1",
+    "additional_information": "substrate_concentration: 2.5 mM;     activity_for_reaction_% (if applicable): 3;     reaction_smiles: FC1=CC=C(CC(OCC)=O)C=C1.[NH3+]OC(C(C)(C)C)=O.O=S(C(F)(F)F)([O-])=O>>FC2=CC=C([C@H](N)C(OCC)=O)C=C2",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

@@ -1,0 +1,15 @@
+{
+    "experiment_id": "ARNLD-7810-2beeb0dd-0b5f-4f20-b0a6-30d3ad18c89f",
+    "experiment_name": "Stereospecific Enzymatic Conversion of Boronic Acids to Amines",
+    "doi": "10.1021/jacs.4c04190",
+    "experiment_date": "2024-07-03",
+    "substrate": "OB(O)c1ccc2ccccc2c1.NO.Cl",
+    "product": "Nc1ccc2ccccc2c1",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MTPSDIPGYDYGRVEKSPITDLEFDLLKKTVMLGEKDVMYLKKACDVLKDQVDEILDLAGGWVASNEHLIYYFSNPDTGEPIKEYLERVRARFGAWILDTTCRDYNREWLDYQYEVGLRHHRSKKGVTDGVRTVPHIPLRYLIAFIYPNTATIKPFLAKKGGSPEDIEGMYNAWFKSVVLQVAIWSHPYTKENDW",
+    "plates_count": 1,
+    "csv_checksum": "e31ecc8f195f7c04f50c0c172bd744f6acf386c50161292b79547faa0306cbc8",
+    "additional_information": "substrate_concentration: 2.5 mM;     activity_for_reaction_% (if applicable): 1;     reaction_smiles: OB(O)C1=CC2=CC=CC=C2C=C1.ON.Cl>>NC3=CC4=CC=CC=C4C=C3",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

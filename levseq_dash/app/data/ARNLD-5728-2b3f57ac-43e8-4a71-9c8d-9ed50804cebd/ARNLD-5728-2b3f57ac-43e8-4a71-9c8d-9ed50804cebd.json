@@ -1,0 +1,15 @@
+{
+    "experiment_id": "ARNLD-5728-2b3f57ac-43e8-4a71-9c8d-9ed50804cebd",
+    "experiment_name": "Nitrene Transfer Catalyzed by a Non-Heme Iron Enzyme and Enhanced by Non-Native Small-Molecule Ligands",
+    "doi": "10.1021/jacs.9b11608",
+    "experiment_date": "2019-12-02",
+    "substrate": "CCc1ccccc1S(=O)(=O)N=[N+]=[N-]",
+    "product": "CCc1ccccc1S(=O)(=O)N=[N+]=[N-]",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MTNLQTFELPTEVTGCAADISLGRALIQAWQKDGIFQIKTDSEQDRKTQEAMAASKQFCKEPLTFKSSCVSDLTYSGYVASGEEVTAGKPDFPEIFTVCKDLSVGDQRVKAGWPCHGPVPWPNNTYQKSMKTFMEELGLAGERLLKLTALGFELPINTFTDLTRDGWHHMRVLRFPPQTSTLSRGIGAHTDYGLLVIAAQDDVGGLYIRPPVEGEKRNRNWLPGESSAGMFEHDEPWTFVTPTPGVWTVFPGDILQFMTGGQLLSTPHKVKLNTRERFACAYFHEPNFEASAYPLFEPSANERIHYGEHFTNMFMRCYPDRITTQRINKENRLAHLEDLKKYSDTRATGS",
+    "plates_count": 1,
+    "csv_checksum": "bd24cbf6515797aa077a51847e940b06490a116400f51c7d6bb2d3caa1e3e2ac",
+    "additional_information": "substrate_concentration: 10 mM;     reaction_smiles: CCC1=CC=CC=C1S(=O)(N=[N+]=[N-])=O>>CCC1=CC=CC=C1S(=O)(N=[N+]=[N-])=O",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

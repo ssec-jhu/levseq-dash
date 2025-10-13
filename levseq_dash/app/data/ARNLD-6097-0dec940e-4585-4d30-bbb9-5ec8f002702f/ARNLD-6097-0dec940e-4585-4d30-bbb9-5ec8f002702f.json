@@ -1,0 +1,15 @@
+{
+    "experiment_id": "ARNLD-6097-0dec940e-4585-4d30-bbb9-5ec8f002702f",
+    "experiment_name": "Enzymatic Nitrogen Incorporation Using Hydroxylamine",
+    "doi": "10.1021/jacs.3c08053",
+    "experiment_date": "2023-09-06",
+    "substrate": "NO.Cl.C=Cc1ccc(OC)cc1",
+    "product": "COc1ccc(C(C)N)cc1",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVEDILDLWYGLQGSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTLCKPLDRQWLNYMYEIGLRHHRTKKGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAIWSYPYAKTGEW",
+    "plates_count": 1,
+    "csv_checksum": "23e08e85671abc944bff68a4e43715b55f2808c9ceeb2daf3dd15c525d0418c0",
+    "additional_information": "substrate_concentration: 10 mM;     activity_for_reaction_% (if applicable): trace;     reaction_smiles: C=CC1=CC=C(OC)C=C1.NO.[H]Cl>>CC(N)C2=CC=C(OC)C=C2",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

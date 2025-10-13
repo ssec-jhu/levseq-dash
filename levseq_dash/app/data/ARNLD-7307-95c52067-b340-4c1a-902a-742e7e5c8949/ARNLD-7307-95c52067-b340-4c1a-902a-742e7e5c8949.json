@@ -1,0 +1,15 @@
+{
+    "experiment_id": "ARNLD-7307-95c52067-b340-4c1a-902a-742e7e5c8949",
+    "experiment_name": "Genetically programmed chiral organoborane synthesis",
+    "doi": "10.1038/nature24996",
+    "experiment_date": "2017-11-29",
+    "substrate": "[BH3-]c1n(C)cc[n+]1C.CCOC(=O)C(C)=[N+]=[N-]",
+    "product": "CCOC(=O)C(C)[BH2-]c1n(C)cc[n+]1C",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MTESGTAAQDPEALAAEIGPVKQVSLGEQIDAALAQQGEQLFNTYCTACHRLDERFIGPALRDVTKRRGPVYIMNVMLNPNGMIQRHPVMKQLVQEYGTMMTDMALSEEQARAILEYLRQVAENQLE",
+    "plates_count": 1,
+    "csv_checksum": "4c6f47247c37466a48a949af2eb44401aea3bec7dc82976f1f0fb240e4b368af",
+    "additional_information": "substrate_concentration: 10 mM;     reaction_smiles: [BH3-]C1=[N+](C=CN1C)C.CC(C(OCC)=O)=[N+]=[N-]>>CC([BH2-]C2=[N+](C)C=CN2C)C(OCC)=O",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

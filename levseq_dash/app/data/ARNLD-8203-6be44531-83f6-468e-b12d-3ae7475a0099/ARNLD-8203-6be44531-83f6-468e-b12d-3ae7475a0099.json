@@ -1,0 +1,15 @@
+{
+    "experiment_id": "ARNLD-8203-6be44531-83f6-468e-b12d-3ae7475a0099",
+    "experiment_name": "Tailoring Tryptophan Synthase TrpB for Selective Quaternary Carbon Bond Formation",
+    "doi": "10.1021/jacs.9b09864",
+    "experiment_date": "2019-11-20",
+    "substrate": "N[C@@H](CO)C(=O)O.CC1C(=O)Nc2ccccc21",
+    "product": "CC1(C[C@H](N)C(=O)O)C(=O)Nc2ccccc21",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MWFGEFGGQYVPETLVGPLKELEKAYKRFKDDEEFNRQLNYYLKTWAGRPTPLYYAKRLTEKIGGAKVYLKREDLVHGGAHKTNNAIGQALLAKLMGKTRLIAGTGAGQHGVATAMAGALLGMKVDIYMGAEDVERQKLNVFRMKLLGANVIPVNSGSRTLKDAFDEALRDWVATFEYTHYLIGSVVGPHPYPTIVRDFQSVIGREAKAQILEAEGQLPDVIVACVGGGSNAMGIFYPFVNDKKVKLVGVEAGGKGLESGKHSASLNAGQVGVSHGMLSYFLQDEEGQIKPSHSIAPGLDHPGVGPEHAYLKKIQRAEYVAVTDEEALKAFHELSRTEGIIPALESAHAVAYAMKLAKEMSRDEIIIVNLSGRGDKDLDIVLKASGNV",
+    "plates_count": 1,
+    "csv_checksum": "8bd3a370b4dcb99b775bfc0bb361cc7c98a945cf7d52d2aa4ed29d96355ed868",
+    "additional_information": "substrate_concentration: 100 mM;     activity_for_reaction_% (if applicable): 0.04;     reaction_smiles: N[C@@H](CO)C(O)=O.O=C1NC2=CC=CC=C2C1C>>O=C3NC4=CC=CC=C4C3(C[C@H](N)C(O)=O)C",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}
