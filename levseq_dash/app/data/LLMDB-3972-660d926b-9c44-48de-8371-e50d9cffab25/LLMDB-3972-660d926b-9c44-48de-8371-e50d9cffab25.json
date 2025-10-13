@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-3972-660d926b-9c44-48de-8371-e50d9cffab25",
+    "experiment_name": "Enzymatic construction of highly strained carbocycles",
+    "doi": "10.1126/science.aar4239",
+    "experiment_date": "2018-06-04",
+    "substrate": "[N+](=[N-])=CC(=O)OCC.C1(=CC=CC=C1)C#CCC",
+    "product": "C(CC1=CC=CC=C1)C=1[C@@H](C1)C(=O)OCC",
+    "assay": "Ionization Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "TIKEMPQPKTFGELKNLPLLNTDKPVQALMKIADELGEIFKFEAPGRVTRYLSSQRLIKEACDESRFDKNLSQALKFARDFAGDGLATSWTHEKNWKKAHNILLPSFSQQAMKGYHAMMVDIAVQLVQKWERLNADEHIEVSEDMTRLTLDTIGLCGFNYRFNSFYRDQPHPFIISMVRALDEVMNKLQRANPDDPAYDENKRQFQEDIKVMNDLVDKIIADRKARGEQSDDLLTQMLNGKDPETGEPLDDGNIRYQIITFLFAGHEGTSGLLSFALYFLVKNPHVLQKVAEEAARVLVDPVPSYKQVKQLKYVGMVLNEALRLWPTVPAFSLYAKEDTVLGGEYPLEKGDEVMVLIPQLHRDKTVWGDDVEEFRPERFENPSAIPQHAFKPFGNGQRASIGQQFALHEATLVLGMMLKHFDFEDHTNYELDIKETLSLKPKGFVVKAKSKKIPLGGIPSPSTLEHHHHHH",
+    "plates_count": 1,
+    "csv_checksum": "11d5affb5780e699aecad247b3150e66d3714860745a691c4100930ac9729f94",
+    "additional_information": "reaction_condition: reaction_temperature:room temperature (23 \u00b0C);    reaction_ph:7.4;    reaction_other_conditions:whole-cell catalyst (E. coli expressing P411 variant, OD600 = 15, 340 \u03bcL), 10 mM Ethyl 2-diazoacetate (1.0 equiv.), 25 mM D-glucose, anaerobic conditions, shaken at 560 rpm, 6 h reaction time, 400 \u03bcL final reaction volume, 2.5 vol% EtOH;    reaction_substrate_concentration:10 mM 5a",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

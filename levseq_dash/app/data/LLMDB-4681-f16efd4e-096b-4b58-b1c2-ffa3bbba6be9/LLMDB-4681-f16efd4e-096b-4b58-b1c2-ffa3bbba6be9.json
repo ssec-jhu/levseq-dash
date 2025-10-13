@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-4681-f16efd4e-096b-4b58-b1c2-ffa3bbba6be9",
+    "experiment_name": "A cell-penetrating artificial metalloenzyme regulates a gene switch in a designer mammalian cell",
+    "doi": "10.1038/s41467-018-04440-0",
+    "experiment_date": "2018-04-24",
+    "substrate": "",
+    "product": "N[C@@H](CC1=CC(I)=C(C(I)=C1)OC1=CC(I)=C(C=C1)O)C(=O)O",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MASMTGGQQMGRDQAGITGTWYNQLGSTFIVTAGADGALTGTYESAVGNAESRYVLTGRYDSAPATDGSGTALGWTVAWKNNYRNAHSATTWSGQYVGGAEARINTQWLLTSGTTEANAWASTLVGHDTFTKVKPSAASIDAAKKAGVNNGNPLDAVQQ",
+    "plates_count": 1,
+    "csv_checksum": "113778a8e987c8f74eb06e78ea9868292debaa372083ee67a84b81d6af100f47",
+    "additional_information": "reaction_condition: reaction_temperature:37 \u00b0C;    reaction_ph:7.5;    reaction_other_conditions:16 h reaction time, 2.0 \u00b5M ArM (22\u2282Sav variants) enzyme loading, total 400 \u00b5L reaction volume, performed in an HPLC vial;    reaction_substrate_concentration:100 \u00b5M",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

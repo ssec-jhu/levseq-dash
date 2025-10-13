@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-6189-4db10410-bfee-4d96-ab7a-94a84954a2a0",
+    "experiment_name": "Orthogonal Expression of an Artificial Metalloenzyme for Abiotic Catalysis",
+    "doi": "10.1002/cbic.201700397",
+    "experiment_date": "2017-12-14",
+    "substrate": "CCOC(=O)C=[N+]=[N-].C=Cc1ccccc1",
+    "product": "CCOC(=O)C1CC1c2ccccc2",
+    "assay": "Ionization Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MTIKEMPQPKTFGELKNLPLLNTDKPVQALMKIADELGEIFKFEAPGRVTRYLSSQRLIKEACDESRFDKNLSQALKFVRDFAGDGLFTSWTHEKNWKKAHNILLPSFSQQAMKGYHAMMVDIAVQLVQKWERLNADEHIEVPEDMTRLTLDTIGLCGFNYRFNSFYRDQPHPFITSMVRALDEAMNKLQRANPDDPAYDENKRQFQEDIKVMNDLVDKIIADRKASGEQSDDLLTHMLNGKDPETGEPLDDENIRYQIITFLIAGHETTSGLLSFALYFLVKNPHVLQKAAEEAARVLVDPVPSYKQVKQLKYVGMVLNEALRLWPTAPAFSLYAKEDTVLGGEYPLEKGDELMLIPQLHRDKTIWGDDVEEFRPERFENPSAIPQHAFKPFGNGQRACIGQQFALHEATLVLGMMLKHFDFEDHTNYELDIKETLTLKPEGFVVKAKSKKIPLGGIPSPSTLEHHHHHH",
+    "plates_count": 1,
+    "csv_checksum": "df18d73b054228eb2a74d15426c716539d411055aa2ab4138856127a531808d7",
+    "additional_information": "reaction_condition: reaction_temperature:room temperature;    reaction_ph:6.0;    reaction_other_conditions:15 \u00b5M catalyst;     5% DMF as cosolvent;     stirred overnight (16 hr);     argon atmosphere;    reaction_substrate_concentration:7.5 mM",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

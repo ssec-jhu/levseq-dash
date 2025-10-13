@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-8080-571f5867-1785-4902-9e79-55e3c585e9ad",
+    "experiment_name": "Biocatalytic asymmetric aldol addition into unactivated ketones",
+    "doi": "10.1038/s41557-024-01647-1",
+    "experiment_date": "2024-09-27",
+    "substrate": "FC(F)(F)C(=O)Cc1ccccc1.C[C@@H](O)[C@H](N)C(O)=O",
+    "product": "N[C@H](C(O)=O)[C@](O)(Cc1ccccc1)C(F)(F)F",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MGSSHHHHHHSSMSNVKQQTAQIVDWLSSTLGKDHQYREDSLSLTANENYPSALVRLTSGSTAGAFYHCSFPF EVPAGEWHFPEPGHMNAIADQVRDLGKTLIGAQAFDWRPNGGSTAEQALMLAACKPGEGFVHFAHRDGGHFAL ESLAQKMGIEIFHLPVNPTSLLIDVAKLDEMVRRNPHIRIVILDQSFKLRWQPLAEIRSVLPDSCTLTYDMSHDGGLI MGGVFDSPLSCGADIVHGNTHKTIPGPQKGYIGFKSAQHPLLVDTSLWVCPHLQSNCHAEQLPPMWVAFKEMEL FGRDYAAQIVSNAKTLARHLHELGLDVTGESFGFTQTHQVHFAVGDLQKALDLCVNSLHAGGIRSTNIEIPGKPGV HGIRLGVQAMTRRGMKEKDFEVVARFIADLYFKKTEPAKVAQQIKEFLQAFPLAPLAYSFDNYLDEELLAAVYQGA QR",
+    "plates_count": 1,
+    "csv_checksum": "dcdffff2089cf05dca0f9b456fdfcf18a0b60b84327102a21f9bef5408aeadd2",
+    "additional_information": "reaction_condition: reaction_temperature:37 \u00b0C;    reaction_ph:7.0;    reaction_other_conditions:0.1 mol% ObiH, 2.5% w/v ScADH lysate, 0.5% w/v CbFDH lysate, 10% MeOH, 6 h;    reaction_substrate_concentration:10 mM 1, 100 mM Thr",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

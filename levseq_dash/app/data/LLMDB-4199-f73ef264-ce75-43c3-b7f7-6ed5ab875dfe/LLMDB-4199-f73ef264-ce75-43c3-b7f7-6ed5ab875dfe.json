@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-4199-f73ef264-ce75-43c3-b7f7-6ed5ab875dfe",
+    "experiment_name": "Directed Evolution of a Fluorinase for Improved Fluorination Efficiency with a Non-native Substrate",
+    "doi": "10.1002/anie.201606722",
+    "experiment_date": "2016-10-14",
+    "substrate": "CSCC[C@H](N)C(O)=O.Nc1ncnc2n(cnc12)[C@@H]3O[C@H](CCl)[C@@H](O)[C@H]3O.[F-]",
+    "product": "Nc1ncnc2n(cnc12)[C@@H]3O[C@H](CF)[C@@H](O)[C@H]3O",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MAANSTRRPIIAFMSDLGTTDDSVAQCKGLMYSICPDVTVVDVCHSMTPWDVEEGARYIVDLPRFFPEGTVFATTTYPATGTTTRSVAVRIKQAAKGGARGQWAGSGAGFERAEGSYIYIAPNNGLLTTVLEEHGYLEAYEVTSPKVIPEQPEPTFYSREMVAIPSAHLAAGFPLSEVGRPLEDHEIVRFNRPAVEQDGEALVGVVSAIDHPFGNVWTNIHRTDLEKAGIGYGARLRLTLDGVLPFEAPLTPTFADAGEIGNIAIYLNSRGYLSIARNAASLAYPYHLKEGMSARVEAR",
+    "plates_count": 1,
+    "csv_checksum": "bab3d77184308d79065633f1cb08cf06c9eaadd54c824231ec44dee3dba71deb",
+    "additional_information": "reaction_condition: reaction_temperature:37\u00b0C;    reaction_ph:nan;    reaction_other_conditions:Enzyme: fluorinase lysates (182 \u00b5L in 260 \u00b5L final volume);     Reaction time: 4 h;     Host strain: E. coli BL21 (DE3) DPNP (nucleoside phosphorylase knocked out);    reaction_substrate_concentration:1 mM 5'-CIDA, 0.5 mM L-Met, 200 mM Fluoride (from NaF)",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

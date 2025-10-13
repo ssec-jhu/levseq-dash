@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-0704-e3772b79-dfa5-419e-9865-8da498541ff2",
+    "experiment_name": "Machine learning-assisted directed protein evolution with combinatorial libraries",
+    "doi": "10.1073/pnas.1901979116",
+    "experiment_date": "2019-04-30",
+    "substrate": "CCOC(=O)C(C)=[N+]=[N-].C[SiH](C)c1ccccc1",
+    "product": "CCOC(=O)[C@@H](C)[Si](C)(C)c1ccccc1.CCOC(=O)[C@H](C)[Si](C)(C)c1ccccc1",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MAPTLSEQTRQLVRASVPALQKHSVAISATMKRLLFERYPETRSLFELPERQIHKLASALLAYARSIDNPSALQAAIRRMVLSHARAGVQAVHYPLLWECLRDAIKEVLGPDATETLLQAWKEAYDFLAHLLSTKEAQVYAVLAELEHHHHHH",
+    "plates_count": 1,
+    "csv_checksum": "3191078a1b669dce672d603ebdd36cadff1b7b3891724cd04fb3b3d9f5d23f55",
+    "additional_information": "No reaction conditions available",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

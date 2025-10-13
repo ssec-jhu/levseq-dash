@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-0573-64fddf0c-c5fb-431d-8f67-7688144e4734",
+    "experiment_name": "Directed evolution of Escherichia coli surface-displayed Vitreoscilla hemoglobin as an artificial metalloenzyme for the synthesis of 5-imino-1 2 4-thiadiazoles",
+    "doi": "10.1039/D4SC00005F",
+    "experiment_date": "2024-04-17",
+    "substrate": "C1(=CC=CC=C1)C(N)=N.N(=C=S)C1=CC=CC=C1",
+    "product": "C1(=CC=CC=C1)NC1=NC(=NS1)C1=CC=CC=C1",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MLDQQTINIIKATVPVLKEHGVTITTTFYKNLFAKHPEVRPLFDMGRQESLEQPKALAMTVLAAAQNIENLPAILPAVKKIAVKHCQAGVAAAHYPIVGQELLGAIKEVLGDAATDDILDAWGKAYGVIADVFIQVEADLYAQAVEHHHHHH*",
+    "plates_count": 1,
+    "csv_checksum": "10e402a87d9bcc11deb78470e2297f43639d0aa5fa864ad205fa5c405a57fd7c",
+    "additional_information": "reaction_string: C=CC1=CC=CC=C1C.O=C(OCC)C=[N+]=[N-]>>O=C(OCC)[C@@H](C2)[C@H]2C3=CC=CC=C3C",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

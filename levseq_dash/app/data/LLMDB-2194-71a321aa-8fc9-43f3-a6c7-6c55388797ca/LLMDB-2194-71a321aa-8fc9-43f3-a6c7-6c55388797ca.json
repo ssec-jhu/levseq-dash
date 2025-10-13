@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-2194-71a321aa-8fc9-43f3-a6c7-6c55388797ca",
+    "experiment_name": "Expanding the Reactivity of Flavin Dependent Halogenases Toward Olefins via Enantioselective Intramolecular Haloetherification and Chemoenzymatic Oxidative Rearrangements",
+    "doi": "10.1021/acscatal.2c03383",
+    "experiment_date": "2022-04-11",
+    "substrate": "COc1ccc(cc1)C(=C)CCCO",
+    "product": "COc1ccc(cc1)C2(CBr)CCCO2",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MSGKIDKILIVGGGTAGWMAASYLGKALQGTADITLLQAPDIPTLGVGEATIPNLQTAFFDFLGIPEDEWMRECNASYKVAIKFINWRTAGEGTSEARELDGGPDHFYHSFGLLKYHEQIPLSHYWFDRSYRGKTVEPFDYACYKEPVILDANRSPRRLDGSKVTNYAWHFDAHLVADFLRRFATEKLGVRHVEDRVEHVQRDANGNIESVRTATGRVFDADLFVDCSGFRGLLINKAMEEPFLDMSDHLLNDSAVATQVPHDDDANGVEPFTSAIAMKSGWTWKIPMLGRFGTGYVYSSRFATEDEAVREFCEMWHLDPETQPLNRIRFRVGRNRRAWVGNCVSIGTSSCFVEPLESTGIYFVYAALYQLVKHFPDKSLNPVLTARFNREIETMFDDTRDFIQAHFYFSPRTDTPFWRANKELRLADGMQEKIDMYRAGMAINAPASDDAQLYYGNFEEEFRNFWNNSNYYCVLAGLGLVPDAPSPRLAHMPQATESVDEVFGAVKDRQRNLLETLPSLHEFLRQQHGR",
+    "plates_count": 1,
+    "csv_checksum": "ef4ed04e07816b4734f72b21e0414aa1c33abb5e3c90e61d413535f3170ffe53",
+    "additional_information": "reaction_condition: reaction_temperature:room temperature;    reaction_ph:7.5;    reaction_other_conditions:5 mM NaBr, 20 mM glucose, 1 mM glutathione, 35 U/mL catalase, 2.5 \u03bcM RebF, 9 U/mL GDH, 50 \u03bcM FDH, 18 h reaction time;    reaction_substrate_concentration:1 mM",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

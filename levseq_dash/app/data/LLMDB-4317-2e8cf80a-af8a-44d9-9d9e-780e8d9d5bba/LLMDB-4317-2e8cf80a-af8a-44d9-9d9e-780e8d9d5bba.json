@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-4317-2e8cf80a-af8a-44d9-9d9e-780e8d9d5bba",
+    "experiment_name": "Enantioselective Single and Dual \u03b1-C-H Bond Functionalization of Cyclic Amines via Enzymatic Carbene Transfer",
+    "doi": "10.1021/jacs.2c10775",
+    "experiment_date": "2022-12-21",
+    "substrate": "C1(=CC=CC=C1)N1CCCC1.[N+](=[N-])=CC(C)=O",
+    "product": "C1(=CC=CC=C1)N1[C@@H](CCC1)CC(C)=O.C1(=CC=CC=C1)N1[C@H](CCC1)CC(C)=O",
+    "assay": "Ionization Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MYDWFSEMRKKDPVYYDGNIWQVFSYRYTKEVLNNFSKFSSDLTGYHERLEDLRNGKIRFDIPTRYTMLTSDPPLHDELRSMSADIFSPQKLQTLETFIRETTRSLLDSIDPREDDIVKKLAVPLPIIVISKILGLPIEDKEKFKEWSDLVAFRLGKPGEIFELGKKYLELIGYVKDHLNSGTEVVSRVVNSNLSDIEKLGYIILLLIAGNETTTNLISNSVIDFTRFNLWQRIREENLYLKAIEEALRYSPPVMRTVRKTKERVKLGDQTIEEGEYVRVWIASANRDEEVFHDGEKFIPDRNPNPHLSFGSGIHLCLGAPLARLEARIAIEEFSKRFRHIEILDTEKVPNEVLNGYKRLVVRLKSNE",
+    "plates_count": 1,
+    "csv_checksum": "97df600a6288d0ece9fb91fedf7fb6994b282492f2a7bc4f2b6bf22e82634dc7",
+    "additional_information": "reaction_condition: reaction_temperature:room temperature;    reaction_ph:7.0;    reaction_other_conditions:CYP119 variants expressed in E. coli C41(DE3) cells (OD600 = 40), 10 mM Na2S2O4 (sodium dithionite), 16 hours, anaerobic chamber;    reaction_substrate_concentration:10 mM 1-phenylpyrrolidine (2a), 20 mM 1-diazopropan-2-one (1a)",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

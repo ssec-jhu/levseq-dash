@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-4107-8a189c3c-d221-4ca5-950f-ce2fcf7a3035",
+    "experiment_name": "Cofactor Binding Dynamics Influence the Catalytic Activity and Selectivity of an Artificial Metalloenzyme",
+    "doi": "10.1021/acscatal.0c01619",
+    "experiment_date": "2020-09-18",
+    "substrate": "CC(C(=O)C=1SC=CN1)=C.CC=1NC2=CC=CC=C2C1",
+    "product": "CC(C(=O)C=1SC=CN1)CC1=C(NC2=CC=CC=C12)C",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MGAEIPKEMLRAQTNVILLNVLKQGDNYVYGIIKQVKEASNGEMELNEATLYTIFDRLEQDGIISSYWGDESQGGRRKYYRLTEIGHENMRLAFESWSRVDKIIENLEANKKSEAIKSRGGSGGWSHPQFEK*",
+    "plates_count": 1,
+    "csv_checksum": "43bf37e7b9bc64369e27ab1c52b66d00e14dc9527f94b2d71b916a8dddbe0f23",
+    "additional_information": "reaction_condition: reaction_temperature:4\u00b0C;    reaction_ph:5.0;    reaction_other_conditions:LmrR_X (120 \u03bcM), [Cu(phen)(NO3)2] (90 \u03bcM), 48h reaction time, prepared in situ by self-assembly;    reaction_substrate_concentration:1 mM 2-methyl-1H-indole, 1 mM 2-methyl-1-(thiazol-2-yl)prop-2-en-1-one",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

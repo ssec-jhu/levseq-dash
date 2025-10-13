@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-7459-3ce2b5c4-7abb-4517-9389-d6d9ecacf13c",
+    "experiment_name": "Enhanced Sequence-Activity Mapping and Evolution of Artificial Metalloenzymes by Active Learning",
+    "doi": "10.1021/acscentsci.4c00258",
+    "experiment_date": "2024-05-22",
+    "substrate": "Nc1ccccc1C#C",
+    "product": "[nH]1ccc2ccccc12",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MASMTGGQQMGRDEAGITGTWYNQLGSTFIVTAGADGALTGTYESAVGNAESRYVLTGRYDSAPATDGSGTALGWTVAWKNNYRNAHSATTWSGQYVGGAEARINTQWLLTSGTTEANAWKSTLVGHDTFTKVKPSAASIDAAKKAGVNNGNPLDAVQQ",
+    "plates_count": 1,
+    "csv_checksum": "07557b1cf3c93f74972b2b4208a155cb558683c9636ef260dc870e2bab5e2fda",
+    "additional_information": "reaction_condition: reaction_temperature:30 \u00b0C;    reaction_ph:7.5;    reaction_other_conditions:whole-cell biocatalysis in E. coli periplasm, 200 rpm shaking, 16 h reaction time, cell density OD600 of 20;    reaction_substrate_concentration:9.1 mM",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

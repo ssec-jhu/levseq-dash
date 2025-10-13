@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-5082-5c86cbff-81d1-4a77-a003-ed6580085d11",
+    "experiment_name": "Synthesis of \u03b2-Branched Tryptophan Analogues Using an Engineered Subunit of Tryptophan Synthase",
+    "doi": "10.1021/jacs.6b04836",
+    "experiment_date": "2016-07-13",
+    "substrate": "N1C=CC2=CC=CC=C12.N[C@H](C(=O)O)[C@@H](C)O",
+    "product": "N[C@H](C(=O)O)[C@@H](C)C1=CNC2=CC=CC=C12",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MWFGEFGGQYVPETLIEPLKELEKAYKRFKDDEEFNRQLNYYLKTWAGRPTPLYYAKRLTEKIGGAKIYLKREDLVHGGAHKTNNAIGQALLAKFMGKTRLIAETGAGQHGVATAMAGALLGMKVDIYMGAEDVERQKMNVFRMKLLGANVIPVNSGSRTLKDAINEALRDWVATFEYTHYLIGSVVGPHPYPTIVRDFQSVIGREAKAQILEAEGQLPDVIVACVGGGSNAMGIFYPFVNDKKVKLVGVEAGGKGLESGKHSASLNAGQVGVFHGMLSYFLQDEEGQIKPTHSIAPGLDYPGVGPEHAYLKKIQRAEYVTVTDEEALKAFHELSRTEGIIPALESAHAVAYAMKLAKEMSRDEIIIVNLSGRGDKDLDIVLKVSGNVLEHHHHHH",
+    "plates_count": 1,
+    "csv_checksum": "7e695377ba2aba5a562f1c661f07a4db81586ff8ee96d513f43b8a0b6e21ded6",
+    "additional_information": "reaction_condition: reaction_temperature:75 \u00b0C;    reaction_ph:8.0;    reaction_other_conditions:10 \u00b5M enzyme (heat-treated lysate), 5% (v/v) DMSO, 1 h reaction time, anaerobic (98/2% N2/H2 atmosphere), borosilicate glass vials;    reaction_substrate_concentration:20 mM Indole, 20 mM L-threonine",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

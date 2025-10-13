@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-1465-4401e4f5-1cee-4d5e-bb5c-d16c18988027",
+    "experiment_name": "Photoenzymatic Enantioselective Intermolecular Radical Hydroamination",
+    "doi": "10.1038/s41929-023-00994-5",
+    "experiment_date": "2023-01-08",
+    "substrate": "C(#N)C1=CC=C(ON(C(OC)=O)C)C=C1.C1(=CC=CC=C1)C(=C)C",
+    "product": "CN(C(OC)=O)CC(C)C1=CC=CC=C1",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MTTLFDPIKLGDLQLPNRIIMAPLTRCRADEGRVPNALMAEYYVQRASAGLILSEATSVSPMGVGYPDTPGIWNDEQVRGWNNVTKAVHAAGGRIFLQLWHVGRISHPSYLNGELPVAPSAIQPKGHVSLVRPLSDYPTPRALETEEINDIVEAYRSGAENAKAAGFDGVEIHGANGYLLDQFLQSSTNQRTDRYGGSLENRARLLLEVTDAAIEVWGAQRVGVHLAPRADAHDMGDADRAETFTYVARELGKRGIAFICSREREADDSIGPLIKEAFGGPYIVNERFDKASANAALASGKADAVAFGVPFIANPDLPARLAADAPLNEAHPETFYGKGPVGYIDYPRL",
+    "plates_count": 1,
+    "csv_checksum": "7c905e6a921c204612418bceb6bcd50e4b2931eb5f035bdd1367419f9676096c",
+    "additional_information": "reaction_condition: reaction_temperature:20 \u00b0C;    reaction_ph:6.5;    reaction_other_conditions:0.008 mmol 1a (10.18 mM), 0.002 mmol 2a;     2 mol% XenB;     2.5 mol% NADP+;     0.01 mmol glucose;     5U GDH;     15 vol% DMSO;     15 vol% glycerol;     540 mW 440 nm blue LED irradiation;     under nitrogen atmosphere;     24-48 h reaction time;    reaction_substrate_concentration:2.54 mM (2a)",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

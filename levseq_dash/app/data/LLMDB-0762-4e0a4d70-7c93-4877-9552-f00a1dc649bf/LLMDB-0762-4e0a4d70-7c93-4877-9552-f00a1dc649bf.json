@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-0762-4e0a4d70-7c93-4877-9552-f00a1dc649bf",
+    "experiment_name": "Repurposing Visible-Light-Excited Ene-Reductases for Diastereo- and Enantioselective Lactones Synthesis",
+    "doi": "10.1002/anie.202402673",
+    "experiment_date": "2024-03-06",
+    "substrate": "C1(=CC=CC=C1)C(=CCCC(=O)O)C",
+    "product": "C1(=CC=CC=C1)C(C)C1CCC(O1)=O",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MHHHHHHPTLFDPIDFGPIHAKNRIVMSPLTRGRADKEAVPTPIMAEYYAQRASAGLIITEATGISREGLGAPFAPGIWSDAQVEAWKPIVAGVHAKGGKIVCQLWHMGRMVHSSVTGTQPVSSSATTAPGEVWTYEGKKPFEQARAIDAADISRILNDYENAARNAIRAGFDGVQIHAANGFLIDEFLRNGTNHRTDEYGGVPENRIRFLKEVTERVIAAIGADRTGVRLSPNGDTQGCIDSAPETVFVPAAKLLQDLGVAWLELREPGPNGTIGKTDQPKLSPQIRKVFLRPLVLNQDYTFEAAQTALAEGKADAIAFGRKFISNPDLPERFARGIALQPDDMKTWASQGPEGYTDYPSATSGPNGACTATCCATCCGCAACTTCTGGGCCGAACTGA",
+    "plates_count": 1,
+    "csv_checksum": "e3bc4230313abc546bc287f437b32482828c5b6d35b39737e967e422e7f2c557",
+    "additional_information": "reaction_condition: reaction_temperature:nan;    reaction_ph:nan;    reaction_other_conditions:nan;    reaction_substrate_concentration:nan",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

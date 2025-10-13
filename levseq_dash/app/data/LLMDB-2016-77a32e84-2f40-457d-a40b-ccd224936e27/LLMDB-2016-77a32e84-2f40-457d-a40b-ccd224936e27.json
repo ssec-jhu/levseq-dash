@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-2016-77a32e84-2f40-457d-a40b-ccd224936e27",
+    "experiment_name": "Photoenzymatic enantioselective intermolecular radical hydroalkylation",
+    "doi": "10.1038/s41586-020-2406-6",
+    "experiment_date": "2020-08-06",
+    "substrate": "C1(=CC=CC=C1)C(=C)C.BrCC(=O)C1=CC=CC=C1",
+    "product": "C1(=CC=CC=C1)C(CC[C@H](C)C1=CC=CC=C1)=O",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MSALFEPYTLKDVTLRNRIAIPPMCQYMAEDGMINDWHHVHLAGLARGGAGLLVVEATAVAPEGRITPGCAGIWSDAHAQAFVPVVQAIKAAGSVPGIQIAHAGRKASANRPWEGDDHIAADDARGWETIAPSAIAFGAHLPKVPREMTLDDIARVKQDFVDAARRARDAGFEWIELHFAHGYLGQSFFSEHSNKRTDAYGGSFENRSRFLLETLAAVREVWPENLPLTARFGVLEYDGRDEQTLEESIELARRFKAGGLDLLSVSVGFTIPDTHIPWGPAFMGPIAERVRREAKLPVTSAWGFGTPQLAEAALQANQLDLVSVGRAHLADPHWAYFAAKELGVEKASWTLPAPYAHWLERYR",
+    "plates_count": 1,
+    "csv_checksum": "3819be17801a52db4ff151c6c5ae3e1b962fa6539865d086a7e108218ba71d47",
+    "additional_information": "reaction_condition: reaction_temperature:25\u00b0C;    reaction_ph:7.6;    reaction_other_conditions:0.5 mol% ER;     5 U/mL GDH;     5 equiv NADP+ to ER;     500 equiv glucose to ER;     4% v/v DMSO;     anaerobic (O2 < 10 ppm);     blue LEDs illumination;     16 h reaction time;    reaction_substrate_concentration:1a: 5 mM, 2a: 2.5 mM",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-0468-1af389ad-cf64-4318-a8d8-f945e528d866",
+    "experiment_name": "Overriding Traditional Electronic Effects in Biocatalytic Baeyer-Villiger Reactions by Directed Evolution",
+    "doi": "10.1021/jacs.8b04742",
+    "experiment_date": "2018-08-22",
+    "substrate": "C1(=CC=CC=C1)CCC(C)=O",
+    "product": "C1(=CC=CC=C1)CCC(=O)OC.C(C)(=O)OCCC1=CC=CC=C1",
+    "assay": "Ionization Readout",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MSTTQTPDLDAIVIGAGFGGIYMLHKLRNDLGLSVRVFEKGGGVGGTWYWNKYPGAKSDTEGFVYRYSFDKELLREYDWTTRYLDQPDVLAYLEHVVERYDLARDIQLNTEVTDAIFDEETELWRVTTAGGETLTARFLVTALGLLSRSNIPDIPGRDSFAGRLVHTNAWPEDLDITGKRVGVIGTGSTGTQFIVAAAKMAEQLTVFQRTPQYCVPSGNGPMDPDEVARIKQNFDSIWDQVRSSTVAFGFEESTVEAMSVSESERQRVFQQAWDKGNGFRFMFGTFCDIATNPEANAAAAAFIRSKIAEIVKDPETARKLTPTDLYAKRPLCNEGYYETYNRDNVSLVSLKETPIEEIVPQGVRTSDGVVHELDVLVFATGFDAVDGNYRAMNLRGRDGRHINEHWTEGPTSYLGVTKAGFPNMFMILGPNGPFTNLPPSIEAQVEWISDLIDKATREGLTTVEPTADAEREWTETCAEIANMTLFPKADSWIFGANIPGKRHAVMFYLGGLGNYRRQLADVADGGYRGFQLRGERAQAVA",
+    "plates_count": 1,
+    "csv_checksum": "98bd322de2f6bec8328bfb7fe9f2498a9fb4e765dadc8c7bb44533f63c530689",
+    "additional_information": "reaction_condition: reaction_temperature:30\u00b0C;    reaction_ph:7.4;    reaction_other_conditions:Whole cells with recombinant expressed protein;     15 h reaction time;     800 rpm shaking;     5% (v/v) methanol co-solvent;     NADP+ (100 \u00b5M), glucose dehydrogenase (200 U), glucose (200 mM) for NADPH regeneration;    reaction_substrate_concentration:10 mM",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

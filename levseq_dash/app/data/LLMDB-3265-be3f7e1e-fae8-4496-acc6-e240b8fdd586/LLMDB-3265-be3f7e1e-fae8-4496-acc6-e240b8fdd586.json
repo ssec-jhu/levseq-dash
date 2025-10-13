@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-3265-be3f7e1e-fae8-4496-acc6-e240b8fdd586",
+    "experiment_name": "Enantioselective Aminohydroxylation of Styrenyl Olefins Catalyzed by an Engineered Hemoprotein",
+    "doi": "10.1002/anie.201812968",
+    "experiment_date": "2019-01-25",
+    "substrate": "O[S](=O)(=O)C(F)(F)F.COc1ccc(C=C)cc1.CC(C)(C)C(=O)ON",
+    "product": "COc1ccc(cc1)C(O)CN",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "TESGTAAQDPEALAAEIGPVKQVSLGEQIDAALAQQGEQLFNTYCTACHRLDERFIGPALRDVTKRRGPVYIMNVMLNPNGMIQRHPVMKQLVQEYGTMMTDMALSEEQARAILEYLRQVAENQLEHHHHHH*",
+    "plates_count": 1,
+    "csv_checksum": "56dd75903ab8180a79914c3c69b15631fe8fde9f1272c8f98751d28493ff26c6",
+    "additional_information": "reaction_condition: reaction_temperature:room temperature;    reaction_ph:8.0;    reaction_other_conditions:whole cells (OD 600 = 30), 10 mg/mL sodium dithionite, anaerobic conditions, 24 hours;    reaction_substrate_concentration:10 mM each",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

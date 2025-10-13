@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-1361-cf1d382c-6c3a-40a9-9289-3bc716f73dae",
+    "experiment_name": "Library design and screening protocol for artificial metalloenzymes based on the biotin-streptavidin technology",
+    "doi": "10.1038/nprot.2016.019",
+    "experiment_date": "2016-03-31",
+    "substrate": "C1Cc2ccccc2C(=N1)c3ccccc3",
+    "product": "C1Cc2ccccc2C(N1)c3ccccc3",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MASMTGGQQMGRDQAGITGTWYNQLGSTFIVTAGADGALTGTYESAVGNAESRYVLTGRYDSAPATDGSGTALGWTVAWKNNYRNAHSATTWSGQYVGGAEARINTQWLLTSGTTEANAWASTLVGHDTFTKVKPSAASIDAAKKAGVNNGNPLDAVQQ",
+    "plates_count": 1,
+    "csv_checksum": "be79786e4315092bd5bc14ed17acb6c867539081f2ab89a6b7dd81651221a5a5",
+    "additional_information": "reaction_condition: reaction_temperature:Room Temperature;    reaction_ph:6;    reaction_other_conditions:5 mM 1,1-Azobis(N,N-dimethylformamide) (diamide), 48 hours, 100 \u00b5M Sav free biotin sites (FBS), catalysis performed with CFE or cell lysates;    reaction_substrate_concentration:10 mM",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

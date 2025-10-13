@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-2701-06db5e59-7588-4b8f-bee1-84900ab8c9d4",
+    "experiment_name": "Myoglobin-Catalyzed Olefination of Aldehydes",
+    "doi": "10.1002/anie.201508817",
+    "experiment_date": "2016-12-02",
+    "substrate": "O=Cc1ccccc1.CCOC(=O)C=[N+]=[N-]",
+    "product": "CCOC(=O)/C=C/c1ccccc1",
+    "assay": "Ionization Readout",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "VLSEGEWQLVLHVWAKVEADVAGHGQDILIRLFKSHPETLEKFDRFKHLKTEAEMKASEDLKKHGVTVLTALGAILKKKGHHEAELKPLAQSHATKHKIPIKYLEFISEAIIHVLHSRHPGDFGADAQGAMNKALELFRKDIAAKYKELGY",
+    "plates_count": 1,
+    "csv_checksum": "e8ede2aeddb3e55581b22303007c5368590b61fc5f9a3222adeabd67cae49623",
+    "additional_information": "reaction_condition: reaction_temperature:room temperature;    reaction_ph:8.0;    reaction_other_conditions:20 \u00b5M myoglobin variant (catalyst), 10 mM sodium dithionite (Na2S2O4), 10 mM triphenylphosphine (PPh3) or triphenylarsine (AsPh3), 12 hours reaction time, anaerobic conditions;    reaction_substrate_concentration:10 mM each (1a and 2a)",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

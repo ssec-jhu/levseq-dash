@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-7923-032aff30-5766-4e88-b823-0ae809845172",
+    "experiment_name": "Electricity-driven enzymatic dynamic kinetic oxidation",
+    "doi": "10.1038/s41586-025-09178-6",
+    "experiment_date": "2025-05-20",
+    "substrate": "C1(=CC=C(C=C1)C(C=O)C)C1=CC=CC=C1",
+    "product": "C1(=CC=C(C=C1)[C@@H](C(=O)O)C)C1=CC=CC=C1",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MGYTVGDYLLDRLHELGIEEIFGVPGLYNLQFLDQIISHKDMKWVGNANELNASYMADGYARTKKAAAFLTTFGVGELSAVNGLAGSYAENLPVVEIVGSPTSKVQNEGKFVHHTLADGDFKHFMKMHEPVTAARTLLTAENATVEIDRVLSALLKERKPVYINLPVDVAAAKAEKPSLPLKKENSTSNTSDQEILNKIQESLKNAKKPIVITGHEIISFGLEKTVTQFISKTKLPITTLNFGKSSVDEALPSFLGIYNGTLSEPNLKEFVESADFILMLGVKLTDSSTGAFTHHLNENKMISLNIDEGKIFNERIQNFDFESLISSLLDLSEIEYKGKYIDKKQEDFVPSNALLSQDRLWQAVENLTQSNETIVAEQGTSFFGASSIFLKSKSHFIGQPLWGSIGYTFPAALGSQIADKESRHLLFIGDGSLQLTVQELGLAIREKINPICFIINNDGYTVEREIHGPNQSYNDIPMWNYSKLPESFGATEDRVVSKIVRTENEFVSVMKEAQADPNRMYWIELILAKEGAPKVLKKMGKLFAEQNKSLEHHHHHH",
+    "plates_count": 1,
+    "csv_checksum": "dbe70018b0863ca43eb4f0244d99ec0fca7374d2cc27e697ba14303fa40fca61",
+    "additional_information": "reaction_condition: reaction_temperature:room temperature (not explicitly stated);    reaction_ph:6.5;    reaction_other_conditions:whole cell KdcA mutants (OD 600 = 50);     FcMeOH (1.5 equiv);     10 v/v% DMSO;     2.5 mM Mg2+;     total volume 2 mL;     0.4 mA constant current;     5.0 F mol\u22121 electricity;     graphite electrodes;     undivided cell;     carried out in a glove box (anaerobic);     magnetic stir bar;     stirred at 760 rpm;    reaction_substrate_concentration:5 mM",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

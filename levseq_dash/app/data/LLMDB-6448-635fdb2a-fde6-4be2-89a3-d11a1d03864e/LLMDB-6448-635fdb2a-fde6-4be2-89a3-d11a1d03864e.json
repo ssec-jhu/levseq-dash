@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-6448-635fdb2a-fde6-4be2-89a3-d11a1d03864e",
+    "experiment_name": "Highly diastereoselective and enantioselective olefin cyclopropanation using engineered myoglobin-based catalysts",
+    "doi": "10.1002/anie.201409928",
+    "experiment_date": "2015-02-02",
+    "substrate": "C=CC1=CC=CC=C1.[N+](=[N-])=CC(=O)OCC",
+    "product": "C1(=CC=CC=C1)[C@H]1[C@@H](C1)C(=O)OCC.C1(=CC=CC=C1)[C@@H]1[C@H](C1)C(=O)OCC",
+    "assay": "Ionization Readout",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "VLSEGEWQLVLHVWAKVEADVAGHGQDILIRLFKSHPETLEKFDRFKHLKTEAEMKASEDLKKHGVTVLTALGAILKKKGHHEAELKPLAQSHATKHKIPIKYLEFISEAIIHVLHSRHPGDFGADAQGAMNKALELFRKDIAAKYKELGY",
+    "plates_count": 1,
+    "csv_checksum": "f20229eba417ad806530399ebb98b1e889a0d380c0fc75679d6efe8fd1d49be8",
+    "additional_information": "reaction_condition: reaction_temperature:room temperature;    reaction_ph:7.0;    reaction_other_conditions:20 \u00b5M myoglobin, 10 mM sodium dithionite, 16 h, anaerobic conditions;    reaction_substrate_concentration:30 mM styrene, 10 mM ethyl diazoacetate",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

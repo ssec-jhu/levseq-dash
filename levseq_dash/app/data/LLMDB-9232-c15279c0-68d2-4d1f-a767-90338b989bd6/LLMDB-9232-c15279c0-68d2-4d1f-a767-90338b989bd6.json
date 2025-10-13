@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-9232-c15279c0-68d2-4d1f-a767-90338b989bd6",
+    "experiment_name": "Controlling Non-Native Cobalamin Reactivity and Catalysis in the Transcription Factor CarH",
+    "doi": "10.1021/acscatal.1c04748",
+    "experiment_date": "2022-01-21",
+    "substrate": "CCOC(=O)C=[N+]=[N-].COc1ccc(C=C)cc1",
+    "product": "CCOC(=O)CC=Cc1ccc(OC)cc1.CCOC(=O)CCCc1ccc(OC)cc1",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MTSSGVYTIAEVEAMTGLSAEVLRQWERRYGFPKPRRTPGGHRLYSAEDVEALKTIKRWLEEGATPKAAIRRYLAQEVRPEDLGTGLLEALLRGDLAGAEALFRRGLRFWGPEGVLEHLLLPVLREVGEAWGRGEIGVAEEHLASTFLRARLQELLDLAGFPPGPPVLVTTPPGERHEIGAMLAAYHLRRKGVPALYLGPDTPLPDLRALARRLGAGAVVLSAVLSEPLRALPDGALKDLAPRVFLGGQGAGPEEARRLGAEYMEDLKGLAEALWLPRGPEKEAI",
+    "plates_count": 1,
+    "csv_checksum": "fba40176d33e8a9a678dc296a2ba01792949036a688d0aac864f5a36b16b2afc",
+    "additional_information": "reaction_condition: reaction_temperature:4 \u00b0C;    reaction_ph:7.5;    reaction_other_conditions:44 \u00b5M CarH*, 10 mM Ti(III) citrate, 10% THF, 4.3 h, light excluded;    reaction_substrate_concentration:1 mM p-methoxystyrene, 10 mM ethyl 2-diazoacetate",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

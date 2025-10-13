@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-1419-4c5a5fe5-cdf9-4857-b544-6dc12f384060",
+    "experiment_name": "Unlocking the function promiscuity of old yellow enzyme to catalyze asymmetric Morita-Baylis-Hillman reaction",
+    "doi": "10.1038/s41467-024-50141-2",
+    "experiment_date": "2024-09-07",
+    "substrate": "C1(C=CCC1)=O.[N+](=O)([O-])C1=CC=C(C=O)C=C1",
+    "product": "OC(C=1C(CCC1)=O)C1=CC=C(C=C1)[N+](=O)[O-]",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MNTMLFSPYTIRGLTLKNRIVMSPMCMYSCDTKDGAVRTWHKIHYPARAVGQVGLIIVEATGVTPQGRISERDLGIWSDDHIAGLRELVGLVKEHGAAIGIALAHAGRKSQVPGEIIAPSAVPFDDSSPTPKEMTKADIEETVQAFQNGARRAKEAGFDVIEIHAAHGFLINEFLSPLSNRRQDEYGGSPENRYRFLGEVIDAVREVWDGPLFVAISASDYHPDGLTAKDYVPYAKRMKEQGVDLVDVSSGAIVPARMNVYPGYQVPFAELIRREADIPTGAVGLITSGWQAEEILQNGRADLVFLGAELLRNPYWPYAAARELGAKISAPVQYERGWRFSAWSHPQFEK",
+    "plates_count": 1,
+    "csv_checksum": "236ade629bde3c72da8b924903cef2de7223130e98af011c77facab9483493fe",
+    "additional_information": "reaction_condition: reaction_temperature:25 \u00b0C;    reaction_ph:10.0;    reaction_other_conditions:100 \u00b5M purified protein, 3% methanol (MeOH) as co-solvent, 220 rpm, 40 h;    reaction_substrate_concentration:5 mM 2-cyclopenten-1-one, 1 mM 4-nitrobenzaldehyde",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

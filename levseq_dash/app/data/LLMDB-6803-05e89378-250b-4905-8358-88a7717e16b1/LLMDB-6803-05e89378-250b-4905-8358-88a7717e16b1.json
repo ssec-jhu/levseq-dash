@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-6803-05e89378-250b-4905-8358-88a7717e16b1",
+    "experiment_name": "An artificial nickel chlorinase based on the biotin-streptavidin technology",
+    "doi": "10.1039/D3CC05847F",
+    "experiment_date": "2024-01-22",
+    "substrate": "C1CCCCC1",
+    "product": "ClC1CCCCC1",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MASMTGGQQMGRDQAGITGTWYNQLGSTFIVTAGADGALTGTYESAVGNAESRYVLTGRYDSAPATDGSGTALGWTVAWKNNYRNAHSATTWSGQYVGGAEARINTQWLLTSGTTEANAWKSTLVGHDTFTKVKPSAASIDAAKKAGVNNGNPLDAVQQ",
+    "plates_count": 1,
+    "csv_checksum": "0cb81e91bbebadf052368a09d9b592d02228332a608b52e704ee52f9575cc95c",
+    "additional_information": "reaction_condition: reaction_temperature:25 \u00b0C;    reaction_ph:9.0;    reaction_other_conditions:50 \u00b5M [(BiotC4-bAQ)Ni] 1, 100 \u00b5M Sav FBS (1:2 ratio of cofactor to Sav FBS), 200 mM Ca(ClO)2, MeCN/phosphate buffer (2:3 ratio), 1 h reaction time;    reaction_substrate_concentration:20 mM",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

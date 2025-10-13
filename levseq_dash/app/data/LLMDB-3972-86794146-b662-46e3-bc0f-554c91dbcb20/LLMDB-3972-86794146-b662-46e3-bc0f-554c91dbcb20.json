@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-3972-86794146-b662-46e3-bc0f-554c91dbcb20",
+    "experiment_name": "Catalytic promiscuity enabled by photoredox catalysis in nicotinamide-dependent oxidoreductases",
+    "doi": "10.1038/s41557-018-0059-y",
+    "experiment_date": "2018-11-06",
+    "substrate": "C(C)(=O)OC1(C(C2=CC=CC=C2CC1)=O)C",
+    "product": "C[C@@H]1C(C2=CC=CC=C2CC1)=O",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MAEEVSNKQVILKNYVTGYPKESDMEIKNVTIKLKVPEGSNDVVVKNLYLSCDPYMRSRMRKIEGSYVESFAPGSPITGYGVAKVLESGDPKFQKGDLVWGMTGWEEYSIITPTQTLFKIHDKDVPLSYYTGILGMPGMTAYAGFHEVCSPKKGETVFVSAASGAVGQLVGQFAKMLGCYVVGSAGSKEKVDLLKSKFGFDEAFNYKEEQDLSAALKRYFPDGIDIYFENVGGKMLDAVLVNMKLYGRIAVCGMISQYNLEQTEGVHNLFCLITKRIRMEGFLVFDYYHLYPKYLEMVIPQIKAGKVVYVEDVAHGLESAPTALVGLFSGRNIGKQVVMVSRELEHHHHHH",
+    "plates_count": 1,
+    "csv_checksum": "0bb5bf258d236d8fa9f4952cbe0f81f68402a4e66ee7c7ed6935219982b07dbd",
+    "additional_information": "reaction_condition: reaction_temperature:25 \u00b0C;    reaction_ph:8.0;    reaction_other_conditions:1.0 mol% DBR enzyme (NtDBR, PaDBR1, PaDBR2, AtDBR), 0.5 mol% Rose Bengal (photocatalyst), 1.0 mol% NADP+, 0.6 mg GDH-105, 82.5 \u03bcmol glucose (for NADPH regeneration), 530 nm LEDs (green irradiation), 12 hours, anaerobic atmosphere (under nitrogen), co-solvents: THF and EtOH (from substrate stock solution);    reaction_substrate_concentration:24 mM",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

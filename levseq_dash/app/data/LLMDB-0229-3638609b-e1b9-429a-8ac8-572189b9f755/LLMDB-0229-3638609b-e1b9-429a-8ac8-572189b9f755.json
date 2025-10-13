@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-0229-3638609b-e1b9-429a-8ac8-572189b9f755",
+    "experiment_name": "Emergence of a distinct mechanism of C-N bond formation in photoenzymes",
+    "doi": "10.1038/s41586-024-08138-w",
+    "experiment_date": "2024-08-10",
+    "substrate": "C1(=CC=CC=C1)C(CCNC1=CC=CC=C1)=C",
+    "product": "CC1(N(CCC1)C1=CC=CC=C1)C1=CC=CC=C1",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MTQKMDFDAIIIGAGFGGLYSLKKLRDDLNLKVRAFDRATEVGGTWFWNQYPGALSDSETHLYCYSWDKELLQEMEIKRKYISQPDVLAYLKRVADKHDLRKDIQFETGIRSAYFDEENSFWNVTTENDEKFTARFLITALGPLSAPNLPKIKGIETFKGELHHTSRWPKDVTFSGKRVGVIGTGSTGVQVITAIASQVKHLTVFQRSAQYSVPIGNVVMSETDVAKIKENYDQIWENVWNSALGYGLNESTLPTMSVSAEERDKIFEEAWQEGGGFRFMFETFGDIAVDETANIEAQNFIKKKISEIVKDPFVAKKLTPTDLYACRPLCDSGYYEIFNRDNVSLEDVKANPIVEIKEDCVVTADGVEHKLDMLICATGFDAVDGSYKRIDIRGKDGISIKDHWKDGPNSYLGMMVSNFPNMFMVFGPNTPLANSPPIIETQVEWIADLIGYAEDHQINQIEATKDAVDNWTNTCSDIANKTLFAKAKCRIFGANVPGKKNTVYLYMGGLKEYRNQISEVSNNNYKGCLLKQ",
+    "plates_count": 1,
+    "csv_checksum": "354e1b72b55669406d9d607ec66757b175ce1f09abd2f9ca7797cab9644d3dde",
+    "additional_information": "reaction_condition: reaction_temperature:room temperature;    reaction_ph:8.0;    reaction_other_conditions:1 mol% enzyme, 10 v% n-octane, 16 h, blue LED irradiation (450 nm, 10 W, 10 cm distance);    reaction_substrate_concentration:10 mM",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

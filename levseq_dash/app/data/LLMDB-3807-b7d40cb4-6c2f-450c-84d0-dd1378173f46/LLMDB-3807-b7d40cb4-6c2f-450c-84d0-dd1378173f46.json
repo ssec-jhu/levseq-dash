@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-3807-b7d40cb4-6c2f-450c-84d0-dd1378173f46",
+    "experiment_name": "An Enzymatic Platform for the Highly Enantioselective and Stereodivergent Construction of Cyclopropyl-\u03b4-lactones",
+    "doi": "10.1002/anie.202007953",
+    "experiment_date": "2020-11-23",
+    "substrate": "[N-]=[N+]=CC(=O)OCC\\C=C\\c1ccccc1",
+    "product": "O=C1OCC[C@H]2[C@@H]1[C@@H]2c3ccccc3",
+    "assay": "Ionization Readout",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "VLSEGEWQLVLHVWAKVEADVAGHGQEVLIRLFKGHPETLEKFDKFKHLKSEDEMKASEDLKKHGATVLTALGGILKKKGHHEAEIKPLAQSHATKHKIPIKYLEFISEAIIHVLHSRHPGDFGADAQGAMNKALELFRKDIAAKYKELGYQG",
+    "plates_count": 1,
+    "csv_checksum": "6cb534f8e282a7d0923cd1c71235d64bdb3a41acea8919e93abbd3f90fa5f79e",
+    "additional_information": "reaction_condition: reaction_temperature:room temperature;    reaction_ph:7.0;    reaction_other_conditions:20 \u00b5M purified protein, 10 mM Na2S2O4, 16 hours, in anaerobic chamber;    reaction_substrate_concentration:2.5 mM",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

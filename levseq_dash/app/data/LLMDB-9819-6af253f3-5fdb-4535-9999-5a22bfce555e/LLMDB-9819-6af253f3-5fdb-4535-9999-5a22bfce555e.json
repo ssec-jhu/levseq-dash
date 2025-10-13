@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-9819-6af253f3-5fdb-4535-9999-5a22bfce555e",
+    "experiment_name": "Engineering an Oxygen-Binding Protein for Photocatalytic CO2\u00a0Reductions in Water",
+    "doi": "10.1002/anie.202215719",
+    "experiment_date": "2023-04-04",
+    "substrate": "O=C=O",
+    "product": "C=O",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MVLSEGEWQLVLHVWAKVEADVAGHGQDILIRLFKSHPETLEKFDRFKHLKTEAEMKASEDLKKHGVTVLTALGAILKKKGHHEAELKPLAQSHATKHKIPIKYLEFISEAIIHVLHSRHPGDFGADAQGAMNKALELFRKDIAAKYKELGYQG",
+    "plates_count": 1,
+    "csv_checksum": "19bd8a7144ebce6559b0001041653afd94a6ee563682263e080a852a6107e468",
+    "additional_information": "reaction_string: C=CC1=CC=CC=C1C.O=C(OCC)C=[N+]=[N-]>>O=C(OCC)[C@@H](C2)[C@H]2C3=CC=CC=C3C",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

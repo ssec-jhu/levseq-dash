@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-5995-ecffd94f-a993-4423-b4c9-e33f7c8a5111",
+    "experiment_name": "An Enzymatic Platform for Aniline Synthesis Through Oxidative Amination",
+    "doi": "10.1002/anie.202505252",
+    "experiment_date": "2025-05-05",
+    "substrate": "CC1=CC=C(C=C1)CN.C1(CCCCC1)=O",
+    "product": "CC1=CC=C(CNC2=CC=CC=C2)C=C1",
+    "assay": "Ionization Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "METMLFSPYTIRGVTLKNRIVMSPMCMYSCDTEDGKVRNWHKIHYPTRAVGQVGLIILEATAVTAQGRISSRDLGIWSDEHVGGLRELVSLVKEHGAKIGIQLAHAGRKSEVDGEIIAPSSIPFSEKTRTPKEMTKADIEETIQAFQNGARRAKEAGFDIIEIHAAHGYLINEFLSPLSNKRQDEYGGSPENRYRFLGEVIDAVKEVWDGPLFVRISASDYHPEGLTVKDYVPYAKRMKKQGVDLIDVSSGAVVPANISVYPGYQVPFAETIRREAEIATGAVGLITSGWQAEEILRNGRADLVFLARELLRNPYWPYAAAKELGTTIPAPVQYERGWRFLEHHHHHH",
+    "plates_count": 1,
+    "csv_checksum": "4d7b8a06483d8cbeb6cd80cc8e4af8234032513741740b2ebba938e95a00f650",
+    "additional_information": "reaction_condition: reaction_temperature:15 \u00b0C;    reaction_ph:7.0;    reaction_other_conditions:1.5 mol% enzyme loading, 2.5 mM sodium dodecyl sulfate (SDS), under air, 24 h, 220 rpm shaking;    reaction_substrate_concentration:1aa: 0.1 M, 2a: 5 mM",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

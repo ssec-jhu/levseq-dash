@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-9695-700cc2f4-5d74-41a5-b9ce-d689dd61e77f",
+    "experiment_name": "Directed Evolution of an Artificial Imine Reductase",
+    "doi": "10.1002/anie.201711016",
+    "experiment_date": "2018-01-16",
+    "substrate": "COC=1C=C2CCN=C(C2=CC1OC)C.C1(=CC=CC=C1)C=1CCCN1.C1(=CC=CC=C1)C1=NCCC2=CC=CC=C12",
+    "product": "COC=1C=C2CCNC(C2=CC1OC)C.C1(=CC=CC=C1)C1NCCC2=CC=CC=C12.C1(=CC=CC=C1)C1NCCC1",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MASMTGGQQMGRDEAGITGTWYNQLGSTFIVTAGADGALTGTYESAVGNAESRYVLTGRYDSAPATDGSGTALGWTVAWKNNYRNAHSATTWSGQYVGGAEARINTQWLLTSGTTEANAWASTLVGHDTFTKVKPSAASIDAAKKAGVNNGNPLDAVQQ",
+    "plates_count": 1,
+    "csv_checksum": "5ced30de0bf2e8e21ab9739a520f32fb51d53cfb3f329768e68e92d10ffac34c",
+    "additional_information": "reaction_condition: reaction_temperature:25\u00b0C;    reaction_ph:7.0;    reaction_other_conditions:30 mM sodium formate, 2 mM DiAm, E. coli cell-free extracts, 48 hours reaction time, 140 \u00b5l reaction volume;    reaction_substrate_concentration:10 mM",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

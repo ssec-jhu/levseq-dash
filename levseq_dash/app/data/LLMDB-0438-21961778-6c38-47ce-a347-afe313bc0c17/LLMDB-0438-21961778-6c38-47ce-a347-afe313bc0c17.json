@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-0438-21961778-6c38-47ce-a347-afe313bc0c17",
+    "experiment_name": "Production of Biobased Ethylbenzene by Cascade Biocatalysis with an Engineered Photodecarboxylase",
+    "doi": "10.1002/anie.202314566",
+    "experiment_date": "2024-01-18",
+    "substrate": "OC(=O)CCc1ccccc1",
+    "product": "CCc1ccccc1",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MASAVEDIRKVLSDSSSPVAGQKYDYILVGGGTAACVLANRLSADGSKRVLVLEAGPDNTSRDVKIPAAITRLFRSPLDWNLFSELQEQLAERQIYMARGRLLGGSSATNATLYHRGAAGDYDAWGVEGWSSEDVLSWFVQAETNADFGPGAYHGSGGPMRVENPRYTNKQLHTAFFKAAEEVGLTPNSDFNDWSHDHAGYGTFQVMQDKGTRADMYRQYLKPVLGRRNLQVLTGAAVTKVNIDQAAGKAQALGVEFSTDGPTGERLSAELAPGGEVIMCAGAVHTPFLLKHSGVGPSAELKEFGIPVVSNLAGVGQNLQDQPACLTAAPVKEKYDGIAISDHIYNEKGQIRKRAIASYLLGGRGGLTSTGCDRGAFVRTAGQALPDLQVRFVPGMALDPDGVSTYVRFAKFQSQGLKWPSGITMQLIACRPQSTGSVGLKSADPFAPPKLSPGYLTDKDGADLATLRKGIHWARDVARSSALSEYLDGELFPGSGVVSDDQIDEYIRRSIHSSNAITGTCKMGNAGDSSSVVDNQLRVHGVEGLRVVDASVVPKIPGGQTGAPVVMIAERAAALLTGKATIGASAAAPATVAA*",
+    "plates_count": 1,
+    "csv_checksum": "5adebb8deec02db9ca33fd422788bebf5d990c2eb06c03e65cc6a86fd1b044ef",
+    "additional_information": "reaction_condition: reaction_temperature:22\u00b0C (shaker temperature, vial temperature ca. 24\u00b0C);    reaction_ph:8.5;    reaction_other_conditions:10 g/L cells, blue light irradiation (200\u2013230 \u03bcmol\u00b7m\u207b\u00b2\u00b7s\u207b\u00b9), in transparent vials;    reaction_substrate_concentration:10 mM",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

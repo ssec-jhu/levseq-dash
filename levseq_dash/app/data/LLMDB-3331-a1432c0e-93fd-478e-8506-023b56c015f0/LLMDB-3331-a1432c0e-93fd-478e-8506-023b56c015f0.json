@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-3331-a1432c0e-93fd-478e-8506-023b56c015f0",
+    "experiment_name": "Enantioselective Synthesis of Chiral Amines via Biocatalytic Carbene N-H Insertion",
+    "doi": "10.1021/acscatal.0c02794",
+    "experiment_date": "2020-02-10",
+    "substrate": "[N+](=[N-])=C(C(=O)OCC1=CC=C(C=C1)C(C)C)C.NC1=CC=CC=C1",
+    "product": "N[C@@H](CC1=CC=CC=C1)C(=O)OCC1=CC=C(C=C1)C(C)C",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MVLSEGEWQLVLHVWAKVEADVAGHGQDILIRLFKSHPETLEKVDRFKHLKTEAEMKASEDLKKHGVTFLTALGAILKKKGHHEAELKPLAQSHATKHKIPIKYLEFISEAIIHVLHSRHPGNFGADAQGAMNKALELFRKDIAAKYKELGYQG",
+    "plates_count": 1,
+    "csv_checksum": "a93ac0a858fb7f62641ef2313b823b1b83aad63c4d544c94bf21a65d0ab43e20",
+    "additional_information": "reaction_condition: reaction_temperature:room temperature;    reaction_ph:7.2;    reaction_other_conditions:E. coli whole cells expressing Mb catalyst (OD=20);    reaction_substrate_concentration:Aniline: 5 mM, 4-isopropylbenzyl 2-diazopropanoate: 5 mM;     ee: 4.0",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}
