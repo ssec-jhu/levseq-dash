@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-6388-e8d1a6ad-6d80-4a29-8f43-b99ce6cb3d28",
+    "experiment_name": "Selective Functionalization of Aliphatic Amines via Myoglobin-catalyzed Carbene N-H Insertion",
+    "doi": "10.1055/s-0039-1690007",
+    "experiment_date": "2020-01-02",
+    "substrate": "NCc1ccccc1.CCOC(=O)C=[N+]=[N-]",
+    "product": "CCOC(=O)CN(CC(=O)OCC)Cc1ccccc1.CCOC(=O)CNCc1ccccc1",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "VLSEGEWQLVLHVWAKVEADVAGHGQDILIRLFKSHPETLEKFDRFKHLKTEAEMKASEDLKKHGVTVLTALGAILKKKGHHEAELKPLAQSHATKHKIPIKYLEFISEAIIHVLHSRHPGDFGADAQGAMNKALELFRKDIAAKYKELGY",
+    "plates_count": 1,
+    "csv_checksum": "9831013557eff976c5ee2e96ad64d5b183db07d70597a9f3a738e47521880ad2",
+    "additional_information": "reaction_condition: reaction_temperature:room temperature;    reaction_ph:8.0;    reaction_other_conditions:20 \u00b5M enzyme, 10 mM Na2S2O4, 16 hrs, anaerobic chamber;    reaction_substrate_concentration:10 mM benzylamine, 10 mM ethyl \u03b1-diazo acetate",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

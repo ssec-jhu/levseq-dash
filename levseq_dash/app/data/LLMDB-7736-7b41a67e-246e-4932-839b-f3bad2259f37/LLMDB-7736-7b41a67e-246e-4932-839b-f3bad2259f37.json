@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-7736-7b41a67e-246e-4932-839b-f3bad2259f37",
+    "experiment_name": "E. coli surface display of streptavidin for directed evolution of an allylic deallylase",
+    "doi": "10.1039/c8sc00484f",
+    "experiment_date": "2018-05-24",
+    "substrate": "",
+    "product": "Nc1ccc2C(=CC(=O)Oc2c1)C[S](O)(=O)=O",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MASMTGGQQMGRDEAGITGTWYNQLGSTFIVTAGADGALTGTYESAVGNAESRYVLTGRYDSAPATDGSGTALGWTVAWKNNYRNAHSATTWSGQYVGGAEARINTQWLLTSGTTEANAWKSTLVGHDTFTKVKPSAASIDAAKKAGVNNGNPLDAVQQ",
+    "plates_count": 1,
+    "csv_checksum": "0f74f6505521e9922283d5cc27612b463c491aab5525d1c37f339ee741bc0a82",
+    "additional_information": "reaction_condition: reaction_temperature:30 \u00b0C;    reaction_ph:7.4;    reaction_other_conditions:E. coli cells displaying Sav variants, 2 \u00b5M [CpRu(QA-Biot)(H2O)]3 pre-incubation on ice for 30 min, 16 h, 310 rpm;    reaction_substrate_concentration:500 \u00b5M",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

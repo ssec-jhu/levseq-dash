@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-9997-c1b62b59-ba0e-4c94-8aa1-093181011929",
+    "experiment_name": "Chemoenzymatic Total Synthesis of Deoxy- epi- and Podophyllotoxin and a Biocatalytic Kinetic Resolution of Dibenzylbutyrolactones",
+    "doi": "10.1002/anie.201900926",
+    "experiment_date": "2019-08-05",
+    "substrate": "COC1=CC(=CC(=C1OC)OC)C[C@@H]2[C@H](COC2=O)CC3=CC4=C(C=C3)OCO4",
+    "product": "COC1=CC(=CC(=C1OC)OC)[C@H]2[C@@H]3[C@@H](CC4=CC5=C(C=C24)OCO5)COC3=O.COC1=CC(=CC(=C1OC)OC)[C@H]2[C@H]3[C@H](CC4=CC5=C(C=C24)OCO5)COC3=O",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MGSTAPLRLPVIDLSMKNLKPGTTSWNSVRTQVREALEEYGCFEAVIDAVSPELQKAVCNKGHELLNLPLETKMLNGNKPEYDGFTSIPNLNEGMGVGRITDLEKVERFTNLMWPEGNKDFCETVYSYGKRMAEVDHILKMMVFESFGMEKHFDSFCESTNYLLHFMRYQQPGKDGRSPALSLHKDKSILTIVNQNDVKGLEFETKDGEWILPTADNHIVLLGDCFMAWSNGRLHSPLHRVTLVANQARLSTSSFSFPKDIIETPAELVDEEHPLLFNPFEITELLAYCFTKEGAKAVCDLKQYKAYTGA",
+    "plates_count": 1,
+    "csv_checksum": "f1905d7118a5237400a53af2fbe821ee3e8a4981859181fac2e7a4a6f2e93c1f",
+    "additional_information": "reaction_condition: reaction_temperature:18\u00b0C;    reaction_ph:7.4;    reaction_other_conditions:Cell-free extract (CFE, 44 v%), 23% DMSO as cosolvent, Sodium ascorbate (3 equiv), Oxygen atmosphere, Reaction time: 18 h;    reaction_substrate_concentration:20 mM",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

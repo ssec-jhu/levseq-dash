@@ -8,6 +8,7 @@ import pandas as pd
 from levseq_dash.app.data_manager.experiment import Experiment
 from levseq_dash.app.data_manager.manager import BaseDataManager
 from levseq_dash.app.utils import u_reaction
+from levseq_dash.app.utils.utils import extract_all_indices
 
 
 def migrate_legacy_data_to_uuid_structure(input_data_path: Path, output_data_path, meta_data_file_name) -> None:
@@ -88,6 +89,16 @@ def migrate_legacy_data_to_uuid_structure(input_data_path: Path, output_data_pat
             if not passed_sanity_check:
                 raise ValueError(f"Experiment CSV file failed sanity check: {exp_csv_file}")
 
+            mutagenesis_method = row["mutagenesis_method"]
+
+            # writing out all the sites for experiments
+            # all_indices = set()
+            # for substitution in df["amino_acid_substitutions"].dropna():
+            #     indices = extract_all_indices(str(substitution))
+            #     all_indices.update(indices)
+            # if 5 >= len(all_indices) > 0:
+            #     print(f"Site Specific: {exp_csv_file}: positions {sorted(all_indices)}")
+
             # checksum calculation
             with open(exp_csv_file, "rb") as f:
                 csv_bytes = f.read()
@@ -111,7 +122,7 @@ def migrate_legacy_data_to_uuid_structure(input_data_path: Path, output_data_pat
                 "substrate": substrate_smiles,
                 "product": product_smiles,
                 "assay": assay_technique,
-                "mutagenesis_method": "Across Sequence",  # Default for legacy data
+                "mutagenesis_method": mutagenesis_method,
                 "parent_sequence": parent_sequence,
                 "plates_count": plates_count,
                 "csv_checksum": csv_checksum,

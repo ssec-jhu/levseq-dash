@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-7517-c1f90d35-654b-444e-9785-f5800dc4bb50",
+    "experiment_name": "Directed Evolution of Artificial Metalloenzymes in Whole Cells",
+    "doi": "10.1002/anie.202110519",
+    "experiment_date": "2022-01-26",
+    "substrate": "CNc1ccccc1.CCOC(=O)C(C)=[N+]=[N-]",
+    "product": "CCOC(=O)[C@H](C)N(C)c1ccccc1",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MYDWFSEMRKKDPVYYDGNIWQVFSYRYTKEVLNNFSKFSSDLTGYHERLEDLRNGKIRFDIPTRYTMLTSDPPLHDELRSMSADIFSPQKLQTLETFIRETTRSLLDSIDPREDDIVKKLAVPLPIIVISKILGLPIEDKEKFKEWSDLVAFRFGKPGEIFELGKKYLELIGYVKDHLNSGTEVVSRVVNSNLSDIEKLGYIILLLIAGNEGTTNLISNSVIDFTRFNLWQRIREENLYLKAIEEALRYSPPLMRTVRKTKERVKLGDQTIEEGEYVRVWIASANRDEEVFHDGEKFIPDRNPNPHLSFGSGIHLGLGAPLARLEARIAIEEFSKRFRHIEILDTEKVPNEVLNGYKRLVVRLKSNE",
+    "plates_count": 1,
+    "csv_checksum": "9537141940d18a16f656c2c00eca5fab686af5c5f0bd855a5abdca1ca185dcd0",
+    "additional_information": "reaction_condition: reaction_temperature:30 \u00b0C;    reaction_ph:6.0;    reaction_other_conditions:Whole-cell reaction (E. coli BL21(DE3) cells expressing Ir-CYP119), enzyme loading: OD600 ~50 cell suspension, reaction time: overnight, ethyl 2-diazopropanoate added in four batches over 4 hours, shaken at 250 rpm;    reaction_substrate_concentration:N-methylaniline: 10 mM, ethyl 2-diazopropanoate: 40 mM",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

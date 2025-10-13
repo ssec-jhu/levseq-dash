@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-9049-181e3231-3964-4bf1-aa17-1c3ce751e7b8",
+    "experiment_name": "Catalytic iron-carbene intermediate revealed in a cytochrome c carbene transferase",
+    "doi": "10.1073/pnas.1807027115",
+    "experiment_date": "2018-10-07",
+    "substrate": "C[SiH](C)c1ccccc1.CCOC(=O)C(C)=[N+]=[N-]",
+    "product": "CCOC(=O)C(C)[Si](C)(C)c1ccccc1",
+    "assay": "Ionization Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MKYLLPTAAAGLLLLAAQPAMAHHHHHHQDPEALAAEIGPVKQVSLGEQIDAALAQQGEQLFNTYCTACHRLDERFIGPALRDVTKRRGPVYIMNTMLNPNGMIQRHPVMKQLVQEYGTMDTDEALSEEQARAILEYLRQVAENQ",
+    "plates_count": 1,
+    "csv_checksum": "1071b97fb509d519b60ccac451eb7245582e686bdd8ffdeb59da25e221918734",
+    "additional_information": "reaction_condition: reaction_temperature:room temperature;    reaction_ph:7.5;    reaction_other_conditions:2.0 \u00b5M Rma TDE, 10 mM sodium dithionite, 5% (v/v) acetonitrile;    reaction_substrate_concentration:10 mM Me-EDA, 10 mM Dimethylphenylsilane",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

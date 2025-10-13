@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-6668-6a404660-ab95-4da7-84c1-a7f5c3c9206e",
+    "experiment_name": "Biocatalytic Strategy for Highly Diastereo- and Enantioselective Synthesis of 2 3-Dihydrobenzofuran-Based Tricyclic Scaffolds",
+    "doi": "10.1002/anie.201903455",
+    "experiment_date": "2019-07-22",
+    "substrate": "[N+](=[N-])=CC(=O)OCC.O1C=CC2=C1C=CC=C2",
+    "product": "C1(C2OC3=C(C21)C=CC=C3)C(=O)OCC",
+    "assay": "Ionization Readout",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "VLSEGEWQLVLHVWAKVEADVAGHGQEVLIRLFKGHPETLEKFDKFKHLKSEDEMKASEDLKKHGATVLTALGGILKKKGHHEAEIKPLAQSHATKHKIPIKYLEFISEAIIHVLHSRHPGDFGADAQGAMNKALELFRKDIAAKYKELGYQG",
+    "plates_count": 1,
+    "csv_checksum": "800027795d0af6fa34b9288fda4ea44600bff758d4ddfda8bc6e0dfbbb4999eb",
+    "additional_information": "reaction_string: C=CC1=CC=CC=C1C.O=C(OCC)C=[N+]=[N-]>>O=C(OCC)[C@@H](C2)[C@H]2C3=CC=CC=C3C",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

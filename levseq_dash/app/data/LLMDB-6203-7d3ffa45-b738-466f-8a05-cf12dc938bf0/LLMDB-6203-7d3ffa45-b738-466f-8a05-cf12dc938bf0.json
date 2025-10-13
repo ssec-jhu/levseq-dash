@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-6203-7d3ffa45-b738-466f-8a05-cf12dc938bf0",
+    "experiment_name": "Origin of high stereocontrol in olefin cyclopropanation catalyzed by an engineered carbene transferase",
+    "doi": "10.1021/acscatal.8b04073",
+    "experiment_date": "2019-01-02",
+    "substrate": "CCOC(=O)C=[N+]=[N-].C=Cc1ccccc1",
+    "product": "CCOC(=O)C1CC1c2ccccc2",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MVLSEGEWQLVLHVWAKVEADVAGHGQDILIRLFKSHPETLEKFDRFKHLKTEAEMKASEDLKKHGVTVLTALGAILKKKGHHEAELKPLAQSHATKHKIPIKYLEFISEAIIHVLHSRHPGNFGADAQGAMNKALELFRKDIAAKYKELGYQG",
+    "plates_count": 1,
+    "csv_checksum": "bf590a54b8f1a26a96f7e7c2887773e94760e1f8003d79109d8279c72f5e5d34",
+    "additional_information": "reaction_condition: reaction_temperature:room temperature;    reaction_ph:7.0;    reaction_other_conditions:20 \u00b5M purified Mb variant, 20 mM ethyl \u03b1-diazoacetate, 10 mM sodium dithionite, under anaerobic conditions, 16 hours;    reaction_substrate_concentration:10 mM styrene",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

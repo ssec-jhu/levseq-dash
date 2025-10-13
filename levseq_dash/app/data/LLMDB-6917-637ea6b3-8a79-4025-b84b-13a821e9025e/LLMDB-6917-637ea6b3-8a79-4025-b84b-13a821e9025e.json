@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-6917-637ea6b3-8a79-4025-b84b-13a821e9025e",
+    "experiment_name": "First and second sphere interactions accelerate non-native\u00a0N-alkylation catalysis by the thermostable, methanol-tolerant B12-dependent enzyme MtaC",
+    "doi": "10.1039/d3cc01071f",
+    "experiment_date": "2024-04-18",
+    "substrate": "C1(=CC=CC=C1)N.[N+](=[N-])=CC(=O)OCC",
+    "product": "C1(=CC=CC=C1)NCC(=O)OCC",
+    "assay": "Ionization Readout",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MLDFTEASLKKVLTRYNVALEKALTPEEAAEELYPKDELIYPIAKAIFEGEEDDVVEGLQAAIEAGKDPIDLIDDALMVGMGVVIRLYDEGVIFLPNVMMSADAMLEGIEYCKENSGATPKTKGTVVCHVAEGDVHDIGKNIVTALLRANGYNVVDLGRDVPAEEVLAAVQKEKPIMLTGTALMTTTMYAFKEVNDMLLENGIKIPFACGGGAVNQDFVSQFALGVYGEEAADAPKIADAIIAGTTDVTELREKFHKH*",
+    "plates_count": 1,
+    "csv_checksum": "78242035e7dd0fbe945a399704a07f46cd18d894b5f9c8f2fb42c92b68018868",
+    "additional_information": "reaction_string: C=CC1=CC=CC=C1C.O=C(OCC)C=[N+]=[N-]>>O=C(OCC)[C@@H](C2)[C@H]2C3=CC=CC=C3C",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-8175-b20e254b-cf1f-41c3-99dd-5cfd451a8a66",
+    "experiment_name": "Design and Evolution of an Enzyme for the Asymmetric Michael Addition of Cyclic Ketones to Nitroolefins by Enamine Catalysis",
+    "doi": "10.1002/anie.202404312",
+    "experiment_date": "2024-09-07",
+    "substrate": "[N+](=O)([O-])/C=C/C1=CC=CC=C1.C1(CCCCC1)=O",
+    "product": "[N+](=O)([O-])CC(C1=CC=CC=C1)C1C(CCCC1)=O",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "GAEIPKEMLRAQTNVILLNVLKQGDNYVYGIIKQVKEASNGEMELNEATLYTIFDRCEQDGIISSYWGDESQGGRRKYYRLTEIGHENMRLAFESWSRVDKIIENLEANKKSEAIKSRGGSGGWSHPQFEK*",
+    "plates_count": 1,
+    "csv_checksum": "15fb2b0cac3514ede84fe8623403d8a56dbca43a3eda11de3194796d811731a6",
+    "additional_information": "reaction_condition: reaction_temperature:20\u00b0C;    reaction_ph:7.0;    reaction_other_conditions:2.5 mol% (25 \u03bcM) LmrR_Cys_THP, 24 h, 5% v/v DMF;    reaction_substrate_concentration:40 mM 1a, 1 mM 2a",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

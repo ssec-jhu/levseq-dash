@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-3695-4efa31e4-6963-4ee8-80f0-d1f702a18ef6",
+    "experiment_name": "A Diverse Library of Chiral Cyclopropane Scaffolds via Chemoenzymatic Assembly and Diversification of Cyclopropyl Ketones",
+    "doi": "10.1021/jacs.0c09504",
+    "experiment_date": "2021-10-02",
+    "substrate": "[N+](=[N-])=CC(CC1=CC=CC=C1)=O.C(=C)C1=CC=CC=C1",
+    "product": "C1(=CC=CC=C1)CC(=O)[C@@H]1[C@H](C1)C1=CC=CC=C1",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "VLSEGEWQLVLHVWAKVEADVAGHGQDILIRLFKSHPETLEKFDRFKHLKTEAEMKASEDLKKVGVTVLTALGAILKKKGHHEAELKPLAQSHATKHKIPIKYLEFISEAIIHVLHSRHPGDFGADAQGAMNKALELFRKDIAAKYKELGYQG",
+    "plates_count": 1,
+    "csv_checksum": "8f2616517161ffb955c21505b9e8986d0f9f005a5ce7a3b9b056a2f680d86b17",
+    "additional_information": "reaction_condition: reaction_temperature:room temperature;    reaction_ph:9.0;    reaction_other_conditions:20 \u00b5M myoglobin, 10 mM sodium dithionite, 16 hours, anaerobic atmosphere, 10% ethanol;    reaction_substrate_concentration:20 mM styrene, 20 mM 1-diazo-3-phenylpropan-2-one",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

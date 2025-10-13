@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-7713-84ed7cd7-1a2d-4ac5-a2f8-32bec0b774a6",
+    "experiment_name": "Flavin-dependent halogenases catalyze enantioselective olefin halocyclization",
+    "doi": "10.1038/s41467-021-23503-3",
+    "experiment_date": "2021-04-27",
+    "substrate": "COc1ccc(cc1)C(=C)CCC(O)=O",
+    "product": "COc1ccc(C2(COC(C2)=O)CBr)cc1",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MSGKIDKILIVGGGTAGWMAASYLGKALQGTADITLLQAPDIPTLGVGEATIPNLQTAFFDFLGIPEDEWMRECNASYKVAIKFINWRTAGEGTSEARELDGGPDHFYHSFGLLKYHEQIPLSHYWFDRSYRGKTVEPFDYACYKEPVILDANRSPRRLDGSKVTNYAWHFDAHLVADFLRRFATEKLGVRHVEDRVEHVQRDANGNIESVRTATGRVFDADLFVDCSGFRGLLINKAMEEPFLDMSDHLLNDSAVATQVPHDDDANGVEPFTSAIAMKSGWTWKIPMLGRFGTGYVYSSRFATEDEAVREFCEMWHLDPETQPLNRIRFRVGRNRRAWVGNCVSIGTSSCFVEPLESTGIYFVYAALYQLVKHFPDKSLNPVLTARFNREIETMFDDTRDFIQAHFYFSPRTDTPFWRANKELRLADGMQEKIDMYRAGMAINAPASDDAQLYYGNFEEEFRNFWNNSNYYCVLAGLGLVPDAPSPRLAHMPQATESVDEVFGAVKDRQRNLLETLPSLHEFLRQQHGR",
+    "plates_count": 1,
+    "csv_checksum": "57ebdbdb21f755a33163fb0a429f6d29baa5d73c69510163156e65d2ba82ba68",
+    "additional_information": "reaction_condition: reaction_temperature:room temperature;    reaction_ph:7.6;    reaction_other_conditions:5 equiv. NaBr, 5 mol% FDH, cofactor regeneration system (2.5 \u00b5M MBP-RebF, 9 U/mL glucose dehydrogenase, 20 mM glucose), 1 mM glutathione, 35 U/mL catalase, 18 hr reaction time;    reaction_substrate_concentration:1 mM",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-0375-70e35f83-f5b3-42f0-b572-6b68dde36cb7",
+    "experiment_name": "Computational Stabilization of a Non-Heme Iron Enzyme Enables Efficient Evolution of New Function",
+    "doi": "10.1002/anie.202414705",
+    "experiment_date": "2024-11-11",
+    "substrate": "OC(=O)C1CCCCC1",
+    "product": "O[C@H]1CC[C@H](CC1)C(O)=O.O[C@@H]1CC[C@H](CC1)C(O)=O",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MLTDEELKRYNELGYLLIEDGLGPEEVAVLRRAADELFAEDSPDRTLEKDGVTVRSVHGCHRRNPVCADLVRHPRLLGPAQQILSGEVYVHQFKINAKAPMRGDVWPWHQDYIFWNREDGMDKPHVVNVAVLLDEATHLNGPLLFVPGTHELGEIDVARRNPPGDGPDQWLPQLSADLDYAIDDDLLATLTDGRGIDSATGKAGSILLFDSRIVHGSGRNMSPFPRRVALVTYNRTDNALPEQDNPRPEFLAARDATPLTPLPEGFRLADPP*",
+    "plates_count": 1,
+    "csv_checksum": "27b0714bde925271b82765378ed0bcda5b175967022ec40e2a6a65e58a878186",
+    "additional_information": "reaction_condition: reaction_temperature:25 \u00b0C;    reaction_ph:6.8;    reaction_other_conditions:10-20 \u00b5M purified enzyme, 1 mM ferrous ammonium sulfate, 1 mM L-ascorbic acid, 24 h reaction time;    reaction_substrate_concentration:20 mM",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

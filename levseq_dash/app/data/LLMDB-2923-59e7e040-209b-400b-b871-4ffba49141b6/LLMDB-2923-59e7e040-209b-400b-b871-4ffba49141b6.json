@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-2923-59e7e040-209b-400b-b871-4ffba49141b6",
+    "experiment_name": "Enantioselective intermolecular benzylic C-H amination catalysed by an engineered iron-haem enzyme",
+    "doi": "10.1038/nchem.2783",
+    "experiment_date": "2017-01-07",
+    "substrate": "CC1=CC=C(C=C1)S(=O)(=O)N=[N+]=[N-].C(C)C1=CC=C(C=C1)OC",
+    "product": "S(=O)(=O)(C1=CC=C(C)C=C1)NC(C)C1=CC=C(C=C1)OC",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MTIKEMPQPKTFGELKNLPLLNTDKPVQALMKIADELGEIFKFEAPGRVTRYLSSQRLIKEACDESRFDKNLSQALKFARDFAGDGLATSWTHEKNWKKAHNILLPSFSQQAMKGYHAMMVDIAVQLVQKWERLNADEHIEVSEDMTRLTLDTIGLCGFNYRFNSFYRDQPHPFIISMVRALDEVMNKLQRANPDDPAYDENKRQFQEDIKVMNDLVDKIIADRKARGEQSDDLLTQMLNGKDPETGEPLDDGNIRYQIITFLFAGHEGTSGLLSFALYFLVKNPHVLQKVAEEAARVLVDPVPSYKQVKQLKYVGMVLNEALRLWPTVPAFSLYAKEDTVLGGEYPLEKGDEVMVLIPQLHRDKTVWGDDVEEFRPERFENPSAIPQHAFKPFGNGQRASIGQQFALHEATLVLGMMLKHFDFEDHTNYELDIKETLSLKPKGFVVKAKSKKIPLGGIPSPSTLEHHHHHH",
+    "plates_count": 1,
+    "csv_checksum": "70de21f3796f01cbd4c24196f4fff758856c0ba6a01c2d50ca6d98f5f15ae8c3",
+    "additional_information": "reaction_condition: reaction_temperature:room temperature (23\u00b0C);    reaction_ph:8.0;    reaction_other_conditions:anaerobic conditions, whole E. coli cells (OD600 = 30), 25 mM glucose, oxygen depletion system (14,000 U/mL catalase, 1,000 U/mL glucose oxidase), 16-20 h reaction time, 40 rpm shaking;    reaction_substrate_concentration:5 mM alkane, 5 mM tosyl azide",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

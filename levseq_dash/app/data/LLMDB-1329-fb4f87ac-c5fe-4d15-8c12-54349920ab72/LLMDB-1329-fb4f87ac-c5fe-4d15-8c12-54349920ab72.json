@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-1329-fb4f87ac-c5fe-4d15-8c12-54349920ab72",
+    "experiment_name": "A designer enzyme for hydrazone and oxime formation featuring an unnatural catalytic aniline residue",
+    "doi": "10.1038/s41557-018-0082-z",
+    "experiment_date": "2018-02-07",
+    "substrate": "N(N)C1=CC=C(C2=NON=C21)[N+](=O)[O-].[N+](=O)([O-])C1=CC=C(C=O)C=C1",
+    "product": "[N+](=O)([O-])C1=CC=C(C=2C1=NON2)NN=CC2=CC=C(C=C2)[N+](=O)[O-]",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "GAEIPKEMLRAQTNVILLNVLKQGDNYVYGIIKQVKEASNGEMELNEATLYTIFDRLEQDGIISSYWGDESQGGRRKYYRLTEIGHENMRLAFESWSRVDKIIENLEANKKSEAIKSRGGSGGWSHPQFEK",
+    "plates_count": 1,
+    "csv_checksum": "3853942638eaecc098c2208d08738209e1180cbc7345ddfd60d740ec43686d9c",
+    "additional_information": "reaction_condition: reaction_temperature:25 \u00b0C;    reaction_ph:7.4;    reaction_other_conditions:5% (v/v) DMF, 10 \u00b5M protein (dimer concentration);    reaction_substrate_concentration:NBD-H: 18 \u00b5M, 4-NBA: 1 mM",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-1361-d1775a27-ae97-4c72-a4d4-3e3334e1dd01",
+    "experiment_name": "Active learning-assisted directed evolution",
+    "doi": "10.1073/pnas.1901979116",
+    "experiment_date": "2025-01-01",
+    "substrate": "CCOC(=O)C=[N+]=[N-].COc1ccc(C=C)cc1",
+    "product": "CCOC(=O)C1CC1c2ccc(OC)cc2",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVEDILDLWYGLQGSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTLCKPLDRQWLNYMYEIGLRHHRTKKGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAIWSYPYAKTGEW",
+    "plates_count": 1,
+    "csv_checksum": "d0ae940db6a3d743b8dd563ea0f4b77dfc8ef3596ab118c94c04c8adf2c2e09c",
+    "additional_information": "reaction_condition: reaction_temperature:room temperature;    reaction_ph:7.6;    reaction_other_conditions:E. coli whole-cells harboring protoglobin variants;     5% MeCN;     anaerobic (0-30 ppm O2);     16 hours reaction time;     IPTG (0.5 mM) and ALA (1.0 mM) used for protein expression/induction;    reaction_substrate_concentration:1a: 10 mM, EDA: 15 mM",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

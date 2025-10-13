@@ -1,0 +1,15 @@
+{
+    "experiment_id": "ARNLD-6568-7542f4f3-d4c8-4695-9ba1-9e7d02a76cbf",
+    "experiment_name": "Directed evolution of cytochrome c for carbon-silicon bond formation: Bringing silicon to life",
+    "doi": "10.1126/science.aah6219",
+    "experiment_date": "2016-11-25",
+    "substrate": "C[SiH](C)c1ccccc1.CCOC(=O)C(C)=[N+]=[N-]",
+    "product": "CCOC(=O)[C@@H](C)[Si](C)(C)c1ccccc1",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MTESGTAAQDPEALAAEIGPVKQVSLGEQIDAALAQQGEQLFNTYCTACHRLDERFIGPALRDVTKRRGPVYIMNVMLNPNGMIQRHPVMKQLVQEYGTMMTDMALSEEQARAILEYLRQVAENQLE",
+    "plates_count": 1,
+    "csv_checksum": "500f83c8e0bc20295f5ac1a6ccd2e69845c86c0464f70350826e9bbc73faf371",
+    "additional_information": "substrate_concentration: 10 mM;     reaction_smiles: CCOC(C(C)=[N+]=[N-])=O.C[SiH](C1=CC=CC=C1)C>>CCOC([C@@H](C)[Si](C)(C2=CC=CC=C2)C)=O",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

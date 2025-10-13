@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-1143-a1a3a3e6-7f83-4fae-92d3-f260db814c66",
+    "experiment_name": "Positioning-Group-Enabled Biocatalytic Oxidative Dearomatization",
+    "doi": "10.1021/acscentsci.9b00163",
+    "experiment_date": "2019-12-06",
+    "substrate": "",
+    "product": "OC1=C(C(=O)OC\\C=C\\C)C(=C(C(=C1C)O)C)C",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MTRSANSPFEVAIVGGGITGLALAVGLLKRNVSFTIYERAENFGELGVGITFTPNAQRAMEALDPCVLQSFTNVASAPSGGTINFVDGVREQGSEDPRTSTAALLFQLHVKGGYKACRRCDFVDQIVQHIPKDCVQYRKWLDSIETDHESGRAVLKFRDGEIAHADVVIGCDGIRSQVRASMFGTDELCPRAQYSHQLGYRGMVPLAQATAVLGPEKTSSAVLHTGPGAFVLTIPLAEVHAMHIEAFIMDKEEWPEVQTSSDSKRYVLPATRNEATKAFAEFGPTVRSAVSMFPEKLEKWAVFDMLEAPVPTFAKGRVCLAGDAAHASTPNQGGGAGFGIEDALVLAEVLAVLAEAPNVSGIVASEALAVYSEVRYERSQWLVRSSRRTGELCTWKDRDWGLAAEELSRDIISRSHQLWDHDTAGMVSDALAILGERVRGADTAF",
+    "plates_count": 1,
+    "csv_checksum": "d444a0f47a5f6e3afa94de1a0d36022320cc51d6b85da79a92161d8a9670b81f",
+    "additional_information": "reaction_condition: reaction_temperature:nan;    reaction_ph:nan;    reaction_other_conditions:nan;    reaction_substrate_concentration:nan",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

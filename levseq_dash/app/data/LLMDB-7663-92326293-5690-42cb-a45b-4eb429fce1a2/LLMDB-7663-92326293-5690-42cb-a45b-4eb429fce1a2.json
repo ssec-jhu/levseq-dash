@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-7663-92326293-5690-42cb-a45b-4eb429fce1a2",
+    "experiment_name": "Non-native Intramolecular Radical Cyclization Catalyzed by a B12\u00a0-Dependent Enzyme",
+    "doi": "10.1002/anie.202312893",
+    "experiment_date": "2023-12-18",
+    "substrate": "CCOC(=O)c1ccc(CN(C(=O)C(F)(F)Cl)C(C)(C)C)cc1.Fc1ccc(CNC(=O)C(F)(F)Cl)cc1",
+    "product": "CC(C)C1CN(Cc2ccc(F)cc2)C(=O)C1(F)F.CCOC(=O)C1=CCC2(CN(C(=O)C2(F)F)C(C)(C)C)C=C1.CC(=C)C1CN(Cc2ccc(F)cc2)C(=O)C1(F)F",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MTSSGVYTIAEVEAMTGLSAEVLRQWERRYGFPKPRRTPGGHRLYSAEDVEALKTIKRWLEEGATPKAAIRRYLAQEVRPEDLGTGLLEALLRGDLAGAEALFRRGLRFWGPEGVLEHLLLPVLREVGEAWGRGEIGVAEEHLASTFLRARLQELLDLAGFPPGPPVLVTTPPGERHEIGAMLAAYHLRRKGVPALYLGPDTPLPDLRALARRLGAGTVVLSAVLSEPLRALPDGALKDLAPRVFLGGQGAGPEEARRLGAEYMEDLKGLAEALWLPRGPEKEAI",
+    "plates_count": 1,
+    "csv_checksum": "f5b3ca96c539ed87a2a73d3836772b7924852baab70af8cea9143002a448f474",
+    "additional_information": "reaction_string: C=CC1=CC=CC=C1C.O=C(OCC)C=[N+]=[N-]>>O=C(OCC)[C@@H](C2)[C@H]2C3=CC=CC=C3C",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

@@ -1,0 +1,15 @@
+{
+    "experiment_id": "ARNLD-5761-292d8b20-ad9e-420e-99be-08a6432e3d83",
+    "experiment_name": "Nitroalkanes as Versatile Nucleophiles for Enzymatic Synthesis of Noncanonical Amino Acids",
+    "doi": "10.1021/acscatal.9b02089",
+    "experiment_date": "2019-08-20",
+    "substrate": "N[C@@H](CO)C(=O)O.O=[N+]([O-])Cc1ccccc1",
+    "product": "N[C@H](C(=O)O)C(c1ccccc1)[N+](=O)[O-]",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MWFGEFGGQYVPETLVGPLKELEKAYKRFKDDEEFNRQLNYYLKTWAGRPTPLYYAKRLTEKIGGAKVYLKREDLVHGGAHKTNNAIGQALLAKLMGKTRLIAETGAGQHGVATAMAGALLGMKVDIYMGAEDVERQKMNVFRMKLLGANVIPVNSGSRTLKDAINEALRDWVATFEYTHYLIGSVVGPHPYPTIVRDFQSVIGREAKAQILEAEGQLPDVIVACVGGGSNAMGIFYPFVNDKKVKLVGVEAGGKGLESGKHSASLNAGQVGVSHGMLSYFLQDEEGQIKPSHSIAPGLDYPGVGPEHAYLKKIQRAEYVAVTDEEALKAFHELSRTEGIIPALESAHAVAYAMKLAKEMSRDEIIIVNLSGRGDKDLDIVLKASGNV",
+    "plates_count": 1,
+    "csv_checksum": "74f84b561626a9af8b84c999c7a3affed26100caa7ef424014ac3d4dc5409751",
+    "additional_information": "substrate_concentration: 50 mM;     reaction_smiles: O=[N+](CC1=CC=CC=C1)[O-].N[C@@H](CO)C(O)=O>>O=C(O)[C@@H](N)C([N+]([O-])=O)C2=CC=CC=C2",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

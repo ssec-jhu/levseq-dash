@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-3484-ff29781c-a0bc-4403-aaf9-7150073663e0",
+    "experiment_name": "Discovery of a regioselectivity switch in nitrating P450s guided by molecular dynamics simulations and Markov models",
+    "doi": "10.1038/nchem.2474",
+    "experiment_date": "2016-01-05",
+    "substrate": "N[C@@H](Cc1c[nH]c2ccccc12)C(O)=O",
+    "product": "N[C@@H](Cc1c[nH]c2ccc(cc12)[N+]([O-])=O)C(O)=O",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MTVPSPLADPSIVPDPYPVYADLAQRRPVHWVERLNAWAVLTYADCAAGLKDPRLTADRGTEVLAAKFPGQPLPPDNIFHRWTKNVVMYTDPPLHDALRRSVRAGFTRAAHQHYDQVLQKVAHDLVASIPAGATEIDAVPALAAELPVRSAVHAFGVPEEDLGFLIPRVNTIMTYHSGPKDQPVTQEIILEKLTDLHTYASELLQGMRGKVLPDTVIARLAAAQDGLTETTPEQTVHQLALVFIALFAPTTPGSLSSGTLAFARNPRQVERFLADQACVDNTANEVLRYNASNQFTWRVAAKDVEMGGVRIEAGQTLALFLGSANRDANMFERPNDFDLDRPNSARHLSFGQGVHACLAAQLISLQLKWFYVALLNRFPGIRTAGEPIWNENLEFRSLRSLPLSLR",
+    "plates_count": 1,
+    "csv_checksum": "554266c76f0c5f102d6b8dbc1e05949baef76f269cededa618a4eb0515062ede",
+    "additional_information": "reaction_string: C=CC1=CC=CC=C1C.O=C(OCC)C=[N+]=[N-]>>O=C(OCC)[C@@H](C2)[C@H]2C3=CC=CC=C3C",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

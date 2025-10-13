@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-7273-b072194b-0e50-4b0a-a3ac-7db00d1c5a08",
+    "experiment_name": "Biocatalytic Generation of Trifluoromethyl Radicals by Nonheme Iron Enzymes for Enantioselective Alkene Difunctionalization",
+    "doi": "10.1021/jacs.4c14310",
+    "experiment_date": "2024-05-12",
+    "substrate": "[Na+].[N-]=[N+]=[N-].COc1ccc(C=C)cc1.O=C1OC(I)(C(F)(F)F)C2=CC=CC=C12",
+    "product": "COc1ccc(cc1)C(CC(F)(F)F)N=[N+]=[N-]",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MQNFEIDYVEMYVENLEVAAFSWVDKYAFAVAGTSRSADHRSIALRQGQVTLVLTEPTSDRHPAAAYLQTHGDGVADIAMATSDVAAAYEAAVRAGAEAVRAPGQHSEAAVTTATIGGFGDVVHTLIQRDGTSAELPPGFTGSMDVTNHGKGDVDLLGIDHFAICLNAGDLGPTVEYYERALGFRQIQDEHIVVGAQAMNSTVVQSASGAVTLGLIEPDRNADPGQIDEFLKDHQGAGVQHIAFNSNDAVRAVKALSERGVEFLKTPGAYYDLLGERITLQTHSLDDLRATNVLADEDHGGQLFHILTASTHPRHTIFFEVIERQGAGTYGSSNVKALYEAVELERTGQSEFGAARR",
+    "plates_count": 1,
+    "csv_checksum": "4ef1e74a14f8f796a510ba4f7ffc4198991b3c740df7396eba77e36f0615e2cd",
+    "additional_information": "reaction_condition: reaction_temperature:room temperature;    reaction_ph:7.4;    reaction_other_conditions:Lysate (OD=40), 1 mM Fe(II), 50 mM sodium azide, 10 mM 1-trifluoromethyl-1,2-benziodoxol-3-(1H)-one, 3 hours, anaerobic conditions;    reaction_substrate_concentration:5 mM (4-methoxystyrene)",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

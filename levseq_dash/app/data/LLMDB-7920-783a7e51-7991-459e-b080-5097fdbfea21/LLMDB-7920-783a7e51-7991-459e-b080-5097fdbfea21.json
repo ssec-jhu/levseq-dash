@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-7920-783a7e51-7991-459e-b080-5097fdbfea21",
+    "experiment_name": "Stereoselective amino acid synthesis by synergistic photoredox-pyridoxal radical biocatalysis",
+    "doi": "10.1126/science.adg2420",
+    "experiment_date": "2023-07-28",
+    "substrate": "C(C1=CC=CC=C1)[B-](F)(F)F.N[C@H](C(=O)O)CO.[K+]",
+    "product": "N[C@H](C(=O)O)CCC1=CC=CC=C1.N[C@@H](C(=O)O)CCC1=CC=CC=C1",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MWFGEFGGQYVPETLVGPLKELEKAYKRFKDDEEFNRQLNYYLKTWAGRPTPLYYAKRLTEKIGGAKVYLKREDLVHGGAHKTNNAIGQALLAKLMGKTRLIAETGAGQHGVATAMAGALLGMKVDIYMGAEDVERQKMNVFRMKLLGANVIPVNSGSRTLKDAINEALRDWVATFEYTHYLIGSVVGPHPYPTIVRDFQSVIGREAKAQILEAEGQLPDVIVACVGGGSNAMGIFYPFVNDKKVKLVGVEAGGKGLESGKHSASLNAGQVGVSHGMLSYFLQDEEGQIKPSHSIAPGLDYPGVGPEHAYLKKIQRAEYVAVTDEEALKAFHELSRTEGIIPALESAHAVAYAMKLAKEMSRDEIIIVNLSGRGDKDLDIVLKASGNVLEHHHHHH",
+    "plates_count": 1,
+    "csv_checksum": "13cd75e81c47fc844ef852073b3abfa2f98e334213b5dcb741be9640010c9b1b",
+    "additional_information": "reaction_condition: reaction_temperature:50 \u00b0C;    reaction_ph:6.0;    reaction_other_conditions:1 mol% PLP enzyme, 10 mol% RhB, h\u03c5 (440 nm), 5% v/v DMSO, 12 h;    reaction_substrate_concentration:4 mM 1a, 20 mM 2a",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

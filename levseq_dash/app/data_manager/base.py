@@ -19,6 +19,7 @@ Usage:
 """
 
 import hashlib
+import random
 import uuid
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional
@@ -330,27 +331,29 @@ class BaseDataManager(ABC):
         Generate a unique experiment ID.
 
         Creates a human-readable experiment identifier by combining a prefix
-        with a UUID. This ID is used for display purposes and should be unique
-        across the entire system.
+        with a 4-digit random number and a UUID. This ID is used for display
+        purposes and should be unique across the entire system.
 
         Args:
             id_prefix (str): Prefix for the experiment ID (e.g., "ARNLD", "EXPT")
                            Should be short (5 characters) and alphanumeric
 
         Returns:
-            str: Generated experiment ID in format "{prefix}-{uuid}"
+            str: Generated experiment ID in format "{prefix}-{4digit}-{uuid}"
 
         Example:
             exp_id = BaseDataManager.generate_experiment_id("ARNLD")
-            # Returns: "ARNLD-123e4567-e89b-12d3-a456-426614174000"
+            # Returns: "ARNLD-1234-123e4567-e89b-12d3-a456-426614174000"
 
         Note:
-            This method uses UUID4 for randomness. The generated ID is
-            guaranteed to be unique but may be long for display purposes.
+            This method uses a random 4-digit number (0000-9999) and UUID4
+            for randomness. The generated ID is guaranteed to be unique but
+            may be long for display purposes.
         """
         generated_uuid = str(uuid.uuid4())
-        # Return a string with the prefix and UUID
-        return f"{id_prefix}-{generated_uuid}"
+        random_4digit = f"{random.randint(0, 9999):04d}"
+        # Return a string with the prefix, 4-digit number, and UUID
+        return f"{id_prefix}-{random_4digit}-{generated_uuid}"
 
     @staticmethod
     def calculate_file_checksum(file_bytes) -> str:

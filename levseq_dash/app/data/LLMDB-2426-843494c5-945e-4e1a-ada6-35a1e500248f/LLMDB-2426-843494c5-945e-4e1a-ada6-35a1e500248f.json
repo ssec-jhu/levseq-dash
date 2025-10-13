@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-2426-843494c5-945e-4e1a-ada6-35a1e500248f",
+    "experiment_name": "Gram-Scale Synthesis of Chiral Cyclopropane-Containing Drugs and Drug Precursors with Engineered Myoglobin Catalysts Featuring Complementary Stereoselectivity",
+    "doi": "10.1002/anie.201608680",
+    "experiment_date": "2016-12-23",
+    "substrate": "[N+](=[N-])=CC(=O)OCC.C(=C)C1=CC=CC=C1",
+    "product": "CCOC(=O)[C@H]1[C@@H](C1)C2=CC=CC=C2",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MVLSEGEWQLVLHVWAKVEADVAGHGQDILIRLFKSHPETLEKFDRFKHLKTEAEMKASEDLKKVGVTVLTALGAILKKKGHHEAELKPLAQSHATKHKIPIKYLEFISEAIIHVLHSRHPGNFGADAQGAMNKALELFRKDIAAKYKELGYQG",
+    "plates_count": 1,
+    "csv_checksum": "72597f791256859f9ac88024c9d39c1f92d289f904701bdb5e63fd36c9ca8530",
+    "additional_information": "reaction_condition: reaction_temperature:room temperature;    reaction_ph:7.0;    reaction_other_conditions:20 \u00b5M Mb variant, 10 mM dithionite, 16 h;    reaction_substrate_concentration:10 mM styrene, 20 mM ethyl diazoacetate",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

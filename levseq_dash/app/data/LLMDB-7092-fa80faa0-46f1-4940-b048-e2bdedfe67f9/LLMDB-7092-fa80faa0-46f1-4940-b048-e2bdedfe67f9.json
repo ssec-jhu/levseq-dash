@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-7092-fa80faa0-46f1-4940-b048-e2bdedfe67f9",
+    "experiment_name": "An Artificial Metalloenzyme Based on a Copper Heteroscorpionate Enables sp3 C-H Functionalization via Intramolecular Carbene Insertion",
+    "doi": "10.1021/jacs.2c03311",
+    "experiment_date": "2022-06-24",
+    "substrate": "CC(C)(C)NC(=O)C(=[N+]=[N-])c1ccccc1",
+    "product": "CC(C)(C)N1C(CC1=O)c2ccccc2.CC(C)(C)N1CC(CC1=O)c2ccccc2",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MASMTGGQQMGRDQAGITGTWYNQLGSTFIVTAGADGALTGTYESAVGNAESRYVLTGRYDSAPATDGSGTALGWTVAWKNNYRNAHSATTWSGQYVGGAEARINTQWLLTSGTTEANAWASTLVGHDTFTKVKPSAASIDAAKKAGVNNGNPLDAVQQ",
+    "plates_count": 1,
+    "csv_checksum": "0b6d5e9974eb3411d9c08424a0f100c34b754c3402c9e69ca369f417e0234ba8",
+    "additional_information": "reaction_string: C=CC1=CC=CC=C1C.O=C(OCC)C=[N+]=[N-]>>O=C(OCC)[C@@H](C2)[C@H]2C3=CC=CC=C3C",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

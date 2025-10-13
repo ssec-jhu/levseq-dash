@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-0578-3cc8f1d4-1a45-4a01-ae5c-1ee25c2d1778",
+    "experiment_name": "Design and Evolution of an Artificial Friedel-Crafts Alkylation Enzyme Featuring an Organoboronic Acid Residue",
+    "doi": "10.1021/jacs.4c03795",
+    "experiment_date": "2024-08-27",
+    "substrate": "OC1=C(C=CC=C1)C(\\C=C\\C)=O.CN1C=CC2=CC=CC=C12",
+    "product": "OC1=C(C=CC=C1)C(CC(C)C1=CN(C2=CC=CC=C12)C)=O",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MAEIPKEMLRAQTNAILLNVLKQGDNYVYGIIKQVKEASNGEMELNEATLYTIFKRLEKDGIISSYWGDESQGGRRKYYRLTEIGHEAMRLGFESWSRVDKIIENLEANKKSEAIKSRWSHPQFEK",
+    "plates_count": 1,
+    "csv_checksum": "b00031f2ea9ec16ae7bc8e3b72f6e73c8b21d731b53a6b0f60b95533e1d5ff79",
+    "additional_information": "reaction_condition: reaction_temperature:5 \u00b0C;    reaction_ph:6.0;    reaction_other_conditions:120 \u00b5M protein (dimer concentration), 5% DMF, 24 hours reaction time, 100 \u00b5L final volume;    reaction_substrate_concentration:1a: 7 mM, 2: 1 mM",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

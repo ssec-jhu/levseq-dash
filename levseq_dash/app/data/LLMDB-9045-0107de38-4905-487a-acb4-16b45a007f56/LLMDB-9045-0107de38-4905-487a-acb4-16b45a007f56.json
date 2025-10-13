@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-9045-0107de38-4905-487a-acb4-16b45a007f56",
+    "experiment_name": "A De Novo Metalloenzyme for Cerium Photoredox Catalysis",
+    "doi": "10.1021/jacs.4c04618",
+    "experiment_date": "2024-08-08",
+    "substrate": "C1(=CC=CC=C1)C(C(O)C1=CC=CC=C1)O",
+    "product": "C(C1=CC=CC=C1)=O",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MASAWSHPQFEKSGSMGDILIVWAKDVDEMLKQVEILRRLGAKQIAVESSDWRILQEALKKGGDILIVNGGGMTITFRGDDLEALLKAAIEMIKQALKFGATITLSLDGNDLNINITGVPEQVRKELAKEAERLAKEFGITVTRTGGGDVDEMLKQVEILRRLGAKQIAVESDDWRILQEALKKG",
+    "plates_count": 1,
+    "csv_checksum": "4c7f609e2fa7eed5ca270e46190ca479c39262684022e8b82df764e60d9d2517",
+    "additional_information": "reaction_condition: reaction_temperature:approx. 23 \u00b0C;    reaction_ph:8.5;    reaction_other_conditions:100 \u00b5M metalloenzyme (PLZ1.0: dimer concentration;     PLZ1.1\u2013PLZ1.4: single-chain concentration), 100 \u00b5M CeCl3 (1 equivalent per protein scaffold), 410\u2013420 nm (3 W) irradiation, 24 h reaction time, aerobic conditions, 10% (v/v) acetonitrile co-solvent, protein and CeCl3 pre-incubated for 2.5 h at 40 \u00b0C;    reaction_substrate_concentration:2 mM",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

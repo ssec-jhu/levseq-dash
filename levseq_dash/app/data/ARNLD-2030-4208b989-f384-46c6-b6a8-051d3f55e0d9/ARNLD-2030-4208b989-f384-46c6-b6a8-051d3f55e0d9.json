@@ -1,0 +1,15 @@
+{
+    "experiment_id": "ARNLD-2030-4208b989-f384-46c6-b6a8-051d3f55e0d9",
+    "experiment_name": "Directed evolution of enzymatic silicon-carbon bond cleavage in siloxanes",
+    "doi": "10.1126/science.adi5554",
+    "experiment_date": "2024-01-25",
+    "substrate": "C[Si](C)(C)O[Si](C)(C)C",
+    "product": "C[Si](C)(C)O[Si](C)(C)CO.C[Si](C)(C)O[Si](C)(C)O",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "TIKEMPQPKTFGELKNLPLLNTDKPVQALMKIADELGEIFKFEAPGRVTRYLSSQRLIKEACDESRFDKNLSQALKFARDFVGDGLGTSWTHEKNWKKAHNILLPSFSQQAMKGYHAMMVDIAVQLVQKWERLNADEHIEVSEDMTRLTLDTIGLCGFNYRFNSFYRDQPHPFIISMVRALDEVMNKLQRANPDDPAYDENKRQFQEDIKVMNDLVDKIIADRKARGEQSDDLLTQMLNGKDPETGEPLDDGNIRYQIITFLIAGHETTSGLLSFALYFLVKNPHVLQKVAEEAARVLVDPVPSYKQVKQLKYVGMVLNEALRLWPTAPAFSLYAKEDTVLGGEYPLEKGDEVMVLIPQLHRDKTVWGDDVEEFRPERFENPSAIPQHAFKPFGNGQRACIGQQFALHEATLVLGMMLKHFDFEDHTNYELDIKETLTLKPKGF",
+    "plates_count": 1,
+    "csv_checksum": "c1b9358d22a8835439590e577bacf822ce6893f097668107a4bfd1d0412e5353",
+    "additional_information": "substrate_concentration: 5 mM;     activity_for_reaction_% (if applicable): 18;     reaction_smiles: C[Si](O[Si](C)(C)C)(C)C>>C[Si](O[Si](CO)(C)C)(C)C.C[Si](O[Si](O)(C)C)(C)C",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

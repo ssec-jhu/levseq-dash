@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-9608-11eb220b-8455-46d4-8ff5-24c3d0c98924",
+    "experiment_name": "Biocatalytic Strategy for the Highly Stereoselective Synthesis of CHF sub 2 sub -Containing Trisubstituted Cyclopropanes",
+    "doi": "10.1002/anie.202015895",
+    "experiment_date": "2021-03-22",
+    "substrate": "FC(C(=C)C1=CC=CC=C1)F.[N+](=[N-])=CC(=O)OCC",
+    "product": "C1(=CC=CC=C1)C1(C(C1)C(=O)OCC)C(F)F",
+    "assay": "Ionization Readout",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MGLSDGEWQLVLNVWGKVEADIPGHGQEVLIRLFKGHPETLEKFDKFKHLKSEDEMKASEDLKKHGATVLTALGGILKKKGHHEAEIKPLAQSHATKHKIPVKYLEFISECIIQVLQSKHPGDFGADAQGAMNKALELFRKDMASNYKELGFQG",
+    "plates_count": 1,
+    "csv_checksum": "f165858a1e6ad4fffd2563c63432675af9f4d93e49ea104410c2becda0bb24d8",
+    "additional_information": "reaction_string: C=CC1=CC=CC=C1C.O=C(OCC)C=[N+]=[N-]>>O=C(OCC)[C@@H](C2)[C@H]2C3=CC=CC=C3C",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

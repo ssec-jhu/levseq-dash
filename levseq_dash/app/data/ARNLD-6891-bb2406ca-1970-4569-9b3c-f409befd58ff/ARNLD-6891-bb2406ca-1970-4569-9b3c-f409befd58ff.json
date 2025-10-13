@@ -1,0 +1,15 @@
+{
+    "experiment_id": "ARNLD-6891-bb2406ca-1970-4569-9b3c-f409befd58ff",
+    "experiment_name": "Asymmetric Alkylation of Ketones Catalyzed by Engineered TrpB",
+    "doi": "10.1002/anie.202106938",
+    "experiment_date": "2021-07-15",
+    "substrate": "N[C@@H](CO)C(=O)O.CCC(=O)c1ccccc1",
+    "product": "CC(C[C@H](N)C(=O)O)C(=O)c1ccccc1",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MKGYFGPYGGQYVPEILMGALEELEAAYEGIMKDESFWKEFNDLLRDYAGRPTPLYFARRLSEKYGARVYLKREDLLHTGAHKINNAIGQVLLAKLMGKTRIIAETGAGQHGVATATAAALFGMECVIYMGEEDTIRQKLNVERMKLLGAKVVPVKSGSRTLKDAIDEALRDWITNLQTTYYVFGSVVGPHPYPIIVRNFQKVIGEETKKQIPEKEGRLPDYIVACVSGGSNAAGIFYPFIDSGVKLIGVEAGGEGLETGKHAASLLKGKIGYLHGSKTFVLQDDWGQVQVSHSVSAGLDYSGVGPEHAYWRETGKVLYDAVTDEEALDAFIELSRLEGIIPALESSHALAYLKKINIKGKVVVVNLSGRGDKDLESVLNHPYVRERIR",
+    "plates_count": 1,
+    "csv_checksum": "cdee4dd62abbcf192b2475e26dfdbbc13cacbc5d4fbc131fb2b4034382e20945",
+    "additional_information": "substrate_concentration: 10 mM;     reaction_smiles: N[C@H](C(O)=O)CO.CCC(C1=CC=CC=C1)=O>>O=C(C2=CC=CC=C2)C(C)C[C@@H](C(O)=O)N",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

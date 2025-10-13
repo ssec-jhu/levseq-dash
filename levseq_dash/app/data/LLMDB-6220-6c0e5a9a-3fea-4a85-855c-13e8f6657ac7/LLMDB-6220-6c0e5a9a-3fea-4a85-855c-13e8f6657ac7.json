@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-6220-6c0e5a9a-3fea-4a85-855c-13e8f6657ac7",
+    "experiment_name": "Hemoprotein-Catalyzed Cyclopropanation En Route to the Chiral Cyclopropanol Fragment of Grazoprevir",
+    "doi": "10.1002/cbic.201800652",
+    "experiment_date": "2019-06-03",
+    "substrate": "CC(=O)C=[N+]=[N-].ClCCCC=C",
+    "product": "CC(=O)C1CC1CCCCl",
+    "assay": "Ionization Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MIDQKEKELIKESWKRIEPNKNEIGLLFYANLFKEEPTVSVLVQSPISSVSRKAMQVLGILVQGIDNLEGLIPTLQDLGRRHKQYGVVDSHYPLVGDCLLKSIQEYLGQGFTEEAKAAWTKVYGIAAQVMTAEHHHHHH",
+    "plates_count": 1,
+    "csv_checksum": "622661d8c7cfa731ebd524146a8bd606154629f222490619fdde02a6f9b1f303",
+    "additional_information": "reaction_condition: reaction_temperature:not specified;    reaction_ph:9.2;    reaction_other_conditions:anaerobic chamber, 2 nmol purified enzyme, 100 mM sodium dithionite (dissolved in 50 mM KPi pH 7.0, 2.5 \u00b5L added), 60 minutes reaction time;    reaction_substrate_concentration:5-chloro-1-pentene: 20 mM, 1-diazo-2-propanone: 10 mM",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

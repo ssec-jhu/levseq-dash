@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-3664-77ef91eb-f7fb-4cf0-943b-ca4e16cf3744",
+    "experiment_name": "Emergence of a catalytic tetrad during evolution of a highly active artificial aldolase",
+    "doi": "10.1038/nchem.2596",
+    "experiment_date": "2017-01-01",
+    "substrate": "",
+    "product": "CN(C)CCN(C)c1ccc2cc(C=O)ccc2c1.CC(C)=O",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MPRYLKGWLEDVVQLSLRRPSVHASRQRPIISLNERILEFNKRNITAIIAYYLRKSPSGLDVERDPIEYAKYMEPYAVGLSIKTEEKYFDGSYEMLRKIASSVSIPILMNDFIVKESQIDDAYNLGADTVLLIVEILTERELESLLEYARGYGMEPLILINDENDLDIALRIGARFITIYSMNFETGEINKENQRKLISMIPSNVVKVPLLDFFEPNEIEELRKLGVNAFMISSSLMRNPEKIKELIEGSLEHHHHHH",
+    "plates_count": 1,
+    "csv_checksum": "26c3e95313d989750e503e31fadd6694b24a170d64fa2c0121025e4f86ccf270",
+    "additional_information": "reaction_condition: reaction_temperature:29 \u00b0C;    reaction_ph:7.5;    reaction_other_conditions:Compartmentalized in 20 pL surfactant-stabilized droplets dispersed in inert fluorinated oil;     Lysis agents (1 mg/mL lysozyme, 2 mg/mL polymyxin B, 10 mM EDTA, 5 mM EGTA) present;     Incubation time varied from 5 minutes to 1 hour;     2.7% acetonitrile;    reaction_substrate_concentration:nan",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

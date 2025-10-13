@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-4127-9631335f-f757-4720-8f7e-8ba47549da50",
+    "experiment_name": "Abiotic reduction of ketones with silanes catalysed by carbonic anhydrase through an enzymatic zinc hydride",
+    "doi": "10.1038/s41557-020-00633-7",
+    "experiment_date": "2021-01-04",
+    "substrate": "C1(=CC=CC=C1)[SiH3].C1(=CC=CC=C1)C(C)=O",
+    "product": "C1(=CC=CC=C1)[C@H](C)O",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MKSSHHHHHHENLYFQSNAMSHHWGYGKHNGPEHWHKDFPIAKGERQSPVDIDTHTAKYDPSLKPLSVSYDQATSLRILNNGHAFNVEFDDSQDKAVLKGGPLDGTYRLIQFHFHWGSLDGQGSEHTVDKKKYAAELHLVHWNTKYGDFGKAVQQPDGLAVLGIFLKVGSAKPGLQKVVDVLDSIKTKGKSADFTNFDPRGLLPESLDYWTYPGSLTTPPLLECVTWIVLKEPISVSSEQVLKFRKLNFNGEGEPEELMVDNWRPAQPLKNRQIKASFK*",
+    "plates_count": 1,
+    "csv_checksum": "2c4510e3886be9226f7143ffc8be3d3f72960ac155547f28f20f7daf36b34b70",
+    "additional_information": "reaction_condition: reaction_temperature:20 \u00b0C;    reaction_ph:8.0;    reaction_other_conditions:Enzyme loading: 0.05 mol% hCAII (relative to ketone);     Phenylsilane: 3.0 equiv. (relative to ketone);     Reaction time: 3 h;     Shaking: 300 rpm orbital shaker;     Catalyst form: hCAII in whole cells;     Vial: 20 mL scintillation vial, loosely capped.;    reaction_substrate_concentration:25 mM",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

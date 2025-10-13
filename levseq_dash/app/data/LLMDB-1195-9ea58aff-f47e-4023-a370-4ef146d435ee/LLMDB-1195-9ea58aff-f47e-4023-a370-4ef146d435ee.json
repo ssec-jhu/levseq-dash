@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-1195-9ea58aff-f47e-4023-a370-4ef146d435ee",
+    "experiment_name": "Enantiodivergent Radical Alkylation by Synergistic Lewis-Acid-Enzyme and Photoredox Catalysis",
+    "doi": "10.1002/anie.202500338",
+    "experiment_date": "2025-04-24",
+    "substrate": "ClCC(=O)C1=CC=CC=C1.C(C)(C)N1C(=NC=C1)C(CC1=CC=CC=C1)=O",
+    "product": "C(C)(C)N1C(=NC=C1)C(C(CC(=O)C1=CC=CC=C1)C1=CC=CC=C1)=O",
+    "assay": "Ionization Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MKEGTGMVVRSSEITPERISNMRGGKGEVEMAHLLSKEAMHNKARLFARMKLPPGSSVGLHKHEGEFEIYYILLGEGVFHDNGKDVPIKAGDVCFTDSGESHSIENTGNTDLEFLAVIILL",
+    "plates_count": 1,
+    "csv_checksum": "d8ebb301b1820d9674f56bc9e4b030e59da4f9f4fdc1b0a19d03ad5c379d4ca7",
+    "additional_information": "reaction_condition: reaction_temperature:room temperature;    reaction_ph:8.0;    reaction_other_conditions:3 mol% enzyme, 6 mol% CuSO4, 2 mol% Ru(bpy)3Cl2, 8% v/v DMSO, N2 atmosphere, 450-460 nm LEDs illumination, 12 h reaction time, total volume 0.8 mL;    reaction_substrate_concentration:5 mM",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

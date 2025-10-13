@@ -1,0 +1,15 @@
+{
+    "experiment_id": "ARNLD-6893-78d269dd-0045-44af-8665-fbe93db349ac",
+    "experiment_name": "Direct Enzymatic Synthesis of a Deep-Blue Fluorescent Noncanonical Amino Acid from Azulene and Serine",
+    "doi": "10.1002/cbic.201900497",
+    "experiment_date": "2019-09-12",
+    "substrate": "N[C@@H](CO)C(=O)O.c1ccc2[nH]ccc2c1",
+    "product": "N[C@@H](Cc1c[nH]c2ccccc12)C(=O)O",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MKGYFGPYGGQYVPEILMGALEELEAAYEGIMKDESFWKEFNDLLRDYAGRPTPLYFARRLSEKYGARVYLKREDLLHTGAHKINNAIGQVLLAKLMGKTRIIAETGAGQHGVATATAAALFGMECVIYMGEEDTIRQKLNVERMKLLGAKVVPVKSGSRTLKDAIDEALRDWITNLQTTYYVFGSVVGPHPYPIIVRNFQKVIGEETKKQIPEKEGRLPDYIVACVSGGSNAAGIFYPFIDSGVKLIGVEAGGEGLETGKHAASLLKGKIGYLHGSKTFVLQDDWGQVQVSHSVSAGLDYSGVGPEHAYWRETGKVLYDAVTDEEALDAFIELSRLEGIIPALESSHALAYLKKINIKGKVVVVNLSGRGDKDLESVLNHPYVRERIR",
+    "plates_count": 1,
+    "csv_checksum": "a592b79c4ccd57bbdff3360f6d968234d35e24eb8b9b1191f436c4b869542996",
+    "additional_information": "substrate_concentration: 10 mM;     reaction_smiles: N[C@@H](CO)C(O)=O.C12=C(NC=C2)C=CC=C1>>N[C@@H](CC3=CNC4=C3C=CC=C4)C(O)=O",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

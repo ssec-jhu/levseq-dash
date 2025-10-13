@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-0759-76c5cf2a-2678-499c-82b0-7973fb476a6c",
+    "experiment_name": "Chemoenzymatic Platform for Synthesis of Chiral Organofluorines Based on Type II Aldolases",
+    "doi": "10.1002/anie.201906805",
+    "experiment_date": "2019-08-19",
+    "substrate": "O=C[C@H](O)CO",
+    "product": "FC(C(=O)[O-])C(C(CO)O)O",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MENSFKAALKAGRPQIGLWLGLSSSYSAELLAGAGFDWLLIDGEHAPNNVQTVLTQLQAIAPYPSQPVVRPSWNDPVQIKQLLDVGTQTLLVPMVQNADEAREAVRATRYPPAGIRGVGSALARASRWNRIPDYLQKANDQMCVLVQIETREAMKNLPQILDVEGVDGVFIGPADLSADMGYAGNPQHPEVQAAIEQAIVQIRESGKAPGILIANEQLAKRYLELGALFVAVGVDTTLLARAAEALAARFGAQATAVKPGVY",
+    "plates_count": 1,
+    "csv_checksum": "801458010407a55cdb845d2f0c47a61278b7c98ef4bfb9789472fac86e22961b",
+    "additional_information": "reaction_condition: reaction_temperature:nan;    reaction_ph:nan;    reaction_other_conditions:nan;    reaction_substrate_concentration:nan",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

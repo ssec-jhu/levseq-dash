@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-5716-5e602c9f-94ca-413a-a68c-b5ae72dcb4be",
+    "experiment_name": "Anion-\u03c0 Enzymes",
+    "doi": "10.1021/acscentsci.6b00097",
+    "experiment_date": "2016-05-23",
+    "substrate": "COc1ccc(OC(=S)CC=O)cc1.[O-][N+](=O)\\C=C\\c1ccccc1",
+    "product": "COc1ccc(OC(=S)C(C=O)C(C[N+]([O-])=O)c2ccccc2)cc1",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MASMTGGQQMGRDQAGITGTWYNQLGSTFIVTAGADGALTGTYESAVGNAESRYVLTGRYDSAPATDGSGTALGWTVAWKNNYRNAHSATTWSGQYVGGAEARINTQWLLTSGTTEANAWKSTLVGHDTFTKVKPSAASIDAAKKAGVNNGNPLDAVQQ",
+    "plates_count": 1,
+    "csv_checksum": "f6a2ba897a36581c15b23d850f69bf70a324e0f5e21372390218c97512fb99fe",
+    "additional_information": "reaction_condition: reaction_temperature:20 \u00b0C;    reaction_ph:3.0;    reaction_other_conditions:10 mol % NDI catalyst (biotinylated ligand 8), 20 mol % streptavidin, reaction time 24 h;    reaction_substrate_concentration:5 mM",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

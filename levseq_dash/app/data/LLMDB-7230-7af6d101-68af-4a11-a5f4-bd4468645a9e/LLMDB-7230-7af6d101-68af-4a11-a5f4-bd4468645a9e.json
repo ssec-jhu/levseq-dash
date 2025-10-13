@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-7230-7af6d101-68af-4a11-a5f4-bd4468645a9e",
+    "experiment_name": "Biocatalytic Synthesis of Allylic and Allenyl Sulfides through a Myoglobin-Catalyzed Doyle-Kirmse Reaction",
+    "doi": "10.1002/anie.201607278",
+    "experiment_date": "2016-10-17",
+    "substrate": "C(C=C)SC1=CC=CC=C1.[N+](=[N-])=CC(=O)OCC",
+    "product": "C1(=CC=CC=C1)SC(C(=O)OCC)CC=C",
+    "assay": "Ionization Readout",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "VLSEGEWQLVLHVWAKVEADVAGHGQEVLIRLFKGHPETLEKFKDKFKHLKSEDEMKASEDLKKHGATVLTALGGILKKKGHHEAEIKPLAQSHATKHKIPIKYLEFISEAIIHVLHSRHPGDFGADAQGAMNKALELFRKDIAAKYKELGYQG",
+    "plates_count": 1,
+    "csv_checksum": "d0bc9e8170dc3cd7f965e4c343137c67e752b4ae556a18357c03a83360e3b48b",
+    "additional_information": "reaction_condition: reaction_temperature:nan;    reaction_ph:nan;    reaction_other_conditions:nan;    reaction_substrate_concentration:nan;     ton: 1000.0",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

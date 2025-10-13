@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-6040-bd8a54d9-c9ad-407b-8994-405efc7a6a33",
+    "experiment_name": "Unlocking Asymmetric Michael Additions in an Archetypical Class I Aldolase by Directed Evolution",
+    "doi": "10.1021/acscatal.1c03911",
+    "experiment_date": "2021-10-15",
+    "substrate": "[N+](=O)([O-])C.C1(=CC=CC=C1)/C=C/C=O",
+    "product": "[N+](=O)([O-])CC(CC=O)C1=CC=CC=C1",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MTDLKASSLRALKLMDLTTLNDDDTDEKVIALCHQAKTPVGNTAAICIYPRFIPIARKTLKEQGTPEIRIATVTNFPHGNDDIEIALAETRAAIAYGADEVDVVFPYRALMAGNEQVGFDLVKACKEACAAANVLLKVIIETGELKDEALIRKASEISIKAGADFIKTSTGKVAVNATPESARIMMEVIRDMGVEKTVGFKPAGGVRTAEDAQKYLAIADELFGADWADARHYRFGASSLLASLLKALGHGDGKSASSYLEHHHHHH",
+    "plates_count": 1,
+    "csv_checksum": "1730e8d4f1ef6545110b92a3c7d3964285cc73373a50596373541fa50d023984",
+    "additional_information": "reaction_condition: reaction_temperature:29 \u00b0C;    reaction_ph:6.5;    reaction_other_conditions:5 \u00b5M DERA, 3 % v/v DMSO;    reaction_substrate_concentration:1 mM 1a, 100 mM 2",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

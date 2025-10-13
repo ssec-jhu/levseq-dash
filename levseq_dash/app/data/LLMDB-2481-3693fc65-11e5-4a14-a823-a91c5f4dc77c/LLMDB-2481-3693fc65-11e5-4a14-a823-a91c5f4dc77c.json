@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-2481-3693fc65-11e5-4a14-a823-a91c5f4dc77c",
+    "experiment_name": "Promiscuity Guided Evolution of Decarboxylative Aldolases for Synthesis of Tertiary \u03b3-Hydroxy Amino Acids",
+    "doi": "10.1002/anie.202422109",
+    "experiment_date": "2025-05-02",
+    "substrate": "FC(C(CC1=CC=CC=C1)=O)(F)F",
+    "product": "N[C@H](C(=O)O)C[C@](C(F)(F)F)(O)CC1=CC=CC=C1",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MKSVATSSLDDVDKDSVPLGSSINGTAQAETPLENVIDVESVRSHFPVLGGETAAFNNASGTVVLKEAIESTSNFMYSFPFPPGVDAKSMEAITAYTGNKGKVAAFINALPDEITFGQSTTALFRLLGLSLKPMLNNDCEIVCSTLCHEAAASAWIHLSRELGITIKWWSPTTTPNSPDDPVLTTDSLKPLLSPKTRLVTCNHVSNVVGTIHPIREIADVVHTIPGAMLIVDGVASVPHRPVDVKELDVDFYCFSWYKLFGPHLGTLYASRKAQDRYMTSINHYFVSSSSLDGKLALGMPSFELQLMCSPIVSYLQDTVGWDRIVRQETVLVTILLEYLLSKPSVYRVFGRRNSDPSQRVAIVTFEVVGRSSGDVAMRVNTRNRFRITSGTLMAPRPTWDVLKPKSSDGLVRVSFVHYNTVEEVRAFCSELDEIVTRDTLEHHHHHH*",
+    "plates_count": 1,
+    "csv_checksum": "83866cce397169c3b49c05972065dd18a57a458da7588bd64701982bf244be25",
+    "additional_information": "reaction_condition: reaction_temperature:nan;    reaction_ph:nan;    reaction_other_conditions:nan;    reaction_substrate_concentration:nan",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

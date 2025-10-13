@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-9950-490b3450-e1d6-4da2-9ced-a7d38e476b34",
+    "experiment_name": "Engineered Enzymes Enable Selective N-Alkylation of Pyrazoles With Simple Haloalkanes",
+    "doi": "10.1002/anie.202014239",
+    "experiment_date": "2021-01-21",
+    "substrate": "Cc1cc[nH]n1",
+    "product": "Cn1ccc(C)n1.Cn1nccc1C",
+    "assay": "Ionization Readout",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MESGFTSKDTYLSHFNPRDYLEKYYKFGSRHSAESQILKHLLKNLFKIFCLDGVKGDLLIDIGSGPTIYQLLSACESFKEIVVTDYSDQNLQEL EKWLKKEPEAFDWSPVVTYVCDLEGNRVKGPEKEEKLRQAVKQVLKCDVTQSQPLGAVPLPPADCVLSTLCLDAACPDLPTYCRALRNLGSLLK PGGFLVIMDALKSSYYMIGEQKFSSLPLGREAVEAAVKEAGYTIEWFEVISQSYSSTMANNEGLFSLVARKLSRPLLEHHHHHH",
+    "plates_count": 1,
+    "csv_checksum": "e5d0275b168424de1d69e954b39dbc2334058bea9fa0f0cfa4f16bb45a36a645",
+    "additional_information": "reaction_condition: reaction_temperature:37\u00b0C;    reaction_ph:7.6;    reaction_other_conditions:2 mM SAM, cell lysate, 20 h reaction time, 1% (v/v) DMSO, deep-well plate format, 180 rpm shaking;    reaction_substrate_concentration:2 mM",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

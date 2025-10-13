@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-5954-38ad245c-3aba-44a6-84c2-c572c52cae8f",
+    "experiment_name": "Chemoselective Cyclopropanation over Carbene Y-H Insertion Catalyzed by an Engineered Carbene Transferase",
+    "doi": "10.1021/acs.joc.8b00946",
+    "experiment_date": "2018-07-20",
+    "substrate": "C[SiH](C)c1ccc(C=C)cc1.CCOC(=O)C=[N+]=[N-].Nc1ccc(C=C)cc1",
+    "product": "CCOC(=O)C1CC1c2ccc(cc2)[SiH](C)C.CCOC(=O)CNc1ccc(C=C)cc1.CCOC(=O)C1CC1c2ccc(N)cc2.CCOC(=O)C[Si](C)(C)c1ccc(C=C)cc1",
+    "assay": "Ionization Readout",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "VLSEGEWQLVLHVWAKVEADVAGHGQEVLIRLFKGHPETLEKFKDKFKHLKSEDEMKASEDLKKHGATVLTALGGILKKKGHHEAEIKPLAQSHATKHKIPIKYLEFISEAIIHVLHSRHPGDFGADAQGAMNKALELFRKDIAAKYKELGYQG",
+    "plates_count": 1,
+    "csv_checksum": "1bf8500ac5a13c7136b1baadc3425524bbdd6b7d468ffc56b55f4cbe789c2806",
+    "additional_information": "reaction_condition: reaction_temperature:room temperature;    reaction_ph:7.2;    reaction_other_conditions:E. coli whole cells (OD600 = 40), 10 mM sodium dithionite (Na2S2O4), 12 hours, anaerobic conditions, 500 \u00b5L-scale reaction;    reaction_substrate_concentration:10 mM (3a or 4a), 10 mM (2)",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

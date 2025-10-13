@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-7644-f67deec9-8600-4846-85a4-5b1bcdb3b803",
+    "experiment_name": "Synthesis of\u00a0\u03b2-Quaternary Lactams Using Photoenzymatic Catalysis",
+    "doi": "10.1002/ajoc.202300274",
+    "experiment_date": "2023-01-08",
+    "substrate": "ClCC(=O)N(C\\C(=C\\C1=CC=CC=C1)\\C)C",
+    "product": "C(C1=CC=CC=C1)[C@@]1(CC(N(C1)C)=O)C",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MPSLFDPIRFGAFTAKNRIWMAPLTRGRATRDHVPTEIMAEYYAQRASAGLIISEATGISQEGLGWPYAPGIWSDAQVEAWLPITQAVHDAGGLIFAQLWHMGRMVPSNVSGMQPVAPSASQAPGLGHTYDGKKPYDVARALRLDEIPRLLDDYEKAARHALKAGFDGVQIHAANGYLIDEFIRDSTNHRHDEYGGAVENRIRLLKDVTERVIATIGKERTAVRLSPNGEIQGTVDSHPEQVFIPAAKMLSDLDIAFLGMREGAVDGTFGKTDQPKLSPEIRKVFKPPLVLNQDYTFETAQAALDSGVADAISFGRPFIGNPDLPRRFFEKAPLTKDVIETWYTQTPKGYTDYPLLGDLEHHHHHH",
+    "plates_count": 1,
+    "csv_checksum": "37871f425d0f4564d1d3dbe9a02a2e74b5c254d3392c6cfd874fa21cc0d16d26",
+    "additional_information": "reaction_condition: reaction_temperature:25\u00b0C;    reaction_ph:7.0;    reaction_other_conditions:2 mol % ERED, 20% w/w GDH-105, 6 equiv. Glucose, Cyan Light, 18 hours, anaerobic (<10 ppm O2), stirring at 400 RPM, fanning;    reaction_substrate_concentration:15 mM",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

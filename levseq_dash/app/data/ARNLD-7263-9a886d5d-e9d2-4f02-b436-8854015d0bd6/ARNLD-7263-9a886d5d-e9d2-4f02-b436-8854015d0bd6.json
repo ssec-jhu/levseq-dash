@@ -1,0 +1,15 @@
+{
+    "experiment_id": "ARNLD-7263-9a886d5d-e9d2-4f02-b436-8854015d0bd6",
+    "experiment_name": "LevSeq: Rapid Generation of Sequence-Function Data for Directed Evolution and Machine Learning (trans)",
+    "doi": "10.1021/acssynbio.4c00625",
+    "experiment_date": "2024-12-24",
+    "substrate": "C=CC1=CC=C(OC)C=C1.O=C(OCC)C=[N+]=[N-]",
+    "product": "O=C(OCC)[C@@H](C2)[C@H]2C3=CC=C(OC)C=C3",
+    "assay": "Mass Spectometry",
+    "mutagenesis_method": "Across Sequence",
+    "parent_sequence": "MAVPGYDFGKVPDAPISDADFESLKKTVMWGEEDEKYRKMACEALKGQVEDILDLWYGLQGSNQHLIYYFGDKSGRPIPQYLEAVRKRFGLWIIDTLCKPLDRQWLNYMYEIGLRHHRTKKGKTDGVDTVEHIPLRYMIAFIAPIGLTIKPILEKSGHPPEAVERMWAAWVKLVVLQVAIWSYPYAKTGEWLE",
+    "plates_count": 6,
+    "csv_checksum": "d27b02d643e488e80687d924feb4d86d4dbe72c503233eb29addcbf384c79909",
+    "additional_information": "reaction_condition: reaction_temperature:room temperature;    reaction_ph:7.6;    reaction_other_conditions:E. coli whole-cells harboring protoglobin variants;     5% MeCN;     anaerobic (0-30 ppm O2);     16 hours reaction time;     IPTG (0.5 mM) and ALA (1.0 mM) used for protein expression/induction;    reaction_substrate_concentration:1a: 10 mM, EDA: 15 mM",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

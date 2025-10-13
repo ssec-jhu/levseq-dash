@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-2204-239889b0-c02e-4fe8-a60f-651006dd4212",
+    "experiment_name": "Enantiocomplementary Synthesis of \u03b3-Nitroketones Using Designed and Evolved Carboligases",
+    "doi": "10.1021/jacs.6b11928",
+    "experiment_date": "2016-12-19",
+    "substrate": "CC(C)=O.COC1=CC=C(C=C1)\\C=C\\[N+](=O)[O-]",
+    "product": "COC1=CC=C(C=C1)C(CC(C)=O)C[N+](=O)[O-]",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "MPRYLKGWLEDVVQLSLRRPSVHASRQRPIISLNERILEFNKRNITAIIAYYLRKSPSGLDVERDPIEYAKYMERYAVGLSIKTEEKYFNGSYEMLRKIASSVSIPILMNDFIVKESQIDDAYNLGADTVLLIVNILTERELESLLEYARSYGMEPLILINDENDLDIALRIGARFIVIFSMNFETGEINKENQRKLISMIPSNVVKVAHLDISERNEIEELRKLGVNAFLISSSLMRNPEKIKELIEGSLEHHHHHH",
+    "plates_count": 1,
+    "csv_checksum": "e41e10054f426f9cd771ad64c2c0c9ea2e62fe6156745e571ea0ca849e739180",
+    "additional_information": "reaction_condition: reaction_temperature:29 \u00b0C;    reaction_ph:6.5;    reaction_other_conditions:in the dark, Enzyme concentration: 3 \u00b5M, Reaction time: 3-24 h;    reaction_substrate_concentration:1a: 50-500 \u00b5M, Acetone: 2 M",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}

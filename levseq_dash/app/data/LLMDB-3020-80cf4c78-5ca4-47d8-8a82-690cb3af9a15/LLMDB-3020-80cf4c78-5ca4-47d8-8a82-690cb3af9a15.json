@@ -1,0 +1,15 @@
+{
+    "experiment_id": "LLMDB-3020-80cf4c78-5ca4-47d8-8a82-690cb3af9a15",
+    "experiment_name": "Stereodivergent Intramolecular Cyclopropanation Enabled by Engineered Carbene Transferases",
+    "doi": "10.1021/jacs.9b02700",
+    "experiment_date": "2019-12-06",
+    "substrate": "[N+](=[N-])=CC(=O)OCC=CC1=CC=CC=C1",
+    "product": "C1(=CC=CC=C1)[C@@H]1[C@H]2COC([C@@H]12)=O",
+    "assay": "Spectroscopic Readout",
+    "mutagenesis_method": "Site Specific",
+    "parent_sequence": "VLSEGEWQLVLHVWAKVEADVAGHGQEVLIRLFKGHPETLEKFDKFKHLKSEDEMKASEDLKKHGATVLTALGGILKKKGHHEAEIKPLAQSHATKHKIPIKYLEFISEAIIHVLHSRHPGDFGADAQGAMNKALELFRKDIAAKYKELGYQG",
+    "plates_count": 1,
+    "csv_checksum": "88ae09008113eb98f4c2cae41f7802d97774ec39c6b10eb3e156bb1a98bdd953",
+    "additional_information": "reaction_condition: reaction_temperature:room temperature;    reaction_ph:7.0;    reaction_other_conditions:20 \u00b5M Mb variant;     10 mM Na2S2O4;     5 hours;     anaerobic chamber;    reaction_substrate_concentration:5 mM",
+    "upload_time_stamp": "2025-10-13 09:20:29"
+}
