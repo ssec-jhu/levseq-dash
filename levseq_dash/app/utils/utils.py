@@ -137,6 +137,7 @@ def decode_csv_file_base64_string_to_dataframe(base64_encoded_string):
 
 
 def calculate_group_mean_ratios_per_smiles_and_plate(df):
+    """Optimized version using vectorized operations in pandas"""
     group_cols = [gs.c_smiles, gs.c_plate]
     value_col = gs.c_fitness_value
 
@@ -145,20 +146,31 @@ def calculate_group_mean_ratios_per_smiles_and_plate(df):
         return df
 
     # --------------------------------
-    # clean up the fitness value column
-    # ----------------------------------
-    # if there are nans or empty values set them to be 0
-    # 'coerce': then invalid parsing will be set as NaN
-    df[value_col] = pd.to_numeric(df[value_col], errors="coerce").fillna(0)
+    # Clean up the fitness value column - OPTIMIZED
+    # --------------------------------
+    # Convert to numeric - this is the main operation
+    numeric_vals = pd.to_numeric(df[value_col], errors="coerce")
 
-    # if there is the word trac in the column replace with 0.001
-    df.loc[df[value_col].astype(str).str.contains("trac", case=False, na=False), value_col] = 0.001
+    # Only check for "trac" in rows that failed numeric conversion (became NaN)
+    # This avoids string operations on already-numeric data
+    nan_mask = numeric_vals.isna()
+    if nan_mask.any():
+        # Only convert to string and check the NaN values
+        trac_mask = df.loc[nan_mask, value_col].astype(str).str.contains("trac", case=False, na=False, regex=False)
+        # Set trac values to 0.001, others to 0
+        numeric_vals.loc[nan_mask] = 0.0
+        numeric_vals.loc[nan_mask[nan_mask].index[trac_mask]] = 0.001
+    else:
+        # No NaN values, just fill with 0
+        numeric_vals = numeric_vals.fillna(0)
+
+    df[value_col] = numeric_vals
 
     # Compute mean ONLY for rows where parent_col == parent_value, per group and that the parent is not 0
     # if a prent has 0 fitness value that group combo is ignored
     parent_mean = (
         df[(df[gs.c_substitutions] == "#PARENT#") & (df[value_col] > 0)]
-        .groupby(group_cols)[value_col]
+        .groupby(group_cols, sort=False)[value_col]  # sort=False saves time
         .mean()
         .reset_index()
         .rename(columns={value_col: "mean"})
@@ -173,14 +185,15 @@ def calculate_group_mean_ratios_per_smiles_and_plate(df):
     # Merge stats back into df
     df = df.merge(parent_mean, on=group_cols, how="left")  # Keeps all rows, even if no mean exists
 
-    # Compute fitness ratio relative to the mean
-    df[gs.cc_ratio] = df[value_col] / df["mean"]
+    # Compute fitness ratio relative to the mean - OPTIMIZED
+    # Vectorized ratio calculation with rounding in one step
+    # Only compute where mean exists and is not zero
+    valid_mask = df["mean"].notna() & (df["mean"] != 0)
+    df[gs.cc_ratio] = np.where(valid_mask, (df[value_col] / df["mean"]).round(3), np.nan)
 
     group_stats_ratio = (
-        df.groupby(group_cols)[gs.cc_ratio].agg(min_group_ratio="min", max_group_ratio="max").reset_index()
+        df.groupby(group_cols, sort=False)[gs.cc_ratio].agg(min_group_ratio="min", max_group_ratio="max").reset_index()
     )
-    # each ratio value must be rounded to the nearest 0.001
-    df[gs.cc_ratio] = df[gs.cc_ratio].round(3)
 
     # merge ratio and min max of the ratio values into the data
     df = df.merge(group_stats_ratio, on=group_cols, how="left")
