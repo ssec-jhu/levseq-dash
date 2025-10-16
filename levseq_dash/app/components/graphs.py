@@ -1,3 +1,7 @@
+import re
+
+import pandas as pd
+import plotly.graph_objects as go
 import plotly_express as px
 
 from levseq_dash.app import global_strings as gs
@@ -157,4 +161,213 @@ def creat_rank_plot(df, plate_number, smiles):
     )
     # Remove all margins
     fig.update_layout(margin=dict(l=0, r=0, b=0))
+    return fig
+
+
+# Amino acid list (just the single letter codes)
+AA_LIST = ["A", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "P", "Q", "R", "S", "T", "V", "W", "Y", "*"]
+
+
+def extract_single_site_mutations(df, smiles_string=None):
+    """
+    Extract all single-site mutations from a dataframe and return them as a sorted list.
+
+    Args:
+        df: DataFrame containing mutation data
+        smiles_string: Optional SMILES string to filter by. If None, processes all data.
+
+    Returns:
+        List of unique residue positions that have single-site mutations (e.g., [45, 67, 123])
+    """
+
+    # Filter by smiles string if provided
+    if smiles_string is not None:
+        filtered_df = df[df[gs.c_smiles] == smiles_string].copy()
+    else:
+        filtered_df = df.copy()
+
+    if filtered_df.empty:
+        return []
+
+    # Get all substitutions that don't contain underscores (single mutations only)
+    single_mutations = filtered_df[
+        (~filtered_df[gs.c_substitutions].str.contains("_", na=False))
+        & (~filtered_df[gs.c_substitutions].isin(["#PARENT#", "#N.A.#", "#LOW#", "-"]))
+    ][gs.c_substitutions].dropna()
+
+    # Extract residue numbers from mutation strings
+    # Pattern: letter(s) + number + letter(s), we want the number
+    residue_numbers = set()
+
+    for mutation in single_mutations:
+        # Look for pattern like A45S, D123F, etc.
+        match = re.search(r"[A-Z*](\d+)[A-Z*]", str(mutation))
+        if match:
+            residue_numbers.add(int(match.group(1)))
+
+    # Return sorted list of unique residue positions
+    return sorted(list(residue_numbers))
+
+
+def create_ssm_plot(df, smiles_string, residue_number):
+    """
+    Create a single-site mutagenesis plot for a specific residue and smiles string.
+
+    Args:
+        df: DataFrame containing mutation data
+        smiles_string: The SMILES string to filter by
+        residue_number: The residue position number (e.g., 45 for A45S)
+
+    Returns:
+        Plotly figure showing histogram-like plot with amino acids on Y-axis
+    """
+
+    # Filter by smiles string first
+    filtered_df = df[df[gs.c_smiles] == smiles_string].copy()
+
+    if filtered_df.empty:
+        print(f"No data found for SMILES: {smiles_string}")
+        return None
+
+    # Define reusable pattern for single-site mutations at the specified residue
+    # Pattern: single amino acid + residue number + single amino acid (including *)
+    # Examples: A45S, A45*, D56F, etc.
+    mutation_pattern = rf"^[A-Z*]\s*{residue_number}\s*[A-Z*]$"
+
+    # Filter for rows that contain ONLY single mutations at the specified residue
+    single_site_mask = filtered_df[gs.c_substitutions].str.match(mutation_pattern, na=False)
+
+    # Include parent entries - these should show up in the "parent" column
+    parent_mask = filtered_df[gs.c_substitutions] == "#PARENT#"
+
+    # Combine conditions: single site mutations at our residue OR parent entries
+    # Note: single_site_mask already ensures no underscores due to ^...$ pattern matching
+    final_mask = single_site_mask | parent_mask
+
+    ssm_df = filtered_df[final_mask].copy()
+
+    if ssm_df.empty:
+        return None
+
+    # Extract the mutated amino acid from the mutation string
+    # Pattern: original_aa + number + mutated_aa
+    def extract_mutated_aa(mutation_str):
+        if pd.isna(mutation_str) or mutation_str == "":
+            return "unknown"
+
+        # Handle parent entries
+        if mutation_str == "#PARENT#":
+            return "Parent"
+
+        # Try to extract mutated amino acid using regex for single mutations
+        # Use same pattern as filtering but with capture group for the mutated amino acid
+        match = re.search(mutation_pattern.replace("[A-Z*]$", "([A-Z*])$"), str(mutation_str))
+        if match:
+            return match.group(1)
+        else:
+            # Anything else (including #N.A.#, #LOW#, -, or other formats) is unknown
+            return "unknown"
+
+    # Extract mutated amino acids
+    ssm_df["mutations"] = ssm_df[gs.c_substitutions].apply(extract_mutated_aa)
+
+    # Define amino acid order using AA_LIST plus special cases
+    aa_order = ["Parent"] + AA_LIST + ["Unknown"]
+
+    # Filter out rows with missing fitness values only
+    # Note: Keeping mutations with fitness value = 0 and parent entries
+    # TODO: Consider if zero fitness values should be excluded for better visualization
+    ssm_df_clean = ssm_df.dropna(subset=[gs.c_fitness_value])
+    # ssm_df_clean = ssm_df_clean[ssm_df_clean[gs.c_fitness_value] != 0]  # Commented out - keeping zero fitness values
+
+    if ssm_df_clean.empty:
+        return None
+
+    # Create categorical column to preserve amino acid order
+    # pd.Categorical function is used to convert a column into a categorical data type,
+    # which is useful for ordering and grouping data.
+    # ordered=True: Marks the categories as ordered
+    ssm_df_clean["mutations_cat"] = pd.Categorical(ssm_df_clean["mutations"], categories=aa_order, ordered=True)
+
+    # Remove amino acids with no data
+    present_aa = ssm_df_clean["mutations"].unique()
+
+    # Create histogram bars for each amino acid showing average or count
+    # First create a summary dataframe for the bars
+    bar_data = ssm_df_clean.groupby("mutations_cat").agg({gs.c_fitness_value: ["mean", "count"]}).reset_index()
+
+    # Flatten column names
+    bar_data.columns = ["mutations_cat", "avg_fitness", "count"]
+
+    # Create the figure with histogram bars using RdBu_r color scale like other graphs
+    fig = px.bar(
+        bar_data,
+        x="mutations_cat",
+        y="avg_fitness",
+        color="avg_fitness",  # Color bars by their fitness values
+        color_continuous_scale="RdBu_r",  # Use same color scale as heatmaps
+        # title=f"Single Site Mutagenesis at Position {residue_number}",
+        labels={
+            # 'mutations_cat': 'Mutated Amino Acid',
+            "avg_fitness": "Avg. Fitness Value"
+        },
+    )
+
+    # Update hover template for bars to only show avg fitness
+    fig.update_traces(selector=dict(type="bar"), hovertemplate="Avg Fitness: %{y:.2f}<extra></extra>")
+
+    # Add scatter points on top of bars to show individual data points
+    fig.add_trace(
+        go.Scatter(
+            x=ssm_df_clean["mutations_cat"],
+            y=ssm_df_clean[gs.c_fitness_value],
+            mode="markers",
+            marker=dict(
+                color="rgba(128,128,128,0.8)",  # Neutral gray points
+                size=6,
+                opacity=0.7,
+                line=dict(color="black", width=0.5),  # Thin black outline for better visibility
+            ),
+            name="Individual Values",
+            hovertemplate="Fitness: %{y}<br><extra></extra>",
+        )
+    )
+
+    # Customize the plot appearance
+    fig.update_layout(
+        xaxis_title="Mutated Amino Acid",
+        yaxis_title="Fitness Value",
+        showlegend=True,
+        legend=dict(x=0.02, y=0.98),
+        margin=dict(l=50, r=50, t=50, b=50),
+        title=dict(
+            x=0.5,  # Center the title
+            xanchor="center",
+        ),
+    )
+
+    # Fix x-axis labels orientation (horizontal instead of rotated)
+    fig.update_xaxes(tickangle=-30)
+
+    # Update bar appearance to match the heatmap theme
+    fig.update_traces(
+        selector=dict(type="bar"),
+        marker_line_color="black",  # Black border for better definition
+        marker_line_width=1,
+        opacity=0.8,
+    )
+
+    # Update colorbar to match heatmap style
+    fig.update_coloraxes(
+        colorbar=dict(
+            thickness=12,
+            orientation="v",  # Vertical color bar for bar plot
+            title="Avg Fitness",
+        )
+    )
+
+    # Add count information to each amino acid
+    # aa_counts = ssm_df_clean["mutations"].value_counts()
+    # print(f"Count per amino acid: {dict(aa_counts)}")
+
     return fig
