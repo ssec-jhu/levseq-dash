@@ -46,9 +46,9 @@ def experiment_ep_pcr_metadata(path_exp_ep_data):
 @pytest.fixture(scope="session")
 def path_exp_ssm_data(test_data_path):
     return [
-        test_data_path / "data" / "flatten_ssm_processed_xy_cas" / "flatten_ssm_processed_xy_cas.csv",
-        test_data_path / "data" / "flatten_ssm_processed_xy_cas" / "flatten_ssm_processed_xy_cas.cif",
-        test_data_path / "data" / "flatten_ssm_processed_xy_cas" / "flatten_ssm_processed_xy_cas.json",
+        test_data_path / "flatten_ssm_processed_xy_cas" / "flatten_ssm_processed_xy_cas.csv",
+        test_data_path / "flatten_ssm_processed_xy_cas" / "flatten_ssm_processed_xy_cas.cif",
+        test_data_path / "flatten_ssm_processed_xy_cas" / "flatten_ssm_processed_xy_cas.json",
     ]
 
 
@@ -209,9 +209,7 @@ def experiment_ep_pcr(path_exp_ep_data):
 
 
 @pytest.fixture(scope="session")
-def experiment_ssm(
-    path_exp_ssm_data,
-):
+def experiment_ssm(path_exp_ssm_data):
     experiment_ssm_example = Experiment(
         experiment_data_file_path=path_exp_ssm_data[0],
         geometry_file_path=path_exp_ssm_data[1],
