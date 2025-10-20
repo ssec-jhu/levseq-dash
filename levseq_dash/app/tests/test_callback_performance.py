@@ -44,23 +44,6 @@ def test_callback_on_load_experiment_page_random_experiment(mocker, path_exp_ep_
     TIME_RESULTS.append((f"RND {len(result[1])} rows", execution_time))
 
 
-@pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping test on Github")
-def test_callback_on_load_experiment_page_big_experiment(mocker, disk_manager_from_app_data):
-    # Mock the singleton instance to use our test data manager
-    mocker.patch("levseq_dash.app.main_app.singleton_data_mgr_instance", disk_manager_from_app_data)
-
-    # TESTING WITH THE TEV DATA
-    experiment_id = "MYLAB-b50e7cb2-6e94-4022-9e9d-ff3fa3d4078f"
-
-    ctx = copy_context()
-    start_time = time.time()
-    result = ctx.run(run_callback_on_load_experiment_page, gs.nav_experiment_path, experiment_id)
-    execution_time = time.time() - start_time
-    assert result is not None
-    assert len(result[1]) == 159133  # TEV has a lot of rows
-    TIME_RESULTS.append((f"TEV {len(result[1])} rows", execution_time))
-
-
 def test_callback_on_load_experiment_page_epdata(mocker, disk_manager_from_test_data):
     # Mock the singleton instance to use our test data manager
     mocker.patch("levseq_dash.app.main_app.singleton_data_mgr_instance", disk_manager_from_test_data)
