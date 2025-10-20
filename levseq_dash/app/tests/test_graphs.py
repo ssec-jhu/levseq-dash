@@ -1,5 +1,6 @@
 import pytest
 
+from levseq_dash.app import global_strings as gs
 from levseq_dash.app.components import graphs
 
 
