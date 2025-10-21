@@ -198,7 +198,7 @@ def filter_single_site_mutations(df, smiles_string=None, residue_number=None, in
 
     if include_parent:
         # Include parent entries
-        parent_mask = filtered_df[gs.c_substitutions] == "#PARENT#"
+        parent_mask = filtered_df[gs.c_substitutions] == gs.hashtag_parent
         final_mask = single_site_mask | parent_mask
     else:
         final_mask = single_site_mask
@@ -271,7 +271,7 @@ def create_ssm_plot(df, smiles_string, residue_number):
             return "unknown"
 
         # Handle parent entries
-        if mutation_str == "#PARENT#":
+        if mutation_str == gs.hashtag_parent:
             return "Parent"
 
         # Use the same mutation pattern as filtering, but add capture group for mutated amino acid
@@ -353,7 +353,7 @@ def create_ssm_plot(df, smiles_string, residue_number):
 
     # Customize the plot appearance
     fig.update_layout(
-        xaxis_title="Mutated Amino Acid",
+        xaxis_title="Amino Acid",
         yaxis_title="Fitness Value",
         showlegend=True,
         legend=dict(x=0.02, y=0.98),
