@@ -56,7 +56,7 @@ def test_callback_on_load_experiment_page_epdata(mocker, disk_manager_from_test_
     result = ctx.run(run_callback_on_load_experiment_page, gs.nav_experiment_path, experiment_id)
     execution_time = time.time() - start_time
     assert result is not None
-    assert len(result[1]) == 1920  # TEV has a lot of rows
+    assert len(result[2]) == 1920  # TEV has a lot of rows
     TIME_RESULTS.append((f"EPPROC {len(result[1])} rows", execution_time))
 
 
