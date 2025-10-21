@@ -78,6 +78,100 @@ def get_slider_area_layout():
     )
 
 
+def get_eppcr_plot_layout():
+    return dbc.Card(
+        [
+            # retention of function curve.
+            dbc.CardHeader(gs.retention_function, className=vis.top_card_head),
+            dbc.CardBody(
+                [
+                    dbc.Row(
+                        [
+                            dbc.Col(
+                                html.Div(
+                                    [
+                                        dbc.Label(gs.select_plate),
+                                        dcc.Dropdown(id="id-list-plates-ranking-plot"),
+                                    ],
+                                    className="dbc",
+                                ),
+                                style=vis.border_column,
+                            ),
+                            dbc.Col(
+                                html.Div(
+                                    [
+                                        dbc.Label(gs.select_smiles),
+                                        dcc.Dropdown(id="id-list-smiles-ranking-plot"),
+                                    ],
+                                    className="dbc",
+                                ),
+                                style=vis.border_column,
+                            ),
+                        ],
+                        className="g-1",
+                    ),
+                    dbc.Row(
+                        [dcc.Graph("id-experiment-ranking-plot")],
+                        className="mb-4 g-0",
+                        style=vis.border_row,
+                    ),
+                ],
+                # keep this at p-1 or 2 so the figure doesn't clamp to the sides of the card
+                # I have set the margins on that to 0
+                className="p-2",
+                style=vis.border_card,
+            ),
+        ],
+        style=vis.card_shadow,
+    )
+
+
+def get_ssm_plot_layout():
+    """Layout for single-site mutagenesis experiments"""
+    return dbc.Card(
+        [
+            dbc.CardHeader("Single Site Mutagenesis", className=vis.top_card_head),
+            dbc.CardBody(
+                [
+                    dbc.Row(
+                        [
+                            dbc.Col(
+                                html.Div(
+                                    [
+                                        dbc.Label("Select Residue Position"),
+                                        dcc.Dropdown(id="id-list-ssm-residue-positions"),
+                                    ],
+                                    className="dbc",
+                                ),
+                                style=vis.border_column,
+                            ),
+                            dbc.Col(
+                                html.Div(
+                                    [
+                                        dbc.Label(gs.select_smiles),
+                                        dcc.Dropdown(id="id-list-smiles-ssm-plot"),
+                                    ],
+                                    className="dbc",
+                                ),
+                                style=vis.border_column,
+                            ),
+                        ],
+                        className="g-1",
+                    ),
+                    dbc.Row(
+                        [dcc.Graph("id-experiment-ssm-plot")],
+                        className="mb-4 g-0",
+                        style=vis.border_row,
+                    ),
+                ],
+                className="p-2",
+                style=vis.border_card,
+            ),
+        ],
+        style=vis.card_shadow,
+    )
+
+
 def get_tab_experiment_main():
     # dbc.Container doesn't pick up the fluid container from parent keep as html.Div
     return html.Div(
@@ -327,50 +421,20 @@ def get_tab_experiment_main():
                         style=vis.border_column,
                     ),
                     dbc.Col(
-                        dbc.Card(
-                            [
-                                dbc.CardHeader(gs.retention_function, className=vis.top_card_head),
-                                dbc.CardBody(
-                                    [
-                                        dbc.Row(
-                                            [
-                                                dbc.Col(
-                                                    html.Div(
-                                                        [
-                                                            dbc.Label(gs.select_plate),
-                                                            dcc.Dropdown(id="id-list-plates-ranking-plot"),
-                                                        ],
-                                                        className="dbc",
-                                                    ),
-                                                    style=vis.border_column,
-                                                ),
-                                                dbc.Col(
-                                                    html.Div(
-                                                        [
-                                                            dbc.Label(gs.select_smiles),
-                                                            dcc.Dropdown(id="id-list-smiles-ranking-plot"),
-                                                        ],
-                                                        className="dbc",
-                                                    ),
-                                                    style=vis.border_column,
-                                                ),
-                                            ],
-                                            className="g-1",
-                                        ),
-                                        dbc.Row(
-                                            [dcc.Graph("id-experiment-ranking-plot")],
-                                            className="mb-4 g-0",
-                                            style=vis.border_row,
-                                        ),
-                                    ],
-                                    # keep this at p-1 or 2 so the figure doesn't clamp to the sides of the card
-                                    # I have set the margins on that to 0
-                                    className="p-2",
-                                    style=vis.border_card,
-                                ),
-                            ],
-                            style=vis.card_shadow,
-                        ),
+                        [
+                            # Hidden div for retention plot layout (default)
+                            html.Div(
+                                id="id-ranking-plot-container",
+                                children=get_eppcr_plot_layout(),
+                                style={"display": "none"},  # Initially hidden
+                            ),
+                            # Hidden div for single-site mutagenesis layout
+                            html.Div(
+                                id="id-ssm-plot-container",
+                                children=get_ssm_plot_layout(),  # Will be populated by callback
+                                style={"display": "none"},  # Initially hidden
+                            ),
+                        ],
                         width=6,
                         style=vis.border_column,
                     ),
@@ -707,6 +771,7 @@ def get_layout():
     """This defines the tab layout."""
     return html.Div(
         [
+            dcc.Store(id="id-exp-listbox-store"),
             dcc.Tabs(
                 [
                     # Experiment dashboard
@@ -728,7 +793,7 @@ def get_layout():
                 ],
                 className="custom-tab-container",
                 value="id-tab-exp-dash",
-            )
+            ),
         ],
         className=vis.main_page_class,
     )
