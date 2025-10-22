@@ -50,6 +50,8 @@ def run_callback_on_submit_experiment(
     product,
     assay,
     mutagenesis_method,
+    experiment_doi,
+    additional_info,
     geometry_content_base64_encoded_string,
     experiment_content_base64_encoded_string,
 ):
@@ -72,6 +74,8 @@ def run_callback_on_submit_experiment(
         product=product,
         assay=assay,
         mutagenesis_method=mutagenesis_method,
+        experiment_doi=experiment_doi,
+        experiment_additional_info=additional_info,
         geometry_content_base64_encoded_string=geometry_content_base64_encoded_string,
         experiment_content_base64_encoded_string=experiment_content_base64_encoded_string,
     )
@@ -234,6 +238,8 @@ def test_on_submit_experiment_performance(mocker, path_exp_ep_data, disk_manager
     product = "C1=CC=C(C=C1)C=O"
     assay = "Fluorescence Assay"
     mutagenesis_method = MutagenesisMethod.epPCR
+    experiment_doi = "10.5281/zenodo.15203754"
+    additional_info = "This is a test experiment for testing."
 
     # Time the on_submit_experiment execution
     ctx = copy_context()
@@ -247,6 +253,8 @@ def test_on_submit_experiment_performance(mocker, path_exp_ep_data, disk_manager
         product,
         assay,
         mutagenesis_method,
+        experiment_doi,
+        additional_info,
         base64_contents[1],  # geometry (CIF)
         base64_contents[0],  # experiment CSV
     )

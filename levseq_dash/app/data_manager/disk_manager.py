@@ -56,6 +56,8 @@ class DiskDataManager(BaseDataManager):
         product,
         assay,
         mutagenesis_method: MutagenesisMethod,  # epPCR or SSM
+        experiment_doi: str,
+        experiment_additional_info: str,
         experiment_content_base64_string,
         geometry_content_base64_string,
     ) -> str:
@@ -87,6 +89,7 @@ class DiskDataManager(BaseDataManager):
         metadata = {
             "experiment_id": experiment_uuid,
             "experiment_name": experiment_name,
+            "doi": experiment_doi,
             "experiment_date": experiment_date,
             "substrate": substrate,
             "product": product,
@@ -95,6 +98,7 @@ class DiskDataManager(BaseDataManager):
             "parent_sequence": parent_sequence,
             "plates_count": plates_count,
             "csv_checksum": csv_checksum,
+            "additional_information": experiment_additional_info,
             "upload_time_stamp": upload_time_stamp,
         }
 

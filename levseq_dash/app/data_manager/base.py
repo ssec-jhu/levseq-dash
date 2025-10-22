@@ -78,6 +78,8 @@ class BaseDataManager(ABC):
         product: str,
         assay: str,
         mutagenesis_method: MutagenesisMethod,
+        experiment_doi: str,
+        experiment_additional_info: str,
         geometry_content_base64_encoded_string: str,
         experiment_content_base64_encoded_string: str,
     ) -> str:
@@ -101,6 +103,8 @@ class BaseDataManager(ABC):
             product (str): Expected chemical product
             assay (str): Type of assay performed (must be from available assays)
             mutagenesis_method (MutagenesisMethod): Method used for mutagenesis
+            experiment_doi (str): DOI related to the experiment or publication
+            experiment_additional_info (str): Additional user-provided information
             geometry_content_base64_encoded_string (str): Base64-encoded CIF/structure file
             experiment_content_base64_encoded_string (str): Base64-encoded CSV data file
 
