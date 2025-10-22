@@ -136,12 +136,12 @@ def get_form():
             ),
             dbc.Row(
                 [
-                    widgets.get_label_fixed_for_form(gs.add_info),
+                    widgets.get_label_fixed_for_form(gs.experiment_additional_info),
                     dbc.Col(
                         dbc.Textarea(
                             # type="text",
                             id="id-input-experiment-info",
-                            placeholder=gs.add_info_placeholder,
+                            placeholder=gs.experiment_additional_info_placeholder,
                             debounce=True,
                         ),
                     ),
