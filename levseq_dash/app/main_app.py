@@ -388,6 +388,8 @@ def enable_submit_experiment(experiment_success, structure_success, valid_substr
     State("id-input-product", "value"),
     State("id-list-assay", "value"),
     State("id-radio-epr", "value"),
+    State("id-input-experiment-doi", "value"),
+    State("id-input-experiment-info", "value"),
     State("id-exp-upload-structure", "data"),
     State("id-exp-upload-csv", "data"),
     prevent_initial_call=True,
@@ -400,6 +402,8 @@ def on_submit_experiment(
     product,
     assay,
     mutagenesis_method,
+    experiment_doi,
+    experiment_additional_info,
     geometry_content_base64_encoded_string,
     experiment_content_base64_encoded_string,
 ):
@@ -412,6 +416,8 @@ def on_submit_experiment(
                 product=product,
                 assay=assay,
                 mutagenesis_method=mutagenesis_method,
+                experiment_doi=experiment_doi,
+                experiment_additional_info=experiment_additional_info,
                 experiment_content_base64_string=experiment_content_base64_encoded_string,
                 geometry_content_base64_string=geometry_content_base64_encoded_string,
             )

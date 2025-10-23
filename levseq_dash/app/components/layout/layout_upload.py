@@ -107,7 +107,7 @@ def get_form():
                                         options=[MutagenesisMethod.epPCR, MutagenesisMethod.SSM],
                                         value=MutagenesisMethod.epPCR,
                                         id="id-radio-epr",
-                                        inline=True,
+                                        # inline=True,
                                     ),
                                 ],
                                 # keep the spans horizontally in one row
@@ -118,6 +118,35 @@ def get_form():
                         # className="d-flex justify-content-center",
                     ),
                 ],
+                className="mb-1",
+            ),
+            dbc.Row(
+                [
+                    widgets.get_label_fixed_for_form(gs.experiment_doi),
+                    dbc.Col(
+                        dbc.Input(
+                            type="text",
+                            id="id-input-experiment-doi",
+                            placeholder=gs.experiment_doi_placeholder,
+                            debounce=True,
+                        ),
+                    ),
+                ],
+                className="mb-1",
+            ),
+            dbc.Row(
+                [
+                    widgets.get_label_fixed_for_form(gs.experiment_additional_info),
+                    dbc.Col(
+                        dbc.Textarea(
+                            # type="text",
+                            id="id-input-experiment-info",
+                            placeholder=gs.experiment_additional_info_placeholder,
+                            debounce=True,
+                        ),
+                    ),
+                ],
+                className="mb-1",
             ),
             html.Br(),
             dbc.Row(
