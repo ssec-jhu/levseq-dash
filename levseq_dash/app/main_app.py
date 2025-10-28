@@ -728,6 +728,11 @@ def redirect_to_experiment_page(n_clicks):
     # -------------------------------
     Output("id-experiment-tab-1", "label"),
     # -------------------------------
+    # Initialize the store with default values
+    # -------------------------------
+    Output("id-exp-listbox-store", "data"),
+    # Output("id-temp-store-data", "data"),
+    # -------------------------------
     # Top variant table
     # -------------------------------
     Output("id-table-exp-top-variants", "rowData"),
@@ -769,6 +774,7 @@ def redirect_to_experiment_page(n_clicks):
     Output("id-list-smiles-ranking-plot", "options"),
     Output("id-list-smiles-ranking-plot", "value"),
     Output("id-experiment-ranking-plot", "figure"),
+    Output("id-ranking-plot-container", "style"),
     # -------------------------------
     # residue highlight slider
     # --------------------------------
@@ -784,7 +790,15 @@ def redirect_to_experiment_page(n_clicks):
     # reaction
     # --------------------------------
     Output("id-experiment-reaction-image", "src"),
-    # Output("id-store-heatmap-data", "data"),
+    # -------------------------------
+    # SSM plot dropdowns and figure
+    # --------------------------------
+    Output("id-list-ssm-residue-positions", "options"),
+    Output("id-list-ssm-residue-positions", "value"),
+    Output("id-list-smiles-ssm-plot", "options"),
+    Output("id-list-smiles-ssm-plot", "value"),
+    Output("id-experiment-ssm-plot", "figure"),
+    Output("id-ssm-plot-container", "style"),
     # --------------------------------
     # Inputs
     # --------------------------------
@@ -810,7 +824,7 @@ def on_load_experiment_page(pathname, experiment_id):
         default_plate = exp.plates[0]
         default_smiles = exp.unique_smiles_in_data[0]
         default_experiment_heatmap_properties_list = gs.experiment_heatmap_properties_list[0]
-        unique_smiles_in_data = ".".join(exp.unique_smiles_in_data)
+        unique_smiles_in_data_str = ".".join(exp.unique_smiles_in_data)
 
         # create the heatmap with default values
         fig_experiment_heatmap = graphs.creat_heatmap(
@@ -831,14 +845,6 @@ def on_load_experiment_page(pathname, experiment_id):
             columns=[col for col in columns_to_drop if col in df_filtered_with_ratio.columns]
         )
 
-        # creat the ranking plot with default values
-        # rank plot uses the ratio data to color
-        fig_experiment_rank_plot = graphs.creat_rank_plot(
-            df=df_filtered_with_ratio,
-            plate_number=default_plate,
-            smiles=default_smiles,
-        )
-
         # set up the slider
         # Fallback if no ratio column exists or values are not valid
         ratio_max = 5.0
@@ -852,11 +858,81 @@ def on_load_experiment_page(pathname, experiment_id):
 
         svg_src_image = u_reaction.create_reaction_image(substrate, product)
 
+        # Determine experiment type and setup conditional layouts
+        mutagenesis_method = exp_meta_data.get("mutagenesis_method", "")
+
+        # Check if this is a single-site mutagenesis experiment
+        is_ssm_experiment = mutagenesis_method == gs.ssm
+
+        store_data = {
+            "heatmap": {
+                "plate": default_plate,
+                "smiles": default_smiles,
+                "property": default_experiment_heatmap_properties_list,
+            }
+        }
+
+        # Initialize rank plot and SSM plot outputs
+        rank_plot_figure = None
+        rank_plot_list_of_plates = no_update
+        rank_plot_default_plate = no_update
+        rank_plot_list_of_unique_smiles = no_update
+        rank_plot_default_smiles = no_update
+        rank_plot_container_style = no_update
+
+        ssm_plot_figure = None
+        ssm_plot_list_mutation_positions = no_update
+        ssm_plot_default_site = no_update
+        ssm_plot_list_of_unique_smiles = no_update
+        ssm_plot_default_smiles = no_update
+        ssm_plot_container_style = no_update
+
+        if is_ssm_experiment:
+            # Get available single-site mutation positions
+            list_ssm_positions = graphs.extract_single_site_mutations(exp.data_df, default_smiles)
+
+            # Create SSM plot if positions are available
+            default_site = list_ssm_positions[0] if len(list_ssm_positions) > 0 else None
+
+            # list of sites that may or may not be empty, regardless have a figure. May be parents only
+            ssm_plot_figure = graphs.create_ssm_plot(
+                df=exp.data_df, smiles_string=default_smiles, residue_number=default_site
+            )
+
+            # successful ssm plot creation
+            if ssm_plot_figure is not None:
+                store_data["ssm_plot"] = {"residue": default_site, "smiles": default_smiles}
+                ssm_plot_list_mutation_positions = list_ssm_positions
+                ssm_plot_default_site = default_site
+                ssm_plot_list_of_unique_smiles = exp.unique_smiles_in_data
+                ssm_plot_default_smiles = default_smiles
+                ssm_plot_container_style = {"display": "block"}
+
+        # fallback if ssm fails OR if the experiment is not ssm
+        if ssm_plot_figure is None:
+            # creat the ranking plot with default values
+            # rank plot uses the ratio data to color
+            rank_plot_figure = graphs.creat_rank_plot(
+                df=df_filtered_with_ratio,
+                plate_number=default_plate,
+                smiles=default_smiles,
+            )
+
+            store_data["rank_plot"] = {"plate": default_plate, "smiles": default_smiles}
+            rank_plot_list_of_plates = exp.plates
+            rank_plot_default_plate = default_plate
+            rank_plot_list_of_unique_smiles = exp.unique_smiles_in_data
+            rank_plot_default_smiles = default_smiles
+            rank_plot_container_style = {"display": "block"}
+
         return (
-            # -------------------------------
             # Tab name
             # -------------------------------
             f"Experiment #{experiment_id}:  {experiment_name}",
+            # --------------------------------
+            # Store data
+            # --------------------------------
+            store_data,
             # -------------------------------
             # Top variant table
             # -------------------------------
@@ -875,7 +951,7 @@ def on_load_experiment_page(pathname, experiment_id):
             exp_meta_data.get("experiment_date", ""),
             exp_meta_data.get("upload_time_stamp", ""),
             exp_meta_data.get("plates_count", 0),
-            unique_smiles_in_data,
+            unique_smiles_in_data_str,
             substrate,
             product,
             exp_meta_data.get("assay", ""),
@@ -894,11 +970,12 @@ def on_load_experiment_page(pathname, experiment_id):
             # -------------------------------
             # rank plot dropdowns and figure
             # --------------------------------
-            exp.plates,  # rank plot:  list of plates
-            default_plate,  # rank plot:  default plate
-            exp.unique_smiles_in_data,  # rank plot: list of smiles values
-            default_smiles,  # rank plot:  default smiles
-            fig_experiment_rank_plot,  # Heatmap: figure
+            rank_plot_list_of_plates,
+            rank_plot_default_plate,
+            rank_plot_list_of_unique_smiles,
+            rank_plot_default_smiles,
+            rank_plot_figure,
+            rank_plot_container_style,
             # -------------------------------
             # residue highlight slider
             # --------------------------------
@@ -914,8 +991,31 @@ def on_load_experiment_page(pathname, experiment_id):
             # reaction
             # --------------------------------
             svg_src_image,
+            # --------------------------------
+            # SSM plot dropdowns and figure
+            # --------------------------------
+            ssm_plot_list_mutation_positions,
+            ssm_plot_default_site,
+            ssm_plot_list_of_unique_smiles,
+            ssm_plot_default_smiles,
+            ssm_plot_figure,
+            ssm_plot_container_style,
         )
     else:
+        raise PreventUpdate
+
+
+def check_early_return(rowData, store_data, plot_str, trigger_list):
+    if rowData is None:
+        raise PreventUpdate
+
+    # If store is None or doesn't have heatmap data, this means it's the initial load
+    # and the store hasn't been properly initialized yet
+    if store_data is None or plot_str not in store_data:
+        raise PreventUpdate
+
+    # Only respond to actual user interactions with the heatmap controls
+    if ctx.triggered_id not in trigger_list:
         raise PreventUpdate
 
 
@@ -923,15 +1023,29 @@ def on_load_experiment_page(pathname, experiment_id):
     Output("id-experiment-heatmap", "figure", allow_duplicate=True),
     Output("id-list-smiles", "disabled"),
     Output("id-list-smiles", "className"),
+    Output("id-exp-listbox-store", "data", allow_duplicate=True),
     Input("id-list-plates", "value"),
     Input("id-list-smiles", "value"),
     Input("id-list-properties", "value"),
-    State("id-table-exp-top-variants", "rowData"),  # TODO: does this have a performance hit?
+    State("id-table-exp-top-variants", "rowData"),
+    State("id-exp-listbox-store", "data"),
     # State("id-store-heatmap-data", "data"),
     prevent_initial_call=True,
 )
-def update_heatmap(selected_plate, selected_smiles, selected_stat_property, rowData):
-    # TODO: does this have a performance hit? if so we can just put the 3 columns in the user session
+def update_heatmap(selected_plate, selected_smiles, selected_stat_property, rowData, store_data):
+    check_early_return(rowData, store_data, "heatmap", ["id-list-plates", "id-list-smiles", "id-list-properties"])
+
+    # Check if values have actually changed from previous selection
+    previous_heatmap_values = store_data.get("heatmap", {})
+    current_heatmap_values = {"plate": selected_plate, "smiles": selected_smiles, "property": selected_stat_property}
+
+    # If values haven't changed, prevent update
+    if previous_heatmap_values == current_heatmap_values:
+        raise PreventUpdate
+
+    # Update store with new values
+    store_data["heatmap"] = current_heatmap_values
+
     df = pd.DataFrame(rowData)
 
     show_smiles = selected_stat_property == gs.experiment_heatmap_properties_list[0]
@@ -943,23 +1057,68 @@ def update_heatmap(selected_plate, selected_smiles, selected_stat_property, rowD
         class_name = "opacity-50 text-secondary dbc"
     else:
         class_name = "dbc"
-    return stat_heatmap, not show_smiles, class_name
+    return stat_heatmap, not show_smiles, class_name, store_data
 
 
 @app.callback(
     Output("id-experiment-ranking-plot", "figure", allow_duplicate=True),
+    Output("id-exp-listbox-store", "data", allow_duplicate=True),
     Input("id-list-plates-ranking-plot", "value"),
     Input("id-list-smiles-ranking-plot", "value"),
-    State("id-table-exp-top-variants", "rowData"),  # TODO: does this have a performance hit?
+    State("id-table-exp-top-variants", "rowData"),
+    State("id-exp-listbox-store", "data"),
     # State("id-store-heatmap-data", "data"),
     prevent_initial_call=True,
 )
-def update_rank_plot(selected_plate, selected_smiles, rowData):
-    # TODO: does this have a performance hit? if so we can just put the 3 columns in the user session
+def update_rank_plot(selected_plate, selected_smiles, rowData, store_data):
+    check_early_return(rowData, store_data, "rank_plot", ["id-list-plates-ranking-plot", "id-list-smiles-ranking-plot"])
+
+    # Check if values have actually changed from previous selection
+    previous_rank_values = store_data.get("rank_plot", {})
+    current_rank_values = {"plate": selected_plate, "smiles": selected_smiles}
+
+    # If values haven't changed, prevent update
+    if previous_rank_values == current_rank_values:
+        raise PreventUpdate
+
+    # Update store with new values
+    store_data["rank_plot"] = current_rank_values
+
     df = pd.DataFrame(rowData)
 
     rank_plot = graphs.creat_rank_plot(df, plate_number=selected_plate, smiles=selected_smiles)
-    return rank_plot
+
+    return rank_plot, store_data
+
+
+@app.callback(
+    Output("id-experiment-ssm-plot", "figure", allow_duplicate=True),
+    Output("id-exp-listbox-store", "data", allow_duplicate=True),
+    Input("id-list-ssm-residue-positions", "value"),
+    Input("id-list-smiles-ssm-plot", "value"),
+    State("id-table-exp-top-variants", "rowData"),
+    State("id-exp-listbox-store", "data"),
+    prevent_initial_call=True,
+)
+def update_ssm_plot(selected_residue, selected_smiles, rowData, store_data):
+    check_early_return(rowData, store_data, "ssm_plot", ["id-list-ssm-residue-positions", "id-list-smiles-ssm-plot"])
+
+    # Check if values have actually changed from previous selection
+    previous_ssm_values = store_data.get("ssm_plot", {})
+    current_ssm_values = {"residue": selected_residue, "smiles": selected_smiles}
+
+    # If values haven't changed, prevent update
+    if previous_ssm_values == current_ssm_values:
+        raise PreventUpdate
+
+    # Update store with new values
+    store_data["ssm_plot"] = current_ssm_values
+
+    df = pd.DataFrame(rowData)
+
+    ssm_plot = graphs.create_ssm_plot(df=df, smiles_string=selected_smiles, residue_number=selected_residue)
+
+    return ssm_plot, store_data
 
 
 @app.callback(

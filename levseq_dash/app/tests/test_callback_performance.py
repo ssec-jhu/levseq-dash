@@ -56,8 +56,8 @@ def test_callback_on_load_experiment_page_epdata(mocker, disk_manager_from_test_
     result = ctx.run(run_callback_on_load_experiment_page, gs.nav_experiment_path, experiment_id)
     execution_time = time.time() - start_time
     assert result is not None
-    assert len(result[1]) == 1920  # TEV has a lot of rows
-    TIME_RESULTS.append((f"EPPROC {len(result[1])} rows", execution_time))
+    assert len(result[2]) == 1920  # TEV has a lot of rows
+    TIME_RESULTS.append((f"EPPROC {len(result[2])} rows", execution_time))
 
 
 def test_callback_on_load_experiment_page_on_all_real_data_files(mocker, app_data_path, disk_manager_from_app_data):
@@ -75,8 +75,8 @@ def test_callback_on_load_experiment_page_on_all_real_data_files(mocker, app_dat
             result = ctx.run(run_callback_on_load_experiment_page, gs.nav_experiment_path, experiment_id)
             execution_time = time.time() - start_time
             assert result is not None
-            assert len(result[1][0]) == 8  # Ensure there are 9 columns for the variants list
-            TIME_RESULTS.append((f"{experiment_id}, {len(result[1])} rows ", execution_time))
+            assert len(result[2][0]) == 8  # Ensure there are 9 columns for the variants list
+            TIME_RESULTS.append((f"{experiment_id}, {len(result[2])} rows ", execution_time))
         except Exception as e:
             # if there is an exception, print it and continue with the next experiment but the test must fail
             failure_count += 1
