@@ -894,7 +894,7 @@ def on_load_experiment_page(pathname, experiment_id):
             # Create SSM plot if positions are available
             default_site = list_ssm_positions[0] if len(list_ssm_positions) > 0 else None
 
-            # list of sites am y or may not be empty, regardless have a figure. May be parents only
+            # list of sites that may or may not be empty, regardless have a figure. May be parents only
             ssm_plot_figure = graphs.create_ssm_plot(
                 df=exp.data_df, smiles_string=default_smiles, residue_number=default_site
             )
