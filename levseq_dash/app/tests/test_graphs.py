@@ -1,3 +1,4 @@
+import pandas as pd
 import pytest
 
 from levseq_dash.app import global_strings as gs
@@ -260,3 +261,93 @@ def test_create_ssm_plot_amino_acid_ordering(experiment_ssm):
     # The amino acids that appear should be in the correct order
     aa_indices = [AA_LIST.index(aa) if aa in AA_LIST else float("inf") for aa in aa_values]
     assert aa_indices == sorted(aa_indices), f"Amino acids should be ordered according to AA_LIST: {aa_values}"
+
+
+def test_create_ssm_plot_invalid_smiles():
+    """Test that create_ssm_plot returns None with non-existent SMILES string."""
+
+    # Create a simple dataframe with some single-site mutations
+    df = pd.DataFrame(
+        {
+            gs.c_smiles: ["CCO", "CCO", "CCO", "CCO"],
+            gs.c_substitutions: [gs.hashtag_parent, "A45S", "A45T", "A46G"],
+            gs.c_fitness_value: [100.0, 150.0, 120.0, 130.0],
+        }
+    )
+
+    # Test with non-existent SMILES string - should return None
+    result = graphs.create_ssm_plot(df, "INVALID_SMILES", 45)
+    assert result is None
+
+
+def test_create_ssm_plot_invalid_residue():
+    """Test that create_ssm_plot returns None with non-existent residue number."""
+    # Create a simple dataframe with some single-site mutations
+    df = pd.DataFrame(
+        {
+            gs.c_smiles: ["CCOC", "CCO", "CCO", "CCO"],
+            gs.c_substitutions: [gs.hashtag_parent, "A45S", "A45T", "A46G"],
+            gs.c_fitness_value: [100.0, 150.0, 120.0, 130.0],
+        }
+    )
+
+    # Test with non-existent residue number - should return None
+    result = graphs.create_ssm_plot(df, "CCO", 99999)
+    assert result is None
+
+
+def test_filter_single_site_mutations_smiles_none():
+    """Test filter_single_site_mutations when smiles_string is None."""
+
+    # Create test data with multiple SMILES
+    df = pd.DataFrame(
+        {
+            gs.c_smiles: ["CCO", "CCC", "CCO", "CCC"],
+            gs.c_substitutions: ["A45S", "B23T", "C67G", "D89F"],
+            gs.c_fitness_value: [100.0, 150.0, 120.0, 130.0],
+        }
+    )
+
+    # When smiles_string is None, should process all SMILES
+    result = graphs.filter_single_site_mutations(df, smiles_string=None, residue_number=45)
+
+    # Should find the A45S mutation regardless of SMILES
+    assert len(result) == 1
+    assert result.iloc[0][gs.c_substitutions] == "A45S"
+
+
+def test_extract_mutated_aa_empty_string():
+    """Test extract_mutated_aa function when mutation_str is empty string."""
+
+    # Create test data with a valid single-site mutation and NaN/empty values
+    df = pd.DataFrame(
+        {
+            gs.c_smiles: ["CCO", "CCO", "CCO"],
+            gs.c_substitutions: [gs.hashtag_parent, "A45S", ""],  # Use NaN instead of empty string
+            gs.c_fitness_value: [100.0, 150.0, 120.0],
+        }
+    )
+
+    # Call create_ssm_plot which will process the NaN value
+    result = graphs.create_ssm_plot(df, "CCO", 45)
+
+    # Should still create a plot
+    assert result is not None
+
+
+def test_extract_mutated_aa_returns_unknown():
+    """Test extract_mutated_aa function when it needs to return 'unknown'."""
+    # Create test data with malformed mutation that doesn't match pattern
+    df = pd.DataFrame(
+        {
+            gs.c_smiles: ["CCO", "CCO", "CCO"],
+            gs.c_substitutions: [gs.hashtag_parent, "#N.A.#", "INVALID_FORMAT"],
+            gs.c_fitness_value: [100.0, 150.0, 120.0],
+        }
+    )
+
+    # Call create_ssm_plot which will process the invalid mutations
+    result = graphs.create_ssm_plot(df, "CCO", 45)
+
+    # Should still create a plot with "unknown" categories
+    assert result is not None

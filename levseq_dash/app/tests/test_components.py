@@ -1,10 +1,13 @@
 import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
 import dash_molstar
-from dash import html
+import numpy as np
+import pandas as pd
+from dash import dcc, html
 
+from levseq_dash.app import global_strings as gs
 from levseq_dash.app.components import column_definitions as cd
-from levseq_dash.app.components import widgets
+from levseq_dash.app.components import vis, widgets
 from levseq_dash.app.components.layout import (
     layout_about,
     layout_bars,
@@ -113,6 +116,15 @@ def test_get_alert():
     assert alert.className == "p-3 user-alert"
 
 
+def test_get_alert_with_markdown():
+    markdown_message = "This is **bold** text with a [link](https://example.com)"
+    alert = widgets.get_alert(markdown_message, error=False, is_markdown=True)
+
+    # When markdown is enabled, children should be a dcc.Markdown component
+    assert isinstance(alert.children, dcc.Markdown)
+    assert alert.children.children == markdown_message
+
+
 def test_get_label_fixed_for_form():
     label = widgets.get_label_fixed_for_form("Test Label", w=3)
     assert label.children == "Test Label"
@@ -163,3 +175,50 @@ def test_about_page_layout():
 def test_explore_layout():
     """Test if the about page layout is correctly generated."""
     assert isinstance(layout_explore.get_layout(), html.Div)
+
+
+def test_data_bars_group_mean_colorscale_null_ratio_column():
+    """This test specifically covers the condition: df[value_col].isna().all() or df[value_col].isnull().all()"""
+    # Test with all ratio values as None (which become NaN in pandas)
+    df_null_ratio = pd.DataFrame(
+        {
+            gs.cc_ratio: [None, None, None],
+            "min_group_ratio": [1.0, 2.0, 3.0],
+            "max_group_ratio": [4.0, 5.0, 6.0],
+            gs.c_substitutions: ["A1G", "T2C", gs.hashtag_parent],
+        }
+    )
+    result = vis.data_bars_group_mean_colorscale(df_null_ratio)
+    assert result == []
+
+
+def test_data_bars_group_mean_colorscale_null_min_max_columns():
+    """This test specifically covers the condition: df[min_col].isna().all() or df[max_col].isna().all()"""
+    # Test with all min_group_ratio values as NaN
+    df_null_min = pd.DataFrame(
+        {
+            gs.cc_ratio: [1.0, 2.0, 3.0],
+            "min_group_ratio": [np.nan, np.nan, np.nan],
+            "max_group_ratio": [4.0, 5.0, 6.0],
+            gs.c_substitutions: ["A1G", "T2C", gs.hashtag_parent],
+        }
+    )
+    result = vis.data_bars_group_mean_colorscale(df_null_min)
+    assert result == []
+
+
+def test_data_bars_group_mean_colorscale_no_parent():
+    """Test data_bars_group_mean_colorscale returns empty styles when no parent substitution exists.
+
+    This test specifically covers the condition: gs.hashtag_parent not in df[gs.c_substitutions].values
+    """
+    df_no_parent = pd.DataFrame(
+        {
+            gs.cc_ratio: [1.0, 2.0, 3.0],
+            "min_group_ratio": [1.0, 2.0, 3.0],
+            "max_group_ratio": [4.0, 5.0, 6.0],
+            gs.c_substitutions: ["A1G", "T2C", "G3A"],  # No #PARENT# value
+        }
+    )
+    result = vis.data_bars_group_mean_colorscale(df_no_parent)
+    assert result == []
