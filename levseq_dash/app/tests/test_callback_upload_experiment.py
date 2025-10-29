@@ -262,7 +262,7 @@ def test_on_submit_experiment_performance(mocker, path_exp_ep_data, disk_manager
 
     # Verify the callback succeeded
     assert result is not None
-    assert len(result) == 3  # Should return (alert, None, None)
+    assert len(result) == 4  # Should return (alert, None, None)
     assert result[0] is not None  # alert should not be None
 
     # Extract experiment ID from the success message

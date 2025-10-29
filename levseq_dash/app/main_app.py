@@ -58,6 +58,7 @@ app.layout = dbc.Container(
         dcc.Store(id="id-exp-upload-csv"),
         dcc.Store(id="id-exp-upload-structure"),
         dcc.Store(id="id-experiment-selected"),
+        dcc.Store(id="id-uploaded-experiment-redirect"),
         # stores for clearing results
         dcc.Store(id="id-cleared-run-seq-matching", data=False),
         dcc.Store(id="id-cleared-run-exp-related-variants", data=False),
@@ -381,6 +382,8 @@ def enable_submit_experiment(experiment_success, structure_success, valid_substr
     # empty out the stores
     Output("id-exp-upload-structure", "data", allow_duplicate=True),
     Output("id-exp-upload-csv", "data", allow_duplicate=True),  # empty them out
+    # redirect - use dedicated redirect store
+    Output("id-uploaded-experiment-redirect", "data"),
     Input("id-button-submit", "n_clicks"),
     State("id-input-experiment-name", "value"),
     State("id-input-experiment-date", "date"),
@@ -425,15 +428,49 @@ def on_submit_experiment(
             # you can verify the information here
             # exp = data_mgr.get_experiment(index)
 
-            success = f"Experiment with UUID: {experiment_id} has been added successfully!"
+            success = (
+                f"Experiment with UUID: {experiment_id} has been added successfully! Redirecting to experiment page..."
+            )
             alert = get_alert(success, error=False)
+
+            return (
+                alert,
+                None,
+                None,  # clear stores
+                experiment_id,  # set experiment id in redirect store (triggers redirect)
+            )
 
         except Exception as e:
             alert = get_alert(f"Error: {e}")
 
-        # return the alert message which is either success or error
-        return alert, None, None  # clear the data stores
+        return (
+            alert,
+            None,
+            None,  # clear the data stores
+            no_update,  # don't trigger redirect
+        )
 
+    else:
+        raise PreventUpdate
+
+
+@app.callback(
+    Output("url", "pathname", allow_duplicate=True),
+    Output("id-page-content", "children", allow_duplicate=True),
+    Output("id-experiment-selected", "data", allow_duplicate=True),
+    Output("id-uploaded-experiment-redirect", "data", allow_duplicate=True),
+    Input("id-uploaded-experiment-redirect", "data"),
+    prevent_initial_call=True,
+)
+def redirect_to_experiment_page_after_upload(experiment_id):
+    """Redirect to experiment page immediately after successful upload."""
+    if experiment_id is not None:
+        return (
+            gs.nav_experiment_path,
+            layout_experiment.get_layout(),
+            experiment_id,  # set the experiment as selected
+            None,  # clear the redirect store
+        )
     else:
         raise PreventUpdate
 
