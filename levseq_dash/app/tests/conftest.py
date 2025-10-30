@@ -221,6 +221,19 @@ def experiment_ssm(path_exp_ssm_data):
 
 
 @pytest.fixture(scope="session")
+def experiment_ssm_cvv_cif_bytes(path_exp_ssm_data):
+    import base64
+
+    with open(path_exp_ssm_data[0], "rb") as f:
+        csv_content = base64.b64encode(f.read()).decode("utf-8")
+
+    with open(path_exp_ssm_data[1], "rb") as f:
+        cif_content = base64.b64encode(f.read()).decode("utf-8")
+
+    return csv_content, cif_content
+
+
+@pytest.fixture(scope="session")
 def selected_row_top_variant_table():
     """
     this is an example selected row from the current setup of the top variants table
