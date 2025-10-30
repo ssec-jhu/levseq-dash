@@ -6,7 +6,10 @@ import pytest
 from levseq_dash.app import global_strings as gs
 from levseq_dash.app.data_manager.experiment import Experiment, MutagenesisMethod
 
-load_config_mock_string = "levseq_dash.app.config.settings.load_config"
+
+@pytest.fixture(scope="session")
+def load_config_mock_string():
+    return "levseq_dash.app.config.settings.load_config"
 
 
 @pytest.fixture(scope="session")
@@ -63,7 +66,7 @@ def experiment_ssm_metadata(path_exp_ep_data):
 
 
 @pytest.fixture
-def mock_load_config_from_test_data_path(mocker, test_data_path):
+def mock_load_config_from_test_data_path(mocker, test_data_path, load_config_mock_string):
     """
     Fixture to mock a response for load config from disk
     """
@@ -78,7 +81,7 @@ def mock_load_config_from_test_data_path(mocker, test_data_path):
 
 
 @pytest.fixture
-def mock_load_config_from_app_data_path(mocker):
+def mock_load_config_from_app_data_path(mocker, load_config_mock_string):
     """
     Fixture to mock a response for load config from disk
     """
@@ -101,7 +104,7 @@ def disk_manager_from_app_data(mock_load_config_from_app_data_path):
 
 
 @pytest.fixture(scope="function")
-def disk_manager_from_temp_data(mocker, tmp_path):
+def disk_manager_from_temp_data(mocker, tmp_path, load_config_mock_string):
     mock = mocker.patch(load_config_mock_string)
     mock.return_value = {
         "deployment-mode": "local-instance",
@@ -153,7 +156,7 @@ def mock_is_local_instance_mode(mocker):
 
 
 @pytest.fixture
-def mock_load_config_invalid(mocker):
+def mock_load_config_invalid(mocker, load_config_mock_string):
     """
     Fixture to mock a config file in disk mode with an invalid path
     """
@@ -167,7 +170,7 @@ def mock_load_config_invalid(mocker):
 
 
 @pytest.fixture
-def mock_load_config_storage_mode_error(mocker):
+def mock_load_config_storage_mode_error(mocker, load_config_mock_string):
     """
     Fixture to mock a config file in an invalid data-mode
     """
