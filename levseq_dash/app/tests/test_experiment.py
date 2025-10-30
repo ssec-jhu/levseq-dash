@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -409,3 +410,80 @@ def test_extract_plates_list_empty_dataframe():
     empty_df = pd.DataFrame()
     plates = Experiment.extract_plates_list(empty_df)
     assert plates == []
+
+
+def test_experiment_empty_geometry_file(tmp_path, path_exp_ep_data):
+    """Test Experiment initialization with empty geometry file."""
+    # Create empty geometry file
+    empty_cif = tmp_path / "empty.cif"
+    empty_cif.write_text("")
+
+    with pytest.raises(Exception, match="Error loading experiment data file"):
+        Experiment(
+            experiment_data_file_path=path_exp_ep_data[0],
+            geometry_file_path=empty_cif,
+        )
+
+
+def test_exp_hot_cold_spots_with_empty_df(experiment_ep_pcr, mocker):
+    """Test exp_hot_cold_spots when data_df is empty."""
+    # Mock the data_df to be empty
+    mocker.patch.object(experiment_ep_pcr, "data_df", pd.DataFrame())
+
+    with pytest.raises(Exception, match="Experiment data is empty"):
+        experiment_ep_pcr.exp_hot_cold_spots(1)
+
+
+def test_exp_get_processed_core_data_with_empty_df(experiment_ep_pcr, mocker):
+    """Test exp_get_processed_core_data_for_valid_mutation_extractions with empty data."""
+    # Mock the data_df to be empty
+    mocker.patch.object(experiment_ep_pcr, "data_df", pd.DataFrame())
+
+    with pytest.raises(Exception, match="Experiment data is empty"):
+        experiment_ep_pcr.exp_get_processed_core_data_for_valid_mutation_extractions()
+
+
+@pytest.mark.parametrize(
+    "well_value",
+    [
+        [""],  # Empty well
+        [np.nan],  # NaN well
+        ["Z99"],  # Invalid: Z is not A-H, 99 is not 1-12
+    ],
+)
+def test_sanity_check_well_value(well_value):
+    """Test run_sanity_checks_on_experiment_file with empty well value."""
+    df = pd.DataFrame(
+        {
+            gs.c_smiles: ["C1=CC=C(C=C1)C=O"],
+            gs.c_plate: ["plate1"],
+            gs.c_well: well_value,  # Empty well
+            gs.c_alignment_count: [1],
+            gs.c_substitutions: [gs.hashtag_parent],
+            gs.c_alignment_probability: [1.0],
+            gs.c_aa_sequence: ["MAVPGY"],
+            gs.c_fitness_value: [100.0],
+        }
+    )
+
+    with pytest.raises(ValueError):
+        Experiment.run_sanity_checks_on_experiment_file(df)
+
+
+def test_sanity_check_duplicate_wells():
+    """Test run_sanity_checks_on_experiment_file with duplicate wells in same smiles-plate combo."""
+    df = pd.DataFrame(
+        {
+            gs.c_smiles: ["C1=CC=C(C=C1)C=O", "C1=CC=C(C=C1)C=O"],
+            gs.c_plate: ["plate1", "plate1"],
+            gs.c_well: ["A1", "A1"],  # Duplicate well
+            gs.c_alignment_count: [1, 1],
+            gs.c_substitutions: [gs.hashtag_parent, "A123B"],
+            gs.c_alignment_probability: [1.0, 1.0],
+            gs.c_aa_sequence: ["MAVPGY", "MAVPGY"],
+            gs.c_fitness_value: [100.0, 200.0],
+        }
+    )
+
+    with pytest.raises(ValueError, match="Duplicate wells in"):
+        Experiment.run_sanity_checks_on_experiment_file(df)
