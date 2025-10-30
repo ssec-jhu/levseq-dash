@@ -172,8 +172,7 @@ class DiskDataManager(BaseDataManager):
             return True
 
         except Exception as e:
-            utils.log_with_context(f"Error deleting experiment {experiment_uuid}: {str(e)}")
-            return False
+            raise Exception(f"Error deleting experiment {experiment_uuid} from disk: {e}")
 
     # ---------------------------
     #    DATA RETRIEVAL: ALL
