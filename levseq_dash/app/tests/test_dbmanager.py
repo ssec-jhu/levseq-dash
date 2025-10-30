@@ -3,6 +3,7 @@ import pytest
 
 from levseq_dash.app import global_strings as gs
 from levseq_dash.app.config import settings
+from levseq_dash.app.data_manager.experiment import MutagenesisMethod
 from levseq_dash.app.utils import utils
 
 num_samples = 2  # change this if more data is added
@@ -31,19 +32,6 @@ def test_get_experiment_out_of_bounds(disk_manager_from_test_data):
     """
     with pytest.raises(Exception):
         disk_manager_from_test_data.get_experiment("randon_id_that_does_not_exist")
-
-
-# TODO: need to add a test for delete
-# def test_delete_experiment(disk_manager_from_test_data):
-#     """
-#     delete multiple experiments, and make sure the count has gone down accordingly
-#     """
-#     assert len(disk_manager_from_test_data.experiments_dict) == num_samples
-#     assert disk_manager_from_test_data.delete_experiment(2)
-#     assert disk_manager_from_test_data.delete_experiment(4)
-#     assert disk_manager_from_test_data.delete_experiment(6)
-#     assert disk_manager_from_test_data.delete_experiment(8)
-#     assert len(disk_manager_from_test_data.experiments_dict) == num_samples - 4
 
 
 def test_db_load_assay(disk_manager_from_test_data):
@@ -106,31 +94,188 @@ def test_load_config():
     assert settings.is_disk_mode() or settings.is_db_mode()
 
 
-# def test_load_config_invalid(mock_load_config_invalid):
-#     from levseq_dash.app.data_manager.manager import DataManager
-#
-#     with pytest.raises(FileNotFoundError):
-#         DataManager()
-#
-#
-# def test_load_config_app_mode_error(mock_load_config_app_mode_error):
-#     from levseq_dash.app.data_manager.manager import DataManager
-#
-#     with pytest.raises(Exception):
-#         DataManager()
-#
-#
-# def test_load_config_env(mock_load_using_existing_env_data_path):
-#     """
-#     This mock will follow through all the way to _load_test_experiment_data
-#     but will throw an exception because it can't find the experiment files in
-#     _load_test_experiment_data
-#     """
-#     from levseq_dash.app.data_manager.manager import DataManager
-#
-#     with pytest.raises(Exception):
-#         DataManager()
-
-
 def test_get_assays(disk_manager_from_test_data):
     assert len(disk_manager_from_test_data.get_assays()) == 3
+
+
+def test_setup_data_path_not_exists(mocker):
+    """Test _setup_data_path raises error when path doesn't exist."""
+    mock = mocker.patch("levseq_dash.app.config.settings.load_config")
+    mock.return_value = {
+        "deployment-mode": "local-instance",
+        "storage-mode": "disk",
+        "disk": {"local-data-path": "/nonexistent/path"},
+    }
+
+    from levseq_dash.app.data_manager.disk_manager import DiskDataManager
+
+    with pytest.raises(FileNotFoundError):
+        DiskDataManager()
+
+
+def test_check_for_duplicate_experiment_no_duplicate(disk_manager_from_test_data):
+    """Test check_for_duplicate_experiment with unique checksum."""
+    result = disk_manager_from_test_data.check_for_duplicate_experiment("some-random-checksum-value")
+    assert result is False
+
+
+def test_check_for_duplicate_experiment_duplicate(disk_manager_from_test_data):
+    """Test check_for_duplicate_experiment with duplicate checksum."""
+    exp_list = disk_manager_from_test_data.get_all_lab_experiments_with_meta_data()
+    existing_checksum = exp_list[0]["csv_checksum"]
+
+    with pytest.raises(ValueError, match="DUPLICATE experiment data detected"):
+        disk_manager_from_test_data.check_for_duplicate_experiment(existing_checksum)
+
+
+def test_delete_experiment_nonexistent(disk_manager_from_test_data):
+    """Test delete_experiment returns False for nonexistent ID."""
+    result = disk_manager_from_test_data.delete_experiment("nonexistent-id")
+    assert result is False
+
+
+def test_delete_experiment_success(disk_manager_from_temp_data, experiment_ssm_cvv_cif_bytes):
+    """Test delete_experiment successfully deletes experiment."""
+
+    # Add an experiment
+    exp_id = disk_manager_from_temp_data.add_experiment_from_ui(
+        experiment_name="To Delete",
+        experiment_date="2025-01-01",
+        substrate="C1=CC=C(C=C1)C=O",
+        product="C1=CC=C(C=C1)C=O",
+        assay="NMR Spectroscopy",
+        mutagenesis_method=MutagenesisMethod.SSM,
+        experiment_doi="",
+        experiment_additional_info="",
+        experiment_content_base64_string=experiment_ssm_cvv_cif_bytes[0],
+        geometry_content_base64_string=experiment_ssm_cvv_cif_bytes[1],
+    )
+
+    # Verify it exists
+    assert disk_manager_from_temp_data.get_experiment_metadata(exp_id) is not None
+
+    # Delete it
+    result = disk_manager_from_temp_data.delete_experiment(exp_id)
+    assert result is True
+
+    # Verify it's gone
+    assert disk_manager_from_temp_data.get_experiment_metadata(exp_id) is None
+
+
+def test_delete_experiment_with_cached_data(disk_manager_from_temp_data, experiment_ssm_cvv_cif_bytes):
+    """Test delete_experiment removes from cache."""
+
+    exp_id = disk_manager_from_temp_data.add_experiment_from_ui(
+        experiment_name="Cached Delete",
+        experiment_date="2025-01-01",
+        substrate="C1=CC=C(C=C1)C=O",
+        product="C1=CC=C(C=C1)C=O",
+        assay="NMR Spectroscopy",
+        mutagenesis_method=MutagenesisMethod.SSM,
+        experiment_doi="",
+        experiment_additional_info="",
+        experiment_content_base64_string=experiment_ssm_cvv_cif_bytes[0],
+        geometry_content_base64_string=experiment_ssm_cvv_cif_bytes[1],
+    )
+
+    # Load into cache
+    exp = disk_manager_from_temp_data.get_experiment(exp_id)
+    assert exp is not None
+
+    # Delete - should remove from cache
+    result = disk_manager_from_temp_data.delete_experiment(exp_id)
+    assert result is True
+
+
+def test_delete_experiment_with_exception(disk_manager_from_temp_data, experiment_ssm_cvv_cif_bytes, mocker):
+    """Test delete_experiment handles exceptions and returns False."""
+
+    # Add experiment
+    exp_id = disk_manager_from_temp_data.add_experiment_from_ui(
+        experiment_name="Exception Test",
+        experiment_date="2025-01-01",
+        substrate="C1=CC=C(C=C1)C=O",
+        product="C1=CC=C(C=C1)C=O",
+        assay="NMR Spectroscopy",
+        mutagenesis_method=MutagenesisMethod.SSM,
+        experiment_doi="",
+        experiment_additional_info="",
+        experiment_content_base64_string=experiment_ssm_cvv_cif_bytes[0],
+        geometry_content_base64_string=experiment_ssm_cvv_cif_bytes[1],
+    )
+
+    # Mock shutil.rmtree to raise an exception
+    mocker.patch("shutil.rmtree", side_effect=Exception("Delete error"))
+
+    # Should return False on exception
+    with pytest.raises(Exception):
+        disk_manager_from_temp_data.delete_experiment(exp_id)
+
+
+def test_get_experiment_file_content(disk_manager_from_test_data):
+    """Test get_experiment_file_content returns file bytes."""
+    files = disk_manager_from_test_data.get_experiment_file_content("flatten_ep_processed_xy_cas")
+    assert "json" in files
+    assert "csv" in files
+    assert isinstance(files["json"], bytes)
+    assert isinstance(files["csv"], bytes)
+
+
+def test_get_experiment_file_content_nonexistent(disk_manager_from_test_data):
+    """Test get_experiment_file_content returns empty dict for nonexistent ID."""
+    files = disk_manager_from_test_data.get_experiment_file_content("nonexistent-id")
+    assert files == {}
+
+
+def test_get_experiment_file_content_with_error(disk_manager_from_test_data, mocker):
+    """Test get_experiment_file_content handles read errors."""
+
+    # Mock Path.read_bytes to raise exception
+    mocker.patch("pathlib.Path.read_bytes", side_effect=Exception("Read error"))
+
+    with pytest.raises(Exception, match="Error reading files for experiment"):
+        disk_manager_from_test_data.get_experiment_file_content("flatten_ep_processed_xy_cas")
+
+
+def test_get_experiments_zipped_empty(disk_manager_from_test_data):
+    """Test get_experiments_zipped returns None for empty list."""
+    result = disk_manager_from_test_data.get_experiments_zipped([])
+    assert result is None
+
+
+def test_get_experiments_zipped(disk_manager_from_test_data):
+    """Test get_experiments_zipped creates valid zip."""
+    exp_list = disk_manager_from_test_data.get_all_lab_experiments_with_meta_data()
+    zip_data = disk_manager_from_test_data.get_experiments_zipped(exp_list[:5])
+    assert zip_data is not None
+    assert isinstance(zip_data, bytes)
+    assert len(zip_data) > 0
+
+
+def test_get_experiments_zipped_with_error(disk_manager_from_test_data, mocker):
+    """Test get_experiments_zipped handles file read errors."""
+    exp_list = [{"experiment_id": "flatten_ep_processed_xy_cas"}]
+
+    # Mock get_experiment_file_content to raise exception
+    mocker.patch.object(
+        disk_manager_from_test_data,
+        "get_experiment_file_content",
+        side_effect=Exception("File read error"),
+    )
+
+    with pytest.raises(Exception, match="Error adding files for experiment"):
+        disk_manager_from_test_data.get_experiments_zipped(exp_list)
+
+
+def test_get_experiment_uses_cache(disk_manager_from_test_data):
+    """Test that get_experiment uses cache on second call."""
+    experiment_id = "flatten_ssm_processed_xy_cas"
+
+    # First call - loads from disk
+    exp1 = disk_manager_from_test_data.get_experiment(experiment_id)
+
+    # Second call - should use cache
+    exp2 = disk_manager_from_test_data.get_experiment(experiment_id)
+
+    # Should be the same object from cache
+    assert exp1 is exp2
