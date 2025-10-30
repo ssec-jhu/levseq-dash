@@ -25,9 +25,10 @@ def run_callback_on_load_experiment_page(pathname, experiment_id):
     return result
 
 
-def test_callback_on_load_experiment_page_random_experiment(mocker, path_exp_ep_data, tmp_path):
+def test_callback_on_load_experiment_page_random_experiment(
+    mocker, path_exp_ep_data, tmp_path, load_config_mock_string
+):
     from levseq_dash.app.data_manager.disk_manager import DiskDataManager
-    from levseq_dash.app.tests.conftest import load_config_mock_string
     from levseq_dash.app.tests.mutation_simulator import generate_temp_test_experiment_files
 
     # we need to mock the config to use tmp_path first then create the experiment files
