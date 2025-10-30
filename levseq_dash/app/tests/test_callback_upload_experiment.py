@@ -98,11 +98,9 @@ def read_file_for_upload(path_exp_ep_data):
     return [csv_base64, cif_base64]
 
 
-def test_callback_on_upload_experiment_file_alert(mocker, path_exp_ep_data, tmp_path):
+def test_callback_on_upload_experiment_file_alert(mocker, path_exp_ep_data, tmp_path, load_config_mock_string):
     """Test the on_upload_experiment_file callback with timing."""
     import dash_bootstrap_components as dbc
-
-    from levseq_dash.app.tests.conftest import load_config_mock_string
 
     # Mock the data manager configuration
     mock = mocker.patch(load_config_mock_string)
@@ -145,16 +143,15 @@ def test_callback_on_upload_experiment_file(mocker, path_exp_ep_data, disk_manag
     TIME_RESULTS.append((f"on_upload_experiment_file", execution_time))
 
 
-def test_callback_on_upload_experiment_file_empty(mocker, path_exp_ep_data, tmp_path):
+def test_callback_on_upload_experiment_file_empty(path_exp_ep_data, tmp_path):
     """Test the on_upload_experiment_file callback with timing."""
     ctx = copy_context()
     result = ctx.run(run_callback_on_upload_experiment_file, None, "randon", "time")
     assert result is not None
 
 
-def test_callback_on_upload_structure_file(mocker, path_exp_ep_data, tmp_path):
+def test_callback_on_upload_structure_file(mocker, path_exp_ep_data, tmp_path, load_config_mock_string):
     """Test the on_upload_structure_file callback with timing."""
-    from levseq_dash.app.tests.conftest import load_config_mock_string
 
     # Mock the data manager configuration
     mock = mocker.patch(load_config_mock_string)
@@ -195,11 +192,9 @@ def test_callback_on_upload_structure_file_empty(mocker, path_exp_ep_data, tmp_p
     assert result is not None
 
 
-def test_callback_on_upload_structure_file_alert(mocker, path_exp_ep_data, tmp_path):
+def test_callback_on_upload_structure_file_alert(mocker, path_exp_ep_data, tmp_path, load_config_mock_string):
     """Test the on_upload_structure_file callback with timing."""
     import dash_bootstrap_components as dbc
-
-    from levseq_dash.app.tests.conftest import load_config_mock_string
 
     # Mock the data manager configuration
     mock = mocker.patch(load_config_mock_string)
