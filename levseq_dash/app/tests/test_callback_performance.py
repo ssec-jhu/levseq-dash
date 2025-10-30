@@ -26,17 +26,32 @@ def run_callback_on_load_experiment_page(pathname, experiment_id):
 
 
 def test_callback_on_load_experiment_page_random_experiment(mocker, path_exp_ep_data, tmp_path):
+    from levseq_dash.app.data_manager.disk_manager import DiskDataManager
     from levseq_dash.app.tests.conftest import load_config_mock_string
     from levseq_dash.app.tests.mutation_simulator import generate_temp_test_experiment_files
 
-    base_csv_path = path_exp_ep_data[0]
-    csv_path, experiment_id = generate_temp_test_experiment_files(tmp_path, base_csv_path, num_plates=500)
+    # we need to mock the config to use tmp_path first then create the experiment files
+    # fixed a bug here where it was the other way
+    # base_csv_path = path_exp_ep_data[0]
+    # csv_path, experiment_id = generate_temp_test_experiment_files(tmp_path, base_csv_path, num_plates=500)
+
     mock = mocker.patch(load_config_mock_string)
     mock.return_value = {
         "deployment-mode": "local-instance",
         "storage-mode": "disk",
         "disk": {"local-data-path": str(tmp_path)},
     }
+
+    # Create the test experiment files
+    base_csv_path = path_exp_ep_data[0]
+    csv_path, experiment_id = generate_temp_test_experiment_files(tmp_path, base_csv_path, num_plates=500)
+
+    # Create a disk manager instance with the mocked config (which will use tmp_path)
+    disk_mgr = DiskDataManager()
+
+    # Mock the singleton instance to use our test data manager
+    mocker.patch("levseq_dash.app.main_app.singleton_data_mgr_instance", disk_mgr)
+
     ctx = copy_context()
     start_time = time.time()
     result = ctx.run(run_callback_on_load_experiment_page, gs.nav_experiment_path, experiment_id)
