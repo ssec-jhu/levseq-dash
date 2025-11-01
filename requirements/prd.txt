@@ -8,7 +8,7 @@ gunicorn==23.0.0
 pyyaml==6.0.2
 dash-molstar==1.2.1
 plotly-express==0.4.1
-biopython==1.85
+biopython==1.86
 rdkit==2025.3.2
 pillow==11.2.1
 cachetools==5.5.2
