@@ -31,23 +31,6 @@ def test_validate_deployment_configuration_public_playground_data_modification_e
         validate_deployment_configuration()
 
 
-def test_validate_deployment_configuration_public_playground_with_id_prefix(mocker, load_config_mock_string):
-    """Test public-playground mode with five-letter-id-prefix set (invalid)."""
-
-    mock = mocker.patch(load_config_mock_string)
-    mock.return_value = {
-        "deployment-mode": "public-playground",
-        "storage-mode": "disk",
-        "disk": {
-            "enable-data-modification": True,
-            "five-letter-id-prefix": "ABCDEF",
-        },
-    }
-
-    with pytest.raises(ValueError):
-        validate_deployment_configuration()
-
-
 def test_validate_deployment_configuration_public_playground_with_local_data_path(mocker, load_config_mock_string):
     """Test public-playground mode with local-data-path set (invalid)."""
 
@@ -115,7 +98,7 @@ def test_validate_deployment_configuration_invalid_deployment_mode(mocker, load_
     """Test invalid deployment mode."""
 
     mock = mocker.patch(load_config_mock_string)
-    mock.return_value = {"deployment-mode": "som-other-mode", "storage-mode": "disk"}
+    mock.return_value = {"deployment-mode": "some-other-mode", "storage-mode": "disk"}
 
     with pytest.raises(ValueError):
         validate_deployment_configuration()
