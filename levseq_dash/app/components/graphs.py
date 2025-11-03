@@ -362,6 +362,11 @@ def create_ssm_plot(df, smiles_string, residue_number):
             x=0.5,  # Center the title
             xanchor="center",
         ),
+        # Improve hover label readability with white text on dark background
+        hoverlabel=dict(
+            bgcolor="rgba(50, 50, 50, 0.9)",  # Dark gray background
+            font_color="white",  # White text for better contrast
+        ),
     )
 
     # Fix x-axis labels orientation (horizontal instead of rotated)
