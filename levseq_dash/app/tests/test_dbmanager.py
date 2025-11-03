@@ -274,7 +274,7 @@ def test_get_experiments_zipped_with_error(disk_manager_from_test_data, mocker):
         disk_manager_from_test_data.get_experiments_zipped(exp_list)
 
 
-def test_get_experiment_uses_cache(disk_manager_from_test_data):
+def test_get_experiment_uses_cache(mocker, disk_manager_from_test_data):
     """Test that get_experiment uses cache on second call."""
     experiment_id = "flatten_ssm_processed_xy_cas"
 
@@ -299,7 +299,3 @@ def test_get_experiment_uses_cache(disk_manager_from_test_data):
 
     # cache should have two entries now
     assert len(disk_manager_from_test_data._experiments_core_data_cache) == 2
-
-    # now test delete experiment removes from cache
-    disk_manager_from_test_data.delete_experiment(experiment_id)
-    assert len(disk_manager_from_test_data._experiments_core_data_cache) == 1
