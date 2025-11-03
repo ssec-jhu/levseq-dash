@@ -186,6 +186,13 @@ def test_delete_experiment_with_cached_data(disk_manager_from_temp_data, experim
     result = disk_manager_from_temp_data.delete_experiment(exp_id)
     assert result is True
 
+    # Verify it's gone - metadata should be None
+    assert disk_manager_from_temp_data.get_experiment_metadata(exp_id) is None
+
+    # Verify it's gone - experiment itself should throw an exception
+    with pytest.raises(Exception):
+        disk_manager_from_temp_data.get_experiment(exp_id)
+
 
 def test_delete_experiment_with_exception(disk_manager_from_temp_data, experiment_ssm_cvv_cif_bytes, mocker):
     """Test delete_experiment handles exceptions and returns False."""
@@ -271,11 +278,28 @@ def test_get_experiment_uses_cache(disk_manager_from_test_data):
     """Test that get_experiment uses cache on second call."""
     experiment_id = "flatten_ssm_processed_xy_cas"
 
+    # cache should be empty at start
+    assert len(disk_manager_from_test_data._experiments_core_data_cache) == 0
+
     # First call - loads from disk
     exp1 = disk_manager_from_test_data.get_experiment(experiment_id)
 
+    # cache should have one entry now
+    assert len(disk_manager_from_test_data._experiments_core_data_cache) == 1
+
     # Second call - should use cache
-    exp2 = disk_manager_from_test_data.get_experiment(experiment_id)
+    exp1_call2 = disk_manager_from_test_data.get_experiment(experiment_id)
 
     # Should be the same object from cache
-    assert exp1 is exp2
+    assert exp1 is exp1_call2
+
+    # get another experiment
+    experiment_id_2 = "flatten_ep_processed_xy_cas"
+    exp2 = disk_manager_from_test_data.get_experiment(experiment_id_2)
+
+    # cache should have two entries now
+    assert len(disk_manager_from_test_data._experiments_core_data_cache) == 2
+
+    # now test delete experiment removes from cache
+    disk_manager_from_test_data.delete_experiment(experiment_id)
+    assert len(disk_manager_from_test_data._experiments_core_data_cache) == 1

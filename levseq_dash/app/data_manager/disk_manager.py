@@ -172,7 +172,7 @@ class DiskDataManager(BaseDataManager):
             return True
 
         except Exception as e:
-            raise Exception(f"Error deleting experiment {experiment_uuid} from disk: {e}")
+            raise RuntimeError(f"Error deleting experiment {experiment_uuid} from disk: {e}") from e
 
     # ---------------------------
     #    DATA RETRIEVAL: ALL
