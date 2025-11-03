@@ -215,7 +215,7 @@ def test_delete_experiment_with_exception(disk_manager_from_temp_data, experimen
     mocker.patch("shutil.rmtree", side_effect=Exception("Delete error"))
 
     # Should return False on exception
-    with pytest.raises(Exception):
+    with pytest.raises(Exception,match="Delete error"):
         disk_manager_from_temp_data.delete_experiment(exp_id)
 
 
