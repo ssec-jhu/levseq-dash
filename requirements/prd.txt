@@ -10,5 +10,5 @@ dash-molstar==1.2.1
 plotly-express==0.4.1
 biopython==1.86
 rdkit==2025.3.2
-pillow==11.2.1
+pillow==12.0.0
 cachetools==6.2.1
