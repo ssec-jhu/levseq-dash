@@ -446,3 +446,79 @@ def test_callback_update_ssm_plot(disk_manager_from_test_data, experiment_ssm, r
     assert output[0] is not None  # Figure
     # check the store value
     assert output[1] == {"ssm_plot": {"residue": new_residue, "smiles": experiment_ssm.unique_smiles_in_data[0]}}
+
+
+# ------------------------------------------------
+def run_callback_on_load_matching_sequences(query_sequence, threshold, n_top_hot_cold):
+    from levseq_dash.app.main_app import on_load_matching_sequences
+
+    context_value.set(AttributeDict(**{"triggered_inputs": [{"prop_id": "id-cleared-run-seq-matching.data"}]}))
+    return on_load_matching_sequences(
+        results_are_cleared=True,
+        n_clicks=1,
+        query_sequence=query_sequence,
+        threshold=threshold,
+        n_top_hot_cold=n_top_hot_cold,
+    )
+
+
+def test_callback_on_load_matching_sequences(disk_manager_from_app_data):
+    ctx = copy_context()
+    output = ctx.run(
+        run_callback_on_load_matching_sequences,
+        gs.seq_align_form_input_sequence_default,
+        0.8,
+        5,
+    )
+
+    assert len(output) == 7
+    assert len(output[0]) == 101  # matched-sequences row Data
+    assert len(output[1]) == 240
+
+
+# ------------------------------------------------
+def run_callback_display_default_selected_matching_sequences(data):
+    from levseq_dash.app.main_app import display_default_selected_matching_sequences
+
+    context_value.set(AttributeDict(**{"triggered_inputs": [{"prop_id": "id-table-matched-sequences.virtualRowData"}]}))
+    return display_default_selected_matching_sequences(data=data)
+
+
+def test_callback_display_default_selected_matching_sequences(mock_load_config_from_test_data_path):
+    """Test display_default_selected_matching_sequences callback."""
+    data = [{"experiment_id": "exp1", "name": "test"}, {"experiment_id": "exp2", "name": "test2"}]
+    ctx = copy_context()
+    output = ctx.run(run_callback_display_default_selected_matching_sequences, data)
+    assert len(output) == 1
+    assert output[0]["experiment_id"] == "exp1"
+
+
+# ------------------------------------------------
+def run_callback_display_selected_matching_sequences(selected_rows):
+    from levseq_dash.app.main_app import display_selected_matching_sequences
+
+    context_value.set(AttributeDict(**{"triggered_inputs": [{"prop_id": "id-table-matched-sequences.selectedRows"}]}))
+    return display_selected_matching_sequences(selected_rows=selected_rows)
+
+
+# def test_callback_display_selected_matching_sequences_empty(mock_load_config_from_test_data_path):
+#     """Test display_selected_matching_sequences with empty selection."""
+#     ctx = copy_context()
+#     selected_rows = [
+#         {
+#             "experiment_id": "flatten_ep_processed_xy_cas",
+#             "experiment_name": "Test Experiment",
+#         }
+#     ]
+#     output = ctx.run(run_callback_display_selected_matching_sequences, selected_rows)
+#     assert len(output) == 7
+
+
+def test_callback_display_selected_matching_sequences_none(mock_load_config_from_test_data_path):
+    """Test display_selected_matching_sequences with None."""
+    ctx = copy_context()
+    with pytest.raises(PreventUpdate):
+        ctx.run(run_callback_display_selected_matching_sequences, None)
+
+
+#
