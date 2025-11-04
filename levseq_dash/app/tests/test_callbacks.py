@@ -4,7 +4,7 @@ import pytest
 from dash import html, no_update
 from dash._callback_context import context_value
 from dash._utils import AttributeDict
-from dash.exceptions import CallbackException, PreventUpdate
+from dash.exceptions import PreventUpdate
 
 from levseq_dash.app import global_strings as gs
 from levseq_dash.app.components import graphs
@@ -519,6 +519,46 @@ def test_callback_display_selected_matching_sequences_none(mock_load_config_from
     ctx = copy_context()
     with pytest.raises(PreventUpdate):
         ctx.run(run_callback_display_selected_matching_sequences, None)
+
+
+# ------------------------------------------------
+def run_callback_on_load_exp_related_variants(query_sequence, threshold, lookup_residues, experiment_id):
+    from levseq_dash.app.main_app import on_load_exp_related_variants
+
+    context_value.set(AttributeDict(**{"triggered_inputs": [{"prop_id": "id-cleared-run-exp-related-variants.data"}]}))
+    return on_load_exp_related_variants(
+        results_are_cleared=True,
+        n_clicks=1,
+        query_sequence=query_sequence,
+        threshold=threshold,
+        lookup_residues=lookup_residues,
+        experiment_id=experiment_id,
+    )
+
+
+@pytest.mark.parametrize("lookup_residues,output_result", [("327, 437", 310), ("264", 95)])
+def test_callback_on_load_exp_related_variants(disk_manager_from_app_data, lookup_residues, output_result):
+    """Test on_load_exp_related_variants callback with valid inputs."""
+    all_lab_sequences = disk_manager_from_app_data.get_all_lab_sequences()
+    experiment_id = "ARNLD-2899-331b61ee-2fd6-42a0-bf48-3be76fe97af1"
+    ctx = copy_context()
+    output = ctx.run(
+        run_callback_on_load_exp_related_variants,
+        all_lab_sequences[experiment_id],
+        0.8,
+        lookup_residues,
+        experiment_id,
+    )
+
+    assert len(output) == 9
+    if output[0] != no_update:
+        assert len(output[0]) == output_result  # related-variants row Data
+        assert output[1] == experiment_id  # experiment_id
+        assert output[2] is not None  # experiment_svg_src (reaction image)
+        assert output[3] is not None  # experiment_substrate
+        assert output[4] is not None  # experiment_product
+    else:
+        assert output[0] == output_result
 
 
 #
