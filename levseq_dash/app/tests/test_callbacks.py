@@ -223,3 +223,98 @@ def test_callback_on_button_run_seq_matching_already_cleared(mock_load_config_fr
     ctx = copy_context()
     with pytest.raises(PreventUpdate):
         ctx.run(run_callback_on_button_run_seq_matching, True)
+
+
+# ------------------------------------------------
+def run_callback_load_explore_page(filter_store):
+    from levseq_dash.app.main_app import load_explore_page
+
+    context_value.set(AttributeDict(**{"triggered_inputs": [{"prop_id": "id-table-all-experiments.columnDefs"}]}))
+    return load_explore_page(temp_text=None, filter_store=filter_store)
+
+
+def test_callback_load_explore_page(disk_manager_from_test_data):
+    """Test load_explore_page callback."""
+    ctx = copy_context()
+    output = ctx.run(run_callback_load_explore_page, None)
+    assert len(output) == 2
+    assert isinstance(output[0], list)  # rowData
+    assert len(output[0]) > 0  # Should have experiments
+
+
+def test_callback_load_explore_page_with_filter(disk_manager_from_test_data):
+    """Test load_explore_page with filter store."""
+    filter_data = {"experiment_name": {"filterType": "text", "type": "contains", "filter": "test"}}
+    ctx = copy_context()
+    output = ctx.run(run_callback_load_explore_page, filter_data)
+    assert output[1] == filter_data  # Filter should be preserved
+
+
+# ------------------------------------------------
+def run_callback_set_assay_list(assay_list):
+    from levseq_dash.app.main_app import set_assay_list
+
+    context_value.set(AttributeDict(**{"triggered_inputs": [{"prop_id": "id-list-assay.options"}]}))
+    return set_assay_list(assay_list=assay_list)
+
+
+def test_callback_set_assay_list(disk_manager_from_test_data):
+    """Test set_assay_list callback."""
+    ctx = copy_context()
+    output = ctx.run(run_callback_set_assay_list, [])
+    assert len(output) == 3
+    assert output[0] == "Mass Spectrometry"
+
+
+# ------------------------------------------------
+def run_callback_validate_substrate_smiles(substrate):
+    from levseq_dash.app.main_app import validate_substrate_smiles
+
+    context_value.set(AttributeDict(**{"triggered_inputs": [{"prop_id": "id-input-substrate.value"}]}))
+    return validate_substrate_smiles(substrate=substrate)
+
+
+def run_callback_validate_product_smiles(product):
+    from levseq_dash.app.main_app import validate_product_smiles
+
+    context_value.set(AttributeDict(**{"triggered_inputs": [{"prop_id": "id-input-product.value"}]}))
+    return validate_product_smiles(product=product)
+
+
+@pytest.mark.parametrize(
+    "smiles, valid",
+    [
+        ("C1=CC=CC=C1", True),  # no selection
+        ("invalid_smiles_123", False),
+    ],
+)
+def test_callback_validate_substrate_smiles(mock_load_config_from_test_data_path, smiles, valid):
+    """Test validate_substrate_smiles  and validate_product_smiles."""
+    ctx = copy_context()
+    output = ctx.run(run_callback_validate_substrate_smiles, smiles)
+    assert output[0] == valid
+
+    output = ctx.run(run_callback_validate_product_smiles, smiles)
+    assert output[0] == valid
+
+
+# ------------------------------------------------
+def run_callback_toggle_sidebar(sidebar_class):
+    from levseq_dash.app.main_app import toggle_sidebar
+
+    context_value.set(AttributeDict(**{"triggered_inputs": [{"prop_id": "id-menu-icon.n_clicks"}]}))
+    return toggle_sidebar(toggle_clicks=1, sidebar_class=sidebar_class)
+
+
+@pytest.mark.parametrize(
+    "sidebar_class, output",
+    [
+        ("thin-sidebar expanded", "thin-sidebar collapsed"),  # no selection
+        ("thin-sidebar collapsed", "thin-sidebar expanded"),
+    ],
+)
+def test_callback_toggle_sidebar_collapse(mock_load_config_from_test_data_path, sidebar_class, output):
+    """Test toggle_sidebar to collapse."""
+    ctx = copy_context()
+    output = ctx.run(run_callback_toggle_sidebar, sidebar_class)
+    assert output == output
