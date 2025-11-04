@@ -7,6 +7,7 @@ from dash._utils import AttributeDict
 from dash.exceptions import CallbackException, PreventUpdate
 
 from levseq_dash.app import global_strings as gs
+from levseq_dash.app.components import graphs
 
 
 def run_callback_route_page(pathname):
@@ -318,3 +319,130 @@ def test_callback_toggle_sidebar_collapse(mock_load_config_from_test_data_path, 
     ctx = copy_context()
     output = ctx.run(run_callback_toggle_sidebar, sidebar_class)
     assert output == output
+
+
+# ------------------------------------------------
+def run_callback_update_heatmap(selected_plate, selected_smiles, selected_stat_property, rowData, store_data):
+    from levseq_dash.app.main_app import update_heatmap
+
+    context_value.set(AttributeDict(**{"triggered_inputs": [{"prop_id": "id-list-plates.value"}]}))
+    return update_heatmap(
+        selected_plate=selected_plate,
+        selected_smiles=selected_smiles,
+        selected_stat_property=selected_stat_property,
+        rowData=rowData,
+        store_data=store_data,
+    )
+
+
+@pytest.mark.parametrize(
+    "plate, smiles, sel_property",
+    [
+        (0, 0, 1),  # different property selected
+        (0, 1, 0),  # different smiles selected
+        (1, 0, 0),  # different plate selected
+    ],
+)
+def test_callback_update_heatmap(disk_manager_from_test_data, experiment_ep_pcr, plate, smiles, sel_property):
+    """Test update_heatmap callback."""
+
+    rowData = experiment_ep_pcr.data_df.to_dict("records")
+    store_data = {
+        "heatmap": {
+            "plate": experiment_ep_pcr.plates[0],
+            "smiles": experiment_ep_pcr.unique_smiles_in_data[0],
+            "property": gs.experiment_heatmap_properties_list[0],
+        }
+    }
+
+    new_plate = experiment_ep_pcr.plates[plate]
+    new_smiles = experiment_ep_pcr.unique_smiles_in_data[smiles]
+    new_property = gs.experiment_heatmap_properties_list[sel_property]
+
+    ctx = copy_context()
+    output = ctx.run(
+        run_callback_update_heatmap,
+        new_plate,
+        new_smiles,
+        new_property,
+        rowData,
+        store_data,
+    )
+    assert len(output) == 4
+    assert output[0] is not None  # Figure
+    # updated store
+    assert output[3] == {"heatmap": {"plate": new_plate, "smiles": new_smiles, "property": new_property}}
+
+
+# ------------------------------------------------
+def run_callback_update_rank_plot(selected_plate, selected_smiles, rowData, store_data):
+    from levseq_dash.app.main_app import update_rank_plot
+
+    context_value.set(AttributeDict(**{"triggered_inputs": [{"prop_id": "id-list-plates-ranking-plot.value"}]}))
+    return update_rank_plot(
+        selected_plate=selected_plate, selected_smiles=selected_smiles, rowData=rowData, store_data=store_data
+    )
+
+
+@pytest.mark.parametrize(
+    "plate, smiles",
+    [(0, 1), (1, 0), (1, 1)],
+)
+def test_callback_update_rank_plot(disk_manager_from_test_data, experiment_ep_pcr, plate, smiles):
+    """Test update_rank_plot callback."""
+    rowData = experiment_ep_pcr.data_df.to_dict("records")
+
+    store_data = {
+        "rank_plot": {
+            "plate": experiment_ep_pcr.plates[0],
+            "smiles": experiment_ep_pcr.unique_smiles_in_data[0],
+        }
+    }
+
+    new_plate = experiment_ep_pcr.plates[plate]
+    new_smiles = experiment_ep_pcr.unique_smiles_in_data[smiles]
+
+    ctx = copy_context()
+    output = ctx.run(run_callback_update_rank_plot, new_plate, new_smiles, rowData, store_data)
+
+    assert len(output) == 2
+    assert output[0] is not None  # Figure
+    # make sure store is updated
+    assert output[1] == {"rank_plot": {"plate": new_plate, "smiles": new_smiles}}
+
+
+# ------------------------------------------------
+def run_callback_update_ssm_plot(selected_residue, selected_smiles, rowData, store_data):
+    from levseq_dash.app.main_app import update_ssm_plot
+
+    context_value.set(AttributeDict(**{"triggered_inputs": [{"prop_id": "id-list-ssm-residue-positions.value"}]}))
+    return update_ssm_plot(
+        selected_residue=selected_residue, selected_smiles=selected_smiles, rowData=rowData, store_data=store_data
+    )
+
+
+@pytest.mark.parametrize(
+    "residue",
+    [1, 2, 3, 4],
+)
+def test_callback_update_ssm_plot(disk_manager_from_test_data, experiment_ssm, residue):
+    """Test update_ssm_plot callback."""
+
+    df = experiment_ssm.data_df
+    rowData = df.to_dict("records")
+
+    list_ssm_positions = graphs.extract_single_site_mutations(df)
+
+    store_data = {"ssm_plot": {"residue": list_ssm_positions[0], "smiles": experiment_ssm.unique_smiles_in_data[0]}}
+
+    new_residue = list_ssm_positions[residue]
+
+    ctx = copy_context()
+    output = ctx.run(
+        run_callback_update_ssm_plot, new_residue, experiment_ssm.unique_smiles_in_data[0], rowData, store_data
+    )
+
+    assert len(output) == 2
+    assert output[0] is not None  # Figure
+    # check the store value
+    assert output[1] == {"ssm_plot": {"residue": new_residue, "smiles": experiment_ssm.unique_smiles_in_data[0]}}
