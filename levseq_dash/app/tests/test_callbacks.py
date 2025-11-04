@@ -501,17 +501,33 @@ def run_callback_display_selected_matching_sequences(selected_rows):
     return display_selected_matching_sequences(selected_rows=selected_rows)
 
 
-# def test_callback_display_selected_matching_sequences_empty(mock_load_config_from_test_data_path):
-#     """Test display_selected_matching_sequences with empty selection."""
-#     ctx = copy_context()
-#     selected_rows = [
-#         {
-#             "experiment_id": "flatten_ep_processed_xy_cas",
-#             "experiment_name": "Test Experiment",
-#         }
-#     ]
-#     output = ctx.run(run_callback_display_selected_matching_sequences, selected_rows)
-#     assert len(output) == 7
+def test_callback_display_selected_matching_sequences(disk_manager_from_test_data):
+    """Test display_selected_matching_sequences with valid selection."""
+    # values in the selected row don't matter for this test
+    # but the experiment id needs to be valid, so it can load geometry
+    import dash_molstar
+
+    selected_rows = [
+        {
+            gs.cc_experiment_id: "flatten_ep_processed_xy_cas",
+            gs.cc_seq_alignment_mismatches: "60,120",
+            gs.cc_hot_indices_per_smiles: "59,89,93",
+            gs.cc_cold_indices_per_smiles: "89,119,120",
+            gs.cc_substrate: "C1=CC=C(C=C1)C=O",
+            gs.cc_product: "C1=CC=C(C=C1)CO",
+        }
+    ]
+    ctx = copy_context()
+    output = ctx.run(run_callback_display_selected_matching_sequences, selected_rows)
+
+    assert len(output) == 7
+    # viewer can be no_update if no geometry, or a list with viewer
+    assert output[0] is not None  # viewer or no_update
+    assert isinstance(output[0][0], dash_molstar.MolstarViewer)
+    assert output[1] is not None  # reaction image svg
+    assert output[2] == "C1=CC=C(C=C1)C=O"  # substrate
+    assert output[3] == "C1=CC=C(C=C1)CO"  # product
+    assert output[4] == "89"  # highlights_both
 
 
 def test_callback_display_selected_matching_sequences_none(mock_load_config_from_test_data_path):
@@ -559,6 +575,42 @@ def test_callback_on_load_exp_related_variants(disk_manager_from_app_data, looku
         assert output[4] is not None  # experiment_product
     else:
         assert output[0] == output_result
+
+
+# ------------------------------------------------
+def run_callback_on_view_all_residue(view, slider_value, selected_smiles, rowData):
+    from levseq_dash.app.main_app import on_view_all_residue
+
+    context_value.set(AttributeDict(**{"triggered_inputs": [{"prop_id": "id-switch-residue-view.value"}]}))
+    return on_view_all_residue(view=view, slider_value=slider_value, selected_smiles=selected_smiles, rowData=rowData)
+
+
+@pytest.mark.parametrize(
+    "view,slider_value,smiles_idx",
+    [
+        (True, [0.5, 1.5], 0),
+        (True, [0.0, 2.0], 1),
+        (False, [0.5, 1.5], 0),
+    ],
+)
+def test_callback_on_view_all_residue(disk_manager_from_test_data, experiment_ep_pcr, view, slider_value, smiles_idx):
+    """Test on_view_all_residue callback with valid inputs."""
+    rowData = experiment_ep_pcr.data_df.to_dict("records")
+    selected_smiles = experiment_ep_pcr.unique_smiles_in_data[smiles_idx]
+
+    ctx = copy_context()
+    output = ctx.run(run_callback_on_view_all_residue, view, slider_value, selected_smiles, rowData)
+
+    assert len(output) == 5
+    # When view is False, most outputs should be no_update
+    if not view:
+        assert output[2] is True  # slider_disabled
+        assert output[3] is True  # listbox_disabled
+    else:
+        # When view is True, check that outputs are set
+        assert output[2] is not None  # slider_disabled
+        assert output[3] is not None  # listbox_disabled
+        assert output[4] is not None  # highlighted_residue_info
 
 
 #
