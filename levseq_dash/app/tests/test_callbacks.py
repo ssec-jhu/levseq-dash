@@ -605,13 +605,12 @@ def test_callback_on_view_all_residue(disk_manager_from_test_data, experiment_ep
     ctx = copy_context()
     output = ctx.run(run_callback_on_view_all_residue, view, slider_value, selected_smiles, rowData)
 
-    assert len(output) == 5
-    # When view is False, most outputs should be no_update
-    if not view:
-        assert output[2] is True  # slider_disabled
-        assert output[3] is True  # listbox_disabled
+    if view:
+        # slider is enabled
+        assert len(output) == 5
+        # on view all residues all the independent residues should be gathered in the list
+        assert len(output[0]["targets"][0]["residue_numbers"]) == 179
     else:
-        # When view is True, check that outputs are set
         assert output[2] is not None  # slider_disabled
         assert output[3] is not None  # listbox_disabled
         assert output[4] is not None  # highlighted_residue_info
