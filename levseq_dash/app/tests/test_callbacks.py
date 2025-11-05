@@ -614,3 +614,43 @@ def test_callback_on_view_all_residue(disk_manager_from_test_data, experiment_ep
         assert output[2] is not None  # slider_disabled
         assert output[3] is not None  # listbox_disabled
         assert output[4] is not None  # highlighted_residue_info
+
+
+# ------------------------------------------------
+def run_callback_on_view_selected_residue_from_table(selected_rows):
+    from levseq_dash.app.main_app import on_view_selected_residue_from_table
+
+    context_value.set(AttributeDict(**{"triggered_inputs": [{"prop_id": "id-table-exp-top-variants.selectedRows"}]}))
+    return on_view_selected_residue_from_table(selected_rows=selected_rows)
+
+
+@pytest.mark.parametrize(
+    "substitutions,expected_info,expected_residues",
+    [
+        ("K99R_R118C", "99, 118", [99, 118]),  # Regular substitutions
+        (gs.hashtag_parent, gs.hashtag_parent, None),  # Parent case - no residue selection
+        ("A10G", "10", [10]),  # Single substitution
+    ],
+)
+def test_callback_on_view_selected_residue_from_table(
+    mock_load_config_from_test_data_path, substitutions, expected_info, expected_residues
+):
+    """Test on_view_selected_residue_from_table callback with valid inputs."""
+    selected_rows = [{gs.c_substitutions: substitutions}]
+
+    ctx = copy_context()
+    output = ctx.run(run_callback_on_view_selected_residue_from_table, selected_rows)
+
+    assert len(output) == 4
+
+    # Check selection output
+    if expected_residues is not None:
+        assert output[0] is not None  # selection should be set
+        assert output[0]["targets"][0]["residue_numbers"] == expected_residues
+    else:
+        # Parent case - selection is reset (empty list)
+        assert output[0]["targets"][0]["residue_numbers"] == []
+
+    # output[1] is focus - can be no_update
+    assert expected_info in output[2]  # highlighted_residue_info contains expected residues
+    assert output[3] is False  # view_all_residue_switch should be False
