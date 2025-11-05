@@ -274,13 +274,10 @@ class DiskDataManager(BaseDataManager):
 
         with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as zipf:
             # Add metadata CSV to root of zip
-
-            # metadata_df = pd.DataFrame(experiments_to_zip)
-            # csv_content = metadata_df.to_csv(index=False)
-            # zipf.writestr(f"EnzEngDB_Experiments.csv", csv_content)
-            csv_header = ",".join(experiments_to_zip[0].keys())
-            csv_rows = "\n".join(",".join(str(value) for value in row.values()) for row in experiments_to_zip)
-            zipf.writestr(f"EnzEngDB_Experiments.csv", f"{csv_header}\n{csv_rows}")
+            # Use pandas to properly handle CSV escaping (commas, quotes, newlines in fields)
+            metadata_df = pd.DataFrame(experiments_to_zip)
+            csv_content = metadata_df.to_csv(index=False)
+            zipf.writestr(f"EnzEngDB_Experiments.csv", csv_content)
 
             # Add experiment files directly from disk
             for exp_data in experiments_to_zip:
