@@ -501,11 +501,12 @@ def run_callback_display_selected_matching_sequences(selected_rows):
     return display_selected_matching_sequences(selected_rows=selected_rows)
 
 
-def test_callback_display_selected_matching_sequences(mocker,disk_manager_from_test_data):
+def test_callback_display_selected_matching_sequences(mocker, disk_manager_from_test_data):
     """Test display_selected_matching_sequences with valid selection."""
     # values in the selected row don't matter for this test
     # but the experiment id needs to be valid, so it can load geometry
     import dash_molstar
+
     mocker.patch("levseq_dash.app.main_app.singleton_data_mgr_instance", disk_manager_from_test_data)
     selected_rows = [
         {
@@ -558,7 +559,7 @@ def test_callback_on_load_exp_related_variants(disk_manager_from_app_data, mocke
     # Mock the singleton to use our app_data fixture
     # if I don't do this, it will try to load from default test data path
     mocker.patch("levseq_dash.app.main_app.singleton_data_mgr_instance", disk_manager_from_app_data)
-    
+
     all_lab_sequences = disk_manager_from_app_data.get_all_lab_sequences()
     experiment_id = "ARNLD-2899-331b61ee-2fd6-42a0-bf48-3be76fe97af1"
     ctx = copy_context()
@@ -614,4 +615,3 @@ def test_callback_on_view_all_residue(disk_manager_from_test_data, experiment_ep
         assert output[2] is not None  # slider_disabled
         assert output[3] is not None  # listbox_disabled
         assert output[4] is not None  # highlighted_residue_info
-
