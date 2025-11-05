@@ -654,3 +654,64 @@ def test_callback_on_view_selected_residue_from_table(
     # output[1] is focus - can be no_update
     assert expected_info in output[2]  # highlighted_residue_info contains expected residues
     assert output[3] is False  # view_all_residue_switch should be False
+
+
+# ------------------------------------------------
+def run_callback_display_selected_exp_related_variants(selected_rows, experiment_id):
+    from levseq_dash.app.main_app import display_selected_exp_related_variants
+
+    context_value.set(
+        AttributeDict(**{"triggered_inputs": [{"prop_id": "id-table-exp-related-variants.selectedRows"}]})
+    )
+    return display_selected_exp_related_variants(selected_rows=selected_rows, experiment_id=experiment_id)
+
+
+@pytest.mark.parametrize(
+    "selected_exp_id,substitutions,substrate,product, query_exp_id",
+    [
+        # Two different experiments from app data with valid geometry
+        (
+            "ARNLD-0821-9561f6f0-9765-4ee7-8d8d-8b33f70b55f2",
+            "A10G_K99R",
+            "C1=CC=C(C=C1)C=O",
+            "C1=CC=C(C=C1)CO",
+            "ARNLD-0917-39903c09-5dc0-4cc8-b805-a5739a835e85",
+        ),
+        (
+            "ARNLD-1222-57801895-faeb-42e1-b24d-cff199d9eaf8",
+            "L52V_T53A",
+            "CC(C)CC1=CC=C(C=C1)C(C)C(=O)O",
+            "CC(C)CC1=CC=C(C=C1)C(C)C(=O)N",
+            "ARNLD-2030-4208b989-f384-46c6-b6a8-051d3f55e0d9",
+        ),
+    ],
+)
+def test_callback_display_selected_exp_related_variants(
+    mocker, disk_manager_from_app_data, selected_exp_id, substitutions, substrate, product, query_exp_id
+):
+    """Test display_selected_exp_related_variants with valid selection."""
+    import dash_molstar
+
+    # Mock singleton to use app data
+    mocker.patch("levseq_dash.app.main_app.singleton_data_mgr_instance", disk_manager_from_app_data)
+
+    selected_rows = [
+        {
+            gs.cc_experiment_id: selected_exp_id,
+            gs.c_substitutions: substitutions,
+            gs.cc_substrate: substrate,
+            gs.cc_product: product,
+        }
+    ]
+
+    ctx = copy_context()
+    output = ctx.run(run_callback_display_selected_exp_related_variants, selected_rows, query_exp_id)
+
+    assert len(output) == 7
+    assert output[0] == substitutions  # selected_substitutions
+    assert isinstance(output[1][0], dash_molstar.MolstarViewer)  # selected_experiment_viewer
+    assert output[2] == selected_exp_id  # selected_experiment_id
+    assert output[3] is not None  # selected_svg_src (reaction image)
+    assert output[4] == substrate  # selected_substrate
+    assert output[5] == product  # selected_product
+    assert isinstance(output[6][0], dash_molstar.MolstarViewer)  # query_experiment_viewer
