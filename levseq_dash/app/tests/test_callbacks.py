@@ -757,9 +757,7 @@ def run_callback_on_delete_experiment_open_modal(selected_rows):
         ("any-id-2", "Test Experiment 2"),
     ],
 )
-def test_callback_on_delete_experiment_open_modal(
-    mock_load_config_from_test_data_path, experiment_id, experiment_name
-):
+def test_callback_on_delete_experiment_open_modal(mock_load_config_from_test_data_path, experiment_id, experiment_name):
     """Test on_delete_experiment_open_modal opens modal with experiment details."""
     selected_rows = [{"experiment_id": experiment_id, "experiment_name": experiment_name}]
 
@@ -826,3 +824,16 @@ def test_callback_on_delete_experiment_modal_confirmed(mocker, temp_experiment_t
 
     # Verify experiment was actually deleted
     assert disk_manager_from_temp_data.get_experiment_metadata(exp_id) is None
+
+
+def test_callback_on_delete_experiment_modal_confirmed_exception(mocker, temp_experiment_to_delete):
+    exp_id = temp_experiment_to_delete
+    selected_rows = [{"experiment_id": exp_id, "experiment_name": "Temp Delete Test"}]
+
+    # Mock shutil.move to raise an exception but the UI in the callback will catch and create alert
+    mocker.patch("shutil.move", side_effect=Exception("Delete error"))
+
+    ctx = copy_context()
+    output = ctx.run(run_callback_on_delete_experiment_modal_confirmed, selected_rows)
+    assert output[0] is no_update  # deleteSelectedRows not changed
+    assert output[2] is False  # Modal should be closed
