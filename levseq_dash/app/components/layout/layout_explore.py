@@ -104,6 +104,32 @@ def get_layout():
                 ],
                 className="mb-4",
             ),
+            # Confirmation modal for deletion
+            dbc.Modal(
+                [
+                    dbc.ModalHeader(dbc.ModalTitle("Confirm Deletion")),
+                    dbc.ModalBody(id="id-delete-modal-body"),
+                    dbc.ModalFooter(
+                        [
+                            dbc.Button(
+                                "Cancel",
+                                id="id-delete-modal-cancel",
+                                className="me-2",
+                                n_clicks=0,
+                            ),
+                            dbc.Button(
+                                "Delete",
+                                id="id-delete-modal-confirm",
+                                color="danger",
+                                n_clicks=0,
+                            ),
+                        ]
+                    ),
+                ],
+                id="id-delete-confirmation-modal",
+                is_open=False,
+                centered=True,
+            ),
             # Download component for ZIP files
             dcc.Download(id="id-download-all-experiments-zip"),
         ],
