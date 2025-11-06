@@ -217,17 +217,73 @@ def on_download_selected_experiments(n_clicks, selected_rows):
     return zip_download_data
 
 
+# -------------------------------
+#   Lab Landing Page - DELETE an experiment related
+# -------------------------------
 @app.callback(
-    Output("id-table-all-experiments", "deleteSelectedRows", allow_duplicate=True),
-    Output("id-alert-explore", "children"),
+    Output("id-delete-confirmation-modal", "is_open"),
+    Output("id-delete-modal-body", "children"),
     Input("id-button-delete-experiment", "n_clicks"),
     State("id-table-all-experiments", "selectedRows"),
     prevent_initial_call=True,
-    running=[(Output("id-button-delete-experiment", "disabled"), True, False)],  # requires the latest Dash 2.16
 )
-def on_delete_selected_experiment(n_clicks, selected_rows):
-    # only accepting one selected row if the button is clicked
-    if n_clicks == 0 or ctx.triggered_id != "id-button-delete-experiment":
+def on_delete_experiment_open_modal(delete_clicks, selected_rows):
+    """Opens the delete confirmation modal when delete button is clicked."""
+    if ctx.triggered_id == "id-button-delete-experiment":
+        if not selected_rows or len(selected_rows) != 1:
+            raise PreventUpdate
+
+        experiment_name = selected_rows[0].get("experiment_name", "Unknown")
+        experiment_id = selected_rows[0]["experiment_id"]
+
+        modal_message = html.Div(
+            [
+                html.P("Are you sure you want to delete the following experiment?"),
+                html.P(
+                    [
+                        html.Strong("Name: "),
+                        html.Span(experiment_name),
+                    ]
+                ),
+                html.P(
+                    [
+                        html.Strong("ID: "),
+                        html.Span(experiment_id),
+                    ]
+                ),
+                html.P("This action will move the experiment to the DELETED_EXP folder.", className="text-muted small"),
+            ]
+        )
+
+        return True, modal_message
+
+    raise PreventUpdate
+
+
+@app.callback(
+    Output("id-delete-confirmation-modal", "is_open", allow_duplicate=True),
+    Input("id-delete-modal-cancel", "n_clicks"),
+    prevent_initial_call=True,
+)
+def on_delete_experiment_modal_cancel(cancel_clicks):
+    """Closes the delete confirmation modal when Cancel or Delete is clicked."""
+    if ctx.triggered_id == "id-delete-modal-cancel":
+        return False
+
+    raise PreventUpdate
+
+
+@app.callback(
+    Output("id-table-all-experiments", "deleteSelectedRows", allow_duplicate=True),
+    Output("id-alert-explore", "children"),
+    Output("id-delete-confirmation-modal", "is_open", allow_duplicate=True),
+    Input("id-delete-modal-confirm", "n_clicks"),
+    State("id-table-all-experiments", "selectedRows"),
+    prevent_initial_call=True,
+)
+def on_delete_experiment_modal_confirmed(confirm_clicks, selected_rows):
+    """Deletes the experiment after user confirms in the modal."""
+    if confirm_clicks == 0 or ctx.triggered_id != "id-delete-modal-confirm":
         raise PreventUpdate
 
     if not selected_rows or len(selected_rows) != 1:
@@ -235,19 +291,22 @@ def on_delete_selected_experiment(n_clicks, selected_rows):
 
     experiment_id = selected_rows[0]["experiment_id"]
     experiment_name = selected_rows[0].get("experiment_name", "Unknown")
+    aggrid_deleteSelectedRows = no_update
+    modal_open = False
     try:
         singleton_data_mgr_instance.delete_experiment(experiment_id)
         # Trigger AG Grid to remove the selected row from the table
         # this will trigger a refresh in the table
         success_message = f"Experiment '{experiment_name}' (ID: {experiment_id}) has been deleted successfully!"
         alert = get_alert(success_message, error=False)
-        return True, alert
+        aggrid_deleteSelectedRows = True
     except Exception as e:
         error_message = (
             f"Error deleting experiment '{experiment_name}': {e}. Please see admin for deleting your experiment"
         )
         alert = get_alert(error_message, error=True)
-        return no_update, alert
+
+    return aggrid_deleteSelectedRows, alert, modal_open
 
 
 # -------------------------------
