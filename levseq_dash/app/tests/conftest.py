@@ -233,6 +233,27 @@ def experiment_ssm_cvv_cif_bytes(path_exp_ssm_data):
     return csv_content, cif_content
 
 
+@pytest.fixture
+def temp_experiment_to_delete(disk_manager_from_temp_data, experiment_ssm_cvv_cif_bytes):
+    """
+    Fixture that creates a temporary experiment in temp_data for deletion testing.
+    Returns the experiment_id of the created experiment.
+    """
+    exp_id = disk_manager_from_temp_data.add_experiment_from_ui(
+        experiment_name="Temp Delete Test",
+        experiment_date="2025-01-01",
+        substrate="C1=CC=C(C=C1)C=O",
+        product="C1=CC=C(C=C1)CO",
+        assay="Mass Spectrometry",
+        mutagenesis_method=MutagenesisMethod.SSM,
+        experiment_doi="",
+        experiment_additional_info="",
+        experiment_content_base64_string=experiment_ssm_cvv_cif_bytes[0],
+        geometry_content_base64_string=experiment_ssm_cvv_cif_bytes[1],
+    )
+    return exp_id
+
+
 @pytest.fixture(scope="session")
 def selected_row_top_variant_table():
     """
