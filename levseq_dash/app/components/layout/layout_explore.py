@@ -97,6 +97,10 @@ def get_layout():
                         #  border-0 removes the hard border
                         # className="shadow border",
                     ),
+                    html.Div(
+                        id="id-alert-explore",
+                        className="mt-3 d-flex justify-content-center",
+                    ),
                 ],
                 className="mb-4",
             ),

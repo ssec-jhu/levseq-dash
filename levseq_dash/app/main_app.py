@@ -219,6 +219,7 @@ def on_download_selected_experiments(n_clicks, selected_rows):
 
 @app.callback(
     Output("id-table-all-experiments", "deleteSelectedRows", allow_duplicate=True),
+    Output("id-alert-explore", "children"),
     Input("id-button-delete-experiment", "n_clicks"),
     State("id-table-all-experiments", "selectedRows"),
     prevent_initial_call=True,
@@ -233,15 +234,20 @@ def on_delete_selected_experiment(n_clicks, selected_rows):
         raise PreventUpdate
 
     experiment_id = selected_rows[0]["experiment_id"]
+    experiment_name = selected_rows[0].get("experiment_name", "Unknown")
     try:
         singleton_data_mgr_instance.delete_experiment(experiment_id)
         # Trigger AG Grid to remove the selected row from the table
         # this will trigger a refresh in the table
-        return True
+        success_message = f"Experiment '{experiment_name}' (ID: {experiment_id}) has been deleted successfully!"
+        alert = get_alert(success_message, error=False)
+        return True, alert
     except Exception as e:
-        # Could optionally show an alert to the user here
-        # alert = get_alert(f"Error deleting experiment: {e}")
-        raise PreventUpdate
+        error_message = (
+            f"Error deleting experiment '{experiment_name}': {e}. Please see admin for deleting your experiment"
+        )
+        alert = get_alert(error_message, error=True)
+        return no_update, alert
 
 
 # -------------------------------
