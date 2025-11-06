@@ -857,4 +857,4 @@ def test_callback_on_delete_experiment_modal_confirmed_no_update():
         ctx.run(run_callback_on_delete_experiment_modal_confirmed, None)
 
     with pytest.raises(PreventUpdate):
-        ctx.run(run_callback_on_delete_experiment_modal_confirmed, [], 3)
+        ctx.run(run_callback_on_delete_experiment_modal_confirmed, [], 0)
