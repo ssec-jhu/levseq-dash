@@ -740,3 +740,53 @@ def test_callback_display_selected_exp_related_variants(
     assert output[4] == substrate  # selected_substrate
     assert output[5] == product  # selected_product
     assert isinstance(output[6][0], dash_molstar.MolstarViewer)  # query_experiment_viewer
+
+
+# ------------------------------------------------
+def run_callback_on_delete_experiment_open_modal(selected_rows):
+    from levseq_dash.app.main_app import on_delete_experiment_open_modal
+
+    context_value.set(AttributeDict(**{"triggered_inputs": [{"prop_id": "id-button-delete-experiment.n_clicks"}]}))
+    return on_delete_experiment_open_modal(delete_clicks=1, selected_rows=selected_rows)
+
+
+@pytest.mark.parametrize(
+    "experiment_id,experiment_name",
+    [
+        ("any-id", "Test Experiment 1"),
+        ("any-id-2", "Test Experiment 2"),
+    ],
+)
+def test_callback_on_delete_experiment_open_modal(
+    mock_load_config_from_test_data_path, experiment_id, experiment_name
+):
+    """Test on_delete_experiment_open_modal opens modal with experiment details."""
+    selected_rows = [{"experiment_id": experiment_id, "experiment_name": experiment_name}]
+
+    ctx = copy_context()
+    output = ctx.run(run_callback_on_delete_experiment_open_modal, selected_rows)
+
+    assert len(output) == 2
+    assert output[0] is True  # Modal should be open
+    assert isinstance(output[1], html.Div)  # Modal body should be a Div
+    # Verify experiment name and ID are in the modal message
+    modal_children = output[1].children
+    assert any(experiment_name in str(child) for child in modal_children)
+    assert any(experiment_id in str(child) for child in modal_children)
+
+
+# ------------------------------------------------
+def run_callback_on_delete_experiment_modal_cancel(cancel_clicks):
+    from levseq_dash.app.main_app import on_delete_experiment_modal_cancel
+
+    context_value.set(AttributeDict(**{"triggered_inputs": [{"prop_id": "id-delete-modal-cancel.n_clicks"}]}))
+    return on_delete_experiment_modal_cancel(cancel_clicks=cancel_clicks)
+
+
+@pytest.mark.parametrize("cancel_clicks", [1, 2, 5])
+def test_callback_on_delete_experiment_modal_cancel(mock_load_config_from_test_data_path, cancel_clicks):
+    """Test on_delete_experiment_modal_cancel closes the modal."""
+    ctx = copy_context()
+    output = ctx.run(run_callback_on_delete_experiment_modal_cancel, cancel_clicks)
+
+    assert output is False  # Modal should be closed
