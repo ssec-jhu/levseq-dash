@@ -178,8 +178,8 @@ def update_explore_page_buttons(selected_rows):
     experiment_id = selected_rows[0]["experiment_id"] if len(selected_rows) == 1 else no_update
 
     # Manage button states based on number of selected rows
-    delete_btn_disabled = True  # TODO: implement delete functionality
     go_to_experiment_btn_disabled = len(selected_rows) != 1  # enabled if there is only one selected row
+    delete_btn_disabled = go_to_experiment_btn_disabled  # delete button will have the same behavior as the "go" button
     download_btn_disabled = len(selected_rows) < 1  # enabled if there is at least one selected row
 
     return experiment_id, delete_btn_disabled, go_to_experiment_btn_disabled, download_btn_disabled
@@ -215,6 +215,33 @@ def on_download_selected_experiments(n_clicks, selected_rows):
     )
 
     return zip_download_data
+
+
+@app.callback(
+    Output("id-table-all-experiments", "deleteSelectedRows", allow_duplicate=True),
+    Input("id-button-delete-experiment", "n_clicks"),
+    State("id-table-all-experiments", "selectedRows"),
+    prevent_initial_call=True,
+    running=[(Output("id-button-delete-experiment", "disabled"), True, False)],  # requires the latest Dash 2.16
+)
+def on_delete_selected_experiment(n_clicks, selected_rows):
+    # only accepting one selected row if the button is clicked
+    if n_clicks == 0 or ctx.triggered_id != "id-button-delete-experiment":
+        raise PreventUpdate
+
+    if not selected_rows or len(selected_rows) != 1:
+        raise PreventUpdate
+
+    experiment_id = selected_rows[0]["experiment_id"]
+    try:
+        singleton_data_mgr_instance.delete_experiment(experiment_id)
+        # Trigger AG Grid to remove the selected row from the table
+        # this will trigger a refresh in the table
+        return True
+    except Exception as e:
+        # Could optionally show an alert to the user here
+        # alert = get_alert(f"Error deleting experiment: {e}")
+        raise PreventUpdate
 
 
 # -------------------------------
