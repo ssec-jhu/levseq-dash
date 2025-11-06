@@ -790,3 +790,39 @@ def test_callback_on_delete_experiment_modal_cancel(mock_load_config_from_test_d
     output = ctx.run(run_callback_on_delete_experiment_modal_cancel, cancel_clicks)
 
     assert output is False  # Modal should be closed
+
+
+# ------------------------------------------------
+def run_callback_on_delete_experiment_modal_confirmed(selected_rows):
+    from levseq_dash.app.main_app import on_delete_experiment_modal_confirmed
+
+    context_value.set(AttributeDict(**{"triggered_inputs": [{"prop_id": "id-delete-modal-confirm.n_clicks"}]}))
+    return on_delete_experiment_modal_confirmed(confirm_clicks=1, selected_rows=selected_rows)
+
+
+def test_callback_on_delete_experiment_modal_confirmed(mocker, temp_experiment_to_delete, disk_manager_from_temp_data):
+    """Test on_delete_experiment_modal_confirmed deletes experiment and closes modal."""
+    # Mock the singleton to use temp data manager
+    mocker.patch("levseq_dash.app.main_app.singleton_data_mgr_instance", disk_manager_from_temp_data)
+
+    # Get the experiment ID from the fixture
+    exp_id = temp_experiment_to_delete
+
+    # Verify it exists before deletion
+    assert disk_manager_from_temp_data.get_experiment_metadata(exp_id) is not None
+
+    selected_rows = [{"experiment_id": exp_id, "experiment_name": "Temp Delete Test"}]
+
+    ctx = copy_context()
+    output = ctx.run(run_callback_on_delete_experiment_modal_confirmed, selected_rows)
+
+    assert len(output) == 3
+    assert output[0] is True  # deleteSelectedRows should be True (success)
+    assert output[1] is not None  # Alert should be present
+    assert output[2] is False  # Modal should be closed
+
+    # Verify experiment was actually deleted
+    assert disk_manager_from_temp_data.get_experiment_metadata(exp_id) is None
+
+    # Verify experiment was actually deleted
+    assert disk_manager_from_temp_data.get_experiment_metadata(exp_id) is None
