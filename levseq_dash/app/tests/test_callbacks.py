@@ -773,6 +773,12 @@ def test_callback_on_delete_experiment_open_modal(mock_load_config_from_test_dat
     assert any(experiment_id in str(child) for child in modal_children)
 
 
+def test_callback_on_delete_experiment_open_modal_no_update():
+    ctx = copy_context()
+    with pytest.raises(PreventUpdate):
+        ctx.run(run_callback_on_delete_experiment_open_modal, [])
+
+
 # ------------------------------------------------
 def run_callback_on_delete_experiment_modal_cancel(cancel_clicks):
     from levseq_dash.app.main_app import on_delete_experiment_modal_cancel
@@ -791,11 +797,11 @@ def test_callback_on_delete_experiment_modal_cancel(mock_load_config_from_test_d
 
 
 # ------------------------------------------------
-def run_callback_on_delete_experiment_modal_confirmed(selected_rows):
+def run_callback_on_delete_experiment_modal_confirmed(selected_rows, confirm_clicks=1):
     from levseq_dash.app.main_app import on_delete_experiment_modal_confirmed
 
     context_value.set(AttributeDict(**{"triggered_inputs": [{"prop_id": "id-delete-modal-confirm.n_clicks"}]}))
-    return on_delete_experiment_modal_confirmed(confirm_clicks=1, selected_rows=selected_rows)
+    return on_delete_experiment_modal_confirmed(confirm_clicks, selected_rows=selected_rows)
 
 
 def test_callback_on_delete_experiment_modal_confirmed(mocker, temp_experiment_to_delete, disk_manager_from_temp_data):
@@ -826,9 +832,14 @@ def test_callback_on_delete_experiment_modal_confirmed(mocker, temp_experiment_t
     assert disk_manager_from_temp_data.get_experiment_metadata(exp_id) is None
 
 
-def test_callback_on_delete_experiment_modal_confirmed_exception(mocker, temp_experiment_to_delete):
+def test_callback_on_delete_experiment_modal_confirmed_error_alert(
+    mocker, temp_experiment_to_delete, disk_manager_from_temp_data
+):
     exp_id = temp_experiment_to_delete
     selected_rows = [{"experiment_id": exp_id, "experiment_name": "Temp Delete Test"}]
+
+    # Mock the singleton to use temp data manager
+    mocker.patch("levseq_dash.app.main_app.singleton_data_mgr_instance", disk_manager_from_temp_data)
 
     # Mock shutil.move to raise an exception but the UI in the callback will catch and create alert
     mocker.patch("shutil.move", side_effect=Exception("Delete error"))
@@ -837,3 +848,13 @@ def test_callback_on_delete_experiment_modal_confirmed_exception(mocker, temp_ex
     output = ctx.run(run_callback_on_delete_experiment_modal_confirmed, selected_rows)
     assert output[0] is no_update  # deleteSelectedRows not changed
     assert output[2] is False  # Modal should be closed
+
+
+def test_callback_on_delete_experiment_modal_confirmed_no_update():
+    """Test on_delete_experiment_modal_confirmed with None selected_rows raises PreventUpdate."""
+    ctx = copy_context()
+    with pytest.raises(PreventUpdate):
+        ctx.run(run_callback_on_delete_experiment_modal_confirmed, None)
+
+    with pytest.raises(PreventUpdate):
+        ctx.run(run_callback_on_delete_experiment_modal_confirmed, [], 3)
