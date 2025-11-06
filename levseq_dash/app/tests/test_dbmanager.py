@@ -134,22 +134,9 @@ def test_delete_experiment_nonexistent(disk_manager_from_test_data):
     assert result is False
 
 
-def test_delete_experiment_success(disk_manager_from_temp_data, experiment_ssm_cvv_cif_bytes):
+def test_delete_experiment_success(temp_experiment_to_delete, disk_manager_from_temp_data):
     """Test delete_experiment successfully deletes experiment."""
-
-    # Add an experiment
-    exp_id = disk_manager_from_temp_data.add_experiment_from_ui(
-        experiment_name="To Delete",
-        experiment_date="2025-01-01",
-        substrate="C1=CC=C(C=C1)C=O",
-        product="C1=CC=C(C=C1)C=O",
-        assay="NMR Spectroscopy",
-        mutagenesis_method=MutagenesisMethod.SSM,
-        experiment_doi="",
-        experiment_additional_info="",
-        experiment_content_base64_string=experiment_ssm_cvv_cif_bytes[0],
-        geometry_content_base64_string=experiment_ssm_cvv_cif_bytes[1],
-    )
+    exp_id = temp_experiment_to_delete
 
     # Verify it exists
     assert disk_manager_from_temp_data.get_experiment_metadata(exp_id) is not None
@@ -162,21 +149,9 @@ def test_delete_experiment_success(disk_manager_from_temp_data, experiment_ssm_c
     assert disk_manager_from_temp_data.get_experiment_metadata(exp_id) is None
 
 
-def test_delete_experiment_with_cached_data(disk_manager_from_temp_data, experiment_ssm_cvv_cif_bytes):
+def test_delete_experiment_with_cached_data(temp_experiment_to_delete, disk_manager_from_temp_data):
     """Test delete_experiment removes from cache."""
-
-    exp_id = disk_manager_from_temp_data.add_experiment_from_ui(
-        experiment_name="Cached Delete",
-        experiment_date="2025-01-01",
-        substrate="C1=CC=C(C=C1)C=O",
-        product="C1=CC=C(C=C1)C=O",
-        assay="NMR Spectroscopy",
-        mutagenesis_method=MutagenesisMethod.SSM,
-        experiment_doi="",
-        experiment_additional_info="",
-        experiment_content_base64_string=experiment_ssm_cvv_cif_bytes[0],
-        geometry_content_base64_string=experiment_ssm_cvv_cif_bytes[1],
-    )
+    exp_id = temp_experiment_to_delete
 
     # Load into cache
     exp = disk_manager_from_temp_data.get_experiment(exp_id)
@@ -194,45 +169,21 @@ def test_delete_experiment_with_cached_data(disk_manager_from_temp_data, experim
         disk_manager_from_temp_data.get_experiment(exp_id)
 
 
-def test_delete_experiment_with_exception(disk_manager_from_temp_data, experiment_ssm_cvv_cif_bytes, mocker):
+def test_delete_experiment_with_exception(temp_experiment_to_delete, disk_manager_from_temp_data, mocker):
     """Test delete_experiment handles exceptions and returns False."""
+    exp_id = temp_experiment_to_delete
 
-    # Add experiment
-    exp_id = disk_manager_from_temp_data.add_experiment_from_ui(
-        experiment_name="Random Test",
-        experiment_date="2025-01-01",
-        substrate="C1=CC=C(C=C1)C=O",
-        product="C1=CC=C(C=C1)C=O",
-        assay="NMR Spectroscopy",
-        mutagenesis_method=MutagenesisMethod.SSM,
-        experiment_doi="",
-        experiment_additional_info="",
-        experiment_content_base64_string=experiment_ssm_cvv_cif_bytes[0],
-        geometry_content_base64_string=experiment_ssm_cvv_cif_bytes[1],
-    )
-
-    # Mock shutil.rmtree to raise an exception
+    # Mock shutil.move to raise an exception
     mocker.patch("shutil.move", side_effect=Exception("Delete error"))
 
-    # Should return False on exception
+    # Should raise exception
     with pytest.raises(Exception, match="Delete error"):
         disk_manager_from_temp_data.delete_experiment(exp_id)
 
 
-def test_delete_experiment_twice_fails_gracefully(disk_manager_from_temp_data, experiment_ssm_cvv_cif_bytes):
+def test_delete_experiment_twice_fails_gracefully(temp_experiment_to_delete, disk_manager_from_temp_data):
     """Test that deleting the same experiment twice returns False."""
-    exp_id = disk_manager_from_temp_data.add_experiment_from_ui(
-        experiment_name="Random Test",
-        experiment_date="2025-01-01",
-        substrate="C1=CC=C(C=C1)C=O",
-        product="C1=CC=C(C=C1)C=O",
-        assay="NMR Spectroscopy",
-        mutagenesis_method=MutagenesisMethod.SSM,
-        experiment_doi="",
-        experiment_additional_info="",
-        experiment_content_base64_string=experiment_ssm_cvv_cif_bytes[0],
-        geometry_content_base64_string=experiment_ssm_cvv_cif_bytes[1],
-    )
+    exp_id = temp_experiment_to_delete
 
     # First deletion succeeds
     result_1 = disk_manager_from_temp_data.delete_experiment(exp_id)
@@ -243,20 +194,10 @@ def test_delete_experiment_twice_fails_gracefully(disk_manager_from_temp_data, e
     assert result_2 is False
 
 
-def test_deleted_experiments_not_loaded_on_init(disk_manager_from_temp_data, experiment_ssm_cvv_cif_bytes):
+def test_deleted_experiments_not_loaded_on_init(temp_experiment_to_delete, disk_manager_from_temp_data):
     """Test that experiments in DELETED_EXP are not loaded during initialization."""
-    exp_id = disk_manager_from_temp_data.add_experiment_from_ui(
-        experiment_name="Random Test",
-        experiment_date="2025-01-01",
-        substrate="C1=CC=C(C=C1)C=O",
-        product="C1=CC=C(C=C1)C=O",
-        assay="NMR Spectroscopy",
-        mutagenesis_method=MutagenesisMethod.SSM,
-        experiment_doi="",
-        experiment_additional_info="",
-        experiment_content_base64_string=experiment_ssm_cvv_cif_bytes[0],
-        geometry_content_base64_string=experiment_ssm_cvv_cif_bytes[1],
-    )
+    exp_id = temp_experiment_to_delete
+
     # Load sequences
     experiments_before_delete = disk_manager_from_temp_data.get_all_lab_sequences()
     assert exp_id in experiments_before_delete
@@ -265,7 +206,7 @@ def test_deleted_experiments_not_loaded_on_init(disk_manager_from_temp_data, exp
     assert exp_id not in disk_manager_from_temp_data.get_all_lab_sequences()
 
     # Create new instance - should not load deleted experiments
-    # disk_manager_from_temp_data already mocked the paths and teh config so its with the same configuration
+    # disk_manager_from_temp_data already mocked the paths and the config so its with the same configuration
     from levseq_dash.app.data_manager.disk_manager import DiskDataManager
 
     new_manager = DiskDataManager()
