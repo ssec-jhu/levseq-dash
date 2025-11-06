@@ -199,7 +199,7 @@ def test_delete_experiment_with_exception(disk_manager_from_temp_data, experimen
 
     # Add experiment
     exp_id = disk_manager_from_temp_data.add_experiment_from_ui(
-        experiment_name="Exception Test",
+        experiment_name="Random Test",
         experiment_date="2025-01-01",
         substrate="C1=CC=C(C=C1)C=O",
         product="C1=CC=C(C=C1)C=O",
@@ -212,11 +212,66 @@ def test_delete_experiment_with_exception(disk_manager_from_temp_data, experimen
     )
 
     # Mock shutil.rmtree to raise an exception
-    mocker.patch("shutil.rmtree", side_effect=Exception("Delete error"))
+    mocker.patch("shutil.move", side_effect=Exception("Delete error"))
 
     # Should return False on exception
     with pytest.raises(Exception, match="Delete error"):
         disk_manager_from_temp_data.delete_experiment(exp_id)
+
+
+def test_delete_experiment_twice_fails_gracefully(disk_manager_from_temp_data, experiment_ssm_cvv_cif_bytes):
+    """Test that deleting the same experiment twice returns False."""
+    exp_id = disk_manager_from_temp_data.add_experiment_from_ui(
+        experiment_name="Random Test",
+        experiment_date="2025-01-01",
+        substrate="C1=CC=C(C=C1)C=O",
+        product="C1=CC=C(C=C1)C=O",
+        assay="NMR Spectroscopy",
+        mutagenesis_method=MutagenesisMethod.SSM,
+        experiment_doi="",
+        experiment_additional_info="",
+        experiment_content_base64_string=experiment_ssm_cvv_cif_bytes[0],
+        geometry_content_base64_string=experiment_ssm_cvv_cif_bytes[1],
+    )
+
+    # First deletion succeeds
+    result_1 = disk_manager_from_temp_data.delete_experiment(exp_id)
+    assert result_1 is True
+
+    # Second deletion should return False because it no longer exists in the metadata list
+    result_2 = disk_manager_from_temp_data.delete_experiment(exp_id)
+    assert result_2 is False
+
+
+def test_deleted_experiments_not_loaded_on_init(disk_manager_from_temp_data, experiment_ssm_cvv_cif_bytes):
+    """Test that experiments in DELETED_EXP are not loaded during initialization."""
+    exp_id = disk_manager_from_temp_data.add_experiment_from_ui(
+        experiment_name="Random Test",
+        experiment_date="2025-01-01",
+        substrate="C1=CC=C(C=C1)C=O",
+        product="C1=CC=C(C=C1)C=O",
+        assay="NMR Spectroscopy",
+        mutagenesis_method=MutagenesisMethod.SSM,
+        experiment_doi="",
+        experiment_additional_info="",
+        experiment_content_base64_string=experiment_ssm_cvv_cif_bytes[0],
+        geometry_content_base64_string=experiment_ssm_cvv_cif_bytes[1],
+    )
+    # Load sequences
+    experiments_before_delete = disk_manager_from_temp_data.get_all_lab_sequences()
+    assert exp_id in experiments_before_delete
+    # Delete the experiment
+    disk_manager_from_temp_data.delete_experiment(exp_id)
+    assert exp_id not in disk_manager_from_temp_data.get_all_lab_sequences()
+
+    # Create new instance - should not load deleted experiments
+    # disk_manager_from_temp_data already mocked the paths and teh config so its with the same configuration
+    from levseq_dash.app.data_manager.disk_manager import DiskDataManager
+
+    new_manager = DiskDataManager()
+
+    assert new_manager.get_experiment_metadata(exp_id) is None
+    assert exp_id not in new_manager.get_all_lab_sequences()
 
 
 def test_get_experiment_file_content(disk_manager_from_test_data):

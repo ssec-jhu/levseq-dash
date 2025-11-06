@@ -160,7 +160,17 @@ class DiskDataManager(BaseDataManager):
             if experiment_dir.exists():
                 import shutil
 
-                shutil.rmtree(experiment_dir)
+                deleted_exp_dir = self.data_path / "DELETED_EXP"
+                deleted_exp_dir.mkdir(exist_ok=True)
+
+                target_path = deleted_exp_dir / experiment_dir.name
+
+                # If target already exists (e.g., previous deletion), remove it first
+                if target_path.exists():
+                    shutil.rmtree(target_path)
+
+                # Move the experiment directory to DELETED_EXP folder
+                shutil.move(str(experiment_dir), str(target_path))
 
             # Remove from in-memory metadata
             del self._experiments_metadata[experiment_uuid]

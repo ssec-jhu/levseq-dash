@@ -48,9 +48,34 @@ def run_callback_update_explore_page_buttons(selected_rows):
 @pytest.mark.parametrize(
     "selected_rows, output_0, output_1, output_2, output_3",
     [
-        ([{"experiment_id": 2}], 2, True, False, False),
-        ([{"experiment_id": 2}, {"experiment_id": 4}], no_update, True, True, False),
-        (None, no_update, True, True, True),
+        (
+            [
+                # single selection
+                {"experiment_id": 2}
+            ],
+            2,
+            False,
+            False,
+            False,
+        ),
+        (
+            [
+                # multiple selection
+                {"experiment_id": 2},
+                {"experiment_id": 4},
+            ],
+            no_update,
+            True,
+            True,
+            False,
+        ),
+        (
+            None,  # no selection
+            no_update,
+            True,
+            True,
+            True,
+        ),
     ],
 )
 def test_callback_update_explore_page_buttons(
@@ -59,10 +84,10 @@ def test_callback_update_explore_page_buttons(
     ctx = copy_context()
     output = ctx.run(run_callback_update_explore_page_buttons, selected_rows)
     assert len(output) == 4
-    assert output[0] == output_0
-    assert output[1] == output_1
-    assert output[2] == output_2
-    assert output[3] == output_3
+    assert output[0] == output_0  # experiment_id or no_update
+    assert output[1] == output_1  # delete_btn_disabled
+    assert output[2] == output_2  # go_to_experiment_btn_disabled
+    assert output[3] == output_3  # download_btn_disabled
 
 
 # ------------------------------------------------
