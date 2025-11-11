@@ -818,12 +818,13 @@ def test_callback_on_delete_experiment_modal_confirmed(mocker, temp_experiment_t
     selected_rows = [{"experiment_id": exp_id, "experiment_name": "Temp Delete Test"}]
 
     ctx = copy_context()
-    output = ctx.run(run_callback_on_delete_experiment_modal_confirmed, selected_rows)
+    aggrid_deleteSelectedRows, alert, modal_open = ctx.run(
+        run_callback_on_delete_experiment_modal_confirmed, selected_rows
+    )
 
-    assert len(output) == 3
-    assert output[0] is True  # deleteSelectedRows should be True (success)
-    assert output[1] is not None  # Alert should be present
-    assert output[2] is False  # Modal should be closed
+    assert aggrid_deleteSelectedRows is True  # deleteSelectedRows should be True (success)
+    assert alert is not None  # Alert should be present
+    assert modal_open is False  # Modal should be closed
 
     # Verify experiment was actually deleted
     assert disk_manager_from_temp_data.get_experiment_metadata(exp_id) is None
@@ -845,9 +846,12 @@ def test_callback_on_delete_experiment_modal_confirmed_error_alert(
     mocker.patch("shutil.move", side_effect=Exception("Delete error"))
 
     ctx = copy_context()
-    output = ctx.run(run_callback_on_delete_experiment_modal_confirmed, selected_rows)
-    assert output[0] is no_update  # deleteSelectedRows not changed
-    assert output[2] is False  # Modal should be closed
+    aggrid_deleteSelectedRows, alert, modal_open = ctx.run(
+        run_callback_on_delete_experiment_modal_confirmed, selected_rows
+    )
+    assert aggrid_deleteSelectedRows is no_update  # deleteSelectedRows not changed
+    assert alert is not None
+    assert modal_open is False  # Modal should be closed
 
 
 def test_callback_on_delete_experiment_modal_confirmed_no_update():

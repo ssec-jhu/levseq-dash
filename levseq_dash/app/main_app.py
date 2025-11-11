@@ -295,16 +295,17 @@ def on_delete_experiment_modal_confirmed(confirm_clicks, selected_rows):
     modal_open = False
     try:
         singleton_data_mgr_instance.delete_experiment(experiment_id)
+    except Exception as e:
+        error_message = (
+            f"Error deleting experiment '{experiment_name}': {e}. Please see admin for deleting your experiment."
+        )
+        alert = get_alert(error_message, error=True)
+    else:
         # Trigger AG Grid to remove the selected row from the table
         # this will trigger a refresh in the table
         success_message = f"Experiment '{experiment_name}' (ID: {experiment_id}) has been deleted successfully!"
         alert = get_alert(success_message, error=False)
         aggrid_deleteSelectedRows = True
-    except Exception as e:
-        error_message = (
-            f"Error deleting experiment '{experiment_name}': {e}. Please see admin for deleting your experiment"
-        )
-        alert = get_alert(error_message, error=True)
 
     return aggrid_deleteSelectedRows, alert, modal_open
 
