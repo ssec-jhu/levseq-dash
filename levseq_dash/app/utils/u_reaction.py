@@ -59,14 +59,21 @@ def convert_svg_img_to_src(svg_img):
 
 
 def create_reaction_image(substrate_smiles: str, product_smiles: str):
-    """
+    """Creates an SVG image of a chemical reaction from substrate to product.
+
+    Generates a visual representation of a chemical reaction using RDKit, with special
+    handling for R-group labels (asterisks). Automatically scales the image width based
+    on the number of reactants and products.
+
     Args:
-        substrate_smiles: reaction substrate in smiles strings
-        product_smiles: reaction product in smiles strings
+        substrate_smiles: Reaction substrate in SMILES string format
+        product_smiles: Reaction product in SMILES string format
 
     Returns:
-        image
+        Base64-encoded SVG image string suitable for web display (data URI format)
 
+    Raises:
+        ValueError: If substrate_smiles or product_smiles is None
     """
     # verification for the smiles strings is removed
     # data that comes into the app and is uploaded will go through smiles verification
@@ -127,16 +134,18 @@ def create_reaction_image(substrate_smiles: str, product_smiles: str):
 
 
 def create_mols_grid(all_smiles_strings: str):
-    """
-    this function is a utility function to converts all the smiles string into
-    the molecular depiction in grid format. It is used solely for this app.
+    """Converts multiple SMILES strings into a grid of molecular structure images.
+
+    Creates a visual grid layout displaying multiple molecular structures with their
+    corresponding SMILES strings as captions. Invalid SMILES are skipped.
+
     Args:
-        all_smiles_strings: smiles string containing all the strings semicolon delimited
-        this function
+        all_smiles_strings: Semicolon-delimited string containing multiple SMILES strings
+                           (e.g., "CCO;c1ccccc1;CC(=O)O")
 
     Returns:
-        the svg image
-
+        Base64-encoded SVG image string of the molecular grid, or None if no valid
+        molecules are found
     """
     if all_smiles_strings and len(all_smiles_strings) > 0:
         # Clean and split SMILES
