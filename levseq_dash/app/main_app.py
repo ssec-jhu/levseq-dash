@@ -108,6 +108,7 @@ app.layout = dbc.Container(
 
 @app.callback(Output("id-page-content", "children"), Input("url", "pathname"))
 def route_page(pathname):
+    """Routes the user to different pages based on the URL pathname."""
     if pathname == "/":
         return layout_landing.get_layout()
     elif pathname == gs.nav_experiment_path:
@@ -135,7 +136,7 @@ def route_page(pathname):
 )
 def load_explore_page(temp_text, filter_store):
     """Loads all lab experiments with metadata for the explore page table.
-    
+
     Retrieves the complete list of experiments and restores any previously saved filter state.
     """
     list_of_all_lab_experiments_with_meta = singleton_data_mgr_instance.get_all_lab_experiments_with_meta_data()
@@ -166,7 +167,7 @@ def save_table_filter_state(filter_model):
 )
 def update_explore_page_buttons(selected_rows):
     """Manages button states on the explore page based on row selection.
-    
+
     Enables/disables the Delete, Go To Experiment, and Download buttons depending on
     the number of rows selected. Stores the experiment ID if exactly one row is selected.
     """
@@ -197,7 +198,7 @@ def update_explore_page_buttons(selected_rows):
 )
 def on_download_selected_experiments(n_clicks, selected_rows):
     """Downloads selected experiments as a timestamped ZIP file.
-    
+
     Packages all selected experiment data and returns a base64-encoded ZIP file
     for download with a timestamp in the filename.
     """
@@ -341,7 +342,7 @@ def set_assay_list(assay_list):
 )
 def on_upload_experiment_file(dash_upload_string_contents, filename, last_modified):
     """Validates and processes uploaded experiment CSV file.
-    
+
     Checks for duplicate experiments, runs sanity checks on the data, and displays
     file information (rows, columns, SMILES) if validation passes, or error alerts if not.
     """
@@ -416,7 +417,7 @@ def on_upload_experiment_file(dash_upload_string_contents, filename, last_modifi
 )
 def on_upload_structure_file(dash_upload_string_contents, filename, last_modified):
     """Processes uploaded protein structure file (PDB/CIF).
-    
+
     Validates and stores the structure file for the experiment, displaying
     the filename or error alerts.
     """
@@ -523,7 +524,7 @@ def on_submit_experiment(
     experiment_content_base64_encoded_string,
 ):
     """Submits a new experiment to the database.
-    
+
     Creates a new experiment entry with all provided metadata and files,
     then redirects to the experiment page on success or displays error alerts on failure.
     """
@@ -612,6 +613,11 @@ def redirect_to_experiment_page_after_upload(experiment_id):
     running=[(Output("id-button-run-seq-matching", "disabled"), True, False)],  # requires the latest Dash 2.16
 )
 def on_load_matching_sequences(results_are_cleared, n_clicks, query_sequence, threshold, n_top_hot_cold):
+    """Performs sequence alignment and identifies matching sequences across all lab experiments.
+
+    Aligns the query sequence against all lab sequences, identifies hot/cold spots,
+    and gathers fitness data per SMILES for each matched experiment.
+    """
     if ctx.triggered_id == "id-cleared-run-seq-matching" and results_are_cleared:
         try:
             # get all the lab sequences
@@ -745,7 +751,7 @@ def on_button_run_seq_matching(n_clicks, results_are_cleared):
 )
 def display_default_selected_matching_sequences(data):
     """Selects the first row in the matched sequences table by default.
-    
+
     Sets the default selected row to be the first row that is rendered on the front end.
     The table sets the sorting and all on the front end side after it is rendered, so we
     cannot select the first row of the data output that gets sent from the previous callback.
@@ -768,7 +774,7 @@ def display_default_selected_matching_sequences(data):
 )
 def display_selected_matching_sequences(selected_rows):
     """Displays detailed information for the selected matching sequence.
-    
+
     Renders the protein structure viewer with highlighted residues (substitutions, hot spots,
     cold spots) and displays the reaction image for the selected matched experiment.
     """
@@ -972,7 +978,7 @@ def redirect_to_experiment_page(n_clicks):
 )
 def on_load_experiment_page(pathname, experiment_id):
     """Loads and initializes all components for the experiment page.
-    
+
     Retrieves experiment data, metadata, generates visualizations (heatmap, rank/SSM plot),
     sets up the protein viewer, and populates all dropdowns with default values.
     """
@@ -1175,6 +1181,11 @@ def on_load_experiment_page(pathname, experiment_id):
 
 
 def check_early_return(rowData, store_data, plot_str, trigger_list):
+    """Helper function to prevent unnecessary updates to plot callbacks.
+
+    Checks if data and store are initialized and if the callback was triggered
+    by an actual user interaction rather than initial page load.
+    """
     if rowData is None:
         raise PreventUpdate
 
@@ -1202,6 +1213,11 @@ def check_early_return(rowData, store_data, plot_str, trigger_list):
     prevent_initial_call=True,
 )
 def update_heatmap(selected_plate, selected_smiles, selected_stat_property, rowData, store_data):
+    """Updates the experiment heatmap based on selected plate, SMILES, and statistical property.
+
+    Only updates if values have actually changed from the previous selection.
+    Disables SMILES dropdown when viewing statistics other than fitness.
+    """
     check_early_return(rowData, store_data, "heatmap", ["id-list-plates", "id-list-smiles", "id-list-properties"])
 
     # Check if values have actually changed from previous selection
@@ -1240,6 +1256,10 @@ def update_heatmap(selected_plate, selected_smiles, selected_stat_property, rowD
     prevent_initial_call=True,
 )
 def update_rank_plot(selected_plate, selected_smiles, rowData, store_data):
+    """Updates the variant ranking plot based on selected plate and SMILES.
+
+    Only updates if values have actually changed from the previous selection.
+    """
     check_early_return(rowData, store_data, "rank_plot", ["id-list-plates-ranking-plot", "id-list-smiles-ranking-plot"])
 
     # Check if values have actually changed from previous selection
@@ -1270,6 +1290,10 @@ def update_rank_plot(selected_plate, selected_smiles, rowData, store_data):
     prevent_initial_call=True,
 )
 def update_ssm_plot(selected_residue, selected_smiles, rowData, store_data):
+    """Updates the single-site mutagenesis (SSM) plot based on selected residue position and SMILES.
+
+    Only updates if values have actually changed from the previous selection.
+    """
     check_early_return(rowData, store_data, "ssm_plot", ["id-list-ssm-residue-positions", "id-list-smiles-ssm-plot"])
 
     # Check if values have actually changed from previous selection
@@ -1460,6 +1484,11 @@ def on_load_exp_related_variants(
     experiment_id,
     # experiment_top_variants_row_data,
 ):
+    """Finds and displays experiments with related sequences at specified residue positions.
+
+    Performs sequence alignment to find matching experiments, then checks for variants
+    at the specified lookup residue positions (gain-of-function or loss-of-function).
+    """
     if ctx.triggered_id == "id-cleared-run-exp-related-variants" and results_are_cleared:
         try:
             # get the lookup list
@@ -1583,10 +1612,11 @@ def on_button_run_exp_related_variants(n_clicks, results_are_cleared):
     prevent_initial_call=True,
 )
 def display_default_selected_exp_related_variants(data):
-    # set the default selected row to be the first row that is rendered on the front end
-    # the table sets the sorting and all on the front end side after it is rendered, so we
-    # can not select the first row of the data output that gets sent from the previous
-    # callback.
+    """Selects the first row in the related variants table by default.
+
+    Sets the default selected row to be the first row that is rendered on the front end.
+    The table sets the sorting on the front end after rendering.
+    """
     return utils.select_first_row_of_data(data)
 
 
@@ -1609,6 +1639,11 @@ def display_default_selected_exp_related_variants(data):
     prevent_initial_call=True,
 )
 def display_selected_exp_related_variants(selected_rows, experiment_id):
+    """Displays detailed comparison between the current experiment and a selected related variant.
+
+    Shows protein structures, reaction images, and highlighted residues for both the current
+    experiment and the selected matching experiment for side-by-side comparison.
+    """
     if selected_rows:
         # selected experiment from the table
         selected_experiment_id = selected_rows[0][gs.cc_experiment_id]
@@ -1699,6 +1734,7 @@ def display_selected_exp_related_variants(selected_rows, experiment_id):
     running=[(Output("id-button-download-related-variants-results", "disabled"), True, False)],
 )
 def on_download_exp_relate_variants_results(n_clicks, option):
+    """Exports related variant results to CSV format."""
     return utils.export_data_as_csv(option, gs.filename_download_related_variants)
 
 
@@ -1709,6 +1745,7 @@ def on_download_exp_relate_variants_results(n_clicks, option):
     prevent_initial_call=True,
 )
 def toggle_sidebar(toggle_clicks, sidebar_class):
+    """Toggles the sidebar between expanded and collapsed states when the menu icon is clicked."""
     if ctx.triggered_id == "id-menu-icon":
         if "expanded" in sidebar_class:
             return "thin-sidebar collapsed"
