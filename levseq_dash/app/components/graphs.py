@@ -312,7 +312,13 @@ def create_ssm_plot(df, smiles_string, residue_number):
 
     # Create histogram bars for each amino acid showing average or count
     # First create a summary dataframe for the bars
-    bar_data = filtered_df.groupby("mutations_cat").agg({gs.c_fitness_value: ["mean", "count"]}).reset_index()
+    # NOTE: default behavior for the observed parameter in groupby operations is changing in a future version.
+    # The warning is telling you that when you group data, especially a categorical column, the library will
+    # soon only show the groups that actually have data in them (observed=True) by default,
+    # instead of showing all possible categories (observed=False).
+    bar_data = (
+        filtered_df.groupby("mutations_cat", observed=False).agg({gs.c_fitness_value: ["mean", "count"]}).reset_index()
+    )
 
     # Flatten column names
     bar_data.columns = ["mutations_cat", "avg_fitness", "count"]
