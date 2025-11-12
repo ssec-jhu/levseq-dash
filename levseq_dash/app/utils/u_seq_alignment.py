@@ -7,18 +7,28 @@ from levseq_dash.app.utils import utils
 
 
 def parse_alignment_pipes(alignment_str, hot_indices, cold_indices):
-    # TODO: need to add condition where hot and cold indices are not provided, maybe break this up into two functions
-    """
-    Utility function to parse the alignment string and reformat it for visualization in the dash table
-    This function is tailored toward the results of the sequence aligner.
+    """Parses sequence alignment string and annotates with hot/cold spot markers.
+
+    Processes BioPython pairwise alignment output, identifies mismatches, and adds
+    visual markers for hot spots (H), cold spots (C), and both (B) for display in
+    the Dash table interface.
+
     Args:
-        alignment_str: the alignment string output from biopython pairwise aligner
-        hot_indices: list of indices with high function in the experiment
-        cold_indices: list of indices with low function in the experiment
+        alignment_str: Multi-line alignment string output from BioPython pairwise aligner
+                      (format: target/query/pipes in groups of 4 lines)
+        hot_indices: List of residue indices with high/gain-of-function
+        cold_indices: List of residue indices with low/loss-of-function
 
     Returns:
-        a re-formatted string that also identifies the high and low functioning residue locations
-        based on the input indices
+        Tuple of (parsed_alignment_string, seq_alignment_mismatches):
+            - parsed_alignment_string: Formatted string with target, pipes, markers, and query
+            - seq_alignment_mismatches: List of mismatch residue indices (1-indexed)
+
+    Note:
+        Protein indices start from 1. Mismatches are identified by "." in the pipe line.
+
+    TODO:
+        Add condition where hot and cold indices are not provided, maybe break into two functions
     """
     # there are multiple groups of 4-pair lines
     # break up the string on the newline
@@ -82,19 +92,19 @@ def parse_alignment_pipes(alignment_str, hot_indices, cold_indices):
 def gather_seq_alignment_data_per_smiles(
     df_hot_cold_residue_per_smiles, seq_match_data, exp_meta_data, seq_match_row_data
 ):
-    """
-    This utility function is used to gather row data per smiles for sequence alignment data on the matched sequences
-    This function solely designed for the purpose of reusing code for gathering row data
+    """Aggregates sequence alignment data per SMILES for matched sequences table display.
+
+    Creates individual table rows for each SMILES in the experiment, combining alignment
+    data, hot/cold spot information, experiment metadata, and parsed alignment strings.
 
     Args:
-        df_hot_cold_residue_per_smiles:  df where the list of hot and cold residue indices are listed peer smiles
-        seq_match_data: the sequence alignment data retrieved from the aligner
-        exp_meta_data: the metadata associated with the experiment
-        seq_match_row_data: the aggrid row data that is gathering the results over all the matched sequences
+        df_hot_cold_residue_per_smiles: DataFrame with hot and cold residue indices per SMILES
+        seq_match_data: Dictionary of sequence alignment data from the aligner
+        exp_meta_data: Dictionary of experiment metadata
+        seq_match_row_data: List accumulating AG Grid row data across all matched sequences
 
     Returns:
-        seq_match_row_data:
-        the aggrid row data that is gathering the results over all the matched sequences
+        Updated seq_match_row_data list with new rows appended for each SMILES in the experiment
     """
     # convert he df do a list of records
     dict_list = df_hot_cold_residue_per_smiles.to_dict(orient="records")
@@ -123,9 +133,17 @@ def gather_seq_alignment_data_per_smiles(
 
 
 def lookup_residues_in_experiment_data(df_experiment_data, lookup_residues_list: list):
-    """
-    This utility function is used to search for and extract rows of data that have the
-    list of residue indices listed in their mutations.
+    """Searches experiment data for variants containing specific residue mutations.
+
+    Extracts all rows from the experiment dataframe where the substitutions column
+    contains any of the specified residue indices.
+
+    Args:
+        df_experiment_data: DataFrame containing experiment variant data with substitutions
+        lookup_residues_list: List of residue indices to search for in mutations
+
+    Returns:
+        DataFrame containing all rows that have mutations at the specified residue positions
     """
     df_exp_results = pd.DataFrame()
     # iterate over the residue list and find matches
@@ -143,6 +161,23 @@ def lookup_residues_in_experiment_data(df_experiment_data, lookup_residues_list:
 def search_and_gather_variant_info_for_matching_experiment(
     experiment, experiment_meta_data, lookup_residues_list, seq_match_data, exp_results_row_data
 ):
+    """Searches a matching experiment for variants at specified residue positions and compiles results.
+
+    Processes an experiment to find variants with mutations at the lookup residue positions,
+    then combines this data with sequence alignment information and experiment metadata for
+    the related variants table display.
+
+    Args:
+        experiment: Experiment object to search for variants
+        experiment_meta_data: Dictionary containing experiment metadata
+        lookup_residues_list: List of residue indices to search for in the experiment
+        seq_match_data: Dictionary of sequence alignment data from the aligner
+        exp_results_row_data: List accumulating results across all matching experiments
+
+    Returns:
+        Updated exp_results_row_data list with new rows appended for variants found
+        in this experiment at the specified residue positions
+    """
     # # preprocess the data for residue extraction
     df_match_exp = experiment.exp_get_processed_core_data_for_valid_mutation_extractions()
 
