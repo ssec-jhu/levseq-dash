@@ -1,5 +1,4 @@
 import base64
-import hashlib
 import inspect
 import io
 import os
@@ -15,19 +14,19 @@ from levseq_dash.app.components.widgets import DownloadType
 from levseq_dash.app.utils import u_reaction
 from levseq_dash.app.utils.u_protein_viewer import substitution_indices_pattern
 
-# def gather_residues_from_selection(selected_rows):
-#     mutations = f"{selected_rows[0]['amino_acid_substitutions']}"
-#     mutations_split = mutations.split("_") if "_" in mutations else [mutations]
-#     residues = list()
-#     for mutation in mutations_split:
-#         match = re.search(r"[A-Za-z](\d+)[A-Za-z]", mutation)
-#         if match:
-#             number = match.group(1)  # Extract the captured number
-#             residues.append(number)
-#     return residues
-
 
 def extract_all_indices(input_str):
+    """Extracts all numeric residue indices from a substitution string.
+
+    Uses regex pattern matching to find all digit sequences that represent
+    residue positions in mutation strings (e.g., "A123B" -> ["123"]).
+
+    Args:
+        input_str: String containing amino acid substitutions with residue indices
+
+    Returns:
+        List of residue indices as strings
+    """
     # re.findall(<pattern>, string)
     # The .findall() method iterates over a string to find a subset of characters that match a specified pattern.
     # It will return a list of every pattern match that occurs in a given string.
@@ -36,6 +35,15 @@ def extract_all_indices(input_str):
 
 
 def is_target_index_in_string(input_str, target_index):
+    """Checks if a specific residue index is present in a substitution string.
+
+    Args:
+        input_str: String containing amino acid substitutions with residue indices
+        target_index: Residue index to search for (int or str)
+
+    Returns:
+        bool: True if the target index is found in the string, False otherwise
+    """
     # re.findall(<pattern>, string)
     # The .findall() method iterates over a string to find a subset of characters that match a specified pattern.
     # It will return a list of every pattern match that occurs in a given string.
@@ -44,20 +52,19 @@ def is_target_index_in_string(input_str, target_index):
     return str(target_index) in result
 
 
-# def get_file_size(file_bytes):
-#     # TODO: revisit theis function, make it better or remove altogether
-#     file_size = len(file_bytes)
-#
-#     if file_size < 1024:
-#         file_size_text = f"{file_size} bytes"
-#     elif file_size < 1024 ** 2:
-#         file_size_text = f"{file_size / 1024:.2f} KB"
-#     else:
-#         file_size_text = f"{file_size / (1024 ** 2):.2f} MB"
-#     return file_size_text
-
-
 def decode_dash_upload_data_to_base64_encoded_string(dash_upload_string_contents):
+    """Extracts base64-encoded data from Dash file upload content string.
+
+    Dash file uploads provide data in the format "data:type;base64,<encoded_data>".
+    This function splits the string and returns just the base64-encoded portion.
+
+    Args:
+        dash_upload_string_contents: Dash upload content string in format
+                                     "data:application/octet-stream;base64,<data>"
+
+    Returns:
+        Base64-encoded string (the portion after the comma)
+    """
     # The content field will contain the file data encoded in Base64,
     # which represents the binary content of the file as a text string.
 
@@ -76,39 +83,22 @@ def decode_dash_upload_data_to_base64_encoded_string(dash_upload_string_contents
     return base64_encoded_string
 
 
-# def decode_base64_string_to_base64_bytes(base64_encoded_string):
-#     # base64.b64decode() function converts the base64 encoded string back
-#     # into its original binary data which is bytes.
-#     base64_encoded_bytes = base64.b64decode(base64_encoded_string)
-#     return base64_encoded_bytes
-
-
-# def decode_csv_file_bytes_to_dataframe(base64_encoded_bytes):
-#     """
-#     utility function for testing the uploaded experiment file
-#     """
-#     try:
-#         # If the content of file_bytes is valid UTF-8 text,
-#         # the .decode("utf-8") method will convert those bytes into a regular Python
-#         # string (a str object). For example, bytes that represent text in
-#         # English, Chinese, or other UTF-8 compatible languages.
-#         # If the bytes are not valid UTF-8, Python will raise a UnicodeDecodeError.
-#         utf8_string = base64_encoded_bytes.decode("utf-8")
-#         # Converts the decoded string into a file-like object
-#         # so that you can use file operations (like reading lines or seeking) on it.
-#         file_as_string = io.StringIO(utf8_string)
-#         df = pd.read_csv(file_as_string)
-#     except UnicodeDecodeError:
-#         df = pd.DataFrame()
-#         # return "The content is not a valid UTF-8 string."
-#
-#     return df
-
-
 def decode_csv_file_base64_string_to_dataframe(base64_encoded_string):
-    """
-    This code is a utility function for the UI
-    to process the uploaded csv file into a dataframe
+    """Decodes a base64-encoded CSV file string into a pandas DataFrame.
+
+    Used to process uploaded CSV files from the Dash UI. Converts base64 string
+    to bytes, then to UTF-8 string, and finally parses as CSV.
+
+    Args:
+        base64_encoded_string: Base64-encoded representation of CSV file contents
+
+    Returns:
+        Tuple of (DataFrame, bytes):
+            - DataFrame: Parsed CSV data
+            - bytes: Original base64-decoded bytes for checksum calculation
+
+    Raises:
+        Exception: If content is not valid UTF-8
     """
     df = pd.DataFrame()
     base64_encoded_bytes = bytes()
@@ -137,7 +127,25 @@ def decode_csv_file_base64_string_to_dataframe(base64_encoded_string):
 
 
 def calculate_group_mean_ratios_per_smiles_and_plate(df):
-    """Optimized version using vectorized operations in pandas"""
+    """Calculates fitness ratios relative to parent mean for each SMILES/plate group.
+
+    Optimized version using vectorized pandas operations. Computes mean parent fitness
+    per SMILES/plate combination, then calculates ratio of each variant's fitness to
+    its group mean. Handles special cases like "trac" (trace) values and zero fitness.
+
+    Args:
+        df: DataFrame containing experiment data with columns: smiles, plate,
+            fitness_value, substitutions
+
+    Returns:
+        DataFrame with added columns: ratio, mean, min_group_ratio, max_group_ratio
+
+    Note:
+        - Returns early if ratio column already exists and has values
+        - "trac" strings in fitness values are converted to 0.001
+        - Groups with zero or NaN parent mean will have NaN ratios
+        - Ratios are rounded to 3 decimal places
+    """
     group_cols = [gs.c_smiles, gs.c_plate]
     value_col = gs.c_fitness_value
 
@@ -201,10 +209,20 @@ def calculate_group_mean_ratios_per_smiles_and_plate(df):
     return df
 
 
-def extract_all_substrate_product_smiles_from_lab_data(list_of_all_lab_experiments_with_meta: list[{}]):
-    """
-    This method extracts all the unique substrate and product smiles  used in the lab data.
-    The input is a list of dictionaries, data type used by AgGrid
+def extract_all_substrate_product_smiles_from_lab_data(list_of_all_lab_experiments_with_meta: list):
+    """Extracts unique substrate and product SMILES from all lab experiments.
+
+    Collects and deduplicates all substrate and product SMILES strings from the
+    experiment metadata, returning them as semicolon-delimited sorted strings.
+
+    Args:
+        list_of_all_lab_experiments_with_meta: List of experiment metadata dictionaries
+                                               (AG Grid data format)
+
+    Returns:
+        Tuple of (substrate_smiles_string, product_smiles_string):
+            - substrate_smiles_string: Semicolon-delimited sorted unique substrates
+            - product_smiles_string: Semicolon-delimited sorted unique products
     """
     all_product_smiles = ""
     all_substrate_smiles = ""
@@ -220,19 +238,24 @@ def extract_all_substrate_product_smiles_from_lab_data(list_of_all_lab_experimen
     return all_substrate_smiles, all_product_smiles
 
 
-# def generate_slider_marks_dict(max_value):
-#     """
-#     This method extracts generates tick marks text for the range slider based on the
-#     max value provided by the experiment. The tick marks are to be set in a dictionary.
-#     """
-#     data_range = range(0, max_value, 1)
-#     return {str(round(value, 1)): str(round(value, 1)) for value in data_range}
-
-
 def export_data_as_csv(option, file_name):
-    """
-    This method is a helper function to generate download parameters for an aggrid-table
-    The download operation is handled by the grid itself. Client just provides params
+    """Generates CSV export parameters for AG Grid table downloads.
+
+    Helper function that creates configuration parameters for AG Grid's built-in
+    CSV export functionality. Adds timestamp to filename and determines which rows
+    to export based on user selection.
+
+    Args:
+        option: Download type option (filtered or all) from DownloadType enum
+        file_name: Base name for the downloaded CSV file (without extension)
+
+    Returns:
+        Tuple of (export_trigger, export_params):
+            - export_trigger: Boolean (True) to trigger the export
+            - export_params: Dict with fileName and exportedRows configuration
+
+    Note:
+        The actual export is handled by AG Grid on the client side
     """
     if option == DownloadType.FILTERED.value:
         exported_rows = "filteredAndSorted"
@@ -247,9 +270,21 @@ def export_data_as_csv(option, file_name):
 
 
 def validate_smiles_string(smiles_string):
-    """
-    This function is a helper function to show the substrate and product text boxes
-    as valid or invalid text boxes in the UI.
+    """Validates a SMILES string and returns UI styling indicators.
+
+    Helper function for Dash input validation that checks if a SMILES string
+    is valid using RDKit. Returns boolean flags for UI styling (valid/invalid).
+
+    Args:
+        smiles_string: SMILES string to validate
+
+    Returns:
+        Tuple of (valid, invalid):
+            - valid: True if SMILES is valid, False otherwise
+            - invalid: True if SMILES is invalid, False otherwise
+
+    Note:
+        Both flags are returned for Dash Bootstrap Components' input validation styling
     """
     # set the defaults
     valid = False
@@ -266,6 +301,18 @@ def validate_smiles_string(smiles_string):
 
 
 def select_first_row_of_data(data):
+    """Selects the first row of AG Grid table data for default selection.
+
+    Used to set default row selection in tables after they're rendered and sorted
+    on the client side. Since sorting happens client-side, we can't preselect from
+    the original data order.
+
+    Args:
+        data: List of row data dictionaries from AG Grid virtualRowData
+
+    Returns:
+        List containing the first row dictionary, or None if data is empty
+    """
     if data:
         # set the default selected row to be the first row that is rendered on the front end
         # the table sets the sorting and all on the front end side after it is rendered, so we
@@ -277,6 +324,19 @@ def select_first_row_of_data(data):
 
 
 def log_with_context(msg, log_flag):
+    """Logs a message with process, thread, and function context information.
+
+    Conditional logging helper that includes PID, thread ID, thread name, and
+    calling function name for debugging multi-threaded/multi-process applications.
+
+    Args:
+        msg: Message to log
+        log_flag: Boolean flag to enable/disable logging for this call
+
+    Note:
+        Only logs if log_flag is True. Useful for profiling and debugging.
+        Format: [PID:pid][TID:tid][thread_name][FUNC:function_name] message
+    """
     # Check if logging is enabled for the given flag
     if not log_flag:
         return  # Do not log if the flag is disabled
