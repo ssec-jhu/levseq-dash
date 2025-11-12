@@ -134,16 +134,12 @@ def route_page(pathname):
     State("id-table-all-experiments-filter-store", "data"),
 )
 def load_explore_page(temp_text, filter_store):
+    """Loads all lab experiments with metadata for the explore page table.
+    
+    Retrieves the complete list of experiments and restores any previously saved filter state.
+    """
     list_of_all_lab_experiments_with_meta = singleton_data_mgr_instance.get_all_lab_experiments_with_meta_data()
 
-    # all_substrate, all_product = utils.extract_all_substrate_product_smiles_from_lab_data(
-    #     list_of_all_lab_experiments_with_meta
-    # )
-    #
-    # # it's Ok if the substrate_svg_image or product_svg_image are None to any issues in the smiles
-    # # UI will just not have an image, but won't fail
-    # substrate_svg_image = u_reaction.create_mols_grid(all_substrate)
-    # product_svg_image = u_reaction.create_mols_grid(all_product)
     return list_of_all_lab_experiments_with_meta, filter_store
 
 
@@ -169,6 +165,11 @@ def save_table_filter_state(filter_model):
     prevent_initial_call=True,
 )
 def update_explore_page_buttons(selected_rows):
+    """Manages button states on the explore page based on row selection.
+    
+    Enables/disables the Delete, Go To Experiment, and Download buttons depending on
+    the number of rows selected. Stores the experiment ID if exactly one row is selected.
+    """
     # Display selected row info
     if not selected_rows:
         # disable all buttons
@@ -195,6 +196,11 @@ def update_explore_page_buttons(selected_rows):
     running=[(Output("id-button-download-all-experiments", "disabled"), True, False)],  # requires the latest Dash 2.16
 )
 def on_download_selected_experiments(n_clicks, selected_rows):
+    """Downloads selected experiments as a timestamped ZIP file.
+    
+    Packages all selected experiment data and returns a base64-encoded ZIP file
+    for download with a timestamp in the filename.
+    """
     if not selected_rows:
         raise PreventUpdate
 
@@ -319,6 +325,7 @@ def on_delete_experiment_modal_confirmed(confirm_clicks, selected_rows):
     # prevent_initial_call=True,
 )
 def set_assay_list(assay_list):
+    """Populates the assay dropdown list with available assays from the data manager."""
     # TODO: check if this gets called back multiple times or not
     assay_list = singleton_data_mgr_instance.get_assays()
     return assay_list
@@ -333,6 +340,11 @@ def set_assay_list(assay_list):
     State("id-button-upload-data", "last_modified"),
 )
 def on_upload_experiment_file(dash_upload_string_contents, filename, last_modified):
+    """Validates and processes uploaded experiment CSV file.
+    
+    Checks for duplicate experiments, runs sanity checks on the data, and displays
+    file information (rows, columns, SMILES) if validation passes, or error alerts if not.
+    """
     if not dash_upload_string_contents:
         return "No file uploaded.", no_update
     else:
@@ -403,6 +415,11 @@ def on_upload_experiment_file(dash_upload_string_contents, filename, last_modifi
     State("id-button-upload-structure", "last_modified"),
 )
 def on_upload_structure_file(dash_upload_string_contents, filename, last_modified):
+    """Processes uploaded protein structure file (PDB/CIF).
+    
+    Validates and stores the structure file for the experiment, displaying
+    the filename or error alerts.
+    """
     if not dash_upload_string_contents:
         return "No file uploaded.", no_update
     else:
@@ -429,6 +446,7 @@ def on_upload_structure_file(dash_upload_string_contents, filename, last_modifie
     prevent_initial_call=True,
 )
 def validate_substrate_smiles(substrate):
+    """Validates the substrate SMILES string and updates input field styling."""
     valid, invalid = utils.validate_smiles_string(substrate)
 
     return valid, invalid
@@ -441,6 +459,7 @@ def validate_substrate_smiles(substrate):
     prevent_initial_call=True,
 )
 def validate_product_smiles(product):
+    """Validates the product SMILES string and updates input field styling."""
     valid, invalid = utils.validate_smiles_string(product)
 
     return valid, invalid
@@ -503,6 +522,11 @@ def on_submit_experiment(
     geometry_content_base64_encoded_string,
     experiment_content_base64_encoded_string,
 ):
+    """Submits a new experiment to the database.
+    
+    Creates a new experiment entry with all provided metadata and files,
+    then redirects to the experiment page on success or displays error alerts on failure.
+    """
     if n_clicks > 0 and ctx.triggered_id == "id-button-submit":
         try:
             experiment_id = singleton_data_mgr_instance.add_experiment_from_ui(
@@ -720,10 +744,12 @@ def on_button_run_seq_matching(n_clicks, results_are_cleared):
     prevent_initial_call=True,
 )
 def display_default_selected_matching_sequences(data):
-    # set the default selected row to be the first row that is rendered on the front end
-    # the table sets the sorting and all on the front end side after it is rendered, so we
-    # can not select the first row of the data output that gets sent from the previous
-    # callback.
+    """Selects the first row in the matched sequences table by default.
+    
+    Sets the default selected row to be the first row that is rendered on the front end.
+    The table sets the sorting and all on the front end side after it is rendered, so we
+    cannot select the first row of the data output that gets sent from the previous callback.
+    """
     return utils.select_first_row_of_data(data)
 
 
@@ -741,6 +767,11 @@ def display_default_selected_matching_sequences(data):
     prevent_initial_call=True,
 )
 def display_selected_matching_sequences(selected_rows):
+    """Displays detailed information for the selected matching sequence.
+    
+    Renders the protein structure viewer with highlighted residues (substitutions, hot spots,
+    cold spots) and displays the reaction image for the selected matched experiment.
+    """
     if selected_rows and len(selected_rows) > 0:
         # extract the info from the table
         substitutions = f"{selected_rows[0][gs.cc_seq_alignment_mismatches]}"
@@ -816,6 +847,7 @@ def display_selected_matching_sequences(selected_rows):
     running=[(Output("id-button-download-hot-cold-results", "disabled"), True, False)],  # requires the latest Dash 2.16
 )
 def on_download_matched_sequences_exp_hot_cold_data_as_csv(n_clicks, option):
+    """Exports hot/cold residue data from matched sequences to CSV format."""
     return utils.export_data_as_csv(option, gs.filename_download_residue_info)
 
 
@@ -830,6 +862,7 @@ def on_download_matched_sequences_exp_hot_cold_data_as_csv(n_clicks, option):
     running=[(Output("id-button-download-matched-sequences-results", "disabled"), True, False)],
 )
 def on_download_matched_sequence_data_as_csv(n_clicks, option):
+    """Exports matched sequence alignment results to CSV format."""
     return utils.export_data_as_csv(option, gs.filename_download_matched_sequences)
 
 
@@ -846,6 +879,7 @@ def on_download_matched_sequence_data_as_csv(n_clicks, option):
     prevent_initial_call=True,
 )
 def redirect_to_experiment_page(n_clicks):
+    """Redirects to the experiment page when the 'Go To Experiment' button is clicked."""
     if n_clicks != 0 and ctx.triggered_id == "id-button-goto-experiment":
         return gs.nav_experiment_path, layout_experiment.get_layout()
     else:
@@ -937,6 +971,11 @@ def redirect_to_experiment_page(n_clicks):
     prevent_initial_call=True,
 )
 def on_load_experiment_page(pathname, experiment_id):
+    """Loads and initializes all components for the experiment page.
+    
+    Retrieves experiment data, metadata, generates visualizations (heatmap, rank/SSM plot),
+    sets up the protein viewer, and populates all dropdowns with default values.
+    """
     if pathname == gs.nav_experiment_path:
         exp = singleton_data_mgr_instance.get_experiment(experiment_id)
         exp_meta_data = singleton_data_mgr_instance.get_experiment_metadata(experiment_id)
