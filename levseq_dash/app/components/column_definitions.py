@@ -1,8 +1,24 @@
+"""
+AG Grid column definitions for data tables.
+
+This module provides reusable column definition functions for various data grids
+throughout the application, including experiments, sequence alignments, and variant data.
+
+DO NOT change definition here if you don't know what you are doing :)
+This will affect all tables in the UI
+"""
+
 from levseq_dash.app import global_strings as gs
 from levseq_dash.app.components import vis
 
 
 def get_checkbox():
+    """
+    Create checkbox column definition for row selection.
+
+    Returns:
+        list: Column definition with checkbox selection enabled.
+    """
     return [
         {  # Checkbox column
             "headerCheckboxSelection": True,
@@ -14,6 +30,15 @@ def get_checkbox():
 
 
 def get_experiment_id(record):
+    """
+    Create experiment ID column definition.
+
+    Args:
+        record: Optional dictionary to update column properties.
+
+    Returns:
+        list: Column definition for experiment ID with truncated display.
+    """
     c = [
         {
             "field": gs.cc_experiment_id,
@@ -33,6 +58,15 @@ def get_experiment_id(record):
 
 
 def get_experiment_name(record):
+    """
+    Create experiment name column definition.
+
+    Args:
+        record: Optional dictionary to update column properties.
+
+    Returns:
+        list: Column definition for experiment name.
+    """
     c = [
         {
             "field": gs.c_experiment_name,
@@ -47,6 +81,19 @@ def get_experiment_name(record):
 
 
 def get_experiment_meta(record_1, record_2, record_3, record_4, record_5):
+    """
+    Create experiment metadata column definitions.
+
+    Args:
+        record_1: Optional properties for experiment_date column.
+        record_2: Optional properties for upload_time_stamp column.
+        record_3: Optional properties for assay column.
+        record_4: Optional properties for mutagenesis_method column.
+        record_5: Optional properties for plates_count column.
+
+    Returns:
+        list: Column definitions for experiment metadata fields.
+    """
     c = [
         {
             "field": "experiment_date",
@@ -91,6 +138,15 @@ def get_experiment_meta(record_1, record_2, record_3, record_4, record_5):
 
 
 def get_experiment_doi(record):
+    """
+    Create DOI column definition with link renderer.
+
+    Args:
+        record: Optional dictionary to update column properties.
+
+    Returns:
+        list: Column definition for DOI with custom cell renderer.
+    """
     c = [
         {"field": "doi", "headerName": "DOI", "tooltipField": "doi", "cellRenderer": "DOILink"},
     ]
@@ -100,6 +156,16 @@ def get_experiment_doi(record):
 
 
 def get_experiment_meta_smiles(record_1, record_2):
+    """
+    Create substrate and product SMILES column definitions.
+
+    Args:
+        record_1: Optional properties for substrate column.
+        record_2: Optional properties for product column.
+
+    Returns:
+        list: Column definitions for substrate and product SMILES.
+    """
     c = [
         {
             "field": gs.cc_substrate,
@@ -122,6 +188,15 @@ def get_experiment_meta_smiles(record_1, record_2):
 
 
 def get_smiles(record):
+    """
+    Create SMILES column definition.
+
+    Args:
+        record: Optional dictionary to update column properties.
+
+    Returns:
+        list: Column definition for SMILES string.
+    """
     c = [
         {
             "field": gs.c_smiles,
@@ -135,6 +210,15 @@ def get_smiles(record):
 
 
 def get_plate_well(record_1):
+    """
+    Create plate and well column definitions.
+
+    Args:
+        record_1: Optional properties for plate column.
+
+    Returns:
+        list: Column definitions for plate and well identifiers.
+    """
     c = [
         {
             "field": gs.c_plate,
@@ -154,6 +238,16 @@ def get_plate_well(record_1):
 
 
 def get_fitness_ratio(record_1, record_2):
+    """
+    Create fitness value and ratio column definitions.
+
+    Args:
+        record_1: Optional properties for fitness_value column.
+        record_2: Optional properties for ratio column.
+
+    Returns:
+        list: Column definitions for fitness and ratio values.
+    """
     c = [
         {
             "field": gs.c_fitness_value,
@@ -181,6 +275,15 @@ def get_fitness_ratio(record_1, record_2):
 
 
 def get_substitutions(record):
+    """
+    Create amino acid substitutions column definition.
+
+    Args:
+        record: Optional dictionary to update column properties.
+
+    Returns:
+        list: Column definition for substitutions display.
+    """
     c = [
         {
             "field": gs.c_substitutions,
@@ -195,6 +298,12 @@ def get_substitutions(record):
 
 
 def get_alignment_scores():
+    """
+    Create alignment score column definitions.
+
+    Returns:
+        list: Column definitions for normalized alignment scores.
+    """
     c = [
         # TODO: do we need to show the raw score
         # {
@@ -215,6 +324,12 @@ def get_alignment_scores():
 
 
 def get_alignment_stats():
+    """
+    Create alignment statistics column definitions.
+
+    Returns:
+        list: Column definitions for matches, gaps, and mismatches.
+    """
     return [
         {
             "field": "identities",
@@ -244,6 +359,12 @@ def get_alignment_stats():
 
 
 def get_alignment_string():
+    """
+    Create sequence alignment string column definition.
+
+    Returns:
+        list: Column definition for alignment visualization with custom renderer.
+    """
     return [
         {
             "field": gs.cc_seq_alignment,
@@ -263,7 +384,13 @@ def get_alignment_string():
 
 def get_top_variant_column_defs(df):
     """
-    Returns column definitions and setup for dash ag grid table per experiment
+    Create column definitions for top variants table in experiment view.
+
+    Args:
+        df: DataFrame for calculating conditional cell styles.
+
+    Returns:
+        list: Complete column definitions for top variants display.
     """
     column_def = (
         get_smiles({"flex": 2})
@@ -280,7 +407,10 @@ def get_top_variant_column_defs(df):
 
 def get_all_experiments_column_defs():
     """
-    Returns column definitions and setup for dash ag grid table for all experiments
+    Create column definitions for all experiments table in lab view.
+
+    Returns:
+        list: Complete column definitions including checkbox and metadata.
     """
 
     column_def = (
@@ -303,7 +433,10 @@ def get_all_experiments_column_defs():
 
 def get_matched_sequences_column_defs():
     """
-    Returns column definitions for the matched sequences
+    Create column definitions for matched sequences alignment table.
+
+    Returns:
+        list: Complete column definitions including alignment stats and strings.
     """
     column_def = (
         # if you want to pin any of the columns, here's how you do it
@@ -345,7 +478,10 @@ def get_matched_sequences_column_defs():
 
 def get_matched_sequences_exp_hot_cold_data_column_defs():
     """
-    Returns column definitions for the matched sequences experiment data
+    Create column definitions for hot/cold spot experiment data table.
+
+    Returns:
+        list: Complete column definitions including hot/cold type indicators.
     """
     column_def = get_experiment_id({"width": 170, "pinned": "left"})
     column_def += get_experiment_name({"width": 250})
@@ -377,7 +513,10 @@ def get_matched_sequences_exp_hot_cold_data_column_defs():
 
 def get_an_experiments_matched_sequences_column_defs():
     """
-    Returns column definitions for the matched sequences
+    Create column definitions for related variants in experiment view.
+
+    Returns:
+        list: Complete column definitions for experiment-specific matched sequences.
     """
     column_def = (
         # It doesn't make sense to sort by experiment ID but keeping commented for PI if of interest

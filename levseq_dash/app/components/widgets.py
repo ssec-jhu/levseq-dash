@@ -15,7 +15,10 @@ from levseq_dash.app.components import vis
 # ----------------------------------------
 def get_table_experiment_top_variants():
     """
-    Returns dash ag grid component with settings setup for use to show the experiments data
+    Create an AG Grid table for displaying top experiment variants.
+
+    Returns:
+        dag.AgGrid: Configured grid component for experiment data display.
     """
     return dag.AgGrid(
         id="id-table-exp-top-variants",
@@ -76,7 +79,10 @@ def get_table_experiment_top_variants():
 
 def get_table_experiment_related_variants():
     """
-    Returns dash ag grid component with settings setup for use to show all experiments
+    Create an AG Grid table for displaying related experiment variants.
+
+    Returns:
+        dag.AgGrid: Configured grid component for related variants display.
     """
     return dag.AgGrid(
         id="id-table-exp-related-variants",
@@ -137,7 +143,10 @@ def get_table_experiment_related_variants():
 # ----------------------------------------
 def get_table_all_experiments():
     """
-    Returns dash ag grid component with settings setup for use to show all experiments
+    Create an AG Grid table for displaying all experiments in the lab view.
+
+    Returns:
+        dag.AgGrid: Configured grid component with multi-row selection.
     """
     return dag.AgGrid(
         id="id-table-all-experiments",
@@ -188,7 +197,10 @@ def get_table_all_experiments():
 # --------------------------------
 def get_table_matched_sequences():
     """
-    Returns dash ag grid component with settings setup for use to show all experiments
+    Create an AG Grid table for displaying matched sequences from alignment.
+
+    Returns:
+        dag.AgGrid: Configured grid component for sequence alignment results.
     """
     return dag.AgGrid(
         id="id-table-matched-sequences",
@@ -243,7 +255,10 @@ def get_table_matched_sequences():
 
 def get_table_matched_sequences_exp_hot_cold_data():
     """
-    Returns dash ag grid component with settings setup for use to show all experiments
+    Create an AG Grid table for displaying hot/cold spot data from experiments.
+
+    Returns:
+        dag.AgGrid: Configured grid component for hot/cold spot analysis.
     """
     return dag.AgGrid(
         id="id-table-matched-sequences-exp-hot-cold-data",
@@ -294,7 +309,10 @@ def get_table_matched_sequences_exp_hot_cold_data():
 # --------------------------------
 def get_protein_viewer():
     """
-    Returns the dash molstar viewer component
+    Create a Molstar protein structure viewer component.
+
+    Returns:
+        dash_molstar.MolstarViewer: Configured 3D protein viewer.
     """
     return dash_molstar.MolstarViewer(
         id="id-viewer",
@@ -314,12 +332,32 @@ def get_protein_viewer():
 # Misc
 # --------------------------------
 def get_label_fixed_for_form(string, w=2):
-    # Create a horizontal form by using the Row component. Be sure to specify width on the Label component,
-    # and wrap your inputs in Col components.
+    """
+    Create a fixed-width label for horizontal forms.
+
+    Args:
+        string: Label text to display.
+        w: Width of the label in Bootstrap columns (default: 2).
+
+    Returns:
+        dbc.Label: Formatted label component.
+    """
     return dbc.Label(string, width=w, className="fw-bolder fs-6")
 
 
 def get_info_icon_tooltip_bundle(info_icon_id, help_string, location, allow_html=False):
+    """
+    Create an info icon with an attached tooltip.
+
+    Args:
+        info_icon_id: Unique ID for the icon element.
+        help_string: Tooltip text to display.
+        location: Tooltip placement ('top', 'bottom', 'left', 'right').
+        allow_html: Whether to allow HTML in tooltip (default: False).
+
+    Returns:
+        html.Span: Info icon with tooltip component.
+    """
     return html.Span(
         [
             # do not use html.span or dbc.label it will mess with the layout
@@ -330,6 +368,18 @@ def get_info_icon_tooltip_bundle(info_icon_id, help_string, location, allow_html
 
 
 def get_tooltip(target_id, string, tip_placement, allow_html=False):
+    """
+    Create a tooltip component for a target element.
+
+    Args:
+        target_id: ID of the element to attach tooltip to.
+        string: Tooltip text content.
+        tip_placement: Tooltip placement ('top', 'bottom', 'left', 'right').
+        allow_html: Whether to render HTML/Markdown in tooltip (default: False).
+
+    Returns:
+        dbc.Tooltip: Configured tooltip component.
+    """
     if allow_html:
         string = (html.Div(dcc.Markdown(string, dangerously_allow_html=True)),)
     return dbc.Tooltip(
@@ -344,6 +394,17 @@ def get_tooltip(target_id, string, tip_placement, allow_html=False):
 
 
 def get_input_plus_info_ico_bundle(input_id, input_value, info_icon_help_string):
+    """
+    Create a text input with an info icon and tooltip.
+
+    Args:
+        input_id: Unique ID for the input element.
+        input_value: Initial value for the input.
+        info_icon_help_string: Help text to display in tooltip.
+
+    Returns:
+        html.Span: Input field with info icon component.
+    """
     return html.Span(
         [
             dbc.Input(
@@ -366,11 +427,22 @@ def get_input_plus_info_ico_bundle(input_id, input_value, info_icon_help_string)
 
 
 class DownloadType(Enum):
+    """Enum for download data type options."""
+
     ORIGINAL = 1
     FILTERED = 2
 
 
 def get_radio_items_download_options(radio_id):
+    """
+    Create radio buttons for selecting download data type (original/filtered).
+
+    Args:
+        radio_id: Unique ID for the radio button group.
+
+    Returns:
+        list: List containing radio items and tooltips.
+    """
     # Note: tooltips will only bind with the first radio_id that comes in, the GEQ one that comes after will not bind
     # the tooltips because the tooltip id is the same as the radio item id not the radio button group as a whole
     id_1 = f"{radio_id}_1"
@@ -398,6 +470,15 @@ def get_radio_items_download_options(radio_id):
 
 
 def get_download_text_icon_combo(text_string):
+    """
+    Create a download icon with accompanying text.
+
+    Args:
+        text_string: Text to display next to download icon.
+
+    Returns:
+        html.Span: Combined icon and text component.
+    """
     return html.Span(
         [
             html.Span(vis.get_icon(vis.icon_download)),
@@ -410,6 +491,16 @@ def get_download_text_icon_combo(text_string):
 
 
 def get_download_radio_combo(button_id, radio_id):
+    """
+    Create a download button with radio options for data type selection.
+
+    Args:
+        button_id: Unique ID for the download button.
+        radio_id: Unique ID for the radio button group.
+
+    Returns:
+        html.Span: Combined button and radio selection component.
+    """
     # Note: tooltips will only bind with the first radio_id that comes in, the GEQ one that comes after will not bind
     # the tooltips because the tooltip id is the same as the radio item id not the radio button group as a whole
     id_1 = f"{radio_id}_1"
@@ -457,7 +548,14 @@ def get_download_radio_combo(button_id, radio_id):
 
 def generate_label_with_info(label, id_info):
     """
-    Produces a bold label with a string. This is used in multiple places throughout the layout.
+    Create a bold label with an associated info display area.
+
+    Args:
+        label: Label text to display.
+        id_info: ID for the info content element.
+
+    Returns:
+        html.Div: Label with info display component.
     """
     return html.Div(
         [
@@ -472,6 +570,17 @@ def generate_label_with_info(label, id_info):
 
 
 def get_alert(alert_message, error=True, is_markdown=False):
+    """
+    Create a dismissable alert component.
+
+    Args:
+        alert_message: Message text to display.
+        error: Whether this is an error alert (default: True).
+        is_markdown: Whether to render message as Markdown (default: False).
+
+    Returns:
+        dbc.Alert: Configured alert component.
+    """
     if error:
         class_name = "p-3 user-alert-error"
     else:

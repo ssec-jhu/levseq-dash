@@ -9,9 +9,16 @@ from levseq_dash.app import global_strings as gs
 
 def format_mutation_annotation(text):
     """
-    This function will run on the annotations dataframe extracted from the data.
-    Format the mutations to remove the underscore and stack them on top of each other up to 3
-    mutations. If it's more than 3, set the annotation as 4Mut*
+    Format mutation text for display in plot annotations.
+
+    Removes underscores and stacks mutations vertically (up to 3).
+    For more than 3 mutations, displays as 'NMut*' where N is the count.
+
+    Args:
+        text: Mutation string with underscores (e.g., 'A45S_D67F_L89P').
+
+    Returns:
+        str: Formatted annotation string with line breaks or mutation count.
     """
     # dataframe text can be empty
     annotation = ""
@@ -29,6 +36,20 @@ def format_mutation_annotation(text):
 
 
 def creat_heatmap(df, plate_number, property, smiles):
+    """
+    Create a 96-well plate heatmap visualization.
+
+    Generates a heatmap showing property values across plate wells with mutation annotations.
+
+    Args:
+        df: DataFrame containing experiment data.
+        plate_number: Plate identifier to filter data.
+        property: Column name for the property to visualize.
+        smiles: SMILES string to filter data.
+
+    Returns:
+        go.Figure: Plotly heatmap figure with annotations.
+    """
     # Need to create a .copy() of the original df. Pandas did not like appending the columns
     # to the original later in the code here, and it raised many warnings.
     # https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
@@ -106,6 +127,20 @@ def creat_heatmap(df, plate_number, property, smiles):
 
 
 def creat_rank_plot(df, plate_number, smiles):
+    """
+    Create a scatter plot showing variants ranked by fitness value.
+
+    Plots variants from highest to lowest fitness with color-coding for
+    different data types (parent, variants, low quality, etc.).
+
+    Args:
+        df: DataFrame containing experiment data.
+        plate_number: Plate identifier to filter data.
+        smiles: SMILES string to filter data.
+
+    Returns:
+        go.Figure: Plotly scatter plot with ranked variants.
+    """
     # Need to create a .copy() of the original df. Pandas did not like appending the columns
     # to the original later in the code here, and it raised many warnings.
     # https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
@@ -170,7 +205,13 @@ AA_LIST = ["A", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "P", "Q",
 
 def get_single_site_mutation_pattern(residue_number=None):
     """
-    Generate regex pattern for single-site mutations.
+    Generate regex pattern for matching single-site mutations.
+
+    Args:
+        residue_number: Specific residue position (e.g., 45). If None, matches any position.
+
+    Returns:
+        str: Regex pattern for single-site mutation matching.
     """
     if residue_number is not None:
         # Pattern for specific residue: A45S, A45*, etc.
@@ -182,7 +223,16 @@ def get_single_site_mutation_pattern(residue_number=None):
 
 def filter_single_site_mutations(df, smiles_string=None, residue_number=None, include_parent=False):
     """
-    Filter dataframe for single-site mutations with optional additional filtering.
+    Filter dataframe for single-site mutations with optional filters.
+
+    Args:
+        df: DataFrame containing mutation data.
+        smiles_string: Optional SMILES filter.
+        residue_number: Optional specific residue position filter.
+        include_parent: Whether to include parent entries (default: False).
+
+    Returns:
+        pd.DataFrame: Filtered dataframe with single-site mutations.
     """
     # Filter by smiles string if provided
     if smiles_string is not None:
@@ -209,14 +259,14 @@ def filter_single_site_mutations(df, smiles_string=None, residue_number=None, in
 
 def extract_single_site_mutations(df, smiles_string=None):
     """
-    Extract all single-site mutations from a dataframe and return them as a sorted list.
+    Extract all single-site mutation positions from a dataframe.
 
     Args:
-        df: DataFrame containing mutation data
-        smiles_string: Optional SMILES string to filter by. If None, processes all data.
+        df: DataFrame containing mutation data.
+        smiles_string: Optional SMILES string filter. If None, processes all data.
 
     Returns:
-        List of unique residue positions that have single-site mutations (e.g., [45, 67, 123])
+        list: Sorted list of unique residue positions (e.g., [45, 67, 123]).
     """
 
     # Use shared filtering function for single-site mutations (any residue number, no parent entries)
@@ -245,15 +295,18 @@ def extract_single_site_mutations(df, smiles_string=None):
 
 def create_ssm_plot(df, smiles_string, residue_number):
     """
-    Create a single-site mutagenesis plot for a specific residue and smiles string.
+    Create a single-site mutagenesis (SSM) plot for a specific residue.
+
+    Generates a bar plot showing average fitness values for each amino acid mutation
+    at the specified position, with individual data points overlaid.
 
     Args:
-        df: DataFrame containing mutation data
-        smiles_string: The SMILES string to filter by
-        residue_number: The residue position number (e.g., 45 for A45S)
+        df: DataFrame containing mutation data.
+        smiles_string: SMILES string to filter by.
+        residue_number: Residue position number (e.g., 45 for A45S).
 
     Returns:
-        Plotly figure showing histogram-like plot with amino acids on Y-axis
+        go.Figure: Plotly bar plot with scatter overlay, or None if no data.
     """
 
     # Use shared filtering function for single-site mutations at specific residue, including parent entries
@@ -388,9 +441,5 @@ def create_ssm_plot(df, smiles_string, residue_number):
             title="Avg Fitness",
         )
     )
-
-    # Add count information to each amino acid
-    # aa_counts = ssm_df_clean["mutations"].value_counts()
-    # print(f"Count per amino acid: {dict(aa_counts)}")
 
     return fig

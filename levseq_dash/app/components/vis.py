@@ -73,82 +73,18 @@ icon_go_to_next = "fa6-solid:circle-chevron-right"
 icon_database = "fa6-solid:database"
 
 
-# # Material Symbols Light https://icon-sets.iconify.design/material-symbols-light/
-# LARGE = 80
-# MEDIUM = 30
-# SMALL = 16
-# icon_home = "material-symbols:home-rounded"  # can add -rounded
-# icon_menu = "material-symbols:menu-rounded"  # -rounded
-# icon_upload = "material-symbols:upload-rounded"  # -rounded or -sharp
-# icon_download = "material-symbols:download-rounded"  # -rounded or -sharp
-# icon_info = "material-symbols:info-rounded"  # -rounded
-# icon_sequence = "material-symbols:genetics-rounded"  # -rounded
-# icon_search = "material-symbols:search-rounded"  # -rounded
-# icon_about = "material-symbols:help-rounded"  # -rounded
-# icon_del_exp = "material-symbols:delete-forever-rounded"
-# icon_go_to_next = "material-symbols:chevron-right-rounded"  # -rounded
-# icon_database = "material-symbols:database-outline-rounded"
-
-
 def get_icon(icon_string, size=MEDIUM):
+    """
+    Create a Dash Iconify icon component.
+
+    Args:
+        icon_string: Icon identifier string (e.g., 'fa6-solid:house').
+        size: Icon size in pixels (default: MEDIUM).
+
+    Returns:
+        DashIconify: Configured icon component.
+    """
     return DashIconify(icon=icon_string, width=size)
-
-
-# --------------------
-#   AGGrid Cell colorings
-# --------------------
-# def data_bars_colorscale(df, column):
-#     """
-#     colors the bars in the cells in the table
-#     color max and min is based on the column values max and min
-#     uses color scale
-#
-#     """
-#     # this doesn't use the mean value as the center of the coloring
-#     n_bins = 200
-#     min_value = df[column].min()
-#     max_value = df[column].max()
-#
-#     # Generate color scale from Plotly
-#     color_scale = px.colors.sample_colorscale(px.colors.diverging.RdBu, [i / n_bins for i in range(n_bins)])
-#     # rdbu goes from blue to red, I want it the other way
-#     color_scale.reverse()
-#
-#     # color_scale = px.colors.sample_colorscale(color_scale, [i / n_bins for i in range(n_bins)])
-#
-#     # Convert to RGBA with transparency
-#     alpha = 1.0
-#     color_scale = [color.replace("rgb", "rgba").replace(")", f", {alpha})") for color in color_scale]
-#
-#     styles = []
-#     for i in range(1, n_bins + 1):
-#         ratio_min = min_value + (i - 1) * (max_value - min_value) / n_bins
-#         ratio_max = min_value + i * (max_value - min_value) / n_bins
-#         max_bound_percentage = (i / n_bins) * 100
-#         color = color_scale[i - 1]  # Pick color from scale
-#
-#         if max_bound_percentage > 89:
-#             text_color = "white"
-#         else:
-#             text_color = "black"
-#         styles.append(
-#             {
-#                 "condition": f"params.value >= {ratio_min}" +
-#                              (f" && params.value < {ratio_max}" if i < n_bins else ""),
-#                 "style": {
-#                     "background": f"""
-#                         linear-gradient(90deg,
-#                         {color} 0%,
-#                         {color} {max_bound_percentage}%,
-#                         white {max_bound_percentage}%,
-#                         white 100%)
-#                     """,
-#                     "color": text_color,
-#                 },
-#             }
-#         )
-#
-#     return styles
 
 
 def data_bars_group_mean_colorscale(
@@ -156,10 +92,21 @@ def data_bars_group_mean_colorscale(
     value_col=gs.cc_ratio,
     min_col="min_group_ratio",
     max_col="max_group_ratio",
-    color_scale=px.colors.diverging.RdBu,
 ):
     """
-    Generate Dash AG Grid cell styles with a color gradient bar.
+    Generate AG Grid cell styles with color gradient bars for ratio visualization.
+
+    Creates conditional cell styles with background color gradients based on normalized
+    ratio values, using min/max values for proper scaling.
+
+    Args:
+        df: DataFrame containing the data.
+        value_col: Column name for ratio values (default: gs.cc_ratio).
+        min_col: Column name for minimum group ratio (default: 'min_group_ratio').
+        max_col: Column name for maximum group ratio (default: 'max_group_ratio').
+
+    Returns:
+        list: List of style dictionaries for AG Grid cellClassRules.
     """
 
     styles = []
