@@ -1,3 +1,10 @@
+"""
+Experiment data structures and validation.
+
+This module defines the Experiment class for loading and processing experiment data,
+along with mutagenesis method enums and validation utilities.
+"""
+
 import re
 from enum import StrEnum
 from pathlib import Path
@@ -9,6 +16,8 @@ from levseq_dash.app.utils import u_protein_viewer, u_reaction, utils
 
 
 class MutagenesisMethod(StrEnum):
+    """Enum representing mutagenesis methods used in experiments."""
+
     epPCR = gs.eppcr
     SSM = gs.ssm
 
@@ -31,6 +40,16 @@ class Experiment:
         experiment_data_file_path,
         geometry_file_path,
     ):
+        """
+        Initialize an Experiment object from CSV and geometry files.
+
+        Args:
+            experiment_data_file_path: Path to the experiment CSV file.
+            geometry_file_path: Path to the geometry CIF file.
+
+        Raises:
+            ValueError: If either file path is invalid.
+        """
         # ----------------------------
         # process the core data first
         # ----------------------------
@@ -64,11 +83,16 @@ class Experiment:
 
     def exp_get_processed_core_data_for_valid_mutation_extractions(self):
         """
-        This function cleans and preprocesses the core data for use in mostly the sequence alignments and
-        ration calculations. It filters and cleans all data so the extracted values are valid experiment
-        results for the sake of the sequence alignment and ratio calculations. The results are extracted per
-        smiles of the experiment. Each values, norm ratio with respect to parent sequence is also appended
-        to the data.
+        Clean and preprocess core data for sequence alignments and ratio calculations.
+
+        Filters and cleans data to extract valid experiment results per SMILES.
+        Calculates normalized ratios with respect to parent sequence.
+
+        Returns:
+            pd.DataFrame: Processed dataframe with valid mutations and calculated ratios.
+
+        Raises:
+            Exception: If experiment data is empty.
         """
         if not self.data_df.empty:
             df = utils.calculate_group_mean_ratios_per_smiles_and_plate(self.data_df)
@@ -93,12 +117,19 @@ class Experiment:
 
     def exp_hot_cold_spots(self, n):
         """
-        This function extracts the top/bottom N residues for the experiment.
-        It filters and cleans all data so the extracted values are valid experiment results
-        The results are extracted per smiles of the experiment.
-        Each values, norm ratio with respect to parent sequence is also appended to the data.
+        Extract top and bottom N residues (hot/cold spots) for the experiment.
+
+        Filters and cleans data to extract valid experiment results per SMILES and plate.
+        Returns hot spots (highest fitness) and cold spots (lowest fitness).
+
         Args:
-            n: top N that we want to extract
+            n: Number of top/bottom residues to extract.
+
+        Returns:
+            tuple: (hot_cold_spots_df, hot_cold_residue_per_smiles_df)
+
+        Raises:
+            Exception: If n <= 0 or experiment data is empty.
         """
         if not self.data_df.empty:
             if n > 0:
@@ -180,13 +211,30 @@ class Experiment:
 
     @staticmethod
     def extract_plates_list(df):
+        """
+        Extract unique plate identifiers from the dataframe.
+
+        Args:
+            df: Dataframe containing plate column.
+
+        Returns:
+            list: List of unique plate identifiers.
+        """
         return list(df[gs.c_plate].unique()) if not df.empty else []
 
     @staticmethod
     def extract_parent_sequence(df):
         """
-        Use this function only after running sanity checks on the original DataFrame where the column exists.
-        Do not use it on a DataFrame that is in memory because it may be optimized and not have the column.
+        Extract parent sequence from the dataframe.
+
+        Note: Use only after running sanity checks on the original DataFrame.
+        Do not use on optimized in-memory DataFrame that may lack the sequence column.
+
+        Args:
+            df: Original experiment dataframe with sequence column.
+
+        Returns:
+            str: Parent amino acid sequence.
         """
         return df[df[gs.c_substitutions] == gs.hashtag_parent][gs.c_aa_sequence].iloc[0]
 

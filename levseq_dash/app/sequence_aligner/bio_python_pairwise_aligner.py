@@ -7,17 +7,32 @@ from levseq_dash.app.utils import utils
 
 
 def setup_aligner_blastp():
+    """Sets up a BioPython PairwiseAligner with BLASTP scoring and BLOSUM62 matrix.
+
+    Initializes a PairwiseAligner with BLASTP scoring scheme, which sets default
+    scoring parameters used by BLASTP for protein alignments. The substitution
+    matrix is then replaced with BLOSUM62 as requested by PI.
+
+    Configuration:
+        - Mode: Global alignment
+        - Gap open score: -12.0
+        - Gap extend score: -1.0
+        - Substitution matrix: BLOSUM62 (24x24 matrix) -> substitution_matrices.load("BLASTP")
+
+    Returns:
+        PairwiseAligner: Configured aligner ready for protein sequence alignment
+
+    Raises:
+        Exception: If aligner configuration doesn't match expected BLASTP settings
+                  or if BLOSUM62 matrix shape is incorrect (should be 24x24)
+
+    Reference:
+        https://biopython.org/docs/dev/Tutorial/chapter_pairwise.html#using-a-pre-defined-substitution-matrix-and-gap-scores
+        https://biopython.org/docs/dev/Tutorial/chapter_pairwise.html#substitution-scores
+    """
     # ---------------------
     # set up the aligner
     # ---------------------
-    # Currently, the provided scoring schemes are blastn and megablast, which are suitable for nucleotide alignments,
-    # and blastp, which is suitable for protein alignments. Selecting these scoring schemes will initialize the
-    # PairwiseAligner object to the default scoring parameters used by BLASTN, MegaBLAST, and BLASTP, respectively.
-    # https://biopython.org/docs/dev/Tutorial/chapter_pairwise.html#using-a-pre-defined-substitution-matrix-and-gap-scores
-    # this will set:
-    #   open_gap_score = -12.0
-    #   extend_gap_score = -1.0
-    #   substitution_matrix = substitution_matrices.load("BLASTP")
     aligner = PairwiseAligner(scoring="blastp")
 
     # verify that scores are set to blastp algorithm
@@ -56,8 +71,19 @@ def setup_aligner_blastp():
 
 
 def sanitize_protein_sequence(sequence: str) -> str:
-    """
-    Sanitize protein sequence for BioPython pairwise alignment.
+    """Sanitizes protein sequence by removing whitespace and control characters.
+
+    Removes spaces, tabs, newlines, carriage returns, form feeds, and vertical tabs
+    to prepare the sequence for BioPython pairwise alignment.
+
+    Args:
+        sequence: Raw protein sequence string
+
+    Returns:
+        Sanitized protein sequence with all whitespace removed
+
+    Raises:
+        ValueError: If sequence is None, empty, or not a string
     """
     if not sequence or not isinstance(sequence, str):
         raise ValueError("Sequence must be a non-empty string.")
@@ -71,9 +97,12 @@ def sanitize_protein_sequence(sequence: str) -> str:
 
 
 def inject_aligner():
-    """
-    Injects the aligner into the threading local storage.
-    This allows the aligner to be used in a thread-safe manner.
+    """Initializes aligner in global scope for ProcessPoolExecutor workers.
+
+    This function is used as an initializer for ProcessPoolExecutor to create
+    one aligner instance per worker process, avoiding the overhead of pickling
+    and creating aligners for each task.
+
     """
     global aligner
     aligner = setup_aligner_blastp()
@@ -81,6 +110,31 @@ def inject_aligner():
 
 # Helper function for alignment
 def parallel_function_align_target(target_exp_id, target_exp_sequence, query_sequence, base_score, threshold):
+    """Performs pairwise alignment of target sequence against query in parallel worker.
+
+    Worker function for ProcessPoolExecutor that aligns a single target sequence
+    against the query sequence, calculates normalized scores, and filters results
+    based on threshold.
+
+    Args:
+        target_exp_id: Experiment ID of the target sequence
+        target_exp_sequence: Target protein sequence to align
+        query_sequence: Query protein sequence to align against
+        base_score: Base alignment score (query against itself) for normalization
+        threshold: Minimum normalized score threshold (0-1) to include in results
+
+    Returns:
+        List of result dictionaries for alignments meeting threshold, each containing:
+            - experiment_id: Target experiment ID
+            - sequence: Target sequence
+            - sequence_alignment: Formatted alignment string
+            - alignment_score: Raw alignment score
+            - norm_score: Normalized score (alignment_score / base_score)
+            - identities: Number of identical residues
+            - mismatches: Number of mismatched residues
+            - gaps: Number of gaps
+
+    """
     # "Move the aligner creation inside the worker function, so it is not pickled or shared"
     # but testing and experiencing shows that it makes it slower AND is pickled anyway
     # keeping notes here that I tried to move aligner creation inside the worker
@@ -121,8 +175,28 @@ def parallel_function_align_target(target_exp_id, target_exp_sequence, query_seq
 
 
 def get_alignments(query_sequence, threshold, targets: dict):
-    """
-    https://biopython.org/docs/dev/Tutorial/chapter_pairwise.html#basic-usage
+    """Performs parallel pairwise alignment of query sequence against multiple targets.
+
+    Sanitizes input sequences, calculates base score, then uses ProcessPoolExecutor
+    to align the query against all target sequences in parallel. Results are filtered
+    by normalized score threshold and sorted by score.
+
+    Args:
+        query_sequence: Query protein sequence to align against targets
+        threshold: Minimum normalized score (0-1) for including results
+        targets: Dictionary mapping experiment IDs to target protein sequences
+
+    Returns:
+        Tuple of (results, base_score, warning_info):
+            - results: List of alignment result dictionaries sorted by norm_score (descending)
+            - base_score: Score of query aligned against itself
+            - warning_info: Markdown-formatted summary with success/failure counts
+
+    Raises:
+        Exception: If query_sequence is empty, targets is empty, or base_score is zero
+
+    Reference:
+        https://biopython.org/docs/dev/Tutorial/chapter_pairwise.html#basic-usage
     """
 
     if query_sequence is None or len(query_sequence) == 0:

@@ -1,3 +1,10 @@
+"""
+Disk-based data manager implementation.
+
+This module provides the DiskDataManager class for local file storage of experiment data,
+including metadata management, file operations, and caching.
+"""
+
 import base64
 import datetime
 import io
@@ -62,7 +69,22 @@ class DiskDataManager(BaseDataManager):
         geometry_content_base64_string,
     ) -> str:
         """
-        Add a new experiment and return its UUID.
+        Add a new experiment from UI upload and return its UUID.
+
+        Args:
+            experiment_name: Name of the experiment.
+            experiment_date: Date the experiment was conducted.
+            substrate: Substrate used in the experiment.
+            product: Product of the experiment.
+            assay: Assay technique used.
+            mutagenesis_method: Method used (epPCR or SSM).
+            experiment_doi: DOI reference for the experiment.
+            experiment_additional_info: Additional notes or information.
+            experiment_content_base64_string: Base64-encoded CSV file content.
+            geometry_content_base64_string: Base64-encoded geometry file content.
+
+        Returns:
+            str: UUID of the newly created experiment.
         """
         # Duplicate data check has already passed in upload by check_for_duplicate_experiment
         # Sanity check has already passed in upload by run_sanity_checks_on_experiment_file
@@ -127,6 +149,15 @@ class DiskDataManager(BaseDataManager):
     def check_for_duplicate_experiment(self, new_csv_checksum: str):
         """
         Check if an experiment with the same checksum already exists.
+
+        Args:
+            new_csv_checksum: Checksum of the new experiment CSV file.
+
+        Returns:
+            bool: False if no duplicate found.
+
+        Raises:
+            ValueError: If a duplicate experiment is detected.
         """
         for experiment_uuid, metadata in self._experiments_metadata.items():
             existing_checksum = metadata.get("csv_checksum", "")
@@ -214,12 +245,27 @@ class DiskDataManager(BaseDataManager):
     def get_experiment_metadata(self, experiment_uuid: str) -> dict | None:
         """
         Get metadata for a specific experiment.
+
+        Args:
+            experiment_uuid: UUID of the experiment.
+
+        Returns:
+            dict | None: Metadata dictionary, or None if not found.
         """
         return self._experiments_metadata.get(experiment_uuid, None)
 
     def get_experiment(self, experiment_uuid: str) -> Experiment | None:
         """
         Get the Experiment object for a specific UUID.
+
+        Args:
+            experiment_uuid: UUID of the experiment.
+
+        Returns:
+            Experiment | None: Loaded experiment object with cached support.
+
+        Raises:
+            Exception: If loading from disk fails.
         """
         try:
             exp = None
@@ -241,7 +287,15 @@ class DiskDataManager(BaseDataManager):
     def get_experiment_file_content(self, experiment_uuid: str) -> dict[str, bytes]:
         """
         Get experiment files content as bytes for a specific experiment.
-        This is the implementation for a local file storage retriever.
+
+        Args:
+            experiment_uuid: UUID of the experiment.
+
+        Returns:
+            dict[str, bytes]: Dictionary with keys 'json', 'csv', 'cif' mapping to file contents.
+
+        Raises:
+            Exception: If file reading fails.
         """
         files_content = {}
         if experiment_uuid not in self._experiments_metadata:
@@ -275,6 +329,15 @@ class DiskDataManager(BaseDataManager):
         return self.assay_list
 
     def get_experiments_zipped(self, experiments_to_zip: list[dict[str]]) -> bytes | None:
+        """
+        Create a ZIP archive containing experiment data and metadata.
+
+        Args:
+            experiments_to_zip: List of experiment metadata dictionaries to include.
+
+        Returns:
+            bytes: ZIP file content, or None if input list is empty.
+        """
         if not experiments_to_zip or len(experiments_to_zip) == 0:
             return None
 
@@ -318,7 +381,11 @@ class DiskDataManager(BaseDataManager):
 
     def _setup_data_path(self):
         """
-        Set up the data storage path.
+        Set up and validate the data storage path.
+
+        Raises:
+            FileNotFoundError: If data directory doesn't exist.
+            PermissionError: If no write permission to storage directory.
         """
 
         self.data_path = settings.get_data_path()
@@ -411,6 +478,12 @@ class DiskDataManager(BaseDataManager):
     def _create_experiment_directory(self, experiment_uuid: str) -> Path:
         """
         Create a directory for an experiment.
+
+        Args:
+            experiment_uuid: UUID of the experiment.
+
+        Returns:
+            Path: Path to the created experiment directory.
         """
         experiment_dir = self.data_path / experiment_uuid
         experiment_dir.mkdir(parents=True, exist_ok=True)
@@ -418,8 +491,13 @@ class DiskDataManager(BaseDataManager):
 
     def _generate_file_paths_for_experiment(self, experiment_uuid: str):
         """
-        Generate file paths for an experiment.
-        Function does not check if the paths exist or not, it just generates the paths.
+        Generate file paths for an experiment without checking if they exist.
+
+        Args:
+            experiment_uuid: UUID of the experiment.
+
+        Returns:
+            tuple: (metadata_path, csv_path, cif_path) as Path objects.
         """
         # This function can be used to generate file paths for experiments
         # based on UUIDs, if needed in the future.
