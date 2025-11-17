@@ -10,8 +10,17 @@ substitution_indices_pattern = r"(\d+)"
 
 
 def get_selection_focus(residues, analyse=True):
-    """ "
-    https://dash-molstar.readthedocs.io/en/latest/
+    """Creates selection and focus objects for highlighting specific residues in the protein viewer.
+
+    Args:
+        residues: List of residue numbers to highlight and focus on
+        analyse: If True, analyzes non-covalent interactions within 5 angstroms
+
+    Returns:
+        Tuple of (selection, focus) objects for dash-molstar viewer
+
+    Reference:
+        https://dash-molstar.readthedocs.io/en/latest/
     """
     target = molstar_helper.get_targets(
         chain="A",
@@ -37,6 +46,11 @@ def get_selection_focus(residues, analyse=True):
 
 
 def reset_selection():
+    """Resets the protein viewer selection to clear all highlighted residues.
+
+    Returns:
+        Selection object that clears all current selections in the viewer
+    """
     target = {"chain_name": None, "auth": False, "residue_numbers": []}
     sel = molstar_helper.get_selection(
         target,
@@ -51,8 +65,21 @@ def reset_selection():
 def get_molstar_rendered_components_seq_alignment(
     hot_residue_indices_list, cold_residue_indices_list, substitution_residue_list
 ):
-    """
-    Generate Dash Molstar components for each of the  list of indices
+    """Generates Dash Molstar components with color-coded residues for sequence alignment visualization.
+
+    Creates visual representations for different types of residues:
+    - Hot spots (gain-of-function): Red
+    - Cold spots (loss-of-function): Blue
+    - Both hot and cold: Purple
+    - Mismatches/substitutions: Ball-and-stick representation
+
+    Args:
+        hot_residue_indices_list: String representation of list of hot spot residue indices
+        cold_residue_indices_list: String representation of list of cold spot residue indices
+        substitution_residue_list: String representation of list of substitution residue indices
+
+    Returns:
+        Tuple of (component_list, hot_only_indices, cold_only_indices, both_hot_and_cold_indices)
     """
 
     mismatch_residues = list(map(int, ast.literal_eval(substitution_residue_list)))
@@ -132,7 +159,18 @@ def get_molstar_rendered_components_seq_alignment(
 
 
 def get_molstar_rendered_components_related_variants(substitution_residue_list):
-    """ """
+    """Generates Dash Molstar components for visualizing related variants.
+
+    Creates visual representations with:
+    - Main chain: Colored by sequence ID with transparency
+    - Substitution residues: Red cartoon and ball-and-stick overlay
+
+    Args:
+        substitution_residue_list: List of substitution residue indices
+
+    Returns:
+        List of molstar components for rendering the protein structure
+    """
 
     sub_residues_list = list(map(int, substitution_residue_list))
 
