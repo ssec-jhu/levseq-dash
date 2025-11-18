@@ -43,6 +43,7 @@ levseq-dash/
 ### Key Files
 
 - **main_app.py**: App initialization, page registration
+- **global_strings.py**: UI text, labels, and URL paths (most string constants are defined here)
 - **components/widgets.py**: Reusable Bootstrap components
 - **components/graphs.py**: Plotly figure creation
 - **components/vis.py**: DataTable configurations
