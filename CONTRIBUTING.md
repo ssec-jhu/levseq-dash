@@ -7,6 +7,51 @@ Thank you for your interest in contributing to LevSeq-Dash! This document provid
 
 Please note that this project has a [Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project, you agree to abide by its terms.
 
+## Quick Reference
+
+### Project Structure
+
+```
+levseq-dash/
+├── levseq_dash/
+│   └── app/
+│       ├── main_app.py              # Main Dash application
+│       ├── components/              # UI components
+│       │   ├── widgets.py           # Reusable widgets
+│       │   ├── graphs.py            # Plotting functions
+│       │   ├── vis.py               # Visualization utilities
+│       │   └── column_definitions.py # Table column configs
+│       ├── layouts/                 # Page layouts
+│       │   ├── layout_landing.py    # Home page
+│       │   ├── layout_upload.py     # Data upload page
+│       │   ├── layout_experiment.py # Experiment view
+│       │   └── layout_matching_sequences.py # Alignment view
+│       ├── data_manager/            # Data management
+│       │   ├── base.py              # Abstract base class
+│       │   ├── manager.py           # Factory functions
+│       │   ├── disk_manager.py      # Local storage
+│       │   └── experiment.py        # Experiment data model
+│       ├── sequence_aligner/        # Sequence alignment
+│       │   └── bio_python_pairwise_aligner.py
+│       ├── utils/                   # Utility functions
+│       └── config/                  # Configuration
+├── tests/                           # Test files
+├── docs/                            # Documentation
+└── requirements/                    # Dependencies
+```
+
+### Key Files
+
+- **main_app.py**: App initialization, page registration
+- **components/widgets.py**: Reusable Bootstrap components
+- **components/graphs.py**: Plotly figure creation
+- **components/vis.py**: DataTable configurations
+- **data_manager/disk_manager.py**: Local file operations
+- **data_manager/experiment.py**: Experiment data model
+- **sequence_aligner/bio_python_pairwise_aligner.py**: Alignment logic
+
+For detailed architecture, see [docs/source/developer.rst](docs/source/developer.rst).
+
 ## Development Setup
 
 See [README.md](README.md) for basic installation and setup instructions. For development:
@@ -378,34 +423,7 @@ The `conftest.py` file provides reusable fixtures for all tests:
 These fixtures avoid code duplication and ensure consistent test environments.
 
 ### Writing Tests
-
-Follow the Arrange-Act-Assert pattern and use shared fixtures from `conftest.py`:
-
-```python
-import pytest
-
-def test_with_data_manager(disk_manager_from_temp_data):
-    """Test using shared fixture from conftest."""
-    # Arrange - fixture provides data manager
-    dm = disk_manager_from_temp_data
-    
-    # Act - perform operations
-    experiments = dm.get_all_lab_experiments_with_meta_data()
-    
-    # Assert - verify results
-    assert isinstance(experiments, list)
-
-@pytest.fixture
-def custom_fixture():
-    """Custom fixture for specific test needs."""
-    return {"key": "value"}
-
-def test_custom(custom_fixture):
-    """Test using custom fixture."""
-    assert custom_fixture["key"] == "value"
-```
-
-**Best Practices**:
+- Follow the same pattern and use shared fixtures from `conftest.py`:
 - Use fixtures from `conftest.py` for common test data and mocks
 - Create custom fixtures in test files for specific test needs
 - Use `tmp_path` fixture for tests that modify files
@@ -429,13 +447,14 @@ tox -e test -- tests/test_specific.py::test_function
 
 **Location**: `docs/source/`
 * Add docstrings to all public functions (auto-extracted by Sphinx):
-* Update `docs/source/usage.rst` for user-facing features.
+* Update `docs/source/*.rst` as needed
 * Documentation is automatically built when you run `tox` without arguments.
 * Building Documentation:
     ```bash
     # Build docs
     tox -e build-docs
-    # open doc/build/html/index.html in browser
+    
+  # open doc/build/html/index.html in browser
     ```
 
 ## Code Style Guidelines
@@ -478,51 +497,6 @@ tox -e check-style  # Check code style
 tox -e format       # Format code
 tox -e build-docs   # Build documentation
 ```
-
-## Quick Reference
-
-### Project Structure
-
-```
-levseq-dash/
-├── levseq_dash/
-│   └── app/
-│       ├── main_app.py              # Main Dash application
-│       ├── components/              # UI components
-│       │   ├── widgets.py           # Reusable widgets
-│       │   ├── graphs.py            # Plotting functions
-│       │   ├── vis.py               # Visualization utilities
-│       │   └── column_definitions.py # Table column configs
-│       ├── layouts/                 # Page layouts
-│       │   ├── layout_landing.py    # Home page
-│       │   ├── layout_upload.py     # Data upload page
-│       │   ├── layout_experiment.py # Experiment view
-│       │   └── layout_matching_sequences.py # Alignment view
-│       ├── data_manager/            # Data management
-│       │   ├── base.py              # Abstract base class
-│       │   ├── manager.py           # Factory functions
-│       │   ├── disk_manager.py      # Local storage
-│       │   └── experiment.py        # Experiment data model
-│       ├── sequence_aligner/        # Sequence alignment
-│       │   └── bio_python_pairwise_aligner.py
-│       ├── utils/                   # Utility functions
-│       └── config/                  # Configuration
-├── tests/                           # Test files
-├── docs/                            # Documentation
-└── requirements/                    # Dependencies
-```
-
-### Key Files
-
-- **main_app.py**: App initialization, page registration
-- **components/widgets.py**: Reusable Bootstrap components
-- **components/graphs.py**: Plotly figure creation
-- **components/vis.py**: DataTable configurations
-- **data_manager/disk_manager.py**: Local file operations
-- **data_manager/experiment.py**: Experiment data model
-- **sequence_aligner/bio_python_pairwise_aligner.py**: Alignment logic
-
-For detailed architecture, see [docs/source/developer.rst](docs/source/developer.rst).
 
 ## License
 
