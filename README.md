@@ -205,4 +205,26 @@ Typically, the CI tests run in github actions will use tox to run below. No need
   * ``tox -e format``
   * ``tox -e py311``
 
+## Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for:
+
+## Documentation
+
+- **User Documentation**: See [docs/source/usage.rst](docs/source/usage.rst) for detailed usage instructions
+- **Developer Documentation**: See [docs/source/developer.rst](docs/source/developer.rst) for architecture and development guide
+- **API Documentation**: Auto-generated from code docstrings - build with `tox -e build-docs`
+
+To build documentation locally:
+```bash
+tox -e build-docs
+open docs/_build/html/index.html
+```
+
+**Note**: Documentation is automatically built when you run `tox` (without arguments).
+
+## License
+
+See [LICENSE](LICENSE) file for details.
+
 
