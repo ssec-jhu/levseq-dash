@@ -280,11 +280,7 @@ After selecting an experiment from the Explore page, you can view detailed analy
 - **Experiment Metadata Panel**: Shows experiment details
 - **Top Variants Table**: Interactive table of all variants
 - **Heatmap**: Visualizes variant data across well plates
-- Key components include:
-
-- **Experiment Table**: Interactive table showing all experiments with filtering and sorting capabilities
-- **Search and Filter**: Quick filtering by experiment name, barcode, or properties
-- **Retention of Function Curve / Single Site Mutagenesis Plot**: Shows variant rankings by fitness
+- **Retention of Function Curve / Site Specific Plot**: Shows variant rankings by fitness
 - **Reaction Visualization**: Displays substrate/product chemistry
 
 Protein Structure Viewer (3D)
