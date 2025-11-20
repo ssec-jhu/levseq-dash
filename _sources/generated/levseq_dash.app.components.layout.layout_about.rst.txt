@@ -1,0 +1,12 @@
+levseq\_dash.app.components.layout.layout\_about
+================================================
+
+.. automodule:: levseq_dash.app.components.layout.layout_about
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      get_layout
+   

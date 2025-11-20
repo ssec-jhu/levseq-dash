@@ -1,0 +1,21 @@
+levseq\_dash.app
+================
+
+.. automodule:: levseq_dash.app
+
+   
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   components
+   config
+   data_manager
+   global_strings
+   global_strings_html
+   main_app
+   main_app_test
+   sequence_aligner
+   utils

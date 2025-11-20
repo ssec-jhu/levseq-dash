@@ -1,0 +1,29 @@
+levseq\_dash.app.components.column\_definitions
+===============================================
+
+.. automodule:: levseq_dash.app.components.column_definitions
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      get_alignment_scores
+      get_alignment_stats
+      get_alignment_string
+      get_all_experiments_column_defs
+      get_an_experiments_matched_sequences_column_defs
+      get_checkbox
+      get_experiment_doi
+      get_experiment_id
+      get_experiment_meta
+      get_experiment_meta_smiles
+      get_experiment_name
+      get_fitness_ratio
+      get_matched_sequences_column_defs
+      get_matched_sequences_exp_hot_cold_data_column_defs
+      get_plate_well
+      get_smiles
+      get_substitutions
+      get_top_variant_column_defs
+   

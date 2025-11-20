@@ -1,0 +1,13 @@
+levseq\_dash.app.sequence\_aligner
+==================================
+
+.. automodule:: levseq_dash.app.sequence_aligner
+
+   
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   bio_python_pairwise_aligner

@@ -1,0 +1,313 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Reference &mdash; levseq_dash 0.1.dev1+gc756ef67f</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/../_static/custom.css?v=9acc99a8" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=d0d3f3d7"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="levseq_dash" href="generated/levseq_dash.html" />
+    <link rel="prev" title="Developer Guide" href="developer.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            levseq_dash
+              <img src="_static/SSEC_logo_vert_white_lg_1184x661.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="developer.html">Developer Guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-reference">Module Reference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/levseq_dash.html">levseq_dash</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#key-modules">Key Modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#components">Components</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/levseq_dash.app.components.widgets.html">levseq_dash.app.components.widgets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/levseq_dash.app.components.graphs.html">levseq_dash.app.components.graphs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/levseq_dash.app.components.vis.html">levseq_dash.app.components.vis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/levseq_dash.app.components.column_definitions.html">levseq_dash.app.components.column_definitions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#data-management">Data Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sequence-alignment">Sequence Alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utilities">Utilities</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/levseq_dash.app.utils.u_protein_viewer.html">levseq_dash.app.utils.u_protein_viewer</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#configuration">Configuration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/levseq_dash.app.config.settings.html">levseq_dash.app.config.settings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/levseq_dash.app.global_strings.html">levseq_dash.app.global_strings</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#using-the-api">Using the API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#import-patterns">Import Patterns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#common-usage-examples">Common Usage Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#notes">Notes</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Additional Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ssec-jhu/levseq-dash">GitHub Repository</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ssec-jhu/levseq-dash/blob/main/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ssec-jhu/levseq-dash/issues">Issue Tracker</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">levseq_dash</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">API Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading"></a></h1>
+<p>This page contains the API documentation for LevSeq-Dash, automatically generated from docstrings in the source code.</p>
+<nav class="contents local" id="table-of-contents">
+<p class="topic-title">Table of Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#overview" id="id1">Overview</a></p></li>
+<li><p><a class="reference internal" href="#module-reference" id="id2">Module Reference</a></p></li>
+<li><p><a class="reference internal" href="#key-modules" id="id3">Key Modules</a></p>
+<ul>
+<li><p><a class="reference internal" href="#components" id="id4">Components</a></p></li>
+<li><p><a class="reference internal" href="#data-management" id="id5">Data Management</a></p></li>
+<li><p><a class="reference internal" href="#sequence-alignment" id="id6">Sequence Alignment</a></p></li>
+<li><p><a class="reference internal" href="#utilities" id="id7">Utilities</a></p></li>
+<li><p><a class="reference internal" href="#configuration" id="id8">Configuration</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#using-the-api" id="id9">Using the API</a></p>
+<ul>
+<li><p><a class="reference internal" href="#import-patterns" id="id10">Import Patterns</a></p></li>
+<li><p><a class="reference internal" href="#common-usage-examples" id="id11">Common Usage Examples</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#notes" id="id12">Notes</a></p></li>
+</ul>
+</nav>
+<section id="overview">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Overview</a><a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>The LevSeq-Dash API is organized into several key modules:</p>
+<ul class="simple">
+<li><p><strong>Components</strong>: UI widgets, graphs, and visualization utilities</p></li>
+<li><p><strong>Data Manager</strong>: Data storage and retrieval abstractions</p></li>
+<li><p><strong>Sequence Aligner</strong>: Pairwise sequence alignment functionality</p></li>
+<li><p><strong>Utils</strong>: Helper functions for protein visualization, reactions, and alignment formatting</p></li>
+<li><p><strong>Config</strong>: Configuration and settings management</p></li>
+</ul>
+</section>
+<section id="module-reference">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Module Reference</a><a class="headerlink" href="#module-reference" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/levseq_dash.html#module-levseq_dash" title="levseq_dash"><code class="xref py py-obj docutils literal notranslate"><span class="pre">levseq_dash</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="key-modules">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Key Modules</a><a class="headerlink" href="#key-modules" title="Link to this heading"></a></h2>
+<section id="components">
+<h3><a class="toc-backref" href="#id4" role="doc-backlink">Components</a><a class="headerlink" href="#components" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/levseq_dash.app.components.widgets.html#module-levseq_dash.app.components.widgets" title="levseq_dash.app.components.widgets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">levseq_dash.app.components.widgets</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/levseq_dash.app.components.graphs.html#module-levseq_dash.app.components.graphs" title="levseq_dash.app.components.graphs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">levseq_dash.app.components.graphs</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/levseq_dash.app.components.vis.html#module-levseq_dash.app.components.vis" title="levseq_dash.app.components.vis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">levseq_dash.app.components.vis</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/levseq_dash.app.components.column_definitions.html#module-levseq_dash.app.components.column_definitions" title="levseq_dash.app.components.column_definitions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">levseq_dash.app.components.column_definitions</span></code></a></p></td>
+<td><p>AG Grid column definitions for data tables.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="data-management">
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">Data Management</a><a class="headerlink" href="#data-management" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+</tbody>
+</table>
+</section>
+<section id="sequence-alignment">
+<h3><a class="toc-backref" href="#id6" role="doc-backlink">Sequence Alignment</a><a class="headerlink" href="#sequence-alignment" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+</tbody>
+</table>
+</section>
+<section id="utilities">
+<h3><a class="toc-backref" href="#id7" role="doc-backlink">Utilities</a><a class="headerlink" href="#utilities" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/levseq_dash.app.utils.u_protein_viewer.html#module-levseq_dash.app.utils.u_protein_viewer" title="levseq_dash.app.utils.u_protein_viewer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">levseq_dash.app.utils.u_protein_viewer</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="configuration">
+<h3><a class="toc-backref" href="#id8" role="doc-backlink">Configuration</a><a class="headerlink" href="#configuration" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/levseq_dash.app.config.settings.html#module-levseq_dash.app.config.settings" title="levseq_dash.app.config.settings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">levseq_dash.app.config.settings</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/levseq_dash.app.global_strings.html#module-levseq_dash.app.global_strings" title="levseq_dash.app.global_strings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">levseq_dash.app.global_strings</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="using-the-api">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">Using the API</a><a class="headerlink" href="#using-the-api" title="Link to this heading"></a></h2>
+<section id="import-patterns">
+<h3><a class="toc-backref" href="#id10" role="doc-backlink">Import Patterns</a><a class="headerlink" href="#import-patterns" title="Link to this heading"></a></h3>
+<p>For application components:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">levseq_dash.app.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">widgets</span><span class="p">,</span> <span class="n">graphs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">levseq_dash.app.data_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_data_manager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">levseq_dash.app.sequence_aligner</span><span class="w"> </span><span class="kn">import</span> <span class="n">BioPythonPairwiseAligner</span>
+</pre></div>
+</div>
+<p>For configuration:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">levseq_dash.app.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">levseq_dash.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">global_strings</span> <span class="k">as</span> <span class="n">gs</span>
+</pre></div>
+</div>
+</section>
+<section id="common-usage-examples">
+<h3><a class="toc-backref" href="#id11" role="doc-backlink">Common Usage Examples</a><a class="headerlink" href="#common-usage-examples" title="Link to this heading"></a></h3>
+<p><strong>Creating a Data Manager</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">levseq_dash.app.data_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_data_manager</span>
+
+<span class="c1"># Creates appropriate manager based on configuration</span>
+<span class="n">data_manager</span> <span class="o">=</span> <span class="n">create_data_manager</span><span class="p">()</span>
+
+<span class="c1"># Get all experiments</span>
+<span class="n">experiments</span> <span class="o">=</span> <span class="n">data_manager</span><span class="o">.</span><span class="n">get_all_lab_experiments_with_meta_data</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>Using the Sequence Aligner</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">levseq_dash.app.sequence_aligner</span><span class="w"> </span><span class="kn">import</span> <span class="n">BioPythonPairwiseAligner</span>
+
+<span class="n">aligner</span> <span class="o">=</span> <span class="n">BioPythonPairwiseAligner</span><span class="p">()</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">aligner</span><span class="o">.</span><span class="n">align</span><span class="p">(</span><span class="n">query_sequence</span><span class="p">,</span> <span class="n">target_sequences</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Creating Visualizations</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">levseq_dash.app.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">graphs</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>  <span class="c1"># Your data</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">graphs</span><span class="o">.</span><span class="n">create_heatmap</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">x_col</span><span class="o">=</span><span class="s1">&#39;position&#39;</span><span class="p">,</span> <span class="n">y_col</span><span class="o">=</span><span class="s1">&#39;value&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="notes">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">Notes</a><a class="headerlink" href="#notes" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>All classes and functions include detailed docstrings following Google style</p></li>
+<li><p>Type hints are used throughout for better IDE support</p></li>
+<li><p>See <a class="reference internal" href="developer.html"><span class="doc">Developer Guide</span></a> for architectural details and contribution guidelines</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="developer.html" class="btn btn-neutral float-left" title="Developer Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="generated/levseq_dash.html" class="btn btn-neutral float-right" title="levseq_dash" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, SSEC-JHU.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

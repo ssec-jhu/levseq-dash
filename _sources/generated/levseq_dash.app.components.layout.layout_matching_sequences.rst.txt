@@ -1,0 +1,15 @@
+levseq\_dash.app.components.layout.layout\_matching\_sequences
+==============================================================
+
+.. automodule:: levseq_dash.app.components.layout.layout_matching_sequences
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      create_layout_reaction
+      get_layout
+      get_seq_align_form
+      get_similar_sequences_results_layout
+   

@@ -1,0 +1,13 @@
+levseq\_dash.app.components.layout.layout\_landing
+==================================================
+
+.. automodule:: levseq_dash.app.components.layout.layout_landing
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      action_card
+      get_layout
+   

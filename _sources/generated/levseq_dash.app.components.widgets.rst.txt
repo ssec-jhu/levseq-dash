@@ -1,0 +1,32 @@
+levseq\_dash.app.components.widgets
+===================================
+
+.. automodule:: levseq_dash.app.components.widgets
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      generate_label_with_info
+      get_alert
+      get_download_radio_combo
+      get_download_text_icon_combo
+      get_info_icon_tooltip_bundle
+      get_input_plus_info_ico_bundle
+      get_label_fixed_for_form
+      get_protein_viewer
+      get_radio_items_download_options
+      get_table_all_experiments
+      get_table_experiment_related_variants
+      get_table_experiment_top_variants
+      get_table_matched_sequences
+      get_table_matched_sequences_exp_hot_cold_data
+      get_tooltip
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      DownloadType
+   

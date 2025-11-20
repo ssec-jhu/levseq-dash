@@ -1,0 +1,34 @@
+levseq\_dash.app.config.settings
+================================
+
+.. automodule:: levseq_dash.app.config.settings
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      get_data_path
+      get_db_settings
+      get_deployment_mode
+      get_disk_settings
+      get_five_letter_id_prefix
+      get_logging_settings
+      get_storage_mode
+      is_data_manager_logging_enabled
+      is_data_modification_enabled
+      is_db_mode
+      is_disk_mode
+      is_local_instance_mode
+      is_pairwise_aligner_logging_enabled
+      is_public_playground_mode
+      is_sequence_alignment_profiling_enabled
+      load_config
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      DeploymentMode
+      StorageMode
+   

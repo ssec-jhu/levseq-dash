@@ -1,0 +1,19 @@
+levseq\_dash.app.components.layout
+==================================
+
+.. automodule:: levseq_dash.app.components.layout
+
+   
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   layout_about
+   layout_bars
+   layout_experiment
+   layout_explore
+   layout_landing
+   layout_matching_sequences
+   layout_upload

@@ -1,0 +1,13 @@
+levseq\_dash.app.components.layout.layout\_bars
+===============================================
+
+.. automodule:: levseq_dash.app.components.layout.layout_bars
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      get_navbar
+      get_sidebar
+   

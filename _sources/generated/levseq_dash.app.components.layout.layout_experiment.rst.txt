@@ -1,0 +1,19 @@
+levseq\_dash.app.components.layout.layout\_experiment
+=====================================================
+
+.. automodule:: levseq_dash.app.components.layout.layout_experiment
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      get_card_experiment_related_variants_result
+      get_eppcr_plot_layout
+      get_layout
+      get_seq_align_form_exp
+      get_slider_area_layout
+      get_ssm_plot_layout
+      get_tab_experiment_main
+      get_tab_experiment_related_variants
+   

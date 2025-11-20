@@ -1,0 +1,18 @@
+levseq\_dash.app.components.graphs
+==================================
+
+.. automodule:: levseq_dash.app.components.graphs
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      creat_heatmap
+      creat_rank_plot
+      create_ssm_plot
+      extract_single_site_mutations
+      filter_single_site_mutations
+      format_mutation_annotation
+      get_single_site_mutation_pattern
+   

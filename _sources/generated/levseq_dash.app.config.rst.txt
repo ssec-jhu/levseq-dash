@@ -1,0 +1,13 @@
+levseq\_dash.app.config
+=======================
+
+.. automodule:: levseq_dash.app.config
+
+   
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   settings
