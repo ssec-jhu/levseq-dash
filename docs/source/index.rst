@@ -1,4 +1,4 @@
-Welcome to LevSeq-Dash Documentation!
+Welcome to LevSeqDash Documentation!
 ==========================================
 
 **LevSeq-Dash** is a user-friendly web application that provides a rich and interactive 
