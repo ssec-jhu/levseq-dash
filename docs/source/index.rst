@@ -55,7 +55,6 @@ For detailed setup instructions, see :doc:`usage`.
    :caption: Developer Documentation
 
    developer
-   api
 
 .. toctree::
    :maxdepth: 1

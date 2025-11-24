@@ -23,31 +23,50 @@ High-Level Architecture
 .. code-block:: text
 
     ┌─────────────────────────────────────────────────────────┐
-    │                     Dash Application                    │
-    │                     (main_app.py)                       │
+    │              Dash Application (main_app.py)             │
+    │  - Routes pages                                         │
+    │  - Registers all callbacks                              │
+    │  - Initializes data manager via factory                 │
     └─────────────────┬───────────────────────────────────────┘
                       │
-         ┌────────────┼────────────┐
-         │            │            │
-         ▼            ▼            ▼
-    ┌────────┐  ┌─────────┐  ┌──────────┐
-    │ Layouts│  │Callbacks│  │Components│
-    └────┬───┘  └────┬────┘  └─────┬────┘
-         │           │              │
-         └───────────┴──────────────┘
-                     │
-         ┌───────────┴───────────┐
-         │                       │
-         ▼                       ▼
-    ┌─────────────┐      ┌──────────────┐
-    │Data Manager │      │Seq Aligner   │
-    └──────┬──────┘      └──────┬───────┘
-           │                    │
-           ▼                    ▼
-    ┌─────────────┐      ┌──────────────┐
-    │ Experiment  │      │  BioPython   │
-    │   Model     │      │   Aligner    │
-    └─────────────┘      └──────────────┘
+         ┌────────────┴────────────┐
+         │                         │
+         ▼                         ▼
+    ┌──────────┐             ┌──────────┐
+    │ Layouts  │             │Components│
+    │ (UI def) │             │(Widgets) │
+    └────┬─────┘             └─────┬────┘
+         │                         │
+         └─────────┬───────────────┘
+                   │
+       ┌───────────┴────────────┐
+       │                        │
+       ▼                        ▼
+    ┌─────────────────────┐    ┌──────────────┐
+    │ Data Manager        │    │Seq Aligner   │
+    │ ┌─────────────────┐ │    └──────┬───────┘
+    │ │ Factory         │ │           │
+    │ │ (manager.py)    │ │           ▼
+    │ └────────┬────────┘ │    ┌──────────────┐
+    │          │          │    │  BioPython   │
+    │          ▼          │    │   Aligner    │
+    │ ┌─────────────────┐ │    └──────────────┘
+    │ │ Base (Abstract) │ │
+    │ └────────┬────────┘ │
+    │          │          │
+    │     ┌────┴────┐     │
+    │     ▼         ▼     │
+    │ ┌──────┐ ┌────────┐ │
+    │ │ Disk │ │ S3/DB  │ │
+    │ │ Mgr  │ │(Future)│ │ 
+    │ └──┬───┘ └────────┘ │
+    └────┼────────────────┘
+         │
+         ▼
+    ┌─────────────┐
+    │ Experiment  │
+    │   Model     │
+    └─────────────┘
 
 Core Modules
 ~~~~~~~~~~~~
@@ -182,42 +201,239 @@ Sequence Alignment Workflow
         └─> Filter & Sort Results
             └─> Return top matches
 
-Configuration System
---------------------
+Configuration File and Settings
+--------------------------------
 
-The application uses a YAML-based configuration system located in ``levseq_dash/app/config/``.
+The application uses a YAML-based configuration system located in ``levseq_dash/app/config/``. The configuration determines deployment mode, storage backend, data paths, and logging behavior.
+
+Configuration Files
+~~~~~~~~~~~~~~~~~~~
+
+**Key Files**:
+
+- ``config.yaml``: Main configuration file with all settings
+- ``settings.py``: Python module that loads and validates configuration
+
+**Location**: ``levseq_dash/app/config/``
 
 Configuration Structure
 ~~~~~~~~~~~~~~~~~~~~~~~
 
+The ``config.yaml`` file is organized into several sections:
+
 .. code-block:: yaml
 
-    # Deployment mode
-    deployment-mode: "local-instance"  # or "public-playground"
-
+    # Deployment mode: "public-playground" or "local-instance"
+    deployment-mode: "local-instance"
+    
+    # Storage backend: "disk" or "db" (database not yet implemented)
+    storage-mode: "disk"
+    
+    # Disk storage settings
     disk:
-      enable-data-modification: true
-      local-data-path: "/path/to/data"
       five-letter-id-prefix: "MYLAB"
-
+      local-data-path: "/path/to/data"
+      enable-data-modification: true
+    
+    # Database settings (not yet implemented)
+    db:
+      host: ""
+      port: ""
+    
+    # Logging and profiling flags
     logging:
       sequence-alignment-profiling: false
       data-manager: false
       pairwise-aligner: false
 
+Deployment Modes
+~~~~~~~~~~~~~~~~
+
+The application supports two deployment modes that determine how data is accessed and whether modifications are allowed.
+
+**public-playground Mode**
+
+- **Purpose**: Read-only demo environment for public websites
+- **Data Location**: Bundled inside container at ``levseq_dash/app/data/``
+- **Data Modification**: Disabled (cannot upload/delete experiments)
+- **Use Case**: Public demos and deployment
+
+.. code-block:: yaml
+
+    deployment-mode: "public-playground"
+    # all other settings ignored or set to false
+
+**local-instance Mode**
+
+- **Purpose**: Full-featured installation with persistent storage
+- **Data Location**: External mount via Docker volume or local path
+- **Data Modification**: User can enable in order to upload/delete experiments
+- **ID Prefix**: Required when data modification is enabled - a 5-letter lab identifier prepended to all experiment UUIDs
+- **Use Case**: Research labs, production deployments
+
+.. code-block:: yaml
+
+    deployment-mode: "local-instance"
+    disk:
+      enable-data-modification: true # or false if that is not wanted
+      local-data-path: "/path/to/data"
+      five-letter-id-prefix: "MYLAB"  # Required when enable-data-modification: true
+
+Storage Modes
+~~~~~~~~~~~~~
+
+**Disk Storage** (Current Implementation)
+
+Uses local filesystem for data persistence:
+
+.. code-block:: yaml
+
+    storage-mode: "disk"
+    disk:
+      five-letter-id-prefix: "MYLAB"
+      local-data-path: "/Users/username/data"
+      enable-data-modification: true
+
+**Settings**:
+
+- ``five-letter-id-prefix``: 5-letter code prepended to experiment UUIDs
+  
+  - **Required** when ``enable-data-modification: true``
+  - Must be exactly 5 letters (no numbers or special characters)
+  - Automatically converted to uppercase
+  - Example: "MYLAB" → experiment IDs like "MYLAB-a1b2c3d4"
+
+- ``local-data-path``: Path to data directory
+  
+  - Can be absolute: ``"/Users/username/Desktop/MyData"``
+  - Can be relative to app: ``"data"`` → ``levseq_dash/app/data/``
+  - Overridden by ``DATA_PATH`` environment variable
+
+- ``enable-data-modification``: Allow upload/delete operations
+  
+  - ``true``: Full read-write access (requires valid ID prefix)
+  - ``false``: Read-only mode
+
+**Database Storage** (Future)
+
+Planned support for database backends:
+
+.. code-block:: yaml
+
+    storage-mode: "db"
+    db:
+      host: "localhost"
+      port: "5432"
+
+Logging Settings
+~~~~~~~~~~~~~~~~
+
+Enable detailed logging for debugging and performance analysis:
+
+.. code-block:: yaml
+
+    logging:
+      sequence-alignment-profiling: true   # Log alignment timing
+      data-manager: true                    # Log data operations
+      pairwise-aligner: true               # Log alignment details
+
+**Logging Flags**:
+
+- ``sequence-alignment-profiling``: Times alignment operations, useful for performance tuning
+- ``data-manager``: Logs experiment CRUD operations, file I/O, cache hits/misses
+- ``pairwise-aligner``: Logs BioPython alignment parameters and results
+
+**Accessing Logging Flags in Code**:
+
+.. code-block:: python
+
+    from levseq_dash.app.config import settings
+    from levseq_dash.app.utils import utils
+    
+    # Check if logging is enabled
+    if settings.is_data_manager_logging_enabled():
+        utils.log_with_context("Loading experiment...", log_flag=True)
+
 Environment Variables
 ~~~~~~~~~~~~~~~~~~~~~
 
-Configuration can be overridden using environment variables:
+Environment variables override ``config.yaml`` settings and are the preferred method for Docker deployments.
 
-- ``DATA_PATH``: Override data storage path
-- ``FIVE_LETTER_ID_PREFIX``: Override experiment ID prefix
+**Available Variables**:
 
-Priority (highest to lowest):
+- ``DATA_PATH``: Override ``disk.local-data-path``
+  
+  .. code-block:: bash
+  
+      docker run -e DATA_PATH=/data -v /host/data:/data levseq-dash
 
-1. Environment variables
-2. config.yaml settings
-3. Default values
+- ``FIVE_LETTER_ID_PREFIX``: Override ``disk.five-letter-id-prefix``
+  
+  .. code-block:: bash
+  
+      docker run -e FIVE_LETTER_ID_PREFIX=PROD levseq-dash
+
+**Configuration Priority** (highest to lowest):
+
+1. Environment variables (``DATA_PATH``, ``FIVE_LETTER_ID_PREFIX``)
+2. ``config.yaml`` settings
+3. Default values (if applicable)
+
+
+
+Adding New Configuration Options
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To add new configuration settings:
+
+1. **Add to config.yaml**:
+
+   .. code-block:: yaml
+
+       my-new-section:
+         my-setting: "value"
+
+2. **Add getter function to settings.py**:
+
+   .. code-block:: python
+
+       def get_my_new_section():
+           config = load_config()
+           return config.get("my-new-section", {})
+       
+       def get_my_setting():
+           section = get_my_new_section()
+           return section.get("my-setting", "default-value")
+
+3. **Use in application code**:
+
+   .. code-block:: python
+
+       from levseq_dash.app.config import settings
+       
+       value = settings.get_my_setting()
+
+4. **Add environment variable support** (optional):
+
+   .. code-block:: python
+
+       def get_my_setting():
+           # Check environment variable first
+           env_value = os.environ.get("MY_SETTING")
+           if env_value:
+               return env_value
+           
+           # Fall back to config file
+           section = get_my_new_section()
+           return section.get("my-setting", "default-value")
+
+**Best Practices**:
+
+- Use descriptive setting names with hyphens (``my-setting``, not ``MySetting``)
+- Provide sensible defaults in getter functions
+- Document new settings in config.yaml with comments
+- Use environment variables for secrets and deployment-specific values
+- Validate settings at application startup (raise clear errors for invalid values)
 
 Adding New Features
 -------------------
@@ -382,7 +598,7 @@ Add plotting functions to ``components/graphs.py``:
         return fig
 
 Extending Data Manager
-~~~~~~~~~~~~~~~~~~~~~~
+----------------------
 
 The data manager uses an abstract base class pattern with a factory for creating instances:
 
@@ -467,34 +683,6 @@ To add a new storage backend (e.g., S3 or database):
 3. Update the factory in ``manager.py`` to return your new manager
 4. Add configuration options to ``config.yaml``
 
-Adding New CSV Data Columns
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-**Location**: CSV files uploaded via the UI, loaded by ``Experiment`` class in ``levseq_dash/app/data_manager/experiment.py``
-
-When you add new columns to your experimental CSV data, the ``Experiment`` class reads the entire CSV using ``pd.read_csv()``, so new columns are **automatically included** in ``self.data_df`` without code changes.
-
-**Do you need to modify upload/download?**
-
-- **Upload**: No changes needed. The data manager saves the entire CSV as-is.
-- **Download**: No changes needed. The data manager exports the entire ``data_df`` DataFrame.
-
-**When you DO need to make changes:**
-
-1. **If new columns need special validation** during upload:
-   
-   - Add validation in ``data_manager/disk_manager.py`` → ``add_experiment_from_ui()``
-   - Example: Check for required columns, validate data types
-
-2. **If new columns should appear in the UI** (tables, graphs):
-   
-   - Update column definitions in ``column_definitions.py``
-   - Add to visualizations in ``graphs.py`` or layout files
-
-3. **If new columns need transformation** during load/save:
-   
-   - Modify ``Experiment.__init__()`` to process the new columns
-   - Update serialization methods if storing derived data
 
 Testing
 -------
@@ -548,92 +736,6 @@ The ``conftest.py`` file provides reusable fixtures for all tests:
 
 These fixtures avoid code duplication and ensure consistent test environments.
 
-Writing Tests
-~~~~~~~~~~~~~
-
-Unit Tests
-^^^^^^^^^^
-
-Test individual functions in isolation:
-
-.. code-block:: python
-
-    import pytest
-    from levseq_dash.app.utils import utils
-    
-    def test_my_function():
-        """Test my_function with valid input."""
-        # Arrange
-        input_data = {"key": "value"}
-        
-        # Act
-        result = utils.my_function(input_data)
-        
-        # Assert
-        assert result["key"] == "processed_value"
-
-Integration Tests
-^^^^^^^^^^^^^^^^^
-
-Test interactions between components:
-
-.. code-block:: python
-
-    def test_data_manager_experiment_lifecycle():
-        """Test complete experiment lifecycle."""
-        manager = create_data_manager()
-        
-        # Add experiment
-        uuid = manager.add_experiment_from_ui(...)
-        
-        # Retrieve experiment
-        exp = manager.get_experiment(uuid)
-        assert exp is not None
-        
-        # Delete experiment
-        deleted = manager.delete_experiment(uuid)
-        assert deleted is True
-
-Fixtures
-^^^^^^^^
-
-Use pytest fixtures for reusable test data. Prefer using shared fixtures from ``conftest.py`` when available:
-
-.. code-block:: python
-
-    def test_with_shared_fixture(disk_manager_from_temp_data):
-        """Test using shared fixture from conftest.py."""
-        # disk_manager_from_temp_data is provided by conftest.py
-        manager = disk_manager_from_temp_data
-        
-        # Add and test experiment
-        uuid = manager.add_experiment_from_ui(...)
-        exp = manager.get_experiment(uuid)
-        assert exp is not None
-
-Create custom fixtures in test files for specific needs:
-
-.. code-block:: python
-
-    @pytest.fixture
-    def sample_dataframe():
-        """Create a sample DataFrame for testing."""
-        return pd.DataFrame({
-            "smiles": ["CCO", "CC(O)C"],
-            "fitness_value": [1.5, 2.0],
-        })
-    
-    def test_with_custom_fixture(sample_dataframe):
-        """Test using custom fixture data."""
-        result = process_data(sample_dataframe)
-        assert len(result) == 2
-
-**Best Practices**:
-
-- Use fixtures from ``conftest.py`` for common test data and mocks
-- Create custom fixtures in test files for specific test needs
-- Use ``tmp_path`` fixture for tests that modify files
-- Mock configuration to isolate tests from system settings
 
 Debugging
 ---------
@@ -665,227 +767,11 @@ Use logging in your code:
 Dash DevTools
 ~~~~~~~~~~~~~
 
-Enable Dash DevTools for debugging callbacks:
+Enable Dash DevTools for debugging callbacks and hot reload:
 
 .. code-block:: python
 
-    app = Dash(__name__, suppress_callback_exceptions=True)
-    app.enable_dev_tools(debug=True, dev_tools_hot_reload=True)
+    if __name__ == "__main__":
+        app.run(debug=True)
 
-Profiling
-~~~~~~~~~
 
-Profile performance-critical code:
-
-.. code-block:: python
-
-    import time
-    
-    start = time.time()
-    result = expensive_operation()
-    duration = time.time() - start
-    print(f"Operation took {duration:.2f} seconds")
-
-Performance Optimization
-------------------------
-
-Caching
-~~~~~~~
-
-Use LRU cache for expensive operations:
-
-.. code-block:: python
-
-    from cachetools import LRUCache
-    
-    class MyManager:
-        def __init__(self):
-            self._cache = LRUCache(maxsize=20)
-        
-        def get_data(self, key):
-            if key in self._cache:
-                return self._cache[key]
-            
-            data = expensive_load(key)
-            self._cache[key] = data
-            return data
-
-Data Loading
-~~~~~~~~~~~~
-
-- Read only necessary columns from CSV files
-- Use ``usecols`` parameter in ``pd.read_csv()``
-- Cache loaded experiment objects
-- Lazy load large data structures
-
-Callback Optimization
-~~~~~~~~~~~~~~~~~~~~~
-
-- Use ``prevent_initial_call=True`` when appropriate
-- Avoid unnecessary callback chains
-- Use ``dash.no_update`` to skip updates
-- Batch updates when possible
-
-Deployment
-----------
-
-Docker Deployment
-~~~~~~~~~~~~~~~~~
-
-Build and run using Docker:
-
-.. code-block:: bash
-
-    # Build image
-    docker build -t levseq-dash:latest .
-    
-    # Run container
-    docker run -p 8050:8050 \
-        -v /host/data:/data \
-        -e DATA_PATH=/data \
-        -e FIVE_LETTER_ID_PREFIX=PROD \
-        levseq-dash:latest
-
-Production Considerations
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-1. **Security**:
-   
-   - Validate all user inputs
-   - Sanitize file uploads
-   - Use HTTPS in production
-   - Keep dependencies updated
-
-2. **Performance**:
-   
-   - Enable caching
-   - Optimize database queries
-   - Use production WSGI server (e.g., Gunicorn)
-   - Monitor resource usage
-
-3. **Reliability**:
-   
-   - Implement error handling
-   - Add logging and monitoring
-   - Regular backups of data
-   - Health check endpoints
-
-4. **Scalability**:
-   
-   - Consider horizontal scaling
-   - Use load balancing
-   - Optimize data access patterns
-   - Profile and optimize bottlenecks
-
-Common Development Tasks
-------------------------
-
-Running the Application
-~~~~~~~~~~~~~~~~~~~~~~~
-
-.. code-block:: bash
-
-    # Development mode with auto-reload
-    python -m levseq_dash.app.main_app
-    
-    # With tox
-    tox -e dev
-
-Running Tests
-~~~~~~~~~~~~~
-
-.. code-block:: bash
-
-    # All tests
-    tox -e test
-    
-    # Specific test
-    tox -e test -- tests/test_utils/test_utils.py::test_function
-    
-    # With coverage
-    tox -e test -- --cov=levseq_dash --cov-report=html
-
-Code Formatting
-~~~~~~~~~~~~~~~
-
-.. code-block:: bash
-
-    # Format code
-    tox -e format
-    
-    # Check linting
-    tox -e lint
-
-Building Documentation
-~~~~~~~~~~~~~~~~~~~~~~
-
-.. code-block:: bash
-
-    # Build docs
-    tox -e docs
-    
-    # Open in browser
-    open docs/_build/html/index.html
-
-Security Scanning
-~~~~~~~~~~~~~~~~~
-
-.. code-block:: bash
-
-    # Run security checks
-    tox -e security
-
-Troubleshooting
----------------
-
-Common Issues
-~~~~~~~~~~~~~
-
-**Import Errors**
-    Ensure all dependencies are installed and virtual environment is activated.
-
-**Callback Errors**
-    Check that all Input/Output IDs match component IDs in the layout.
-
-**Data Loading Issues**
-    Verify file paths and permissions. Enable data-manager logging.
-
-**Alignment Performance**
-    For large datasets, consider implementing pagination or filtering.
-
-**Docker Build Failures**
-    Clear Docker cache: ``docker build --no-cache``
-
-Getting Help
-~~~~~~~~~~~~
-
-- Check existing documentation
-- Search GitHub issues
-- Create a new issue with detailed information
-- Contact maintainers
-
-Resources
----------
-
-External Documentation
-~~~~~~~~~~~~~~~~~~~~~~
-
-- `Dash Documentation <https://dash.plotly.com/>`_
-- `Plotly Python Documentation <https://plotly.com/python/>`_
-- `Pandas Documentation <https://pandas.pydata.org/docs/>`_
-- `BioPython Documentation <https://biopython.org/wiki/Documentation>`_
-- `Pytest Documentation <https://docs.pytest.org/>`_
-
-Related Projects
-~~~~~~~~~~~~~~~~
-
-- `Dash Bootstrap Components <https://dash-bootstrap-components.opensource.faculty.ai/>`_
-- `Dash AG Grid <https://dash.plotly.com/dash-ag-grid>`_
-- `Dash Molstar <https://github.com/ssec-jhu/dash-molstar>`_
-
-Contributing
-------------
-
-See the `CONTRIBUTING.md <https://github.com/ssec-jhu/levseq-dash/blob/main/CONTRIBUTING.md>`_ file for detailed contribution guidelines.
-
-Thank you for contributing to LevSeq-Dash!
