@@ -6,6 +6,8 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15880411.svg)](https://doi.org/10.5281/zenodo.17310822)
 
 > **🌐 Live Demo**: This application is publicly available at [https://enzengdb.org/](https://enzengdb.org/)
+> 
+> **📖 Documentation**: Documentation is available at [https://ssec-jhu.github.io/levseq-dash/](https://ssec-jhu.github.io/levseq-dash/)
 
 
 
