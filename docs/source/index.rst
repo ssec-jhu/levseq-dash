@@ -43,8 +43,6 @@ For detailed setup instructions, see :doc:`usage`.
 
    This project is under active development. Features and APIs may change.
 
-Documentation Sections
-----------------------
 
 .. toctree::
    :maxdepth: 2
@@ -63,6 +61,4 @@ Documentation Sections
    :maxdepth: 1
    :caption: Additional Resources
 
-   GitHub Repository <https://github.com/ssec-jhu/levseq-dash>
-   Contributing Guide <https://github.com/ssec-jhu/levseq-dash/blob/main/CONTRIBUTING.md>
-   Issue Tracker <https://github.com/ssec-jhu/levseq-dash/issues>
+
