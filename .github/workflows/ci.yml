@@ -82,6 +82,7 @@ jobs:
         flags: unittests
         name: codecov-umbrella
         verbose: true
+        slug: ssec-jhu/levseq-dash
 
   docs:
     name: Build docs with Python ${{ matrix.python-version }}
