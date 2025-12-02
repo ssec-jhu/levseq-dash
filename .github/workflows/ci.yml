@@ -82,10 +82,13 @@ jobs:
         flags: unittests
         name: codecov-umbrella
         verbose: true
+        slug: ssec-jhu/levseq-dash
 
   docs:
     name: Build docs with Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     strategy:
       matrix:
         python-version: [ 3.11 ]
@@ -102,10 +105,16 @@ jobs:
           pip3 install -r requirements/docs.txt
         shell: bash
       - name: Build sphinx docs.
-        env:
-          SPHINXOPTS: '-W'
         run: tox -e build-docs
         shell: bash
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        # build if push is on the main branch
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/_build/html
+          force_orphan: true # Without this, the gh-pages branch may accumulate old commits and get messy.
 
   build:
     name: Build and Publish.

@@ -6,6 +6,8 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15880411.svg)](https://doi.org/10.5281/zenodo.17310822)
 
 > **🌐 Live Demo**: This application is publicly available at [https://enzengdb.org/](https://enzengdb.org/)
+> 
+> **📖 Documentation**: Documentation is available at [https://ssec-jhu.github.io/levseq-dash/](https://ssec-jhu.github.io/levseq-dash/)
 
 
 
@@ -204,5 +206,27 @@ Typically, the CI tests run in github actions will use tox to run below. No need
   * ``tox -e test``
   * ``tox -e format``
   * ``tox -e py311``
+
+## Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for:
+
+## Documentation
+
+- **User Documentation**: See [docs/source/usage.rst](docs/source/usage.rst) for detailed usage instructions
+- **Developer Documentation**: See [docs/source/developer.rst](docs/source/developer.rst) for architecture and development guide
+- **API Documentation**: Auto-generated from code docstrings - build with `tox -e build-docs`
+
+To build documentation locally:
+```bash
+tox -e build-docs
+open docs/_build/html/index.html
+```
+
+**Note**: Documentation is automatically built when you run `tox` (without arguments).
+
+## License
+
+See [LICENSE](LICENSE) file for details.
 
 
