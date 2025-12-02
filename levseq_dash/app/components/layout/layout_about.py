@@ -59,32 +59,32 @@ def get_layout():
             ),
             html.H4("Upload Data", className="page-title mt-4"),
             html.Hr(),
-        html.Div(
-            [
-            html.P(
+            html.Div(
                 [
-                    "To upload your sequence and fitness data, please ",
-                                        html.A(
-                        "use the local instance",
-                        href="https://github.com/ssec-jhu/levseq-dash",
-                        target="_blank",
+                    html.P(
+                        [
+                            "To upload your sequence and fitness data, please ",
+                            html.A(
+                                "use the local instance",
+                                href="https://github.com/ssec-jhu/levseq-dash",
+                                target="_blank",
+                            ),
+                            ". This functionality is disabled on the public version to preserve "
+                            "data integrity and protect your privacy."
+                            "Once your data is added locally, "
+                            "your data will appear alongside other experiments. If you wish to "
+                            "make your data public, first validate the upload "
+                            "on the local instance"
+                            "to ensure everything appears as intended. When satisfied with the "
+                            "visualization, please take screenshots of the "
+                            "dashboard and email them "
+                            "to us at: ylong[at]caltech[dot]edu, "
+                            "along with the upload files and "
+                            "the required metadata. If you have any issues, also please email us.",
+                        ]
                     ),
-                    ". This functionality is disabled on the public version to preserve "
-                    "data integrity and protect your privacy."
-                    "Once your data is added locally, "
-                    "your data will appear alongside other experiments. If you wish to "
-                    "make your data public, first validate the upload "
-                    "on the local instance"
-                    "to ensure everything appears as intended. When satisfied with the "
-                    "visualization, please take screenshots of the "
-                    "dashboard and email them "
-                    "to us at: ylong[at]caltech[dot]edu, "
-                    "along with the upload files and "
-                    "the required metadata. If you have any issues, also please email us.",
-                ]
-            ),
-        ],
-            className="px-5",
+                ],
+                className="px-5",
             ),
             html.H4("Core Functionality", className="page-title mt-4"),
             html.Hr(),
@@ -330,7 +330,6 @@ def get_layout():
                 [
                     html.Ol(
                         [
-
                             html.Li(
                                 [
                                     html.Span("Explore Experiments: ", className=primary_bold),

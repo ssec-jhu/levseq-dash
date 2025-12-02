@@ -1757,4 +1757,4 @@ def toggle_sidebar(toggle_clicks, sidebar_class):
 
 # Run the app
 if __name__ == "__main__":
-    app.run() # debug=True for debugging
+    app.run()  # debug=True for debugging
