@@ -70,7 +70,7 @@ def get_layout():
                         target="_blank",
                     ),
                     ". This functionality is disabled on the public version to preserve "
-                    "data integrity and protect your privacy. <br>"
+                    "data integrity and protect your privacy."
                     "Once your data is added locally, "
                     "your data will appear alongside other experiments. If you wish to "
                     "make your data public, first validate the upload "
