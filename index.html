@@ -1,0 +1,182 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to LevSeqDash Documentation! &mdash; levseq_dash 0.1.dev1+gba072e22a</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/../_static/custom.css?v=9acc99a8" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=97907de9"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Usage Guide" href="usage.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            levseq_dash
+              <img src="_static/SSEC_logo_vert_white_lg_1184x661.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="developer.html">Developer Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">levseq_dash</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Welcome to LevSeqDash Documentation!</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="welcome-to-levseqdash-documentation">
+<h1>Welcome to LevSeqDash Documentation!<a class="headerlink" href="#welcome-to-levseqdash-documentation" title="Link to this heading"></a></h1>
+<p><strong>LevSeq-Dash</strong> is a user-friendly web application that provides a rich and interactive
+visualization dashboard for directed evolution experiments. It allows researchers to explore
+protein structures in 3D, analyze sequence variants, and make data-driven decisions about
+which mutations lead to enhanced activity.</p>
+<p>🌐 <strong>Live Application</strong>: <a class="reference external" href="https://enzengdb.org/">https://enzengdb.org/</a></p>
+<p>📦 <strong>Source Code</strong>: <a class="reference external" href="https://github.com/ssec-jhu/levseq-dash">GitHub Repository</a></p>
+<section id="key-features">
+<h2>Key Features<a class="headerlink" href="#key-features" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>3D Protein Structure Visualization</strong>: Interactive protein viewer with Molstar integration</p></li>
+<li><p><strong>Sequence-Function Database</strong>: Comprehensive storage of directed evolution experiment data</p></li>
+<li><p><strong>Variant Analysis</strong>: Compare and analyze mutations across experiments</p></li>
+<li><p><strong>Sequence Alignment</strong>: BLASTP-style pairwise alignment for finding related sequences</p></li>
+<li><p><strong>Interactive Visualizations</strong>: Heatmaps, rank plots, and single-site mutagenesis plots</p></li>
+<li><p><strong>Lab Data Management</strong>: Upload, manage, and analyze your own experiment data</p></li>
+</ul>
+</section>
+<section id="quick-start">
+<h2>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading"></a></h2>
+<p>Get started quickly with the Public Playground mode:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Clone the repository</span>
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/ssec-jhu/levseq-dash.git
+<span class="nb">cd</span><span class="w"> </span>levseq-dash
+
+<span class="c1"># Build and run with Docker</span>
+docker<span class="w"> </span>build<span class="w"> </span>.<span class="w"> </span>-t<span class="w"> </span>levseq-dash:playground<span class="w"> </span>--no-cache
+docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">8050</span>:8050<span class="w"> </span>levseq-dash:playground
+
+<span class="c1"># Access at http://0.0.0.0:8050</span>
+</pre></div>
+</div>
+<p>For detailed setup instructions, see <a class="reference internal" href="usage.html"><span class="doc">Usage Guide</span></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This project is under active development. Features and APIs may change.</p>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#configuration">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#uploading-experiments">Uploading Experiments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#exploring-the-database">Exploring The Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#single-experiment-page">Single Experiment Page</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#sequence-alignment">Sequence Alignment</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="developer.html">Developer Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#architecture-overview">Architecture Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#data-flow">Data Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#configuration-file-and-settings">Configuration File and Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#adding-new-features">Adding New Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#extending-data-manager">Extending Data Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#debugging">Debugging</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="usage.html" class="btn btn-neutral float-right" title="Usage Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, SSEC-JHU.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

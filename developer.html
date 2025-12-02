@@ -1,0 +1,928 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Developer Guide &mdash; levseq_dash 0.1.dev1+gba072e22a</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/../_static/custom.css?v=9acc99a8" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=97907de9"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Usage Guide" href="usage.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            levseq_dash
+              <img src="_static/SSEC_logo_vert_white_lg_1184x661.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Developer Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#architecture-overview">Architecture Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#high-level-architecture">High-Level Architecture</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core-modules">Core Modules</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#data-flow">Data Flow</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#upload-workflow">Upload Workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#experiment-view-workflow">Experiment View Workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sequence-alignment-workflow">Sequence Alignment Workflow</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-file-and-settings">Configuration File and Settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#configuration-files">Configuration Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#configuration-structure">Configuration Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#deployment-modes">Deployment Modes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#storage-modes">Storage Modes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#logging-settings">Logging Settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#environment-variables">Environment Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adding-new-configuration-options">Adding New Configuration Options</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#adding-new-features">Adding New Features</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#adding-a-new-page">Adding a New Page</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adding-a-new-callback">Adding a New Callback</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adding-a-new-widget">Adding a New Widget</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adding-a-new-graph-type">Adding a New Graph Type</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#extending-data-manager">Extending Data Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#testing">Testing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#test-organization">Test Organization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#shared-test-fixtures-conftest-py">Shared Test Fixtures (conftest.py)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#debugging">Debugging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#logging">Logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dash-devtools">Dash DevTools</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">levseq_dash</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Developer Guide</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/developer.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="developer-guide">
+<h1>Developer Guide<a class="headerlink" href="#developer-guide" title="Link to this heading"></a></h1>
+<p>This guide provides detailed information for developers contributing to or extending LevSeq-Dash.</p>
+<nav class="contents local" id="table-of-contents">
+<p class="topic-title">Table of Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#getting-started" id="id1">Getting Started</a></p></li>
+<li><p><a class="reference internal" href="#architecture-overview" id="id2">Architecture Overview</a></p>
+<ul>
+<li><p><a class="reference internal" href="#high-level-architecture" id="id3">High-Level Architecture</a></p></li>
+<li><p><a class="reference internal" href="#core-modules" id="id4">Core Modules</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#data-flow" id="id5">Data Flow</a></p>
+<ul>
+<li><p><a class="reference internal" href="#upload-workflow" id="id6">Upload Workflow</a></p></li>
+<li><p><a class="reference internal" href="#experiment-view-workflow" id="id7">Experiment View Workflow</a></p></li>
+<li><p><a class="reference internal" href="#sequence-alignment-workflow" id="id8">Sequence Alignment Workflow</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#configuration-file-and-settings" id="id9">Configuration File and Settings</a></p>
+<ul>
+<li><p><a class="reference internal" href="#configuration-files" id="id10">Configuration Files</a></p></li>
+<li><p><a class="reference internal" href="#configuration-structure" id="id11">Configuration Structure</a></p></li>
+<li><p><a class="reference internal" href="#deployment-modes" id="id12">Deployment Modes</a></p></li>
+<li><p><a class="reference internal" href="#storage-modes" id="id13">Storage Modes</a></p></li>
+<li><p><a class="reference internal" href="#logging-settings" id="id14">Logging Settings</a></p></li>
+<li><p><a class="reference internal" href="#environment-variables" id="id15">Environment Variables</a></p></li>
+<li><p><a class="reference internal" href="#adding-new-configuration-options" id="id16">Adding New Configuration Options</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#adding-new-features" id="id17">Adding New Features</a></p>
+<ul>
+<li><p><a class="reference internal" href="#adding-a-new-page" id="id18">Adding a New Page</a></p></li>
+<li><p><a class="reference internal" href="#adding-a-new-callback" id="id19">Adding a New Callback</a></p></li>
+<li><p><a class="reference internal" href="#adding-a-new-widget" id="id20">Adding a New Widget</a></p></li>
+<li><p><a class="reference internal" href="#adding-a-new-graph-type" id="id21">Adding a New Graph Type</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#extending-data-manager" id="id22">Extending Data Manager</a></p></li>
+<li><p><a class="reference internal" href="#testing" id="id23">Testing</a></p>
+<ul>
+<li><p><a class="reference internal" href="#test-organization" id="id24">Test Organization</a></p></li>
+<li><p><a class="reference internal" href="#shared-test-fixtures-conftest-py" id="id25">Shared Test Fixtures (conftest.py)</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#debugging" id="id26">Debugging</a></p>
+<ul>
+<li><p><a class="reference internal" href="#logging" id="id27">Logging</a></p></li>
+<li><p><a class="reference internal" href="#dash-devtools" id="id28">Dash DevTools</a></p></li>
+</ul>
+</li>
+</ul>
+</nav>
+<section id="getting-started">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Getting Started</a><a class="headerlink" href="#getting-started" title="Link to this heading"></a></h2>
+<p>For initial setup and contribution guidelines, please see the <a class="reference external" href="https://github.com/ssec-jhu/levseq-dash/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a> file in the repository root.</p>
+</section>
+<section id="architecture-overview">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Architecture Overview</a><a class="headerlink" href="#architecture-overview" title="Link to this heading"></a></h2>
+<p>LevSeq-Dash is built using the Dash framework (Plotly) for creating interactive web applications in Python. The application follows a modular architecture with clear separation of concerns.</p>
+<section id="high-level-architecture">
+<h3><a class="toc-backref" href="#id3" role="doc-backlink">High-Level Architecture</a><a class="headerlink" href="#high-level-architecture" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>┌─────────────────────────────────────────────────────────┐
+│              Dash Application (main_app.py)             │
+│  - Routes pages                                         │
+│  - Registers all callbacks                              │
+│  - Initializes data manager via factory                 │
+└─────────────────┬───────────────────────────────────────┘
+                  │
+     ┌────────────┴────────────┐
+     │                         │
+     ▼                         ▼
+┌──────────┐             ┌──────────┐
+│ Layouts  │             │Components│
+│ (UI def) │             │(Widgets) │
+└────┬─────┘             └─────┬────┘
+     │                         │
+     └─────────┬───────────────┘
+               │
+   ┌───────────┴────────────┐
+   │                        │
+   ▼                        ▼
+┌─────────────────────┐    ┌──────────────┐
+│ Data Manager        │    │Seq Aligner   │
+│ ┌─────────────────┐ │    └──────┬───────┘
+│ │ Factory         │ │           │
+│ │ (manager.py)    │ │           ▼
+│ └────────┬────────┘ │    ┌──────────────┐
+│          │          │    │  BioPython   │
+│          ▼          │    │   Aligner    │
+│ ┌─────────────────┐ │    └──────────────┘
+│ │ Base (Abstract) │ │
+│ └────────┬────────┘ │
+│          │          │
+│     ┌────┴────┐     │
+│     ▼         ▼     │
+│ ┌──────┐ ┌────────┐ │
+│ │ Disk │ │ S3/DB  │ │
+│ │ Mgr  │ │(Future)│ │
+│ └──┬───┘ └────────┘ │
+└────┼────────────────┘
+     │
+     ▼
+┌─────────────┐
+│ Experiment  │
+│   Model     │
+└─────────────┘
+</pre></div>
+</div>
+</section>
+<section id="core-modules">
+<h3><a class="toc-backref" href="#id4" role="doc-backlink">Core Modules</a><a class="headerlink" href="#core-modules" title="Link to this heading"></a></h3>
+<ol class="arabic">
+<li><p><strong>Main Application</strong> (<code class="docutils literal notranslate"><span class="pre">main_app.py</span></code>)</p>
+<ul class="simple">
+<li><p>Entry point for the Dash application</p></li>
+<li><p>Registers all callbacks</p></li>
+<li><p>Initializes data manager and configuration</p></li>
+<li><p>Sets up routing and navigation</p></li>
+</ul>
+</li>
+<li><p><strong>Global Strings</strong> (<code class="docutils literal notranslate"><span class="pre">global_strings.py</span></code>)</p>
+<ul class="simple">
+<li><p>Centralized location for UI text, labels, and messages</p></li>
+<li><p>URL path constants for page routing</p></li>
+<li><p>Navigation labels and menu items</p></li>
+<li><p><strong>Note</strong>: Most string constants in the application are defined here for consistency and easy localization</p></li>
+</ul>
+</li>
+<li><p><strong>Data Manager</strong> (<code class="docutils literal notranslate"><span class="pre">data_manager/</span></code>)</p>
+<ul class="simple">
+<li><p><strong>Abstract Base Class</strong> (<code class="docutils literal notranslate"><span class="pre">base.py</span></code>): Defines interface for data operations</p></li>
+<li><p><strong>Factory</strong> (<code class="docutils literal notranslate"><span class="pre">manager.py</span></code>): Creates appropriate data manager based on configuration</p></li>
+<li><p><strong>Disk Manager</strong> (<code class="docutils literal notranslate"><span class="pre">disk_manager.py</span></code>): Local file storage implementation</p></li>
+<li><p><strong>Experiment Model</strong> (<code class="docutils literal notranslate"><span class="pre">experiment.py</span></code>): Data model for experiment objects</p></li>
+</ul>
+<p>The data manager handles:
+- Experiment CRUD operations
+- Metadata management
+- File I/O operations
+- Caching with LRU cache</p>
+</li>
+<li><p><strong>Sequence Aligner</strong> (<code class="docutils literal notranslate"><span class="pre">sequence_aligner/</span></code>)</p>
+<ul class="simple">
+<li><p>Wraps BioPython’s pairwise alignment functionality</p></li>
+<li><p>Provides BLASTP-style alignment for protein sequences</p></li>
+<li><p>Calculates alignment scores and statistics</p></li>
+<li><p>Formats alignment strings for visualization</p></li>
+</ul>
+</li>
+<li><p><strong>Layouts</strong> (<code class="docutils literal notranslate"><span class="pre">layouts/</span></code>)</p>
+<p>Each layout module defines a page in the application:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">layout_landing.py</span></code>: Home page with navigation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">layout_upload.py</span></code>: Data upload and validation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">layout_experiment.py</span></code>: Single experiment view with variants</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">layout_bars.py</span></code>: All experiments table</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">layout_matching_sequences.py</span></code>: Sequence alignment results</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">layout_explore.py</span></code>: Sequence exploration and filtering</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">layout_about.py</span></code>: About page and documentation</p></li>
+</ul>
+</li>
+<li><p><strong>Components</strong> (<code class="docutils literal notranslate"><span class="pre">components/</span></code>)</p>
+<p>Reusable UI components:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">widgets.py</span></code>: Tables, viewers, form elements, alerts</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">graphs.py</span></code>: Plotting functions (heatmaps, rank plots, Single-Site Mutagenesis plots)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vis.py</span></code>: Styling constants and cell coloring utilities</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">column_definitions.py</span></code>: AG Grid column configurations</p></li>
+</ul>
+</li>
+<li><p><strong>Utils</strong> (<code class="docutils literal notranslate"><span class="pre">utils/</span></code>)</p>
+<p>Helper functions for:</p>
+<ul class="simple">
+<li><p>Protein structure visualization</p></li>
+<li><p>Chemical reaction rendering</p></li>
+<li><p>Sequence alignment formatting</p></li>
+<li><p>General utilities (logging, data processing)</p></li>
+</ul>
+</li>
+</ol>
+</section>
+</section>
+<section id="data-flow">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Data Flow</a><a class="headerlink" href="#data-flow" title="Link to this heading"></a></h2>
+<section id="upload-workflow">
+<h3><a class="toc-backref" href="#id6" role="doc-backlink">Upload Workflow</a><a class="headerlink" href="#upload-workflow" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>User Upload
+    │
+    ├─&gt; Validate CSV format
+    │   └─&gt; Check required columns
+    │       └─&gt; Validate well format
+    │           └─&gt; Verify SMILES strings
+    │               └─&gt; Check for duplicates
+    │
+    ├─&gt; Process Data
+    │   └─&gt; Calculate checksums
+    │       └─&gt; Extract parent sequence
+    │           └─&gt; Generate UUID
+    │
+    └─&gt; Store Files
+        ├─&gt; Save metadata (JSON)
+        ├─&gt; Save experiment data (CSV)
+        └─&gt; Save geometry (CIF)
+</pre></div>
+</div>
+</section>
+<section id="experiment-view-workflow">
+<h3><a class="toc-backref" href="#id7" role="doc-backlink">Experiment View Workflow</a><a class="headerlink" href="#experiment-view-workflow" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Select Experiment
+    │
+    ├─&gt; Load from Cache (if available)
+    │   └─&gt; Return cached Experiment object
+    │
+    └─&gt; Load from Disk
+        ├─&gt; Read CSV (core columns only)
+        ├─&gt; Read CIF geometry
+        ├─&gt; Calculate unique SMILES
+        ├─&gt; Extract plates
+        └─&gt; Cache Experiment object
+</pre></div>
+</div>
+</section>
+<section id="sequence-alignment-workflow">
+<h3><a class="toc-backref" href="#id8" role="doc-backlink">Sequence Alignment Workflow</a><a class="headerlink" href="#sequence-alignment-workflow" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Input Sequence
+    │
+    ├─&gt; Get All Lab Sequences
+    │   └─&gt; Extract parent from each experiment
+    │
+    ├─&gt; Setup BLASTP Aligner
+    │   └─&gt; Configure scoring matrix
+    │       └─&gt; Set gap penalties
+    │
+    ├─&gt; Perform Alignments
+    │   └─&gt; For each target sequence:
+    │       ├─&gt; Run pairwise alignment
+    │       ├─&gt; Calculate score &amp; statistics
+    │       └─&gt; Format alignment string
+    │
+    └─&gt; Filter &amp; Sort Results
+        └─&gt; Return top matches
+</pre></div>
+</div>
+</section>
+</section>
+<section id="configuration-file-and-settings">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">Configuration File and Settings</a><a class="headerlink" href="#configuration-file-and-settings" title="Link to this heading"></a></h2>
+<p>The application uses a YAML-based configuration system located in <code class="docutils literal notranslate"><span class="pre">levseq_dash/app/config/</span></code>. The configuration determines deployment mode, storage backend, data paths, and logging behavior.</p>
+<section id="configuration-files">
+<h3><a class="toc-backref" href="#id10" role="doc-backlink">Configuration Files</a><a class="headerlink" href="#configuration-files" title="Link to this heading"></a></h3>
+<p><strong>Key Files</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">config.yaml</span></code>: Main configuration file with all settings</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">settings.py</span></code>: Python module that loads and validates configuration</p></li>
+</ul>
+<p><strong>Location</strong>: <code class="docutils literal notranslate"><span class="pre">levseq_dash/app/config/</span></code></p>
+</section>
+<section id="configuration-structure">
+<h3><a class="toc-backref" href="#id11" role="doc-backlink">Configuration Structure</a><a class="headerlink" href="#configuration-structure" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code> file is organized into several sections:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Deployment mode: &quot;public-playground&quot; or &quot;local-instance&quot;</span>
+<span class="nt">deployment-mode</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;local-instance&quot;</span>
+
+<span class="c1"># Storage backend: &quot;disk&quot; or &quot;db&quot; (database not yet implemented)</span>
+<span class="nt">storage-mode</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;disk&quot;</span>
+
+<span class="c1"># Disk storage settings</span>
+<span class="nt">disk</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">five-letter-id-prefix</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;MYLAB&quot;</span>
+<span class="w">  </span><span class="nt">local-data-path</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;/path/to/data&quot;</span>
+<span class="w">  </span><span class="nt">enable-data-modification</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+
+<span class="c1"># Database settings (not yet implemented)</span>
+<span class="nt">db</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span>
+
+<span class="c1"># Logging and profiling flags</span>
+<span class="nt">logging</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">sequence-alignment-profiling</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">  </span><span class="nt">data-manager</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">  </span><span class="nt">pairwise-aligner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</pre></div>
+</div>
+</section>
+<section id="deployment-modes">
+<h3><a class="toc-backref" href="#id12" role="doc-backlink">Deployment Modes</a><a class="headerlink" href="#deployment-modes" title="Link to this heading"></a></h3>
+<p>The application supports two deployment modes that determine how data is accessed and whether modifications are allowed.</p>
+<p><strong>public-playground Mode</strong></p>
+<ul class="simple">
+<li><p><strong>Purpose</strong>: Read-only demo environment for public websites</p></li>
+<li><p><strong>Data Location</strong>: Bundled inside container at <code class="docutils literal notranslate"><span class="pre">levseq_dash/app/data/</span></code></p></li>
+<li><p><strong>Data Modification</strong>: Disabled (cannot upload/delete experiments)</p></li>
+<li><p><strong>Use Case</strong>: Public demos and deployment</p></li>
+</ul>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">deployment-mode</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;public-playground&quot;</span>
+<span class="c1"># all other settings ignored or set to false</span>
+</pre></div>
+</div>
+<p><strong>local-instance Mode</strong></p>
+<ul class="simple">
+<li><p><strong>Purpose</strong>: Full-featured installation with persistent storage</p></li>
+<li><p><strong>Data Location</strong>: External mount via Docker volume or local path</p></li>
+<li><p><strong>Data Modification</strong>: User can enable in order to upload/delete experiments</p></li>
+<li><p><strong>ID Prefix</strong>: Required when data modification is enabled - a 5-letter lab identifier prepended to all experiment UUIDs</p></li>
+<li><p><strong>Use Case</strong>: Research labs, production deployments</p></li>
+</ul>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">deployment-mode</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;local-instance&quot;</span>
+<span class="nt">disk</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">enable-data-modification</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1"># or false if that is not wanted</span>
+<span class="w">  </span><span class="nt">local-data-path</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;/path/to/data&quot;</span>
+<span class="w">  </span><span class="nt">five-letter-id-prefix</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;MYLAB&quot;</span><span class="w">  </span><span class="c1"># Required when enable-data-modification: true</span>
+</pre></div>
+</div>
+</section>
+<section id="storage-modes">
+<h3><a class="toc-backref" href="#id13" role="doc-backlink">Storage Modes</a><a class="headerlink" href="#storage-modes" title="Link to this heading"></a></h3>
+<p><strong>Disk Storage</strong> (Current Implementation)</p>
+<p>Uses local filesystem for data persistence:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">storage-mode</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;disk&quot;</span>
+<span class="nt">disk</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">five-letter-id-prefix</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;MYLAB&quot;</span>
+<span class="w">  </span><span class="nt">local-data-path</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;/Users/username/data&quot;</span>
+<span class="w">  </span><span class="nt">enable-data-modification</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<p><strong>Settings</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">five-letter-id-prefix</span></code>: 5-letter code prepended to experiment UUIDs</p>
+<ul>
+<li><p><strong>Required</strong> when <code class="docutils literal notranslate"><span class="pre">enable-data-modification:</span> <span class="pre">true</span></code></p></li>
+<li><p>Must be exactly 5 letters (no numbers or special characters)</p></li>
+<li><p>Automatically converted to uppercase</p></li>
+<li><p>Example: “MYLAB” → experiment IDs like “MYLAB-a1b2c3d4”</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">local-data-path</span></code>: Path to data directory</p>
+<ul>
+<li><p>Can be absolute: <code class="docutils literal notranslate"><span class="pre">&quot;/Users/username/Desktop/MyData&quot;</span></code></p></li>
+<li><p>Can be relative to app: <code class="docutils literal notranslate"><span class="pre">&quot;data&quot;</span></code> → <code class="docutils literal notranslate"><span class="pre">levseq_dash/app/data/</span></code></p></li>
+<li><p>Overridden by <code class="docutils literal notranslate"><span class="pre">DATA_PATH</span></code> environment variable</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">enable-data-modification</span></code>: Allow upload/delete operations</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">true</span></code>: Full read-write access (requires valid ID prefix)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">false</span></code>: Read-only mode</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>Database Storage</strong> (Future)</p>
+<p>Planned support for database backends:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">storage-mode</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;db&quot;</span>
+<span class="nt">db</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;localhost&quot;</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;5432&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="logging-settings">
+<h3><a class="toc-backref" href="#id14" role="doc-backlink">Logging Settings</a><a class="headerlink" href="#logging-settings" title="Link to this heading"></a></h3>
+<p>Enable detailed logging for debugging and performance analysis:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">logging</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">sequence-alignment-profiling</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">   </span><span class="c1"># Log alignment timing</span>
+<span class="w">  </span><span class="nt">data-manager</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">                    </span><span class="c1"># Log data operations</span>
+<span class="w">  </span><span class="nt">pairwise-aligner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">               </span><span class="c1"># Log alignment details</span>
+</pre></div>
+</div>
+<p><strong>Logging Flags</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">sequence-alignment-profiling</span></code>: Times alignment operations, useful for performance tuning</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">data-manager</span></code>: Logs experiment CRUD operations, file I/O, cache hits/misses</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pairwise-aligner</span></code>: Logs BioPython alignment parameters and results</p></li>
+</ul>
+<p><strong>Accessing Logging Flags in Code</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">levseq_dash.app.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">levseq_dash.app.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span>
+
+<span class="c1"># Check if logging is enabled</span>
+<span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">is_data_manager_logging_enabled</span><span class="p">():</span>
+    <span class="n">utils</span><span class="o">.</span><span class="n">log_with_context</span><span class="p">(</span><span class="s2">&quot;Loading experiment...&quot;</span><span class="p">,</span> <span class="n">log_flag</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="environment-variables">
+<h3><a class="toc-backref" href="#id15" role="doc-backlink">Environment Variables</a><a class="headerlink" href="#environment-variables" title="Link to this heading"></a></h3>
+<p>Environment variables override <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code> settings and are the preferred method for Docker deployments.</p>
+<p><strong>Available Variables</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">DATA_PATH</span></code>: Override <code class="docutils literal notranslate"><span class="pre">disk.local-data-path</span></code></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span><span class="nv">DATA_PATH</span><span class="o">=</span>/data<span class="w"> </span>-v<span class="w"> </span>/host/data:/data<span class="w"> </span>levseq-dash
+</pre></div>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">FIVE_LETTER_ID_PREFIX</span></code>: Override <code class="docutils literal notranslate"><span class="pre">disk.five-letter-id-prefix</span></code></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span><span class="nv">FIVE_LETTER_ID_PREFIX</span><span class="o">=</span>PROD<span class="w"> </span>levseq-dash
+</pre></div>
+</div>
+</li>
+</ul>
+<p><strong>Configuration Priority</strong> (highest to lowest):</p>
+<ol class="arabic simple">
+<li><p>Environment variables (<code class="docutils literal notranslate"><span class="pre">DATA_PATH</span></code>, <code class="docutils literal notranslate"><span class="pre">FIVE_LETTER_ID_PREFIX</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config.yaml</span></code> settings</p></li>
+<li><p>Default values (if applicable)</p></li>
+</ol>
+</section>
+<section id="adding-new-configuration-options">
+<h3><a class="toc-backref" href="#id16" role="doc-backlink">Adding New Configuration Options</a><a class="headerlink" href="#adding-new-configuration-options" title="Link to this heading"></a></h3>
+<p>To add new configuration settings:</p>
+<ol class="arabic">
+<li><p><strong>Add to config.yaml</strong>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">my-new-section</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">my-setting</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;value&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Add getter function to settings.py</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">get_my_new_section</span><span class="p">():</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;my-new-section&quot;</span><span class="p">,</span> <span class="p">{})</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_my_setting</span><span class="p">():</span>
+    <span class="n">section</span> <span class="o">=</span> <span class="n">get_my_new_section</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">section</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;my-setting&quot;</span><span class="p">,</span> <span class="s2">&quot;default-value&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Use in application code</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">levseq_dash.app.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+
+<span class="n">value</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">get_my_setting</span><span class="p">()</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Add environment variable support</strong> (optional):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">get_my_setting</span><span class="p">():</span>
+    <span class="c1"># Check environment variable first</span>
+    <span class="n">env_value</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;MY_SETTING&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">env_value</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">env_value</span>
+
+    <span class="c1"># Fall back to config file</span>
+    <span class="n">section</span> <span class="o">=</span> <span class="n">get_my_new_section</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">section</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;my-setting&quot;</span><span class="p">,</span> <span class="s2">&quot;default-value&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p><strong>Best Practices</strong>:</p>
+<ul class="simple">
+<li><p>Use descriptive setting names with hyphens (<code class="docutils literal notranslate"><span class="pre">my-setting</span></code>, not <code class="docutils literal notranslate"><span class="pre">MySetting</span></code>)</p></li>
+<li><p>Provide sensible defaults in getter functions</p></li>
+<li><p>Document new settings in config.yaml with comments</p></li>
+<li><p>Use environment variables for secrets and deployment-specific values</p></li>
+<li><p>Validate settings at application startup (raise clear errors for invalid values)</p></li>
+</ul>
+</section>
+</section>
+<section id="adding-new-features">
+<h2><a class="toc-backref" href="#id17" role="doc-backlink">Adding New Features</a><a class="headerlink" href="#adding-new-features" title="Link to this heading"></a></h2>
+<section id="adding-a-new-page">
+<h3><a class="toc-backref" href="#id18" role="doc-backlink">Adding a New Page</a><a class="headerlink" href="#adding-a-new-page" title="Link to this heading"></a></h3>
+<ol class="arabic">
+<li><p><strong>Create layout</strong> in <code class="docutils literal notranslate"><span class="pre">layouts/layout_my_page.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dash_bootstrap_components</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dbc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dash</span><span class="w"> </span><span class="kn">import</span> <span class="n">html</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_layout</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">dbc</span><span class="o">.</span><span class="n">Container</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create the page layout.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">dbc</span><span class="o">.</span><span class="n">Container</span><span class="p">([</span>
+        <span class="n">dbc</span><span class="o">.</span><span class="n">Row</span><span class="p">([</span>
+            <span class="n">dbc</span><span class="o">.</span><span class="n">Col</span><span class="p">([</span>
+                <span class="n">html</span><span class="o">.</span><span class="n">H1</span><span class="p">(</span><span class="s2">&quot;Page Title&quot;</span><span class="p">),</span>
+                <span class="c1"># Your page content</span>
+            <span class="p">])</span>
+        <span class="p">])</span>
+    <span class="p">])</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Define the path</strong> in <code class="docutils literal notranslate"><span class="pre">global_strings.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Add navigation label</span>
+<span class="n">nav_my_page</span> <span class="o">=</span> <span class="s2">&quot;My Page&quot;</span>
+
+<span class="c1"># Add URL path (at the end of the file with other paths)</span>
+<span class="n">nav_my_page_path</span> <span class="o">=</span> <span class="s2">&quot;/my-page&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Register page route</strong> in <code class="docutils literal notranslate"><span class="pre">main_app.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import the layout module at the top</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">levseq_dash.app.layouts</span><span class="w"> </span><span class="kn">import</span> <span class="n">layout_my_page</span>
+
+<span class="c1"># Add route in the route_page callback (around line 109)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span><span class="n">Output</span><span class="p">(</span><span class="s2">&quot;id-page-content&quot;</span><span class="p">,</span> <span class="s2">&quot;children&quot;</span><span class="p">),</span> <span class="n">Input</span><span class="p">(</span><span class="s2">&quot;url&quot;</span><span class="p">,</span> <span class="s2">&quot;pathname&quot;</span><span class="p">))</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">route_page</span><span class="p">(</span><span class="n">pathname</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">pathname</span> <span class="o">==</span> <span class="s2">&quot;/&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">layout_landing</span><span class="o">.</span><span class="n">get_layout</span><span class="p">()</span>
+    <span class="c1"># ... existing routes ...</span>
+    <span class="k">elif</span> <span class="n">pathname</span> <span class="o">==</span> <span class="n">gs</span><span class="o">.</span><span class="n">nav_my_page_path</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">layout_my_page</span><span class="o">.</span><span class="n">get_layout</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">html</span><span class="o">.</span><span class="n">Div</span><span class="p">([</span><span class="n">html</span><span class="o">.</span><span class="n">H2</span><span class="p">(</span><span class="s2">&quot;Page not found!&quot;</span><span class="p">)])</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Add navigation link</strong> in <code class="docutils literal notranslate"><span class="pre">layouts/layout_bars.py</span></code> sidebar or navbar</p></li>
+<li><p><strong>Add callbacks</strong> in <code class="docutils literal notranslate"><span class="pre">main_app.py</span></code> (not in the layout file):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
+    <span class="n">Output</span><span class="p">(</span><span class="s2">&quot;my-output&quot;</span><span class="p">,</span> <span class="s2">&quot;children&quot;</span><span class="p">),</span>
+    <span class="n">Input</span><span class="p">(</span><span class="s2">&quot;my-button&quot;</span><span class="p">,</span> <span class="s2">&quot;n_clicks&quot;</span><span class="p">),</span>
+    <span class="n">State</span><span class="p">(</span><span class="s2">&quot;my-input&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">),</span>
+    <span class="n">prevent_initial_call</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">handle_my_page_interaction</span><span class="p">(</span><span class="n">n_clicks</span><span class="p">,</span> <span class="n">input_value</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handle user interaction on my page.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">n_clicks</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dash</span><span class="o">.</span><span class="n">no_update</span>
+    <span class="c1"># Process and return result</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Processed: </span><span class="si">{</span><span class="n">input_value</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p><strong>Important Notes:</strong></p>
+<ul class="simple">
+<li><p>Layout files only define the UI structure via <code class="docutils literal notranslate"><span class="pre">get_layout()</span></code> function</p></li>
+<li><p>All callbacks must be registered in <code class="docutils literal notranslate"><span class="pre">main_app.py</span></code> (not in layout files)</p></li>
+<li><p>Page routing is handled by the <code class="docutils literal notranslate"><span class="pre">route_page</span></code> callback in <code class="docutils literal notranslate"><span class="pre">main_app.py</span></code></p></li>
+<li><p>Path constants are defined in <code class="docutils literal notranslate"><span class="pre">global_strings.py</span></code> for consistency</p></li>
+</ul>
+</section>
+<section id="adding-a-new-callback">
+<h3><a class="toc-backref" href="#id19" role="doc-backlink">Adding a New Callback</a><a class="headerlink" href="#adding-a-new-callback" title="Link to this heading"></a></h3>
+<p>Callbacks should be added in the relevant layout module:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dash</span><span class="w"> </span><span class="kn">import</span> <span class="n">callback</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Output</span>
+
+<span class="nd">@callback</span><span class="p">(</span>
+    <span class="n">Output</span><span class="p">(</span><span class="s2">&quot;output-id&quot;</span><span class="p">,</span> <span class="s2">&quot;property&quot;</span><span class="p">),</span>
+    <span class="n">Input</span><span class="p">(</span><span class="s2">&quot;input-id&quot;</span><span class="p">,</span> <span class="s2">&quot;property&quot;</span><span class="p">),</span>
+    <span class="n">prevent_initial_call</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">my_callback</span><span class="p">(</span><span class="n">input_value</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Callback description.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        input_value: Description.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Output value description.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Process input</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">process_data</span><span class="p">(</span><span class="n">input_value</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
+</pre></div>
+</div>
+<p>Best Practices:</p>
+<ul class="simple">
+<li><p>Use descriptive callback names</p></li>
+<li><p>Add docstrings</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">prevent_initial_call=True</span></code> when appropriate</p></li>
+<li><p>Handle errors gracefully</p></li>
+<li><p>Log important operations</p></li>
+</ul>
+</section>
+<section id="adding-a-new-widget">
+<h3><a class="toc-backref" href="#id20" role="doc-backlink">Adding a New Widget</a><a class="headerlink" href="#adding-a-new-widget" title="Link to this heading"></a></h3>
+<p>Add reusable components to <code class="docutils literal notranslate"><span class="pre">components/widgets.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">get_my_widget</span><span class="p">(</span><span class="n">widget_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a custom widget.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        widget_id: Unique ID for the widget.</span>
+<span class="sd">        **kwargs: Additional properties.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Component with configured properties.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">dbc</span><span class="o">.</span><span class="n">Component</span><span class="p">(</span>
+        <span class="nb">id</span><span class="o">=</span><span class="n">widget_id</span><span class="p">,</span>
+        <span class="c1"># Add properties</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="adding-a-new-graph-type">
+<h3><a class="toc-backref" href="#id21" role="doc-backlink">Adding a New Graph Type</a><a class="headerlink" href="#adding-a-new-graph-type" title="Link to this heading"></a></h3>
+<p>Add plotting functions to <code class="docutils literal notranslate"><span class="pre">components/graphs.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">create_my_plot</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">x_col</span><span class="p">,</span> <span class="n">y_col</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a custom plot visualization.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df: DataFrame containing data.</span>
+<span class="sd">        x_col: Column name for X-axis.</span>
+<span class="sd">        y_col: Column name for Y-axis.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        go.Figure: Plotly figure object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">px</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x_col</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y_col</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span>
+        <span class="c1"># Customize appearance</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">fig</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="extending-data-manager">
+<h2><a class="toc-backref" href="#id22" role="doc-backlink">Extending Data Manager</a><a class="headerlink" href="#extending-data-manager" title="Link to this heading"></a></h2>
+<p>The data manager uses an abstract base class pattern with a factory for creating instances:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>┌─────────────────────────────────────────────────────┐
+│              main_app.py                            │
+│                                                     │
+│  singleton_data_mgr_instance = create_data_manager()│
+└──────────────────┬──────────────────────────────────┘
+                   │
+                   ▼
+┌─────────────────────────────────────────────────────────┐
+│           manager.py (Factory)                          │
+│                                                         │
+│  def create_data_manager():                             │
+│      if is_disk_mode():                                 │
+│          return DiskDataManager()                       │
+│      elif is_database_mode():                           │
+│          return DatabaseDataManager() ← Extend backends │
+│      elif is_s3_mode():                                 │
+│          return S3DataManager()       ← Extend backends │
+└──────────────────┬──────────────────────────────────────┘
+                   │
+                   ▼
+┌──────────────────────────────────────────────────────┐
+│         BaseDataManager (Abstract)                   │
+│  - get_experiment()                                  │
+│  - add_experiment_from_ui()                          │
+│  - get_all_lab_experiments_with_meta_data()          │
+│  - delete_experiment()                               │
+│  - ... other abstract methods                        │
+└──────────────────┬───────────────────────────────────┘
+                   │
+       ┌───────────┴───────────┬────────────┐
+       │                       │            │
+       ▼                       ▼            ▼
+┌────────────────┐    ┌──────────────┐  ┌──────────────┐
+│DiskDataManager │    │DatabaseData  │  │S3DataManager │
+│                │    │Manager       │  │              │
+│(Current Model) │    │(New)         │  │(New)         │
+└────────────────┘    └──────────────┘  └──────────────┘
+</pre></div>
+</div>
+<p>To add new functionality to all backends:</p>
+<ol class="arabic">
+<li><p><strong>Add method to base class</strong> (<code class="docutils literal notranslate"><span class="pre">data_manager/base.py</span></code>):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">DataManager</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">my_new_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        New data operation.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            param: Description.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Result dictionary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Implement in disk manager</strong> (<code class="docutils literal notranslate"><span class="pre">data_manager/disk_manager.py</span></code>):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">DiskDataManager</span><span class="p">(</span><span class="n">DataManager</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">my_new_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Implement the new method.&quot;&quot;&quot;</span>
+        <span class="c1"># Access self._data_path for file operations</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_path</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2">.json&quot;</span>
+        <span class="c1"># Read/write operations</span>
+        <span class="k">return</span> <span class="n">result</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Implement in other backends</strong> as needed (e.g., database, S3)</p></li>
+</ol>
+<p>To add a new storage backend (e.g., S3 or database):</p>
+<ol class="arabic simple">
+<li><p>Create a new manager class inheriting from <code class="docutils literal notranslate"><span class="pre">BaseDataManager</span></code></p></li>
+<li><p>Implement all abstract methods for your backend</p></li>
+<li><p>Update the factory in <code class="docutils literal notranslate"><span class="pre">manager.py</span></code> to return your new manager</p></li>
+<li><p>Add configuration options to <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code></p></li>
+</ol>
+</section>
+<section id="testing">
+<h2><a class="toc-backref" href="#id23" role="doc-backlink">Testing</a><a class="headerlink" href="#testing" title="Link to this heading"></a></h2>
+<section id="test-organization">
+<h3><a class="toc-backref" href="#id24" role="doc-backlink">Test Organization</a><a class="headerlink" href="#test-organization" title="Link to this heading"></a></h3>
+<p>Tests are organized by functionality:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>levseq_dash/app/tests/                     # Application tests
+├── conftest.py                            # Shared fixtures and configuration
+├── test_callbacks.py                      # Dash callback tests (routing, interactions)
+├── test_dbmanager.py                      # Data manager operations (CRUD)
+├── test_experiment.py                     # Experiment model and validation
+├── test_components.py                     # UI widgets and tables
+├── test_graphs.py                         # Plotting (heatmaps, rank plots, Single-Site Mutagenesis)
+├── test_settings.py                       # Configuration and settings
+├── test_alignment.py                      # Sequence alignment integration
+├── test_utils.py                          # Utility functions
+└── test_data/                             # Test fixtures and sample data
+
+levseq_dash/app/sequence_aligner/tests/    # Sequence alignment tests
+├── test_pairwise_aligner.py               # Alignment algorithm logic
+└── test_alignment_time.py                 # Performance benchmarks
+</pre></div>
+</div>
+</section>
+<section id="shared-test-fixtures-conftest-py">
+<h3><a class="toc-backref" href="#id25" role="doc-backlink">Shared Test Fixtures (conftest.py)</a><a class="headerlink" href="#shared-test-fixtures-conftest-py" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">conftest.py</span></code> file provides reusable fixtures for all tests:</p>
+<p><strong>Path Fixtures</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">test_data_path</span></code>, <code class="docutils literal notranslate"><span class="pre">app_data_path</span></code>: Common directory paths for test and app data</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">path_exp_ep_data</span></code>, <code class="docutils literal notranslate"><span class="pre">path_exp_ssm_data</span></code>: Paths to sample experiment files (CSV, CIF, JSON)</p></li>
+</ul>
+<p><strong>Data Fixtures</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">experiment_ep_pcr_metadata</span></code>, <code class="docutils literal notranslate"><span class="pre">experiment_ssm_metadata</span></code>: Pre-loaded experiment metadata from JSON</p></li>
+</ul>
+<p><strong>Mock Configuration Fixtures</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">mock_load_config_from_test_data_path</span></code>: Mock config pointing to test data directory</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mock_get_deployment_mode</span></code>, <code class="docutils literal notranslate"><span class="pre">mock_is_data_modification_enabled</span></code>: Mock settings functions</p></li>
+</ul>
+<p><strong>Data Manager Fixtures</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">disk_manager_from_app_data</span></code>: DiskDataManager using app data (for read-only tests)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">disk_manager_from_temp_data</span></code>: DiskDataManager using temporary directory (for write tests)</p></li>
+</ul>
+<p>These fixtures avoid code duplication and ensure consistent test environments.</p>
+</section>
+</section>
+<section id="debugging">
+<h2><a class="toc-backref" href="#id26" role="doc-backlink">Debugging</a><a class="headerlink" href="#debugging" title="Link to this heading"></a></h2>
+<section id="logging">
+<h3><a class="toc-backref" href="#id27" role="doc-backlink">Logging</a><a class="headerlink" href="#logging" title="Link to this heading"></a></h3>
+<p>Enable logging in <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code> for debugging:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">logging</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">sequence-alignment-profiling</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">  </span><span class="c1"># Alignment timing</span>
+<span class="w">  </span><span class="nt">data-manager</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">                   </span><span class="c1"># Data operations</span>
+<span class="w">  </span><span class="nt">pairwise-aligner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">              </span><span class="c1"># Alignment details</span>
+</pre></div>
+</div>
+<p>Use logging in your code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">levseq_dash.app.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">levseq_dash.app.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+
+<span class="n">utils</span><span class="o">.</span><span class="n">log_with_context</span><span class="p">(</span>
+    <span class="s2">&quot;Debug message&quot;</span><span class="p">,</span>
+    <span class="n">log_flag</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">is_data_manager_logging_enabled</span><span class="p">()</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="dash-devtools">
+<h3><a class="toc-backref" href="#id28" role="doc-backlink">Dash DevTools</a><a class="headerlink" href="#dash-devtools" title="Link to this heading"></a></h3>
+<p>Enable Dash DevTools for debugging callbacks and hot reload:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="usage.html" class="btn btn-neutral float-left" title="Usage Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, SSEC-JHU.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

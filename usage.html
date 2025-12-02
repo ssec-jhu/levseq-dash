@@ -1,0 +1,774 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Usage Guide &mdash; levseq_dash 0.1.dev1+gba072e22a</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/../_static/custom.css?v=9acc99a8" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=97907de9"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Developer Guide" href="developer.html" />
+    <link rel="prev" title="Welcome to LevSeqDash Documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            levseq_dash
+              <img src="_static/SSEC_logo_vert_white_lg_1184x661.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quick-start-with-docker">Quick Start with Docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#local-installation">Local Installation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#deployment-modes">Deployment Modes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#local-instance-setup">Local Instance Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#logging-and-debugging">Logging and Debugging</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#uploading-experiments">Uploading Experiments</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#required-csv-columns">Required CSV Columns</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#exploring-the-database">Exploring The Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#single-experiment-page">Single Experiment Page</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#protein-structure-viewer-3d">Protein Structure Viewer (3D)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#residue-highlighting">Residue Highlighting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#top-variants-table">Top Variants Table</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#heatmap-visualization">Heatmap Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#retention-of-function-curve">Retention of Function Curve</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#single-site-mutagenesis-ssm-plot">Single-Site Mutagenesis (SSM) Plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#related-variants-tabs">Related Variants Tabs</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#sequence-alignment">Sequence Alignment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#running-an-alignment-search">Running an Alignment Search</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#understanding-the-results">Understanding the Results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#protein-structure-visualization">Protein Structure Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tips-for-effective-alignment-searches">Tips for Effective Alignment Searches</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="developer.html">Developer Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">levseq_dash</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Usage Guide</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/usage.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="usage-guide">
+<h1>Usage Guide<a class="headerlink" href="#usage-guide" title="Link to this heading"></a></h1>
+<p>This guide covers how to install, configure, and use LevSeq-Dash for visualizing and analyzing directed evolution experiments.</p>
+<nav class="contents local" id="table-of-contents">
+<p class="topic-title">Table of Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#installation" id="id8">Installation</a></p>
+<ul>
+<li><p><a class="reference internal" href="#prerequisites" id="id9">Prerequisites</a></p></li>
+<li><p><a class="reference internal" href="#quick-start-with-docker" id="id10">Quick Start with Docker</a></p></li>
+<li><p><a class="reference internal" href="#local-installation" id="id11">Local Installation</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#configuration" id="id12">Configuration</a></p>
+<ul>
+<li><p><a class="reference internal" href="#deployment-modes" id="id13">Deployment Modes</a></p></li>
+<li><p><a class="reference internal" href="#local-instance-setup" id="id14">Local Instance Setup</a></p></li>
+<li><p><a class="reference internal" href="#logging-and-debugging" id="id15">Logging and Debugging</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#uploading-experiments" id="id16">Uploading Experiments</a></p>
+<ul>
+<li><p><a class="reference internal" href="#required-csv-columns" id="id17">Required CSV Columns</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#exploring-the-database" id="id18">Exploring The Database</a></p></li>
+<li><p><a class="reference internal" href="#single-experiment-page" id="id19">Single Experiment Page</a></p>
+<ul>
+<li><p><a class="reference internal" href="#protein-structure-viewer-3d" id="id20">Protein Structure Viewer (3D)</a></p></li>
+<li><p><a class="reference internal" href="#residue-highlighting" id="id21">Residue Highlighting</a></p></li>
+<li><p><a class="reference internal" href="#top-variants-table" id="id22">Top Variants Table</a></p></li>
+<li><p><a class="reference internal" href="#heatmap-visualization" id="id23">Heatmap Visualization</a></p></li>
+<li><p><a class="reference internal" href="#retention-of-function-curve" id="id24">Retention of Function Curve</a></p></li>
+<li><p><a class="reference internal" href="#single-site-mutagenesis-ssm-plot" id="id25">Single-Site Mutagenesis (SSM) Plot</a></p></li>
+<li><p><a class="reference internal" href="#related-variants-tabs" id="id26">Related Variants Tabs</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#sequence-alignment" id="id27">Sequence Alignment</a></p>
+<ul>
+<li><p><a class="reference internal" href="#overview" id="id28">Overview</a></p></li>
+<li><p><a class="reference internal" href="#running-an-alignment-search" id="id29">Running an Alignment Search</a></p></li>
+<li><p><a class="reference internal" href="#understanding-the-results" id="id30">Understanding the Results</a></p></li>
+<li><p><a class="reference internal" href="#protein-structure-visualization" id="id31">Protein Structure Visualization</a></p></li>
+<li><p><a class="reference internal" href="#tips-for-effective-alignment-searches" id="id32">Tips for Effective Alignment Searches</a></p></li>
+</ul>
+</li>
+</ul>
+</nav>
+<section id="installation">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Installation</a><a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
+<section id="prerequisites">
+<h3><a class="toc-backref" href="#id9" role="doc-backlink">Prerequisites</a><a class="headerlink" href="#prerequisites" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Python 3.9 or higher</p></li>
+<li><p>Docker (optional, for containerized deployment)</p></li>
+<li><p>Git</p></li>
+</ul>
+</section>
+<section id="quick-start-with-docker">
+<h3><a class="toc-backref" href="#id10" role="doc-backlink">Quick Start with Docker</a><a class="headerlink" href="#quick-start-with-docker" title="Link to this heading"></a></h3>
+<p>The fastest way to get started is using Docker:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Clone the repository</span>
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/ssec-jhu/levseq-dash.git
+<span class="nb">cd</span><span class="w"> </span>levseq-dash
+
+<span class="c1"># Build the Docker image</span>
+docker<span class="w"> </span>build<span class="w"> </span>.<span class="w"> </span>-t<span class="w"> </span>levseq-dash:latest<span class="w"> </span>--no-cache
+
+<span class="c1"># Run in Public Playground mode</span>
+docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">8050</span>:8050<span class="w"> </span>levseq-dash:latest
+</pre></div>
+</div>
+<p>The application will be available at <a class="reference external" href="http://0.0.0.0:8050">http://0.0.0.0:8050</a></p>
+</section>
+<section id="local-installation">
+<h3><a class="toc-backref" href="#id11" role="doc-backlink">Local Installation</a><a class="headerlink" href="#local-installation" title="Link to this heading"></a></h3>
+<p>For development or local use without Docker:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Clone the repository</span>
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/ssec-jhu/levseq-dash.git
+<span class="nb">cd</span><span class="w"> </span>levseq-dash
+
+<span class="c1"># Install dependencies</span>
+pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements/requirements.txt
+
+<span class="c1"># Run the application</span>
+python<span class="w"> </span>-m<span class="w"> </span>levseq_dash.app.main_app
+</pre></div>
+</div>
+</section>
+</section>
+<section id="configuration">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">Configuration</a><a class="headerlink" href="#configuration" title="Link to this heading"></a></h2>
+<section id="deployment-modes">
+<h3><a class="toc-backref" href="#id13" role="doc-backlink">Deployment Modes</a><a class="headerlink" href="#deployment-modes" title="Link to this heading"></a></h3>
+<p>LevSeq-Dash supports two deployment modes:</p>
+<p><strong>Public Playground Mode</strong></p>
+<p>This mode is the <strong>fastest way</strong> to run the app and is ideal for demos, testing, and exploration
+of the curated sample dataset publicly available online at <a class="reference external" href="https://enzengdb.org/">https://enzengdb.org/</a></p>
+<ul class="simple">
+<li><p>Read-only mode with example data</p></li>
+<li><p>No data modification allowed</p></li>
+<li><p>Perfect for exploring features and testing</p></li>
+<li><p>Uses pre-loaded sample experiments</p></li>
+</ul>
+<p><strong>Local Instance Mode</strong></p>
+<p>Use this mode for setting up an instance in your lab with persistent, user-controlled data storage.</p>
+<ul class="simple">
+<li><p>Full read/write access for lab use</p></li>
+<li><p>Upload and manage your own experiments</p></li>
+<li><p>Delete experiments as needed</p></li>
+<li><p>Customize data storage location</p></li>
+<li><p>Set unique experiment ID prefixes for your lab</p></li>
+</ul>
+</section>
+<section id="local-instance-setup">
+<h3><a class="toc-backref" href="#id14" role="doc-backlink">Local Instance Setup</a><a class="headerlink" href="#local-instance-setup" title="Link to this heading"></a></h3>
+<p><strong>Step 1: Configure config.yaml</strong></p>
+<p>Open <code class="docutils literal notranslate"><span class="pre">levseq_dash/app/config/config.yaml</span></code> and configure it for local instance mode.</p>
+<p>💡 <strong>Hint</strong>: You can copy/paste the configuration below and modify the values:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set deployment mode to local-instance</span>
+<span class="nt">deployment-mode</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;local-instance&quot;</span>
+
+<span class="nt">disk</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># Enable data modification to allow adding/deleting data</span>
+<span class="w">  </span><span class="nt">enable-data-modification</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+
+<span class="w">  </span><span class="c1"># Set a unique 5-letter prefix for your lab or project</span>
+<span class="w">  </span><span class="c1"># OR set using environment variable</span>
+<span class="w">  </span><span class="nt">five-letter-id-prefix</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;MYLAB&quot;</span>
+
+<span class="w">  </span><span class="c1"># Example: absolute path of data on your desktop</span>
+<span class="w">  </span><span class="nt">local-data-path</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;/Users/&lt;username&gt;/Desktop/MyLabData&quot;</span>
+</pre></div>
+</div>
+<p><strong>Step 2: Configure five-letter-id-prefix</strong></p>
+<ul class="simple">
+<li><p>This should be a unique identifier for your lab or project (e.g., “MYLAB”, “JONES”)</p></li>
+<li><p>It <strong>must be exactly 5 letters long</strong> and can only contain alphabetic characters (A-Z, a-z)</p></li>
+<li><p>This will be prefixed to all your experiment IDs (e.g., “MYLAB-EXP001”)</p></li>
+<li><p>Helps distinguish experiments from different labs/projects</p></li>
+</ul>
+<p><strong>Step 3: Configure local-data-path</strong></p>
+<ul class="simple">
+<li><p>This is where your experiment data will be stored on your local machine</p></li>
+<li><p>Use an <strong>absolute path</strong> (e.g., <code class="docutils literal notranslate"><span class="pre">/Users/username/Desktop/MyLabData</span></code>)</p></li>
+<li><p>Make sure the directory exists and that you have write permissions to it</p></li>
+<li><p>All uploaded experiments will be stored here</p></li>
+</ul>
+<p><strong>Using Docker with Environment Variables</strong></p>
+<p>You can override config.yaml settings at runtime using environment variables to set up multiple instances:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">FIVE_LETTER_ID_PREFIX</span></code>: Configure the 5-letter prefix</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DATA_PATH</span></code>: Configure the local data path</p></li>
+</ul>
+<p><strong>Docker Run Example</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run in local instance mode using settings in config.yaml</span>
+docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">8050</span>:8050<span class="w"> </span>levseq-dash:local
+
+<span class="c1"># OR run with environment variables to override config.yaml settings</span>
+docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">8050</span>:8050<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-v<span class="w"> </span>/your/host/data/path:/data<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-e<span class="w"> </span><span class="nv">DATA_PATH</span><span class="o">=</span>/data<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-e<span class="w"> </span><span class="nv">FIVE_LETTER_ID_PREFIX</span><span class="o">=</span>MYLAB<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>levseq-dash:local
+</pre></div>
+</div>
+<p><strong>Parameters Explained</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">-v</span> <span class="pre">/your/host/data/path:/data</span></code>: Mounts a directory from your host machine to the <code class="docutils literal notranslate"><span class="pre">/data</span></code> directory inside the container</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-e</span> <span class="pre">DATA_PATH=/data</span></code>: Tells the application to use the <code class="docutils literal notranslate"><span class="pre">/data</span></code> directory for storage</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-e</span> <span class="pre">FIVE_LETTER_ID_PREFIX=MYLAB</span></code>: Sets your unique 5-letter lab/project identifier</p></li>
+</ul>
+</section>
+<section id="logging-and-debugging">
+<h3><a class="toc-backref" href="#id15" role="doc-backlink">Logging and Debugging</a><a class="headerlink" href="#logging-and-debugging" title="Link to this heading"></a></h3>
+<p>Enable detailed logging for development and debugging:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Logging and profiling settings for development and debugging</span>
+<span class="nt">logging</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># Enable profiling for sequence alignment performance testing</span>
+<span class="w">  </span><span class="c1"># Logs timing information for alignment operations (default: false)</span>
+<span class="w">  </span><span class="nt">sequence-alignment-profiling</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+
+<span class="w">  </span><span class="c1"># Enable detailed logging for data manager operations</span>
+<span class="w">  </span><span class="c1"># Logs data loading, experiment management operations (default: false)</span>
+<span class="w">  </span><span class="nt">data-manager</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+
+<span class="w">  </span><span class="c1"># Enable logging for pairwise aligner detailed operations</span>
+<span class="w">  </span><span class="c1"># Logs alignment algorithm details and performance (default: false)</span>
+<span class="w">  </span><span class="nt">pairwise-aligner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<p><strong>Logging Parameters</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">sequence-alignment-profiling</span></code>: Enables timing logs for sequence alignment operations, useful for performance optimization</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">data-manager</span></code>: Enables detailed logging of data loading, experiment metadata operations, and file I/O</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pairwise-aligner</span></code>: Enables verbose logging of the BioPython pairwise alignment algorithm details</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>These logging settings are primarily for development and debugging. Set all to <code class="docutils literal notranslate"><span class="pre">false</span></code> in production deployments to reduce log verbosity.</p>
+</div>
+</section>
+</section>
+<section id="uploading-experiments">
+<h2><a class="toc-backref" href="#id16" role="doc-backlink">Uploading Experiments</a><a class="headerlink" href="#uploading-experiments" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p>Navigate to the <strong>Upload</strong> page</p></li>
+<li><p>Prepare your data:</p>
+<ul class="simple">
+<li><p><strong>CSV file</strong>: Experiment data with required columns (see below)</p></li>
+<li><p><strong>CIF file</strong>: Protein structure file in cif file (PDB format is not yet supported)</p></li>
+</ul>
+</li>
+<li><p>Fill in the metadata form:</p>
+<ul class="simple">
+<li><p>Lab Experiment ID</p></li>
+<li><p>Parent Sequence</p></li>
+<li><p>Experiment Description</p></li>
+<li><p>Date of the experiment</p></li>
+<li><p>Valid SMILES strings used in the experiment as substrate and product</p></li>
+</ul>
+</li>
+<li><p>Click <strong>Upload</strong> to validate and store the experiment</p></li>
+<li><p>On success, you will see a confirmation message and can navigate to the experiment page.</p></li>
+</ol>
+<p>If there are errors, they will be displayed for correction.</p>
+<section id="required-csv-columns">
+<h3><a class="toc-backref" href="#id17" role="doc-backlink">Required CSV Columns</a><a class="headerlink" href="#required-csv-columns" title="Link to this heading"></a></h3>
+<p>Your CSV file must include these columns:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">smiles_string</span></code>: Chemical structure in SMILES format</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fitness_value</span></code>: Activity/fitness measurement</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">well</span></code>: Well position (e.g., “A01”, “B12”) - must be in standard 96-well plate format (A1-H12)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">plate</span></code>: Plate identifier (e.g., “1”, “2”, “Plate1”)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">amino_acid_substitutions</span></code>: Amino acid mutations (e.g., “A123G”, “M45K”)</p>
+<ul>
+<li><p>Must include at least one row with <code class="docutils literal notranslate"><span class="pre">#PARENT#</span></code> as the value to represent the parent sequence</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">alignment_count</span></code>: Number of sequence alignments</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">alignment_probability</span></code>: Probability score for the alignment</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All SMILES strings must be valid chemical structures. Invalid SMILES will cause upload to fail with an error message indicating which row contains the invalid SMILES.</p>
+</div>
+</section>
+</section>
+<section id="exploring-the-database">
+<h2><a class="toc-backref" href="#id18" role="doc-backlink">Exploring The Database</a><a class="headerlink" href="#exploring-the-database" title="Link to this heading"></a></h2>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="_images/explore.png"><img alt="Explore page showing all experiments in an interactive table" src="_images/explore.png" style="height: 300px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Explore page with experiment table, filters, and batch operation buttons</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Features</strong>:</p>
+<ul class="simple">
+<li><p>View table of all uploaded experiments with metadata</p></li>
+<li><p>Interactive controls for filtering, sorting, and searching</p></li>
+<li><p>Select experiments to perform batch operations</p></li>
+<li><p>Export data in multiple formats</p></li>
+</ul>
+<p><strong>Table Interactions</strong>:</p>
+<dl class="simple">
+<dt><em>Selection</em>:</dt><dd><ul class="simple">
+<li><p><strong>Single Selection</strong>: Click any row to select it</p></li>
+<li><p><strong>Multi-Selection</strong>: Hold Ctrl (Cmd on Mac) and click multiple rows</p></li>
+</ul>
+</dd>
+<dt><em>Filtering and Sorting</em>:</dt><dd><ul class="simple">
+<li><p><strong>Column Filters</strong>: Click the filter icon in column headers to access filters</p></li>
+<li><p><strong>Text Search</strong>: Type in filter boxes to search within specific columns</p></li>
+<li><p><strong>Sorting</strong>: Click column headers to toggle ascending/descending sort</p></li>
+<li><p><strong>Filter Persistence</strong>: Filters are automatically saved in browser session storage</p></li>
+</ul>
+</dd>
+<dt><em>Data Export</em>:</dt><dd><ul class="simple">
+<li><p><strong>Export Filtered Data</strong>: Download a CSV file containing only the currently filtered rows</p></li>
+<li><p><strong>Export Selected</strong>: Download multiple experiments as a ZIP file (see Actions below)</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Available Actions</strong> (Buttons activate based on row selection):</p>
+<ul>
+<li><p><strong>Go To Experiment</strong>: Navigate to detailed experiment view</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Requires: Exactly 1 row selected</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><strong>Download Selected Experiments</strong>: Export experiments as a ZIP archive</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Requires: 1 or more rows selected</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><strong>Delete</strong>: Remove experiment from the system</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Requires: Exactly 1 row selected</p></li>
+<li><p>Only available in Local Instance mode</p></li>
+<li><p>Note: Files are moved to a backup folder, not permanently deleted</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</section>
+<section id="single-experiment-page">
+<h2><a class="toc-backref" href="#id19" role="doc-backlink">Single Experiment Page</a><a class="headerlink" href="#single-experiment-page" title="Link to this heading"></a></h2>
+<p>After selecting an experiment from the Explore page, you can view detailed analysis and visualizations.</p>
+<p><strong>Page Components</strong>:</p>
+<ul class="simple">
+<li><p><strong>Protein Structure Viewer</strong>: 3D visualization (if CIF file provided)</p></li>
+<li><p><strong>Experiment Metadata Panel</strong>: Shows experiment details</p></li>
+<li><p><strong>Top Variants Table</strong>: Interactive table of all variants</p></li>
+<li><p><strong>Heatmap</strong>: Visualizes variant data across well plates</p></li>
+<li><p><strong>Retention of Function Curve / Site Specific Plot</strong>: Shows variant rankings by fitness</p></li>
+<li><p><strong>Reaction Visualization</strong>: Displays substrate/product chemistry</p></li>
+</ul>
+<section id="protein-structure-viewer-3d">
+<h3><a class="toc-backref" href="#id20" role="doc-backlink">Protein Structure Viewer (3D)</a><a class="headerlink" href="#protein-structure-viewer-3d" title="Link to this heading"></a></h3>
+<figure class="align-center" id="id2">
+<a class="reference internal image-reference" href="_images/molecular_viewer.png"><img alt="Molecular viewer showing 3D protein structure with highlighted residues" src="_images/molecular_viewer.png" style="height: 500px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">3D protein structure viewer with highlighted mutation positions</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><em>Navigation Controls</em>:
+- <strong>Rotate</strong>: Left-click and drag
+- <strong>Zoom</strong>: Scroll wheel or pinch gesture
+- <strong>Pan</strong>: Right-click and drag (or Ctrl + left-click)
+- <strong>Reset View</strong>: Click the home icon in viewer controls</p>
+</section>
+<section id="residue-highlighting">
+<h3><a class="toc-backref" href="#id21" role="doc-backlink">Residue Highlighting</a><a class="headerlink" href="#residue-highlighting" title="Link to this heading"></a></h3>
+<p>Residues can be highlighted in two ways:</p>
+<ol class="arabic simple">
+<li><p><em>Table Selection*</em>: Select a variant row to highlight its mutation positions</p></li>
+<li><p><em>View All Residues Mode</em>:</p>
+<ul class="simple">
+<li><p>Enable the <strong>“View All Residues”</strong> toggle switch</p></li>
+<li><p>Use the <strong>Fitness Ratio Slider</strong> to set threshold (e.g., 1.5-5.0)</p></li>
+<li><p>Viewer highlights all residues appearing in variants above threshold</p></li>
+<li><p>Filter by specific substrate/product using <strong>SMILES dropdown</strong></p></li>
+<li><p>Info text displays which residues are currently highlighted</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="top-variants-table">
+<h3><a class="toc-backref" href="#id22" role="doc-backlink">Top Variants Table</a><a class="headerlink" href="#top-variants-table" title="Link to this heading"></a></h3>
+<p><em>Features</em>:</p>
+<ul class="simple">
+<li><p>Displays all variants from the experiment</p></li>
+<li><p>Rows are color-coded by fitness ratio</p></li>
+<li><p>Select rows to highlight mutations in the 3D protein viewer</p></li>
+<li><p>Filter by fitness ratio range using slider controls</p></li>
+</ul>
+<p><em>Selection</em>:</p>
+<ul class="simple">
+<li><p><strong>Single Selection</strong>: Click any row to select it</p></li>
+<li><p><strong>Multi-Selection</strong>: Hold Ctrl (Cmd on Mac) and click multiple rows</p></li>
+</ul>
+<p><em>Filtering and Sorting</em>:</p>
+<ul class="simple">
+<li><p><strong>Column Filters</strong>: Click the filter icon in column headers</p></li>
+<li><p><strong>Text Search</strong>: Type in filter boxes to search within specific columns</p></li>
+<li><p><strong>Sorting</strong>: Click column headers to toggle ascending/descending sort</p></li>
+</ul>
+</section>
+<section id="heatmap-visualization">
+<h3><a class="toc-backref" href="#id23" role="doc-backlink">Heatmap Visualization</a><a class="headerlink" href="#heatmap-visualization" title="Link to this heading"></a></h3>
+<figure class="align-center" id="id3">
+<a class="reference internal image-reference" href="_images/heatmap.png"><img alt="Heatmap visualization of variant fitness across well plates" src="_images/heatmap.png" style="height: 400px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Interactive heatmap showing fitness values color-coded by well position</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Visualizes variant data across well plates with color-coded values.</p>
+<p><strong>Controls</strong>:</p>
+<ul class="simple">
+<li><p><strong>Plate Dropdown</strong>: Select which plate to view</p></li>
+<li><p><strong>SMILES Dropdown</strong>: Choose substrate/product combination</p></li>
+<li><p><strong>Property Dropdown</strong>: Select visualization property:</p>
+<ul>
+<li><p><strong>Fitness</strong>: Shows fitness values</p></li>
+<li><p><strong>Mean/Median/Std Dev</strong>: Statistical summaries across plates</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>Interactions</strong>:</p>
+<ul class="simple">
+<li><p>Click individual wells to see detailed variant information</p></li>
+<li><p>Hover over wells for quick data preview</p></li>
+</ul>
+</section>
+<section id="retention-of-function-curve">
+<h3><a class="toc-backref" href="#id24" role="doc-backlink">Retention of Function Curve</a><a class="headerlink" href="#retention-of-function-curve" title="Link to this heading"></a></h3>
+<figure class="align-center" id="id4">
+<a class="reference internal image-reference" href="_images/rank_plot.png"><img alt="Retention of function curve showing variant fitness rankings" src="_images/rank_plot.png" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Bar chart displaying ranked variants by fitness value</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Shows all variants ranked by fitness value. Bars are color-coded by fitness ratio relative to parent.</p>
+<p><strong>Controls</strong>:</p>
+<ul class="simple">
+<li><p><strong>Plate Dropdown</strong>: Filter by specific plate</p></li>
+<li><p><strong>SMILES Dropdown</strong>: Filter by substrate/product</p></li>
+</ul>
+<p><strong>Chart Elements</strong>:</p>
+<ul class="simple">
+<li><p><strong>X-axis</strong>: Variant identifier or mutation</p></li>
+<li><p><strong>Y-axis</strong>: Fitness value</p></li>
+<li><p><strong>Hover</strong>: Displays detailed variant information</p></li>
+</ul>
+</section>
+<section id="single-site-mutagenesis-ssm-plot">
+<h3><a class="toc-backref" href="#id25" role="doc-backlink">Single-Site Mutagenesis (SSM) Plot</a><a class="headerlink" href="#single-site-mutagenesis-ssm-plot" title="Link to this heading"></a></h3>
+<figure class="align-center" id="id5">
+<a class="reference internal image-reference" href="_images/ssm_plot.png"><img alt="Single-Site Mutagenesis plot showing fitness by amino acid substitution" src="_images/ssm_plot.png" style="height: 400px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Single-Site Mutagenesis plot displaying fitness values for all amino acid substitutions at a position</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Appears for Site Specific experiments instead of retention of function curve. Shows fitness for each amino acid substitution at a selected position.</p>
+<p><strong>Controls</strong>:</p>
+<ul class="simple">
+<li><p><strong>Residue Position Dropdown</strong>: Select which position to analyze</p></li>
+<li><p><strong>SMILES Dropdown</strong>: Filter by substrate/product</p></li>
+</ul>
+<p><strong>Chart Elements</strong>:</p>
+<ul class="simple">
+<li><p><strong>Bars</strong>: Fitness value for each amino acid substitution</p></li>
+<li><p><strong>Dotted Line</strong>: Parent sequence fitness (reference)</p></li>
+<li><p><strong>Hover</strong>: Shows amino acid and fitness details</p></li>
+</ul>
+</section>
+<section id="related-variants-tabs">
+<h3><a class="toc-backref" href="#id26" role="doc-backlink">Related Variants Tabs</a><a class="headerlink" href="#related-variants-tabs" title="Link to this heading"></a></h3>
+<p>Find experiments with similar sequences that have variants at specific positions.</p>
+<figure class="align-center" id="id6">
+<a class="reference internal image-reference" href="_images/related_variants.png"><img alt="Related Variants tab showing similar experiments with variants at lookup positions" src="_images/related_variants.png" style="height: 400px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Related Variants tab displaying similar experiments with variants at lookup positions.</span><a class="headerlink" href="#id6" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Setup</strong></p>
+<ol class="arabic simple">
+<li><p>Query sequence is auto-filled with current experiment’s parent sequence</p></li>
+<li><p>Set <strong>Alignment Threshold</strong> (default 0.8): Minimum sequence similarity (0-1 scale, where 1.0 = 100% match)</p></li>
+<li><p>Enter <strong>Lookup Residues</strong>: Comma-separated positions to check (e.g., “100,150,200”)</p></li>
+<li><p>Click <strong>Run</strong> to search</p></li>
+</ol>
+<p><strong>Understanding Results and Comparison View</strong></p>
+<ul class="simple">
+<li><p>Table shows experiments with similar parent sequences and with variants at lookup positions</p></li>
+<li><p>Select a row to compare protein structures side-by-side</p></li>
+<li><p>Reaction images shows substrate/product for comparison</p></li>
+<li><p>Left protein structure panel shows current experiment structure with highlighted positions</p></li>
+<li><p>Right protein structure panel shows selected match structure with highlighted positions</p></li>
+</ul>
+<p><strong>Color Coding</strong>:</p>
+<ul class="simple">
+<li><p><em>Red*</em>: Gain-of-function variants</p></li>
+<li><p><em>Blue*</em>: Loss-of-function variants</p></li>
+<li><p><em>Purple*</em>: Positions that both showed GoF and LoF variants</p></li>
+</ul>
+</section>
+</section>
+<section id="sequence-alignment">
+<h2><a class="toc-backref" href="#id27" role="doc-backlink">Sequence Alignment</a><a class="headerlink" href="#sequence-alignment" title="Link to this heading"></a></h2>
+<p>The Sequence Alignment feature allows you to search across all experiments in the database to find those with similar parent sequences to your query. This is particularly useful for:</p>
+<ul class="simple">
+<li><p>Identifying related enzyme variants across different experiments</p></li>
+<li><p>Finding experiments that may have explored similar sequence space</p></li>
+<li><p>Comparing gain-of-function and loss-of-function mutations across related proteins</p></li>
+<li><p>Discovering which residue positions are critical for function across protein families</p></li>
+</ul>
+<section id="overview">
+<h3><a class="toc-backref" href="#id28" role="doc-backlink">Overview</a><a class="headerlink" href="#overview" title="Link to this heading"></a></h3>
+<p>The alignment tool uses BLASTP-style pairwise sequence alignment to compare your query sequence against all parent sequences in the database. When matches are found, the system analyzes the variants in those experiments to identify positions that consistently show gain-of-function (GoF) or loss-of-function (LoF) mutations.</p>
+</section>
+<section id="running-an-alignment-search">
+<h3><a class="toc-backref" href="#id29" role="doc-backlink">Running an Alignment Search</a><a class="headerlink" href="#running-an-alignment-search" title="Link to this heading"></a></h3>
+<p><strong>Step 1: Navigate and Enter Query</strong></p>
+<ol class="arabic simple">
+<li><p>Navigate to <strong>Matching Sequences</strong> page from the sidebar</p></li>
+<li><p>Enter your query protein sequence in the text area:</p>
+<ul class="simple">
+<li><p>Must be a valid amino acid sequence (single-letter codes)</p></li>
+<li><p>Remove any non-sequence letters (e.g., whitespace, numbers, &gt;, &lt;)</p></li>
+</ul>
+</li>
+</ol>
+<p><strong>Step 2: Configure Search Parameters</strong></p>
+<ul class="simple">
+<li><p><strong>Alignment Threshold</strong> (0-1 scale):</p>
+<ul>
+<li><p>Sets the minimum sequence identity for matches to be returned, where 1.0 = 100% match</p></li>
+<li><p>Default: 0.8 is recommended as a starting point</p></li>
+<li><p>Lower values (0.6-0.7) will find more distantly related sequences</p></li>
+<li><p>Higher values (0.9-1.0) will only find very similar sequences</p></li>
+<li><p>Example: 0.8 means at least 80% of aligned positions must be identical</p></li>
+</ul>
+</li>
+<li><p><strong>Top N GoF/LoF Positions</strong>:</p>
+<ul>
+<li><p>Specifies how many gain-of-function and loss-of-function positions to identify</p></li>
+<li><p>Default: Top 2 for each category</p></li>
+<li><p>These positions are ranked by the magnitude of fitness change across variants</p></li>
+<li><p>Helps focus on the most impactful mutations</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>Step 3: Execute Search</strong></p>
+<p>Click <strong>Run Alignment</strong> to start the search. The system will:</p>
+<ol class="arabic simple">
+<li><p>Align your query against all database parent sequences</p></li>
+<li><p>Filter results by the alignment threshold</p></li>
+<li><p>Analyze variants at each position in matching experiments</p></li>
+<li><p>Identify and rank positions showing gain or loss of function</p></li>
+</ol>
+</section>
+<section id="understanding-the-results">
+<h3><a class="toc-backref" href="#id30" role="doc-backlink">Understanding the Results</a><a class="headerlink" href="#understanding-the-results" title="Link to this heading"></a></h3>
+<p><strong>Matched Sequences Table</strong></p>
+<p>This table displays all experiments with parent sequences that meet your alignment threshold:</p>
+<p><em>Key Columns</em>:</p>
+<ul class="simple">
+<li><p><strong>Experiment ID</strong>: Click to navigate to the full experiment page</p></li>
+<li><p><strong>Alignment Score</strong>: Raw alignment score from the pairwise alignment algorithm</p></li>
+<li><p><strong>Percent Identity</strong>: Percentage of aligned positions that are identical matches</p></li>
+<li><p><strong>Substitutions</strong>: Amino acid differences between query and target sequence</p></li>
+<li><p><strong>Gap Count</strong>: Number of insertions/deletions in the alignment</p></li>
+<li><p><strong>Parent Sequence Length</strong>: Length of the matched parent sequence</p></li>
+</ul>
+<p><em>Interpreting Results</em>:</p>
+<ul class="simple">
+<li><p>Higher percent identity indicates more similar sequences</p></li>
+<li><p>Review substitutions to understand key differences between sequences</p></li>
+<li><p>Experiments with similar percent identity but different substitutions may have explored different regions of sequence space</p></li>
+</ul>
+<p><strong>Gain-of-Function (GoF) and Loss-of-Function (LoF) Mutations Table</strong></p>
+<p>This table aggregates mutation data across all matched experiments to identify critical residue positions:</p>
+<p><em>Understanding GoF Mutations</em> (marked in red):</p>
+<ul class="simple">
+<li><p>Positions where mutations consistently lead to <strong>increased</strong> fitness values</p></li>
+<li><p>Fitness ratio &gt; 1.0 relative to parent sequence</p></li>
+<li><p>These positions may represent opportunities for enhancing enzyme activity</p></li>
+<li><p>Higher fitness values indicate stronger gain-of-function effects</p></li>
+</ul>
+<p><em>Understanding LoF Mutations</em> (marked in blue):</p>
+<ul class="simple">
+<li><p>Positions where mutations consistently lead to <strong>decreased</strong> fitness values</p></li>
+<li><p>Fitness ratio &lt; 1.0 relative to parent sequence</p></li>
+<li><p>These positions may be critical for maintaining protein structure or catalytic function</p></li>
+<li><p>Lower fitness values indicate stronger loss-of-function effects</p></li>
+</ul>
+<p><em>Table Columns</em>:</p>
+<ul class="simple">
+<li><p><strong>Position</strong>: Residue position number in the aligned sequence</p></li>
+<li><p><strong>Mutation Type</strong>: GoF (gain), LoF (loss), or Both (positions showing mixed effects)</p></li>
+<li><p><strong>Average Fitness Ratio</strong>: Mean fitness across all variants at this position</p></li>
+<li><p><strong>Count</strong>: Number of different amino acid substitutions observed at this position</p></li>
+<li><p><strong>SMILES</strong>: Substrate/product combinations where effects were observed</p></li>
+<li><p><strong>Top Variants</strong>: Specific mutations with highest/lowest fitness</p></li>
+</ul>
+<p><em>Export Options</em>:</p>
+<ul class="simple">
+<li><p>Click <strong>Export</strong> to download the table as CSV for further analysis</p></li>
+<li><p>Use in downstream analysis, publication figures, or experimental design</p></li>
+</ul>
+</section>
+<section id="protein-structure-visualization">
+<h3><a class="toc-backref" href="#id31" role="doc-backlink">Protein Structure Visualization</a><a class="headerlink" href="#protein-structure-visualization" title="Link to this heading"></a></h3>
+<p>When you select a row from the Matched Sequences table, the 3D protein structure viewer displays the matched experiment’s structure with color-coded mutation positions:</p>
+<figure class="align-center" id="id7">
+<a class="reference internal image-reference" href="_images/alignment.png"><img alt="Sequence alignment view showing matched experiments with color-coded GoF and LoF positions" src="_images/alignment.png" style="height: 500px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Protein structure viewer displaying gain-of-function (red), loss-of-function (blue), and mixed (purple) mutation positions</span><a class="headerlink" href="#id7" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Color Coding Scheme</strong>:</p>
+<ul class="simple">
+<li><p><strong>Red residues</strong>: Positions where gain-of-function mutations were observed</p></li>
+<li><p><strong>Blue residues</strong>: Positions where loss-of-function mutations were observed</p></li>
+<li><p><strong>Purple residues</strong>: Positions showing both GoF and LoF mutations</p></li>
+</ul>
+<p><strong>Viewer Interactions</strong>:</p>
+<ul class="simple">
+<li><p>Rotate, zoom, and pan to examine positions in 3D structural context</p></li>
+<li><p>Identify whether GoF/LoF positions cluster together (potential active site)</p></li>
+<li><p>Check if critical positions are on protein surface or buried in core</p></li>
+<li><p>Look for spatial relationships between different mutation types</p></li>
+</ul>
+</section>
+<section id="tips-for-effective-alignment-searches">
+<h3><a class="toc-backref" href="#id32" role="doc-backlink">Tips for Effective Alignment Searches</a><a class="headerlink" href="#tips-for-effective-alignment-searches" title="Link to this heading"></a></h3>
+<p><strong>Choosing Alignment Threshold</strong>:</p>
+<ul class="simple">
+<li><p>Start with 0.8 if you’re unsure</p></li>
+<li><p>Use 0.9-1.0 for finding very closely related variants (same protein family)</p></li>
+<li><p>Use 0.6-0.8 for finding more distant homologs or related enzyme classes</p></li>
+<li><p>Lower thresholds will increase search time but may reveal interesting distant relationships</p></li>
+</ul>
+<p><strong>Performance Considerations</strong>:</p>
+<ul class="simple">
+<li><p>Searches typically complete in seconds to minutes depending on database size</p></li>
+<li><p>Very long query sequences (&gt;1000 AA) may take longer</p></li>
+<li><p>Large numbers of matches (&gt;100) may take time to analyze variants</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to LevSeqDash Documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="developer.html" class="btn btn-neutral float-right" title="Developer Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, SSEC-JHU.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
