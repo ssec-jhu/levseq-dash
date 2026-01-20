@@ -1,0 +1,76 @@
+name: Add data to database
+description: Submit a request to add a new dataset to the database
+title: "[DATA ADD] <short description>"
+labels: ["data-submission"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Data submission checklist
+        Please complete **all** fields below. Issues that do not meet the requirements will not be processed.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission checklist
+      description: All boxes must be checked
+      options:
+        - label: I confirm that I have tested uploading to EnzEngDB website (or locally hosted version)
+          required: true
+        - label: I have included the headers in my csv [id	barcode_plate	plate	well	amino_acid_substitutions	alignment_count	alignment_probability	average_mutation_frequency	p_value	p_adj_value	nt_sequence	aa_sequence	smiles_string	fitness_value	reaction_smiles]
+          required: true
+        - label: I have included the required metadata?
+          required: true
+        - label: I have added a cif file?
+          required: true
+        - label: I confirm this data is legally shareable and properly licensed
+          required: true
+        - label: I have verified the data format matches the database schema
+          required: true
+        - label: I have provided a stable download link or attached the data
+          required: true
+        - label: I have included metadata
+          required: true
+
+  - type: input
+    id: dataset_name
+    attributes:
+      label: Dataset name
+      description: Short, descriptive name
+      placeholder: e.g. Environmental Enzyme Kinetics v1
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Dataset description
+      description: What is this data and why is it useful?
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Contact information
+      description: Who can we contact about this and how? (if we have issues)
+    validations:
+      required: true
+
+  - type: input
+    id: license
+    attributes:
+      label: License
+      placeholder: e.g. CC-BY-4.0
+    validations:
+      required: true
+
+  - type: textarea
+    id: link
+    attributes:
+      label: Data location
+      description: URL, DOI, or upload instructions
+    validations:
+      required: true

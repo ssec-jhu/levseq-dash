@@ -435,7 +435,7 @@ def get_layout():
                     "If you use the EnzEngDB Dashboard in your research, please cite both the paper and the software:",
                     html.Ul(
                         [
-                            html.Li("Paper Citation: on publication."),
+                            html.Li("Paper link/citation: https://doi.org/10.1093/nar/gkaf1142"),
                             html.Li(
                                 [
                                     "Software Citation: ",
