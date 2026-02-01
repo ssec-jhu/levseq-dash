@@ -1,2 +1,2 @@
-tox==4.32.0
-GitPython==3.1.45
+tox==4.34.1
+GitPython==3.1.46
