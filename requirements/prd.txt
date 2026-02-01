@@ -4,7 +4,7 @@ dash-bootstrap-components==2.0.4
 dash-bootstrap-templates==2.1.0
 dash-iconify==0.1.2
 pandas==2.3.3
-gunicorn==23.0.0
+gunicorn==24.1.1
 pyyaml==6.0.3
 dash-molstar==1.2.1
 plotly-express==0.4.1
